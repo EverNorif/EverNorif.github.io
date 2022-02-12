@@ -16,21 +16,22 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Flask获取get、post等各类参数的方式。">
+    <meta name="description" content="Flask可以通过request简单拿到访问的地址，但是如果使用了nginx进行代理，那么无论客户端真实ip是多少，获取到的都是转发而来的127.0.0.1地址。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Flask获取各类参数">
-<meta property="og:url" content="http://example.com/2022/02/12/Flask%E8%8E%B7%E5%8F%96%E5%90%84%E7%B1%BB%E5%8F%82%E6%95%B0/index.html">
+<meta property="og:title" content="Flask通过nginx反向代理时获取客户端真实IP">
+<meta property="og:url" content="http://example.com/2022/02/12/Flask%E9%80%9A%E8%BF%87nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%97%B6%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9C%9F%E5%AE%9EIP/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="Flask获取get、post等各类参数的方式。">
+<meta property="og:description" content="Flask可以通过request简单拿到访问的地址，但是如果使用了nginx进行代理，那么无论客户端真实ip是多少，获取到的都是转发而来的127.0.0.1地址。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-12T08:19:53.000Z">
-<meta property="article:modified_time" content="2022-02-12T08:44:29.376Z">
+<meta property="article:published_time" content="2022-02-12T09:10:42.000Z">
+<meta property="article:modified_time" content="2022-02-12T09:14:49.785Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Flask">
+<meta property="article:tag" content="nginx">
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>Flask获取各类参数 - EverNorif</title>
+  <title>Flask通过nginx反向代理时获取客户端真实IP - EverNorif</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -176,7 +177,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Flask获取各类参数">
+            <span class="h2" id="subtitle" title="Flask通过nginx反向代理时获取客户端真实IP">
               
             </span>
 
@@ -186,7 +187,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-02-12 16:19" pubdate>
+      <time datetime="2022-02-12 17:10" pubdate>
         2022年2月12日 下午
       </time>
     </span>
@@ -197,7 +198,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      719 字
+      381 字
     </span>
   
 
@@ -206,7 +207,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6 分钟
+      4 分钟
     </span>
   
 
@@ -239,29 +240,23 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Flask获取各类参数</h1>
+            <h1 style="display: none">Flask通过nginx反向代理时获取客户端真实IP</h1>
             
             <div class="markdown-body">
-              <h2 id="Flask获取get参数"><a href="#Flask获取get参数" class="headerlink" title="Flask获取get参数"></a>Flask获取get参数</h2><p>通过request.args.get()方式进行获取：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 以username举例</span><br>username = request.args.get(<span class="hljs-string">&#x27;username&#x27;</span>)<br></code></pre></td></tr></table></figure>
+              <h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p>正常情况下，通过如下方式即可获取：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><pre><code class="hljs python">ip = request.remote_addr<br></code></pre></td></tr></table></figure>
+
+<p>如果使用了nginx进行代理的话，需要首先在nginx的配置文件中进行相应的修改：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml">server &#123;<br>    location / &#123;<br>        proxy_set_header X-Real-IP $remote_addr;<br>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后在Flask代码中通过如下方式获取：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> request<br><br>real_ip = request.headers[<span class="hljs-string">&#x27;X-Forwarded-For&#x27;</span>]<br></code></pre></td></tr></table></figure>
 
 
 
-<h2 id="Flask获取post参数"><a href="#Flask获取post参数" class="headerlink" title="Flask获取post参数"></a>Flask获取post参数</h2><p>post获取参数分为多种情况，下面列举我在实际过程中使用过的获取方式。</p>
-<h3 id="1-原始参数"><a href="#1-原始参数" class="headerlink" title="1. 原始参数"></a>1. 原始参数</h3><p>原始参数指的是以json格式传送的参数，在axios中一般以如下方式传递：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-variable language_">this</span>.<span class="hljs-property">$axios</span>.<span class="hljs-title function_">post</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">$store</span>.<span class="hljs-property">state</span>.<span class="hljs-property">backend_url</span> + <span class="hljs-string">&#x27;post/changePwd&#x27;</span>, &#123;<br>    <span class="hljs-attr">username</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">username</span>,<br>    <span class="hljs-attr">password</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">password</span><br>&#125;)<br></code></pre></td></tr></table></figure>
-
-<p>此类参数的接收，使用json进行解析：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">data = request.get_data()<br>json_data = json.loads(data.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br>user_name = json_data.get(<span class="hljs-string">&#x27;username&#x27;</span>)<br>pwd = json_data.get(<span class="hljs-string">&#x27;password&#x27;</span>)<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="2-使用表单传递的数据"><a href="#2-使用表单传递的数据" class="headerlink" title="2.使用表单传递的数据"></a>2.使用表单传递的数据</h3><p>使用表单传递的数据，可能有文件，也可能有参数</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 文件传递</span><br>file_data = request.files.get(<span class="hljs-string">&#x27;file&#x27;</span>)<br><span class="hljs-comment"># 表单参数传递</span><br>path = request.form.get(<span class="hljs-string">&#x27;path&#x27;</span>)<br><br><span class="hljs-comment"># 文件获取之后可能的操作(文件下载)</span><br>file_data.save(path + file_data.filename)<br></code></pre></td></tr></table></figure>
-
-
-
-<p>还有其他的方法等遇到了再继续补充…</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://lpwmm.blog.csdn.net/article/details/109474476?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&utm_relevant_index=1#/">Flask使用nginx反向代理后获取客户端真实IP地址_Dexter’s Laboratory-CSDN博客</a></li>
+</ol>
 
             </div>
             <hr>
@@ -283,6 +278,8 @@
                     
                       <a class="hover-with-bg" href="/tags/Flask/">Flask</a>
                     
+                      <a class="hover-with-bg" href="/tags/nginx/">nginx</a>
+                    
                   </div>
                 
               </div>
@@ -298,9 +295,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/02/12/Flask%E9%80%9A%E8%BF%87url%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/">
+                      <a href="/2022/02/12/Python%E5%AE%9E%E7%8E%B0Markdown%E7%9A%84%E8%AF%BB%E5%8F%96%E5%92%8C%E8%BD%AC%E6%8D%A2/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Flask通过url传递参数</span>
+                        <span class="hidden-mobile">Python实现Markdown的读取和转换</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -308,8 +305,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/02/12/Flask%E5%AE%9E%E7%8E%B0%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E4%BB%A5%E5%8F%8Atoken%E9%AA%8C%E8%AF%81/">
-                        <span class="hidden-mobile">Flask实现密码登录以及token验证</span>
+                      <a href="/2022/02/12/Flask%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E7%9A%84%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F/">
+                        <span class="hidden-mobile">Flask静态文件的组织方式</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
