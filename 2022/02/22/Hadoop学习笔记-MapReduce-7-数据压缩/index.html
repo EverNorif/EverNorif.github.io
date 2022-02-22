@@ -16,15 +16,15 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="具体介绍MapTask和ReduceTask中的工作流程。">
+    <meta name="description" content="记录学习在MapReduce中采用的数据压缩。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask">
-<meta property="og:url" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-5-MapTask%E5%92%8CReduceTask/index.html">
+<meta property="og:title" content="Hadoop学习笔记-MapReduce(7)-数据压缩">
+<meta property="og:url" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-7-%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="具体介绍MapTask和ReduceTask中的工作流程。">
+<meta property="og:description" content="记录学习在MapReduce中采用的数据压缩。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-22T08:49:53.000Z">
-<meta property="article:modified_time" content="2022-02-22T10:25:22.277Z">
+<meta property="article:published_time" content="2022-02-22T10:45:40.000Z">
+<meta property="article:modified_time" content="2022-02-22T11:01:56.724Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="笔记">
@@ -32,7 +32,7 @@
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask - EverNorif</title>
+  <title>Hadoop学习笔记-MapReduce(7)-数据压缩 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -178,7 +178,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask">
+            <span class="h2" id="subtitle" title="Hadoop学习笔记-MapReduce(7)-数据压缩">
               
             </span>
 
@@ -188,8 +188,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-02-22 16:49" pubdate>
-        2022年2月22日 下午
+      <time datetime="2022-02-22 18:45" pubdate>
+        2022年2月22日 晚上
       </time>
     </span>
   
@@ -199,7 +199,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.2k 字
+      1.1k 字
     </span>
   
 
@@ -241,46 +241,106 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask</h1>
+            <h1 style="display: none">Hadoop学习笔记-MapReduce(7)-数据压缩</h1>
             
             <div class="markdown-body">
-              <h2 id="MapTask"><a href="#MapTask" class="headerlink" title="MapTask"></a>MapTask</h2><ol>
-<li><p><strong>Read阶段</strong>：MapTask通过InputFormat获得RecordReader，从输入中解析出一个个键值对</p>
-</li>
-<li><p><strong>Map阶段</strong>：将得到的键值对交给用户编写的map函数进行处理，并产生一系列新的键值对</p>
-</li>
-<li><p><strong>Collect阶段</strong>：将生成的键值对进行分区（调用Partitioner），并写入一个环形缓冲区内</p>
-</li>
-<li><p><strong>Spill阶段</strong>：溢写阶段。溢写阶段会生成临时文件，在数据写入本地磁盘之前，先对数据进行一次本地排序，并在必要的时候对数据进行合并、压缩等操作</p>
+              <h2 id="Hadoop压缩概述"><a href="#Hadoop压缩概述" class="headerlink" title="Hadoop压缩概述"></a>Hadoop压缩概述</h2><p>压缩的优缺点：</p>
 <ul>
-<li>使用快排：先按照分区编号进行排序，然后按照key进行排序。这样经过排序之后，数据以分区为单位聚集在一起，并且同一分区所有的数据对key有序</li>
-<li>按照分区编号由小到大将数据写入临时文件中（任务工作目录下的<code>output/spillN.out</code>）。如果用户设置了Combiner，则在写入文件之前还会对每个分区的数据进行一次合并操作</li>
-<li>分区数据的元信息也会写入内存中，每个分区的元信息中包括了分区在临时文件中的偏移量，压缩前数据大小和压缩后数据大小。如果当前内存的索引超过1MB，也会将内存索引写入文件<code>output/spillN.out.index</code>中</li>
+<li>优点：减少磁盘IO、降低磁盘的存储空间</li>
+<li>缺点：增加CPU开销</li>
+</ul>
+<p>压缩原则：</p>
+<ul>
+<li><p>运算密集型的Job，少用压缩</p>
+</li>
+<li><p>IO密集型的Job，多用压缩</p>
+</li>
+</ul>
+<h2 id="MapReduce支持的压缩编码"><a href="#MapReduce支持的压缩编码" class="headerlink" title="MapReduce支持的压缩编码"></a>MapReduce支持的压缩编码</h2><p>压缩算法的对比介绍</p>
+<table>
+<thead>
+<tr>
+<th>压缩格式</th>
+<th>Hadoop自带</th>
+<th>算法</th>
+<th>文件扩展名</th>
+<th>是否可切片</th>
+<th>程序是否需要修改</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DEFLATE</td>
+<td>√</td>
+<td>DEFALTE</td>
+<td>.deflate</td>
+<td>×</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>Gzip</td>
+<td>√</td>
+<td>DEFALTE</td>
+<td>.gz</td>
+<td>×</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>bzip2</td>
+<td>√</td>
+<td>bzip2</td>
+<td>.bz2</td>
+<td>√</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>LZ0</td>
+<td>×，需要安装</td>
+<td>LZ0</td>
+<td>.lzo</td>
+<td>√</td>
+<td>需要建立索引，还需指定输入格式</td>
+</tr>
+<tr>
+<td>Snappy</td>
+<td>√</td>
+<td>Snappy</td>
+<td>.snappy</td>
+<td>×</td>
+<td>不需要</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Gzip压缩<ul>
+<li>优点：压缩率较高</li>
+<li>缺点：不支持Split；压缩&#x2F;解压速度一般</li>
 </ul>
 </li>
-<li><p><strong>Merge阶段</strong>：当所有数据处理完成之后，MapTask对所有的临时文件进行一次合并，以确保最终只会生成一个数据文件。</p>
+<li>Bzip2压缩<ul>
+<li>优点：压缩率高，支持Split</li>
+<li>缺点：压缩&#x2F;解压速度慢</li>
+</ul>
+</li>
+<li>Lzo压缩<ul>
+<li>优点：压缩&#x2F;解压速度比较快，支持Split</li>
+<li>缺点：压缩率一般；想要支持切片需要额外建立索引</li>
+</ul>
+</li>
+<li>Snappy压缩<ul>
+<li>优点：压缩&#x2F;解压速度块</li>
+<li>缺点：不支持Split，压缩率一般</li>
+</ul>
+</li>
+</ul>
+<h2 id="压缩位置选择"><a href="#压缩位置选择" class="headerlink" title="压缩位置选择"></a>压缩位置选择</h2><p>压缩可以在MapReduce的任意阶段启用</p>
 <ul>
-<li>所有的临时文件合并成一个大文件<code>output/file.out</code>，同时生成相应的索引文件<code>output/file.out.index</code></li>
-<li>在进行文件合并的过程中，MapTask以分区为单位进行合并，对于某个分区来说，会采用多轮递归合并的方式。（每轮合并<code>mapreduce.task.io.sort.factor</code>默认10个文件）</li>
+<li>输入端采用压缩：无需显示指定使用的编解码格式，Hadoop自动检查文件的扩展名</li>
+<li>Mapper输出采用压缩：为了减少MapTask和ReduceTask之间的网络IO，重点考虑压缩和解压块LZO、Snappy</li>
+<li>Reducer输出采用压缩：如果数据永久保存，则考虑压缩率高的Bzip2和Gzip；如果要输入下一个MapReduce，则要考虑数据量和是否支持切片</li>
 </ul>
 <blockquote>
-<p>让每个MapTask最终只生成一个数据文件，可以避免同时打开大量文件和同时读取大量小文件产生的随机读取带来的开销</p>
+<p>需要使用压缩的话，可以在驱动类中进行配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 开启 map 端输出压缩</span><br>conf.setBoolean(<span class="hljs-string">&quot;mapreduce.map.output.compress&quot;</span>, <span class="hljs-literal">true</span>);<br><span class="hljs-comment">// 设置 map 端输出压缩方式</span><br>conf.setClass(<span class="hljs-string">&quot;mapreduce.map.output.compress.codec&quot;</span>, <br>BZip2Codec.class,CompressionCodec.class);<br><span class="hljs-comment">// 设置 reduce 端输出压缩开启</span><br>FileOutputFormat.setCompressOutput(job, <span class="hljs-literal">true</span>);<br><span class="hljs-comment">// 设置压缩的方式</span><br> FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class); <br><span class="hljs-comment">// FileOutputFormat.setOutputCompressorClass(job, GzipCodec.class); </span><br><span class="hljs-comment">// FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);</span><br><br></code></pre></td></tr></table></figure>
 </blockquote>
-</li>
-</ol>
-<h2 id="ReduceTask"><a href="#ReduceTask" class="headerlink" title="ReduceTask"></a>ReduceTask</h2><ol>
-<li><strong>Copy阶段</strong>：ReduceTask从各个MapTask上远程拷贝对应数据。并且针对某一片数据，如果其大小超过一定阈值，则写在磁盘上，否则直接放在内存当中</li>
-<li><strong>Sort阶段</strong>：在远程拷贝数据的同时，ReduceTsk启动了两个后台线程对内存和磁盘上的文件进行合并，以防止内存使用过多或磁盘上的文件过多。</li>
-<li><strong>Reduce阶段</strong>：用户自定义的reduce函数进行结果计算</li>
-</ol>
-<p>对于ReduceTask的启动个数：</p>
-<ol>
-<li>ReduceTask &#x3D; 0，表示没有Reduce阶段，输出文件个数和Map个数一致，这时候也没有Shuffle阶段</li>
-<li>ReduceTask默认值为1</li>
-<li>如果数据分布不均匀，在Reduce阶段很有可能产生数据倾斜</li>
-<li>ReduceTask数量并不是任意设置的，还要考虑业务逻辑需求</li>
-<li>如果分区数量不是1但是ReduceTask数量是1，则不执行分区过程。因为在MapTask的源码中，执行分区的前提是先判断ReduceNum的个数是否大于1，不大于1的话则不会执行分区过程。</li>
-</ol>
 
             </div>
             <hr>
@@ -321,18 +381,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-6-Join%E5%BA%94%E7%94%A8/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(6)-Join应用</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-4-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E5%8C%BA%E5%92%8C%E6%8E%92%E5%BA%8F/">
-                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(4)-自定义分区和排序</span>
+                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-6-Join%E5%BA%94%E7%94%A8/">
+                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(6)-Join应用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

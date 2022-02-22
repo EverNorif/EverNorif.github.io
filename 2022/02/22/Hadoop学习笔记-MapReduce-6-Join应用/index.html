@@ -16,15 +16,15 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="具体介绍MapTask和ReduceTask中的工作流程。">
+    <meta name="description" content="通过描述一个Join案例的完成要点，来了解一些使用方法。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask">
-<meta property="og:url" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-5-MapTask%E5%92%8CReduceTask/index.html">
+<meta property="og:title" content="Hadoop学习笔记-MapReduce(6)-Join应用">
+<meta property="og:url" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-6-Join%E5%BA%94%E7%94%A8/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="具体介绍MapTask和ReduceTask中的工作流程。">
+<meta property="og:description" content="通过描述一个Join案例的完成要点，来了解一些使用方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-22T08:49:53.000Z">
-<meta property="article:modified_time" content="2022-02-22T10:25:22.277Z">
+<meta property="article:published_time" content="2022-02-22T10:24:33.000Z">
+<meta property="article:modified_time" content="2022-02-22T10:45:00.956Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="笔记">
@@ -32,7 +32,7 @@
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask - EverNorif</title>
+  <title>Hadoop学习笔记-MapReduce(6)-Join应用 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -178,7 +178,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask">
+            <span class="h2" id="subtitle" title="Hadoop学习笔记-MapReduce(6)-Join应用">
               
             </span>
 
@@ -188,8 +188,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-02-22 16:49" pubdate>
-        2022年2月22日 下午
+      <time datetime="2022-02-22 18:24" pubdate>
+        2022年2月22日 晚上
       </time>
     </span>
   
@@ -199,7 +199,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.2k 字
+      1.3k 字
     </span>
   
 
@@ -208,7 +208,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10 分钟
+      11 分钟
     </span>
   
 
@@ -241,45 +241,28 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask</h1>
+            <h1 style="display: none">Hadoop学习笔记-MapReduce(6)-Join应用</h1>
             
             <div class="markdown-body">
-              <h2 id="MapTask"><a href="#MapTask" class="headerlink" title="MapTask"></a>MapTask</h2><ol>
-<li><p><strong>Read阶段</strong>：MapTask通过InputFormat获得RecordReader，从输入中解析出一个个键值对</p>
-</li>
-<li><p><strong>Map阶段</strong>：将得到的键值对交给用户编写的map函数进行处理，并产生一系列新的键值对</p>
-</li>
-<li><p><strong>Collect阶段</strong>：将生成的键值对进行分区（调用Partitioner），并写入一个环形缓冲区内</p>
-</li>
-<li><p><strong>Spill阶段</strong>：溢写阶段。溢写阶段会生成临时文件，在数据写入本地磁盘之前，先对数据进行一次本地排序，并在必要的时候对数据进行合并、压缩等操作</p>
-<ul>
-<li>使用快排：先按照分区编号进行排序，然后按照key进行排序。这样经过排序之后，数据以分区为单位聚集在一起，并且同一分区所有的数据对key有序</li>
-<li>按照分区编号由小到大将数据写入临时文件中（任务工作目录下的<code>output/spillN.out</code>）。如果用户设置了Combiner，则在写入文件之前还会对每个分区的数据进行一次合并操作</li>
-<li>分区数据的元信息也会写入内存中，每个分区的元信息中包括了分区在临时文件中的偏移量，压缩前数据大小和压缩后数据大小。如果当前内存的索引超过1MB，也会将内存索引写入文件<code>output/spillN.out.index</code>中</li>
-</ul>
-</li>
-<li><p><strong>Merge阶段</strong>：当所有数据处理完成之后，MapTask对所有的临时文件进行一次合并，以确保最终只会生成一个数据文件。</p>
-<ul>
-<li>所有的临时文件合并成一个大文件<code>output/file.out</code>，同时生成相应的索引文件<code>output/file.out.index</code></li>
-<li>在进行文件合并的过程中，MapTask以分区为单位进行合并，对于某个分区来说，会采用多轮递归合并的方式。（每轮合并<code>mapreduce.task.io.sort.factor</code>默认10个文件）</li>
-</ul>
+              <h2 id="背景描述"><a href="#背景描述" class="headerlink" title="背景描述"></a>背景描述</h2><p>现在我们有两个文件，称为文件A和文件B，文件B更大，文件A更小。希望完成两个文件的Join操作，即使用文件A中的某个字段来替换B中的字段，Join依据为id相同。</p>
+<p>这个任务的重点在于如何完成Join操作，我们可以选择在Reduce阶段完成，也可以在Map阶段完成。</p>
+<h2 id="Reduce-Join"><a href="#Reduce-Join" class="headerlink" title="Reduce Join"></a>Reduce Join</h2><p>在这种情况下，Map阶段的工作就是将两个文件都读入，处理成键值对的形式。连接字段作为key，其余内容作为值。并且我们需要打上标签，来表示后面的内容是来自哪一张表的。</p>
+<p>而在Reduce阶段，我们可以根据键值对中的标签来区分不同文件，之后再进行合并即可。</p>
 <blockquote>
-<p>让每个MapTask最终只生成一个数据文件，可以避免同时打开大量文件和同时读取大量小文件产生的随机读取带来的开销</p>
+<p>这里不知道如何完成的操作应该是如何判断键值对的内容来自哪一张表，可以通过以下过程来完成</p>
+<figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//获取对应文件名称 context为上下文对象</span><br><span class="hljs-type">InputSplit</span> <span class="hljs-variable">split</span> <span class="hljs-operator">=</span> context.getInputSplit();<br><span class="hljs-type">FileSplit</span> <span class="hljs-variable">fileSplit</span> <span class="hljs-operator">=</span> (FileSplit) split;<br>filename = fileSplit.getPath().getName();<br><br></code></pre></td></tr></table></figure>
+
+<p>由于不同文件会产生不同的数据分片，也就会分配给不同的Mapper，所以每个Mapper只需要执行上面的过程一次即可，可以选择将其放在Mapper的setup函数当中（重写setup函数）</p>
 </blockquote>
-</li>
-</ol>
-<h2 id="ReduceTask"><a href="#ReduceTask" class="headerlink" title="ReduceTask"></a>ReduceTask</h2><ol>
-<li><strong>Copy阶段</strong>：ReduceTask从各个MapTask上远程拷贝对应数据。并且针对某一片数据，如果其大小超过一定阈值，则写在磁盘上，否则直接放在内存当中</li>
-<li><strong>Sort阶段</strong>：在远程拷贝数据的同时，ReduceTsk启动了两个后台线程对内存和磁盘上的文件进行合并，以防止内存使用过多或磁盘上的文件过多。</li>
-<li><strong>Reduce阶段</strong>：用户自定义的reduce函数进行结果计算</li>
-</ol>
-<p>对于ReduceTask的启动个数：</p>
+<p>这种方案，合并的操作是在Reduce阶段完成的，Reduce阶段的处理压力太大，而Map阶段的运算负载很低，资源利用率不高，在Reduce阶段容易产生数据倾斜。</p>
+<h2 id="Map-Join"><a href="#Map-Join" class="headerlink" title="Map Join"></a>Map Join</h2><p>Map join适用于一张表十分小，一张表很大的场景。具体思想就是在Map端缓存多张表，提前处理业务逻辑。增加Map端的业务，来减少Reduce端数据的压力，尽可能减少数据倾斜。</p>
+<p>使用<strong>DistributedCache</strong>，具体流程如下：</p>
 <ol>
-<li>ReduceTask &#x3D; 0，表示没有Reduce阶段，输出文件个数和Map个数一致，这时候也没有Shuffle阶段</li>
-<li>ReduceTask默认值为1</li>
-<li>如果数据分布不均匀，在Reduce阶段很有可能产生数据倾斜</li>
-<li>ReduceTask数量并不是任意设置的，还要考虑业务逻辑需求</li>
-<li>如果分区数量不是1但是ReduceTask数量是1，则不执行分区过程。因为在MapTask的源码中，执行分区的前提是先判断ReduceNum的个数是否大于1，不大于1的话则不会执行分区过程。</li>
+<li><p>在Mapper的setup阶段，将文件读取到缓存集合当中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//通过缓存文件得到小表数据 pd.txt</span><br>URI[] cacheFiles = context.getCacheFiles();<br><span class="hljs-type">Path</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(cacheFiles[<span class="hljs-number">0</span>]);<br><span class="hljs-comment">//获取文件系统对象,并开流</span><br><span class="hljs-type">FileSystem</span> <span class="hljs-variable">fs</span> <span class="hljs-operator">=</span> FileSystem.get(context.getConfiguration());<br><span class="hljs-type">FSDataInputStream</span> <span class="hljs-variable">fis</span> <span class="hljs-operator">=</span> fs.open(path);<br><span class="hljs-comment">//通过包装流转换为 reader,方便按行读取</span><br><span class="hljs-type">BufferedReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(fis, <span class="hljs-string">&quot;UTF-8&quot;</span>));<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>在Driver驱动类中加载缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//缓存普通文件到 Task 运行节点。</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;file:///e:/cache/pd.txt&quot;</span>));<br><span class="hljs-comment">//如果是集群运行,需要设置 HDFS 路径</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;hdfs://hadoop102:8020/cache/pd.txt&quot;</span>));<br></code></pre></td></tr></table></figure></li>
 </ol>
 
             </div>
@@ -321,9 +304,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-6-Join%E5%BA%94%E7%94%A8/">
+                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-7-%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(6)-Join应用</span>
+                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(7)-数据压缩</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -331,8 +314,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-4-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E5%8C%BA%E5%92%8C%E6%8E%92%E5%BA%8F/">
-                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(4)-自定义分区和排序</span>
+                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-5-MapTask%E5%92%8CReduceTask/">
+                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
