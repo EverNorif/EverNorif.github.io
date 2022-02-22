@@ -24,7 +24,7 @@
 <meta property="og:description" content="对HDFS读写流程和工作机制的学习">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-02-18T12:34:13.000Z">
-<meta property="article:modified_time" content="2022-02-20T10:08:48.798Z">
+<meta property="article:modified_time" content="2022-02-22T07:38:21.708Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="HDFS">
@@ -257,7 +257,7 @@
 <p> 用户成功写入了一个数据块就认为成功，不关心后续副本的复制问题。每次创建副本的时候，当前Datanode只对下一个Datanode负责</p>
 <p>客户端上传Block，以Packet为单位，每一个Packet会携带一个chunk。chunk是Hadoop中最小的单位。</p>
 <p>Packet是Client端向Dataode，或者DataNode的PipLine之间传输数据的基本单位，默认<code>64kB</code>.</p>
-<p>Chunk是最小的Hadoop中最小的单位，是Client向DataNode或DataNode的PipLne之间进行数据校验的基本单位，默认<code>512Byte</code>，因为用作校验(自己校验自己)，故每个chunk需要带有<code>4Byte</code>的校验位。所以实际每个chunk写入packet的大小为526Byte，真实数据与校验值数据的比值为128:1。</p>
+<p>Chunk是最小的Hadoop中最小的单位，是Client向DataNode或DataNode的PipLne之间进行数据校验的基本单位，默认<code>512Byte</code>，因为用作校验(自己校验自己)，故每个chunk需要带有<code>4Byte</code>的校验位。所以实际每个chunk写入packet的大小为516Byte，真实数据与校验值数据的比值为128:1。</p>
 </blockquote>
 </li>
 <li><p>当一个Block传输完成之后，客户端再次请求NameNode进行第二个Block的传输。</p>
