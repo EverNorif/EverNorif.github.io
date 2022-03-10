@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E6%B5%81%E7%A8%8B2.png">
 <meta property="og:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/OutputFormat.png">
 <meta property="article:published_time" content="2022-02-22T00:41:34.000Z">
-<meta property="article:modified_time" content="2022-02-22T08:54:52.694Z">
+<meta property="article:modified_time" content="2022-03-10T06:54:13.248Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="笔记">
@@ -385,7 +385,7 @@
 <ol>
 <li>MapTask收集map方法输出的键值对，放在内存缓冲区中</li>
 <li>内存缓冲区无法一次性存放所有的输出，于是会存在不断的溢写，可能会溢出多个文件</li>
-<li>在溢写的过程中，需要将内存中的文件持久化到本地，在此之前会对文件内内部的数据按照分区进行快排，快排的依据是key值。排序完成之后，形成本地文件</li>
+<li>在溢写的过程中，需要将内存中的文件持久化到本地，在此之前会对文件内部的数据按照分区进行快排，快排的依据是key值。排序完成之后，形成本地文件</li>
 <li>在过程中会可能会出现多个溢写文件，这些文件各自内部按照分区有序，但是最终需要形成一个分区有序的大文件，所以再对所有的溢写文件进行归并排序</li>
 <li>在上面的合并过程中，可以出现Combiner过程（可选）</li>
 <li>启动ReduceTask。ReduceTask按照自己的分区号，去各个MapTask机器上取得对应的分区数据</li>

@@ -24,7 +24,7 @@
 <meta property="og:description" content="在Hadoop中还存在序列化的概念，存在Writable接口。为了在不同节点之间进行数据传递，必须使得数据能够序列化。这里学习了将自定义类用于键值对中的必要操作。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-02-20T11:21:16.000Z">
-<meta property="article:modified_time" content="2022-02-20T11:58:54.941Z">
+<meta property="article:modified_time" content="2022-03-10T07:06:08.090Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="笔记">
@@ -248,7 +248,7 @@
 <p>反序列化：反序列化就是将收到的字节序列（或者其他数据传输协议）或者是磁盘的持久化数据，转换成内存中的对象。</p>
 <h3 id="2-hadoop序列化背景"><a href="#2-hadoop序列化背景" class="headerlink" title="2. hadoop序列化背景"></a>2. hadoop序列化背景</h3><p>在MapReduce的过程中，Mapper和Reducer之间存在数据交换，他们很有可能是不在一台节点上的，所以需要利用网络传输的手段来传输数据。因此数据需要序列化。在之前的示例中，我们使用的是hadoop writable类型的数据，那是Hadoop提供的可以序列化的基本类型。但是如果我们在键值对中想要使用我们自定义的类型，那么不作任何准备是不行的，因此需要完成序列化。</p>
 <p>我们使用的是Hadoop的序列化，即让我们自定义的类实现序列化接口Writable。</p>
-<p>这里并不使用ava的序列化，因为Java的序列化是一个重量级的序列化框架（Serializable）。一个对象被序列化之后，会附带很多额外的信息，包括各种校验信息，Header，继承体系等等，不便于在网络中高效传输，所以Hadoop自己开发了一套序列化机制（Writable）。</p>
+<p>这里并不使用java的序列化，因为Java的序列化是一个重量级的序列化框架（Serializable）。一个对象被序列化之后，会附带很多额外的信息，包括各种校验信息，Header，继承体系等等，不便于在网络中高效传输，所以Hadoop自己开发了一套序列化机制（Writable）。</p>
 <p>Hadoop的序列化特点：</p>
 <ul>
 <li>紧凑：高效使用存储空间</li>
@@ -265,7 +265,7 @@
 <li><strong>重写反序列化方法readFields</strong></li>
 <li>这里注意反序列化的顺序和序列化的顺序要完全一致</li>
 <li>如果想要将结果显示在文件中，需要<strong>重写toString()方法</strong></li>
-<li>如果想要将自定义的对象放在key中传输，还需要实现Comparable接口。因为MapReduce框架中的Shuffle过程要求对key能够排序</li>
+<li>如果想要将自定义的对象放在key中传输，还需要实现WritableComparable接口。因为MapReduce框架中的Shuffle过程要求对key能够排序</li>
 </ol>
 <p>因此，我们的自定义类实现如下（省略了setter和getter方法）：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FLowBean</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Writable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> upFlow;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> downFlow;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> sumFlow;<br><br>    <span class="hljs-comment">// 空参构造</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">FLowBean</span><span class="hljs-params">()</span> &#123;<br>    &#125;<br>        <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">write</span><span class="hljs-params">(DataOutput dataOutput)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        dataOutput.writeLong(upFlow);<br>        dataOutput.writeLong(downFlow);<br>        dataOutput.writeLong(sumFlow);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">readFields</span><span class="hljs-params">(DataInput dataInput)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        <span class="hljs-built_in">this</span>.upFlow = dataInput.readLong();<br>        <span class="hljs-built_in">this</span>.downFlow = dataInput.readLong();<br>        <span class="hljs-built_in">this</span>.sumFlow = dataInput.readLong();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> upFlow + <span class="hljs-string">&quot;\t&quot;</span> + downFlow + <span class="hljs-string">&quot;\t&quot;</span> + sumFlow;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
