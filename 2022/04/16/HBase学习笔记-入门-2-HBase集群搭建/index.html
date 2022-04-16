@@ -16,23 +16,22 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="通过描述一个Join案例的完成要点，来了解一些使用方法。">
+    <meta name="description" content="本文介绍了HBase集群搭建的过程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hadoop学习笔记-MapReduce(6)-Join应用">
-<meta property="og:url" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-6-Join%E5%BA%94%E7%94%A8/index.html">
+<meta property="og:title" content="HBase学习笔记-入门(2)-HBase集群搭建">
+<meta property="og:url" content="http://example.com/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-HBase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="通过描述一个Join案例的完成要点，来了解一些使用方法。">
+<meta property="og:description" content="本文介绍了HBase集群搭建的过程">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-22T10:24:33.000Z">
-<meta property="article:modified_time" content="2022-02-22T10:45:00.956Z">
+<meta property="article:published_time" content="2022-04-16T08:27:02.000Z">
+<meta property="article:modified_time" content="2022-04-16T09:11:50.775Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="HBase">
 <meta property="article:tag" content="笔记">
-<meta property="article:tag" content="Hadoop">
-<meta property="article:tag" content="MapReduce">
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>Hadoop学习笔记-MapReduce(6)-Join应用 - EverNorif</title>
+  <title>HBase学习笔记-入门(2)-HBase集群搭建 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -178,7 +177,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Hadoop学习笔记-MapReduce(6)-Join应用">
+            <span class="h2" id="subtitle" title="HBase学习笔记-入门(2)-HBase集群搭建">
               
             </span>
 
@@ -188,8 +187,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-02-22 18:24" pubdate>
-        2022年2月22日 晚上
+      <time datetime="2022-04-16 16:27" pubdate>
+        2022年4月16日 下午
       </time>
     </span>
   
@@ -199,7 +198,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.3k 字
+      2.5k 字
     </span>
   
 
@@ -208,7 +207,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11 分钟
+      21 分钟
     </span>
   
 
@@ -241,29 +240,74 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Hadoop学习笔记-MapReduce(6)-Join应用</h1>
+            <h1 style="display: none">HBase学习笔记-入门(2)-HBase集群搭建</h1>
             
             <div class="markdown-body">
-              <h2 id="背景描述"><a href="#背景描述" class="headerlink" title="背景描述"></a>背景描述</h2><p>现在我们有两个文件，称为文件A和文件B，文件B更大，文件A更小。希望完成两个文件的Join操作，即使用文件A中的某个字段来替换B中的字段，Join依据为id相同。</p>
-<p>这个任务的重点在于如何完成Join操作，我们可以选择在Reduce阶段完成，也可以在Map阶段完成。</p>
-<h2 id="Reduce-Join"><a href="#Reduce-Join" class="headerlink" title="Reduce Join"></a>Reduce Join</h2><p>在这种情况下，Map阶段的工作就是将两个文件都读入，处理成键值对的形式。连接字段作为key，其余内容作为值。并且我们需要打上标签，来表示后面的内容是来自哪一张表的。</p>
-<p>而在Reduce阶段，我们可以根据键值对中的标签来区分不同文件，之后再进行合并即可。</p>
-<blockquote>
-<p>这里不知道如何完成的操作应该是如何判断键值对的内容来自哪一张表，可以通过以下过程来完成</p>
-<figure class="highlight java"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//获取对应文件名称 context为上下文对象</span><br><span class="hljs-type">InputSplit</span> <span class="hljs-variable">split</span> <span class="hljs-operator">=</span> context.getInputSplit();<br><span class="hljs-type">FileSplit</span> <span class="hljs-variable">fileSplit</span> <span class="hljs-operator">=</span> (FileSplit) split;<br>filename = fileSplit.getPath().getName();<br><br></code></pre></td></tr></table></figure>
+              <h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><p>搭建HBase集群之间，首先需要完成Hadoop集群的搭建，并且需要先安装和搭建好Zookeeper。安装详情可以参考对应文章，搭建的集群同样为<code>hadoop102</code>，<code>hadoop103</code>，<code>hadoop104</code>。</p>
+<p>这里需要注意Hadoop、Zookeeper以及HBase的版本适配问题，可以参考官方文档：<a target="_blank" rel="noopener" href="https://hbase.apache.org/book.html#basic.prerequisites">Apache HBase ™ Reference Guide</a></p>
+<p>此处选择的版本如下：</p>
+<table>
+<thead>
+<tr>
+<th>软件</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Hadoop</td>
+<td>3.1.3</td>
+</tr>
+<tr>
+<td>Zookeeper</td>
+<td>3.7.0</td>
+</tr>
+<tr>
+<td>HBase</td>
+<td>2.4.11</td>
+</tr>
+</tbody></table>
+<h2 id="集群搭建"><a href="#集群搭建" class="headerlink" title="集群搭建"></a>集群搭建</h2><p>首先需要上传解压HBase安装包</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><pre><code class="hljs sh">tar -zxvf hbase-2.4.11-bin.tar.gz -C /opt/moudle<br></code></pre></td></tr></table></figure>
 
-<p>由于不同文件会产生不同的数据分片，也就会分配给不同的Mapper，所以每个Mapper只需要执行上面的过程一次即可，可以选择将其放在Mapper的setup函数当中（重写setup函数）</p>
-</blockquote>
-<p>这种方案，合并的操作是在Reduce阶段完成的，Reduce阶段的处理压力太大，而Map阶段的运算负载很低，资源利用率不高，在Reduce阶段容易产生数据倾斜。</p>
-<h2 id="Map-Join"><a href="#Map-Join" class="headerlink" title="Map Join"></a>Map Join</h2><p>Map join适用于一张表十分小，一张表很大的场景。具体思想就是在Map端缓存多张表，提前处理业务逻辑。增加Map端的业务，来减少Reduce端数据的压力，尽可能减少数据倾斜。</p>
-<p>使用<strong>DistributedCache</strong>，具体流程如下：</p>
-<ol>
-<li><p>在Mapper的setup阶段，将文件读取到缓存集合当中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//通过缓存文件得到小表数据 pd.txt</span><br>URI[] cacheFiles = context.getCacheFiles();<br><span class="hljs-type">Path</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(cacheFiles[<span class="hljs-number">0</span>]);<br><span class="hljs-comment">//获取文件系统对象,并开流</span><br><span class="hljs-type">FileSystem</span> <span class="hljs-variable">fs</span> <span class="hljs-operator">=</span> FileSystem.get(context.getConfiguration());<br><span class="hljs-type">FSDataInputStream</span> <span class="hljs-variable">fis</span> <span class="hljs-operator">=</span> fs.open(path);<br><span class="hljs-comment">//通过包装流转换为 reader,方便按行读取</span><br><span class="hljs-type">BufferedReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(fis, <span class="hljs-string">&quot;UTF-8&quot;</span>));<br></code></pre></td></tr></table></figure>
+<p>之后需要修改HBase中的配置文件，路径为<code>$HBase/conf</code></p>
+<p>首先需要修改<code>hbase-env.sh</code>文件，这其中配置了HBase运行时变量，如Java路径，RegionServer相关参数等。这里我们需要在其中配置Java环境，并且设置使用我们自己的Zookeeper：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">export</span> JAVA_HOME=/opt/module/jdk1.8.0_212/<br><span class="hljs-built_in">export</span> HBASE_MANAGES_ZK=<span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>第一行设置Java环境</p>
 </li>
-<li><p>在Driver驱动类中加载缓存</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//缓存普通文件到 Task 运行节点。</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;file:///e:/cache/pd.txt&quot;</span>));<br><span class="hljs-comment">//如果是集群运行,需要设置 HDFS 路径</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;hdfs://hadoop102:8020/cache/pd.txt&quot;</span>));<br></code></pre></td></tr></table></figure></li>
-</ol>
+<li><p>第二行设置使用我们自己的Zookeeper</p>
+<blockquote>
+<p>如果该项设置为true，则表示使用Zookeeper作为HBase的一部分来管理启动，即Zookeeper随着HBase的启动而启动，随其关闭而关闭；</p>
+<p>如果设置为false，则表示Zookeeper作为独立的集群来运行，与HBase脱离关系。</p>
+</blockquote>
+</li>
+</ul>
+<p>之后需要配置<code>hbase-site.xml</code>文件，其中可以添加HBase的相关配置，如分布式的模式，Zookeeper的配置等，配置如下内容：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- HBase数据在HDFS中的存放的路径 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.rootdir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>hdfs://hadoop102:8020/hbase<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- Hbase的运行模式。false是单机模式，true是分布式模式。若为false,Hbase和Zookeeper会运行在同一个JVM里面 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.cluster.distributed<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- ZooKeeper的地址 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>hadoop102,hadoop103,hadoop104<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- ZooKeeper快照的存储位置 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>/opt/module/zookeeper-3.7.0/zkData<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>phoenix.schema.isNamespaceMappingEnabled<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>其中的NameNode节点，Zookeeper的地址，Zookeeper数据的存储位置需要按照实际进行配置。</p>
+<p>由于我们搭建的是完全分布式，所以需要在<code>regionservers</code>中写入需要配置为RegionServer的节点：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs smali">hadoop102<br>hadoop103<br>hadoop104<br></code></pre></td></tr></table></figure>
+
+<p>之后，添加相关的环境变量（和之前一样，我们选择放在<code>/etc/profile.d/my_env.sh</code>中）：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#HBASE_HOME</span><br><span class="hljs-built_in">export</span> HBASE_HOME=/opt/module/hbase-2.4.11<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HBASE_HOME</span>/bin<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HBASE_HOME</span>/sbin<br></code></pre></td></tr></table></figure>
+
+<p>在一台机器上完成对应操作之后，将文件进行分发，最终三台机器上拥有了对应的文件夹。之后就可以启动集群了。</p>
+<h2 id="集群启动"><a href="#集群启动" class="headerlink" title="集群启动"></a>集群启动</h2><p>在启动HBase之前，需要先启动Hadoop和Zookeeper。</p>
+<p>命令如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 启动HBase</span><br><span class="hljs-variable">$HBASE_HOME</span>/bin/start-hbase.sh<br><span class="hljs-comment"># 关闭HBase</span><br><span class="hljs-variable">$HBASE_HOME</span>/bin/stop-hbase.sh<br></code></pre></td></tr></table></figure>
+
+<p>由于配置了环境变量，可以直接使用。</p>
+<p>启动集群之后，可以使用hbase shell进行测试。输入<code>hbase shell</code>进入命令行操作模式，输入status查看目前状态，出现以下内容则表示hbase已经安装配置成功了：</p>
+
+
+<p>同时可以通过网页端可视化查看HBase，访问NameNode的16010端口（<a href="http://hadoop102:16010）">http://hadoop102:16010）</a></p>
+<p>通过jps查看目前运行的Java进程，可以在Master节点上查看到HMaster进程，Slave节点上查看到HRegionServer进程。如果使用的是HBase内置的Zookeeper，则节点上还能够查看到HQuorumPeer进程；如果使用的是用户的Zookeeper，则查看到的是QuorumPeerMain进程。</p>
+<blockquote>
+<p>HQuorumPeer表示hbase管理的zookeeper</p>
+<p>QuorumPeerMain表示zookeeper独立的进程</p>
+</blockquote>
 
             </div>
             <hr>
@@ -275,7 +319,7 @@
                     
                       <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
                     
-                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hadoop/">Hadoop</a>
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/HBase/">HBase</a>
                     
                   </div>
                 
@@ -283,11 +327,9 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
+                      <a class="hover-with-bg" href="/tags/HBase/">HBase</a>
+                    
                       <a class="hover-with-bg" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Hadoop/">Hadoop</a>
-                    
-                      <a class="hover-with-bg" href="/tags/MapReduce/">MapReduce</a>
                     
                   </div>
                 
@@ -304,18 +346,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-7-%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(7)-数据压缩</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-5-MapTask%E5%92%8CReduceTask/">
-                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(5)-MapTask和ReduceTask</span>
+                      <a href="/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-HBase%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/">
+                        <span class="hidden-mobile">HBase学习笔记-入门(1)-HBase基本介绍</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
