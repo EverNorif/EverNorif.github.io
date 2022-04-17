@@ -16,24 +16,22 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本文介绍了HBase集群搭建的过程">
+    <meta name="description" content="HBase是一种列存储模式和键值对存储模式结合的NoSQL数据库，具有灵活的数据模型，不仅可以基于键进行快速查询，还可以实现基于值、列名等的全文遍历和检索。本文介绍在HBase中使用的数据模型。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HBase学习笔记-入门(2)-HBase集群搭建">
-<meta property="og:url" content="http://example.com/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-HBase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:title" content="HBase学习笔记-入门(3)-HBase数据模型">
+<meta property="og:url" content="http://example.com/2022/04/17/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-3-HBase%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="本文介绍了HBase集群搭建的过程">
+<meta property="og:description" content="HBase是一种列存储模式和键值对存储模式结合的NoSQL数据库，具有灵活的数据模型，不仅可以基于键进行快速查询，还可以实现基于值、列名等的全文遍历和检索。本文介绍在HBase中使用的数据模型。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-HBase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/hbase-shell-status.png">
-<meta property="article:published_time" content="2022-04-16T08:27:02.000Z">
-<meta property="article:modified_time" content="2022-04-17T03:11:13.628Z">
+<meta property="article:published_time" content="2022-04-17T06:12:39.000Z">
+<meta property="article:modified_time" content="2022-04-17T07:51:15.795Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="HBase">
 <meta property="article:tag" content="笔记">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-HBase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/hbase-shell-status.png">
   
   
-  <title>HBase学习笔记-入门(2)-HBase集群搭建 - EverNorif</title>
+  <title>HBase学习笔记-入门(3)-HBase数据模型 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -179,7 +177,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="HBase学习笔记-入门(2)-HBase集群搭建">
+            <span class="h2" id="subtitle" title="HBase学习笔记-入门(3)-HBase数据模型">
               
             </span>
 
@@ -189,8 +187,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-04-16 16:27" pubdate>
-        2022年4月16日 下午
+      <time datetime="2022-04-17 14:12" pubdate>
+        2022年4月17日 下午
       </time>
     </span>
   
@@ -200,7 +198,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.6k 字
+      1.3k 字
     </span>
   
 
@@ -209,7 +207,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      22 分钟
+      11 分钟
     </span>
   
 
@@ -242,75 +240,23 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">HBase学习笔记-入门(2)-HBase集群搭建</h1>
+            <h1 style="display: none">HBase学习笔记-入门(3)-HBase数据模型</h1>
             
             <div class="markdown-body">
-              <h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><p>搭建HBase集群之间，首先需要完成Hadoop集群的搭建，并且需要先安装和搭建好Zookeeper。安装详情可以参考对应文章，搭建的集群同样为<code>hadoop102</code>，<code>hadoop103</code>，<code>hadoop104</code>。</p>
-<p>这里需要注意Hadoop、Zookeeper以及HBase的版本适配问题，可以参考官方文档：<a target="_blank" rel="noopener" href="https://hbase.apache.org/book.html#basic.prerequisites">Apache HBase ™ Reference Guide</a></p>
-<p>此处选择的版本如下：</p>
-<table>
-<thead>
-<tr>
-<th>软件</th>
-<th>版本</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Hadoop</td>
-<td>3.1.3</td>
-</tr>
-<tr>
-<td>Zookeeper</td>
-<td>3.7.0</td>
-</tr>
-<tr>
-<td>HBase</td>
-<td>2.4.11</td>
-</tr>
-</tbody></table>
-<h2 id="集群搭建"><a href="#集群搭建" class="headerlink" title="集群搭建"></a>集群搭建</h2><p>首先需要上传解压HBase安装包</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><pre><code class="hljs sh">tar -zxvf hbase-2.4.11-bin.tar.gz -C /opt/moudle<br></code></pre></td></tr></table></figure>
-
-<p>之后需要修改HBase中的配置文件，路径为<code>$HBase/conf</code></p>
-<p>首先需要修改<code>hbase-env.sh</code>文件，这其中配置了HBase运行时变量，如Java路径，RegionServer相关参数等。这里我们需要在其中配置Java环境，并且设置使用我们自己的Zookeeper：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">export</span> JAVA_HOME=/opt/module/jdk1.8.0_212/<br><span class="hljs-built_in">export</span> HBASE_MANAGES_ZK=<span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
-
-<ul>
-<li><p>第一行设置Java环境</p>
-</li>
-<li><p>第二行设置使用我们自己的Zookeeper</p>
-<blockquote>
-<p>如果该项设置为true，则表示使用Zookeeper作为HBase的一部分来管理启动，即Zookeeper随着HBase的启动而启动，随其关闭而关闭；</p>
-<p>如果设置为false，则表示Zookeeper作为独立的集群来运行，与HBase脱离关系。</p>
-</blockquote>
-</li>
-</ul>
-<p>之后需要配置<code>hbase-site.xml</code>文件，其中可以添加HBase的相关配置，如分布式的模式，Zookeeper的配置等，配置如下内容：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- HBase数据在HDFS中的存放的路径 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.rootdir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>hdfs://hadoop102:8020/hbase<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- Hbase的运行模式。false是单机模式，true是分布式模式。若为false,Hbase和Zookeeper会运行在同一个JVM里面 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.cluster.distributed<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- ZooKeeper的地址 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>hadoop102,hadoop103,hadoop104<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- ZooKeeper快照的存储位置 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>/opt/module/zookeeper-3.7.0/zkData<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>phoenix.schema.isNamespaceMappingEnabled<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-<p>其中的NameNode节点，Zookeeper的地址，Zookeeper数据的存储位置需要按照实际进行配置。</p>
-<p>（注意，NameNode节点和HMaster节点并没有绝对的一致关系，并不是说HMaster节点一定在NameNode节点上，具体在哪一个节点上运行HMaster与Zookeeper有关）</p>
-<p>由于我们搭建的是完全分布式，所以需要在<code>regionservers</code>中写入需要配置为RegionServer的节点：</p>
-<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs smali">hadoop102<br>hadoop103<br>hadoop104<br></code></pre></td></tr></table></figure>
-
-<p>之后，添加相关的环境变量（和之前一样，我们选择放在<code>/etc/profile.d/my_env.sh</code>中）：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#HBASE_HOME</span><br><span class="hljs-built_in">export</span> HBASE_HOME=/opt/module/hbase-2.4.11<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HBASE_HOME</span>/bin<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HBASE_HOME</span>/sbin<br></code></pre></td></tr></table></figure>
-
-<p>在一台机器上完成对应操作之后，将文件进行分发，最终三台机器上拥有了对应的文件夹。之后就可以启动集群了。</p>
-<h2 id="集群启动"><a href="#集群启动" class="headerlink" title="集群启动"></a>集群启动</h2><p>在启动HBase之前，需要先启动Hadoop和Zookeeper。</p>
-<p>命令如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 启动HBase</span><br><span class="hljs-variable">$HBASE_HOME</span>/bin/start-hbase.sh<br><span class="hljs-comment"># 关闭HBase</span><br><span class="hljs-variable">$HBASE_HOME</span>/bin/stop-hbase.sh<br></code></pre></td></tr></table></figure>
-
-<p>由于配置了环境变量，可以直接使用。</p>
-<p>启动集群之后，可以使用hbase shell进行测试。输入<code>hbase shell</code>进入命令行操作模式，输入status查看目前状态，出现以下内容则表示hbase已经安装配置成功了：</p>
-<img src="/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-HBase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/hbase-shell-status.png" srcset="/img/loading.gif" lazyload class="" title="hbase-shell-status">
-
-<p>同时可以通过网页端可视化查看HBase，访问NameNode的16010端口（<a target="_blank" rel="noopener" href="http://hadoop102:16010/">http://hadoop102:16010</a> ）</p>
-<p>通过jps查看目前运行的Java进程，可以在Master节点上查看到HMaster进程，Slave节点上查看到HRegionServer进程。如果使用的是HBase内置的Zookeeper，则节点上还能够查看到HQuorumPeer进程；如果使用的是用户的Zookeeper，则查看到的是QuorumPeerMain进程。</p>
-<blockquote>
-<p>HQuorumPeer表示hbase管理的zookeeper</p>
-<p>QuorumPeerMain表示zookeeper独立的进程</p>
-</blockquote>
+              <h2 id="HBase数据模型"><a href="#HBase数据模型" class="headerlink" title="HBase数据模型"></a>HBase数据模型</h2><p>HBase中不支持关系型模型，而是根据用户的需求提供更加灵活和可扩展的表设计。在HBase中，同样存在表、行、列、单元格等概念，不同的是，HBase中有列族的概念。一个列族包括一列或者多列，并且HBase中的每个列都必须属于一个列族。</p>
+<p>可以将HBase的数据模型理解成一个多个维度的Map结构。一张HBase表中存在若干行，并且一张表拥有多个列族，一个列族中存在多个列。根据行键我们可以唯一地定位到一行，在一行中，根据列族+列标识符又可以唯一定位到一列，即得到一个单元格。（可以将行键理解为一级key，列族+列标识符理解成二级key）</p>
+<h3 id="表（Table）"><a href="#表（Table）" class="headerlink" title="表（Table）"></a>表（Table）</h3><p>HBase中的数据以表的形式存储，同一张表中的数据通常是相关的。一张表拥有多个列族，并且一张表由多个行组成。</p>
+<h3 id="行（Row）"><a href="#行（Row）" class="headerlink" title="行（Row）"></a>行（Row）</h3><p>HBase中的一行由行键Row Key完全标识，一行内可以拥有多个列族，一个列族拥有多个列。通过列族+列标识符可以定位到行内的某一个值的内容。</p>
+<p>行在存储的时候，会按照行键字典顺序进行排序。</p>
+<h3 id="列族（Column-Family）"><a href="#列族（Column-Family）" class="headerlink" title="列族（Column Family）"></a>列族（Column Family）</h3><p>HBase中的列族是一些列的集合。一个列族拥有的列不需要事先定义，列族支持动态扩展，用户可以很轻松地添加一个列，无须预定义列的数量以及类型（也无法定义类型）。所有的列均以字符串的形式存储，在用户使用的时候按照需要自行进行数据类型转换</p>
+<h3 id="列标识符（Column-Qualifier）"><a href="#列标识符（Column-Qualifier）" class="headerlink" title="列标识符（Column Qualifier）"></a>列标识符（Column Qualifier）</h3><p>列族中的数据通过列标识符来进行定位，列标识符没有特定的数据类型，按照byte [ ]来进行存储。</p>
+<p>拥有了列族和列标识符之后，就可以按照<code>Column Family Name:Column Qualifier</code>格式来定位某一列，例如<code>C1:USER</code>。</p>
+<h3 id="单元格（Cell）"><a href="#单元格（Cell）" class="headerlink" title="单元格（Cell）"></a>单元格（Cell）</h3><p>通过行键、列族、列标识符，我们可以定位到一个单元格，单元格中的内容以二进制存储，其中保存同一份数据的多个版本。每个版本记录了一个值和一个时间戳，用来标识版本的先后，最新的数据排列在最前面。</p>
+<h3 id="时间戳（Timestamp）"><a href="#时间戳（Timestamp）" class="headerlink" title="时间戳（Timestamp）"></a>时间戳（Timestamp）</h3><p>在默认情况下，每一个单元格插入数据时都会用时间戳来进行版本标识。读取单元格数据时，如果时间戳没有被指定，则默认返回最新的数据；写入新的单元格数据时，如果没有设置时间戳，默认使用当前时间。每一个列族的单元数据的版本数量都被 HBase 单独维护，默认情况下 HBase 保留 3 个版本数据。</p>
+<hr>
+<p>对比来说，HBase表与关系型数据库中的表结构看起来没有太大差异，只是HBase中多了列族的概念，但是实际上差别还是挺大的。</p>
+<p>在关系型数据库中，表的结构需要预先定义，包括列名，数据类型，值域等。如果需要添加新的列，需要修改表结构，而这对已经存在的数据会造成很大影响，并且关系型数据库中对每个列都预留了存储空间，如果新增一个列的话，会导致关系型数据库中产生很多<code>Null</code>值，消耗大量的存储空间。同时关系型数据库按照行来存储。</p>
+<p>而在HBase中，<code>Null</code>在物理上不占用存储空间。并且如果要添加新列的话，只需要在列族中动态添加即可。另一方面，HBase面向列存储，在实际的物理存储中，列族是分开存储的。</p>
 
             </div>
             <hr>
@@ -349,9 +295,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/04/17/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-3-HBase%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B/">
+                      <a href="/2022/04/17/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-4-HBase%E7%9A%84Shell%E6%93%8D%E4%BD%9C/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">HBase学习笔记-入门(3)-HBase数据模型</span>
+                        <span class="hidden-mobile">HBase学习笔记-入门(4)-HBase的Shell操作</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -359,8 +305,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-HBase%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/">
-                        <span class="hidden-mobile">HBase学习笔记-入门(1)-HBase基本介绍</span>
+                      <a href="/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-HBase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">
+                        <span class="hidden-mobile">HBase学习笔记-入门(2)-HBase集群搭建</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
