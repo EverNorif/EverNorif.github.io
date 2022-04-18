@@ -16,21 +16,24 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-    <meta name="description" content="在自己配置环境变量的时候出现错误，之后输入绝大多数都显示找不到，如何解决。">
+    <meta name="description" content="HBase高级部分开始介绍HBase的相关原理，本文介绍HBase的架构以及内部的逻辑结构模型。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux环境变量错误导致找不到命令">
-<meta property="og:url" content="http://example.com/2022/02/17/Linux%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E9%94%99%E8%AF%AF%E5%AF%BC%E8%87%B4%E6%89%BE%E4%B8%8D%E5%88%B0%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:title" content="HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型">
+<meta property="og:url" content="http://example.com/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-1-HBase%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="在自己配置环境变量的时候出现错误，之后输入绝大多数都显示找不到，如何解决。">
+<meta property="og:description" content="HBase高级部分开始介绍HBase的相关原理，本文介绍HBase的架构以及内部的逻辑结构模型。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-17T10:23:12.000Z">
-<meta property="article:modified_time" content="2022-04-18T06:35:09.058Z">
+<meta property="og:image" content="http://example.com/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-1-HBase%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B/HBase%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B.png">
+<meta property="article:published_time" content="2022-04-18T06:09:37.000Z">
+<meta property="article:modified_time" content="2022-04-18T07:04:50.951Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="HBase">
+<meta property="article:tag" content="笔记">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-1-HBase%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B/HBase%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B.png">
   
   
-  <title>Linux环境变量错误导致找不到命令 - EverNorif</title>
+  <title>HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -208,7 +211,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Linux环境变量错误导致找不到命令">
+            <span class="h2" id="subtitle" title="HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型">
               
             </span>
 
@@ -218,8 +221,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-02-17 18:23" pubdate>
-        2022年2月17日 晚上
+      <time datetime="2022-04-18 14:09" pubdate>
+        2022年4月18日 下午
       </time>
     </span>
   
@@ -229,7 +232,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      269 字
+      1.3k 字
     </span>
   
 
@@ -238,7 +241,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      3 分钟
+      11 分钟
     </span>
   
 
@@ -271,23 +274,62 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Linux环境变量错误导致找不到命令</h1>
+            <h1 style="display: none">HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型</h1>
             
             <div class="markdown-body">
-              <h2 id="问题描述与解决"><a href="#问题描述与解决" class="headerlink" title="问题描述与解决"></a>问题描述与解决</h2><p>在某些情况下，自己配置环境变量导致出现了错误，例如变量符号<code>$</code>打错了之类的，这样会导致很多命令无法使用，例如<code>ls</code>，<code>vim</code>之类的，这导致没有办法通过正常方式修改原先错误的配置文件。</p>
-<p>解决方案如下：</p>
-<ol>
-<li><p>首先在命令行中输入如下命令，使得暂时可以使用命令行执行命令</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><pre><code class="hljs shell">export PATH=/usr/bin:/usr/sbin:/bin:/sbin <br></code></pre></td></tr></table></figure>
+              <h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h2><p>HBase集群是一种主从架构的设计，其中有三类角色：Client、Master Server以及Region Server</p>
+<p><strong>Client：</strong>客户端发出对HBase的操作请求，例如HBase Shell、编写的Java代码都属于客户端</p>
+<p>**Master Server： **Master Server是所有Region Server的管理者，不负责管理用户数据表。</p>
+<ul>
+<li>监控Region Server</li>
+<li>处理Region Server的故障转移</li>
+<li>处理元数据的变更</li>
+<li>处理Region的分配或者移除</li>
+<li>在空闲时间进行数据的负载均衡</li>
+<li>通过Zookeeper来发布自己的位置给客户端</li>
+</ul>
+<p><strong>Region Server：</strong> Region是用户数据表的实际管理者</p>
+<ul>
+<li>处理分配给它的Region</li>
+<li>负责存储HBase的实际数据</li>
+<li>刷新缓存到HDFS文件系统中</li>
+<li>执行压缩</li>
+<li>负责处理Region分片</li>
+</ul>
+<p>在Region Server中包含了许多组件，包括：WAL、StoreFile（HFile）、Store、MemStore、Region等。这些也是在HBase中重要的逻辑结构模型。</p>
+<h2 id="逻辑结构模型"><a href="#逻辑结构模型" class="headerlink" title="逻辑结构模型"></a>逻辑结构模型</h2><p>HBase中用户数据存储在Region Server中，一个Region Server存放的内容可以表示如下：</p>
+<img src="/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-1-HBase%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B/HBase%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="HBase逻辑结构模型">
+
+<ul>
+<li><strong>Region</strong>：在HBase中，一张表会被划分成多个Region，并由Region Server提供存储服务<ul>
+<li>回应HBase的特点，原生支持分布式存储</li>
+<li>每个Region保存一定行键范围的数据，Region中的数据有序，按照行键的字典序来进行排列</li>
+</ul>
 </li>
-<li><p>打开相应的配置文件，使用系统自带的<code>vi</code></p>
+<li><strong>Store</strong>：每一个Region又会按照列族垂直划分成Store</li>
+<li><strong>MemStore</strong>：为Store提供的缓存区域<ul>
+<li>向HBase中写入数据时，都是先向MemStore中写入，提高读写速度</li>
+<li>当MemStore存储将要满的时候，整个线程写入到HDFS的HFile中，写入之前会按照行键排序</li>
+<li>每个列族有一个MemStore</li>
+</ul>
 </li>
-<li><p>刷新环境变量<code>source</code></p>
+<li><strong>StoreFile</strong>： Store的存储文件<ul>
+<li>一个Store最终可能存储为多个StoreFile</li>
+<li>物理存储为HFile（概念上的对应 HDFS &lt;-&gt; HFile ，HBase &lt;-&gt; StoreFile）</li>
+<li>写入操作是连续写入的，写入的是按照行键排序的键值对数据，写入速度非常快</li>
+</ul>
 </li>
-<li><p>重启服务器<code>reboot</code></p>
+<li><strong>WAL</strong>： Write Ahead Log， 预写日志，用于故障恢复<ul>
+<li>WAL是HBase中提供的一种高并发、持久化的日志保存与回放机制</li>
+<li>在执行操作命令之前（例如put、delete、incr等），会将这个命令保存在WAL中</li>
+<li>写入WAL之后，再去执行对应操作</li>
+<li>一旦服务器崩溃，可以通过回放WAL来实现恢复崩溃之前的数据</li>
+<li>物理上的存储是Hadoop的Sequence File</li>
+</ul>
 </li>
-</ol>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45335305/article/details/106920244#/">CentOS中错误配置环境变量导致命令不可用_林浩吧的博客-CSDN博客_centos环境变量配置错误</a></p>
+</ul>
+<p>逻辑结构模型可以简单总结如下：</p>
+<p>对于一张表，会按照行键横向划分成多个Region，每个Region按照列族纵向划分成多个Store。每个Store，最终的存储形式为StoreFile，物理存储为HDFS中的HFile。在执行操作之前，会将操作记录在WAL中，用于故障恢复。之后执行写入操作，数据写入HBase之前，首先需要写入对应的MenStore，当快要写满之后再持久化到文件中。写入文件之前需要对数据按照行键进行排序，之后再写入。</p>
 
             </div>
             <hr>
@@ -297,9 +339,9 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
                     
-                      <a class="hover-with-bg" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/">Linux</a>
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/HBase/">HBase</a>
                     
                   </div>
                 
@@ -307,7 +349,9 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Linux/">Linux</a>
+                      <a class="hover-with-bg" href="/tags/HBase/">HBase</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
                     
                   </div>
                 
@@ -324,18 +368,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/02/17/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-IP%E5%92%8C%E4%B8%BB%E6%9C%BA%E5%90%8D%E7%A7%B0%E7%9A%84%E9%85%8D%E7%BD%AE/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Hadoop学习笔记-入门(1)-IP和主机名称的配置</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/02/13/JavaScript%E5%AE%8C%E6%88%90%E5%AF%B9json%E6%95%B0%E6%8D%AE%E7%9A%84%E6%8E%92%E5%BA%8F/">
-                        <span class="hidden-mobile">JavaScript完成对json数据的排序</span>
+                      <a href="/2022/04/17/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-5-HBase%E7%9A%84Java-API%E6%93%8D%E4%BD%9C/">
+                        <span class="hidden-mobile">HBase学习笔记-入门(5)-HBase的Java API操作</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
