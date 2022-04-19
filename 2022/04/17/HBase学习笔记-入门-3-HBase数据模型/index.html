@@ -24,7 +24,7 @@
 <meta property="og:description" content="HBase是一种列存储模式和键值对存储模式结合的NoSQL数据库，具有灵活的数据模型，不仅可以基于键进行快速查询，还可以实现基于值、列名等的全文遍历和检索。本文介绍在HBase中使用的数据模型。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-04-17T06:12:39.000Z">
-<meta property="article:modified_time" content="2022-04-17T07:51:15.795Z">
+<meta property="article:modified_time" content="2022-04-19T07:12:13.633Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="HBase">
 <meta property="article:tag" content="笔记">
@@ -230,7 +230,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.3k 字
+      1.4k 字
     </span>
   
 
@@ -239,7 +239,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11 分钟
+      12 分钟
     </span>
   
 
@@ -285,6 +285,7 @@
 <p>拥有了列族和列标识符之后，就可以按照<code>Column Family Name:Column Qualifier</code>格式来定位某一列，例如<code>C1:USER</code>。</p>
 <h3 id="单元格（Cell）"><a href="#单元格（Cell）" class="headerlink" title="单元格（Cell）"></a>单元格（Cell）</h3><p>通过行键、列族、列标识符，我们可以定位到一个单元格，单元格中的内容以二进制存储，其中保存同一份数据的多个版本。每个版本记录了一个值和一个时间戳，用来标识版本的先后，最新的数据排列在最前面。</p>
 <h3 id="时间戳（Timestamp）"><a href="#时间戳（Timestamp）" class="headerlink" title="时间戳（Timestamp）"></a>时间戳（Timestamp）</h3><p>在默认情况下，每一个单元格插入数据时都会用时间戳来进行版本标识。读取单元格数据时，如果时间戳没有被指定，则默认返回最新的数据；写入新的单元格数据时，如果没有设置时间戳，默认使用当前时间。每一个列族的单元数据的版本数量都被 HBase 单独维护，默认情况下 HBase 保留 3 个版本数据。</p>
+<h3 id="命名空间（NameSpace）"><a href="#命名空间（NameSpace）" class="headerlink" title="命名空间（NameSpace）"></a>命名空间（NameSpace）</h3><p>命名空间，类似于关系型数据库中的DataBase概念。每个命名空间下有多个表，HBase有两个自带的命名空间，分别是hbase和default。其中hbase下存放的是HBase内置的表，包括meta和namespace等；而default是用户默认使用的命名空间。</p>
 <hr>
 <p>对比来说，HBase表与关系型数据库中的表结构看起来没有太大差异，只是HBase中多了列族的概念，但是实际上差别还是挺大的。</p>
 <p>在关系型数据库中，表的结构需要预先定义，包括列名，数据类型，值域等。如果需要添加新的列，需要修改表结构，而这对已经存在的数据会造成很大影响，并且关系型数据库中对每个列都预留了存储空间，如果新增一个列的话，会导致关系型数据库中产生很多<code>Null</code>值，消耗大量的存储空间。同时关系型数据库按照行来存储。</p>
