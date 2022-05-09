@@ -1,0 +1,659 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构以用于处理不同的应用场景。这三大数据结构分别是RDD(弹性分布式数据集)、累加器(分布式共享只写变量)和广播变量(分布式共享只读变量)。本文介绍了RDD的相关概念以及一些相关算子的使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记-SparkCore(1)-RDD以及相关算子">
+<meta property="og:url" content="http://example.com/2022/05/08/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-1-RDD%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E7%AE%97%E5%AD%90/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构以用于处理不同的应用场景。这三大数据结构分别是RDD(弹性分布式数据集)、累加器(分布式共享只写变量)和广播变量(分布式共享只读变量)。本文介绍了RDD的相关概念以及一些相关算子的使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-08T06:34:44.000Z">
+<meta property="article:modified_time" content="2022-05-08T14:44:20.907Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Spark">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Spark学习笔记-SparkCore(1)-RDD以及相关算子 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  <header style="height: 80vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/post.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Spark学习笔记-SparkCore(1)-RDD以及相关算子">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-05-08 14:34" pubdate>
+        2022年5月8日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.8k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      40 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Spark学习笔记-SparkCore(1)-RDD以及相关算子</h1>
+            
+            <div class="markdown-body">
+              <h2 id="RDD"><a href="#RDD" class="headerlink" title="RDD"></a>RDD</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>RDD（Resilient Distributed Dataset），弹性分布式数据集，是Spark中最基本的数据处理模型。在代码中，它是一个抽象类，代表一个弹性的、不可变的、可分区、里面的元素可并行计算的集合。</p>
+<ul>
+<li>弹性：<ul>
+<li>存储的弹性：内存与磁盘的自动切换</li>
+<li>容错的弹性：数据丢失的自动恢复</li>
+<li>计算的弹性：计算出错重试机制</li>
+<li>分片的弹性：可以根据需要重新分片</li>
+</ul>
+</li>
+<li>分布式：数据存储在集群的不同节点上</li>
+<li>数据集：RDD中封装了计算逻辑，并不保存数据</li>
+<li>数据抽象：RDD是一个抽象类，需要子类的具体实现</li>
+<li>不可变：RDD中封装了计算逻辑，是不可以改变的。如果想要改变，只能产生新的RDD，在新的RDD里面封装逻辑</li>
+<li>可分区：分区后进行并行计算</li>
+</ul>
+<blockquote>
+<p>输入数据首先需要组织成RDD的结果，之后可以调用RDD中的方法（后续进行处理）。多个不同功能的算子组合成复杂的业务逻辑，直到调用行动算子，数据进行处理，让数据走过对应的逻辑得到最终的输出。</p>
+<p>RDD中存在分区的概念，由于需要面对分布式计算的场景，实际计算的时候也是将任务分配给其他的Executor来执行。分区机制，即如何将输入数据进行划分，是RDD中一个重要属性。</p>
+</blockquote>
+<h3 id="核心属性"><a href="#核心属性" class="headerlink" title="核心属性"></a>核心属性</h3><p>RDD中有五个核心属性：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><pre><code class="hljs scala"><span class="hljs-type">Internally</span>, each <span class="hljs-type">RDD</span> is characterized by five main properties:<br>- <span class="hljs-type">A</span> list of partitions<br>- <span class="hljs-type">A</span> function <span class="hljs-keyword">for</span> computing each split<br>- <span class="hljs-type">A</span> list of dependencies on other <span class="hljs-type">RDDs</span><br>- <span class="hljs-type">Optionally</span>, a <span class="hljs-type">Partitioner</span> <span class="hljs-keyword">for</span> key-value <span class="hljs-type">RDDs</span> (e.g. to say that the <span class="hljs-type">RDD</span> is hash-partitioned)<br>- <span class="hljs-type">Optionally</span>, a list of preferred locations to compute each split on (e.g. block locations <span class="hljs-keyword">for</span> an <span class="hljs-type">HDFS</span> file)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>分区列表：RDD中的分区列表，用于实现分布式计算</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPartitions</span></span>: <span class="hljs-type">Array</span>[<span class="hljs-type">Partition</span>]<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>分区计算函数：RDD的计算逻辑，Spark在计算的时候，使用分区函数对每个分区中的数据进行处理</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@DeveloperApi</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compute</span></span>(split: <span class="hljs-type">Partition</span>, context: <span class="hljs-type">TaskContext</span>): <span class="hljs-type">Iterator</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>RDD之间的依赖关系：RDD是计算模型的封装，当需要将多个计算模型进行组合的时候，就需要将多个RDD建立依赖关系</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDependencies</span></span>: <span class="hljs-type">Seq</span>[<span class="hljs-type">Dependency</span>[_]] = deps<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>分区器（可选）：当数据为Key-Value类型数据的时候，可以通过设定分区器自定义数据的分区</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@transient</span> <span class="hljs-keyword">val</span> partitioner: <span class="hljs-type">Option</span>[<span class="hljs-type">Partitioner</span>] = <span class="hljs-type">None</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>首选位置（可选）：可以设置分区的物理位置偏好，设定分区优先选择分配给哪个节点</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPreferredLocations</span></span>(split: <span class="hljs-type">Partition</span>): <span class="hljs-type">Seq</span>[<span class="hljs-type">String</span>] = <span class="hljs-type">Nil</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="执行原理"><a href="#执行原理" class="headerlink" title="执行原理"></a>执行原理</h3><p>从计算的角度来看，在数据处理的过程中，需要将计算资源（例如内存、CPU等）和计算模型进行协调和整合。Spark框架在执行的时候，先申请资源，然后将应用程序中的数据处理逻辑分解成一个个的计算任务，然后将任务分发到已经分配资源的计算节点上。数据按照指定的计算模型进行处理，得到最终的计算结果。</p>
+<p>以Yarn环境举例来说，首先启动Yarn集群环境，集群中会存在Resource Manager和Node Manager两种角色。之后Spark通过申请资源来创建调度节点和计算节点，分别在对应的节点上得到Driver和Executor。然后Spark框架根据需求将计算逻辑<strong>根据分区</strong>划分成不同的任务，调度节点将不同分区的数据送到不同的Executor上进行处理。RDD在整个流程中主要用于将逻辑进行封装，生成Task发送给Executor节点执行计算。</p>
+<h2 id="基础编程"><a href="#基础编程" class="headerlink" title="基础编程"></a>基础编程</h2><h3 id="RDD创建"><a href="#RDD创建" class="headerlink" title="RDD创建"></a>RDD创建</h3><p>首先我们需要能够从数据中创建RDD（生成RDD），有以下4种方法</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 前置环境</span><br><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>)<br><span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>从内存中创建RDD</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 从内存中的集合创建 </span><br><span class="hljs-comment">// makeRDD()方法</span><br><span class="hljs-keyword">val</span> seq = <span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)<br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(seq)<br><br><span class="hljs-comment">// parallelize()方法</span><br><span class="hljs-keyword">val</span> rdd = sc.parallelize(seq)<br></code></pre></td></tr></table></figure>
+
+<p><code>sc.makeRDD()</code>和<code>sc.parallelize()</code>两种方式都能够从内存的集合创建出RDD，其中<code>makeRDD()</code>方法其实只是<code>parallelize()</code>方法的一层封装</p>
+<p>在创建RDD的时候可以传递第二个参数，这个参数表示分区的数量。默认值采用会采用配置参数<code>spark.default.parallelism</code>，如果该配置参数没有被设置的话，则采用当前环境下的最大可用核数。可用使用<code>saveAsTextFile</code>来查看分区效果，默认情况下一个分区会产生一个保存文件，下面的代码最终会在工作目录下的<code>/ouput</code>保存出5个内容文件：<code>part-00000</code>~&#96;part-00004&#96;</p>
+<p>（具体的分区逻辑会在后面进行说明）</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>)<br>sparkConf.set(<span class="hljs-string">&quot;spark.default.parallelism&quot;</span>, <span class="hljs-string">&quot;5&quot;</span>)<br><span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br><br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>))<br><br>rdd.saveAsTextFile(<span class="hljs-string">&quot;output&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>从文件中创建RDD</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 从文件中创建,相对路径默认为工作目录开始</span><br><span class="hljs-comment">// 本地文件</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;input/data.txt&quot;</span>)<br><span class="hljs-comment">// 本地目录</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;input&quot;</span>)<br><span class="hljs-comment">// 使用通配符</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;input/data1*.txt&quot;</span>)<br><span class="hljs-comment">// 分布式存储系统路径</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;hdfs://hadoop102:8020/input&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>可以有外部存储系统的数据集创建RDD包括：本地的文件系统，所有Hadoop支持的数据系统如HDFS、HBase等。并且其中文件路径有很灵活的使用功能。</p>
+<p>有时候我们希望在读取数据的同时知道这些数据的来源，那么可以使用<code>wholeTextFiles</code>方法，得到的rdd读取结果为元组，第一个元素表示文件路径，第二个元素表示文件内容</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.wholeTextFiles(<span class="hljs-string">&quot;data&quot;</span>)<br>rdd.collect().foreach(println)<br></code></pre></td></tr></table></figure>
+
+<p>输出效果如下，其中的折行效果来自于输入文件中的换行符，路径为绝对路径：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">(file:/D:/Java/Spark/data/1.txt,1<br>1<br>)<br>(file:/D:/Java/Spark/data/2.txt,2<br>2<br>)<br></code></pre></td></tr></table></figure>
+
+<p>从文件中同样可以指定分区数量，具体逻辑与从内存中创建有所不同，也会在后续进行对比。</p>
+<ul>
+<li>从其他RDD创建</li>
+</ul>
+<p>从其他RDD创建指的是，一个RDD运算完成之后，得到的是一个新的RDD</p>
+<ul>
+<li>直接创建RDD</li>
+</ul>
+<p>直接使用new的方式构造RDD，一般在Spark框架内部使用</p>
+<h3 id="RDD并行度与分区"><a href="#RDD并行度与分区" class="headerlink" title="RDD并行度与分区"></a>RDD并行度与分区</h3><p>分区：Spark将一个作业切分成多个任务，发送给Executor节点并行计算</p>
+<p>并行度：能够同时并行计算的任务数量称为并行度。</p>
+<p>从内存中生成RDD和从文件中生成RDD，分区逻辑略有区别，分别体现在默认分区数量以及分区划分上。</p>
+<p>读取<strong>内存</strong>数据：</p>
+<p><code>makeRDD</code>的第二个参数为<code>numSlices</code>，表示分区数量。默认的分区数量采用会采用配置参数<code>spark.default.parallelism</code>，如果该配置参数没有被设置的话，则采用当前环境下的最大可用核数。</p>
+<p>分区划分的核心逻辑如下（<code>org.apache.spark.rdd.ParallelCollectionRDD</code>的<code>slice</code>方法），其中<code>numSlices</code>之前传入的参数，<code>length</code>为构建RDD的序列的长度，经过下面代码可以得到<code>numSlices</code>个tuple。每个tuple中保存了<code>start</code>和<code>end</code>，作为参数调用Array的<code>slice(from: Int, until: Int)</code>方法可以切分子数组，即对应分区中的内容。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala">(<span class="hljs-number">0</span> until numSlices).iterator.map &#123; i =&gt;<br>    <span class="hljs-keyword">val</span> start = ((i * length) / numSlices).toInt<br>    <span class="hljs-keyword">val</span> end = (((i + <span class="hljs-number">1</span>) * length) / numSlices).toInt<br>    (start, end)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>举例来说，下面的代码运行后，在<code>output</code>目录下得到4个输出文件</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">List</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>), <span class="hljs-number">4</span>)<br><span class="hljs-comment">// numSlices = 4, length = 10</span><br><span class="hljs-comment">// 0: [0, 2)</span><br><span class="hljs-comment">// 1: [2, 5)</span><br><span class="hljs-comment">// 2: [5, 7)</span><br><span class="hljs-comment">// 3: [7, 10)</span><br>rdd.saveAsTextFile(<span class="hljs-string">&quot;output&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>输出文件内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">part-00000</span><br>0<br>1<br><span class="hljs-meta"># </span><span class="language-bash">part-00001</span><br>2<br>3<br>4<br><span class="hljs-meta"># </span><span class="language-bash">part-00002</span><br>5<br>6<br><span class="hljs-meta"># </span><span class="language-bash">part-00003</span><br>7<br>8<br>9<br></code></pre></td></tr></table></figure>
+
+<p>读取<strong>文件</strong>数据：</p>
+<p><code>textFile</code>的第二个参数为<code>minPartitions</code>，表示最小的分区数量，默认值为<code>defalutMinPartitions</code>，定义如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">defaultMinPartitions</span></span>: <span class="hljs-type">Int</span> = math.min(defaultParallelism, <span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
+
+<p>分区划分逻辑：（待补充…）</p>
+<blockquote>
+<p>返回的RDD是HadoopRDD类，其中使用了FileInputFormat的getPartition方法，并且是旧的API，其中getPartition还接受一个参数numSplices</p>
+</blockquote>
+<p>数据存放在分区里面的逻辑</p>
+<blockquote>
+<p>FileInputFormat中getPartitions的新旧API实现差异：</p>
+<p>旧API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><br></code></pre></td></tr></table></figure>
+
+<p>新API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><br></code></pre></td></tr></table></figure>
+
+
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/354778850">【spark】RDD的分区 - 知乎 (zhihu.com)</a></p>
+<p>分区是分区？数据读取是数据读取 分区数据分配</p>
+<p>按行读取 TextInputFormat中的RecordReader</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/shufangreal/article/details/119852818?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-3-119852818-blog-116541180.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-3-119852818-blog-116541180.pc_relevant_default&utm_relevant_index=6">Spark- 之不同Source产生RDD的分区数与数据分配_稳哥的哥的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40180229/article/details/122945565">【SPARK】浅谈Spark数据读取并行度获取及数据分区存储_SmallScorpion的博客-CSDN博客_spark并发读取文件</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/helloxiaozhe/article/details/111811876?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-111811876-blog-119852818.pc_relevant_antiscanv2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-111811876-blog-119852818.pc_relevant_antiscanv2&utm_relevant_index=5">scala spark dataframe和rdd 获取分区个数及每个分区的内容_Data_IT_Farmer的博客-CSDN博客_spark获取分区id</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/ks_1998/article/details/123880402">Spark RDD的分区规则详解_大象·的博客-CSDN博客_sparkrdd的分区</a></p>
+<p>查看分区的内容</p>
+<p>TextInputFormat读取文件</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/cxzdy/p/5111774.html">Hadoop源码解析之: TextInputFormat如何处理跨split的行 - 五三中 - 博客园 (cnblogs.com)</a></p>
+<h3 id="RDD算子"><a href="#RDD算子" class="headerlink" title="RDD算子"></a>RDD算子</h3><h2 id="RDD转换算子"><a href="#RDD转换算子" class="headerlink" title="RDD转换算子"></a>RDD转换算子</h2><h2 id="RDD行动算子"><a href="#RDD行动算子" class="headerlink" title="RDD行动算子"></a>RDD行动算子</h2><h2 id="应用案例"><a href="#应用案例" class="headerlink" title="应用案例"></a>应用案例</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Spark/">Spark</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Spark/">Spark</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/09/Hadoop%E6%BA%90%E7%A0%81-TextInputFormat%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%88%86%E5%8C%BA%E7%9A%84%E8%A1%8C%E8%AF%BB%E5%8F%96%E9%97%AE%E9%A2%98/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hadoop源码-TextInputFormat解决跨分区的行读取问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/08/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Spark%E8%BF%90%E8%A1%8C%E6%9E%B6%E6%9E%84/">
+                        <span class="hidden-mobile">Spark学习笔记-入门(2)-Spark运行架构</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <i class="iconfont icon-love"></i> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          load: ['ui/lazy']
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
