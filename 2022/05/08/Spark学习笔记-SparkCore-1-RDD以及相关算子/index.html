@@ -24,7 +24,7 @@
 <meta property="og:description" content="Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构以用于处理不同的应用场景。这三大数据结构分别是RDD(弹性分布式数据集)、累加器(分布式共享只写变量)和广播变量(分布式共享只读变量)。本文介绍了RDD的相关概念以及一些相关算子的使用。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-08T06:34:44.000Z">
-<meta property="article:modified_time" content="2022-05-09T12:18:24.297Z">
+<meta property="article:modified_time" content="2022-05-09T12:27:13.439Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Spark">
@@ -251,7 +251,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      130 分钟
+      131 分钟
     </span>
   
 
@@ -487,7 +487,7 @@
 <p>将数据集中重复的数据去重。</p>
 <blockquote>
 <p><strong>集合的distinct</strong> VS. <strong>RDD算子中的distinct</strong></p>
-<p>distinct完成的功能都是完成数据的去重，但是具体的逻辑有所不同。在集合的distinct中，底层实现使用的是HashMap的结构；在RDD算子中的distinct中，底层使用的是连续的算子调用，核心逻辑如下，利用reduceByKey每次聚合只留其中一个重复。</p>
+<p>distinct完成的功能都是完成数据的去重，但是具体的逻辑有所不同。在集合的distinct中，底层实现使用的是HashSet的结构；在RDD算子中的distinct中，底层使用的是连续的算子调用，核心逻辑如下，利用reduceByKey每次聚合只留其中一个重复。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">map(x =&gt; (x, <span class="hljs-literal">null</span>)).reduceByKey((x, _) =&gt; x, numPartitions).map(_._1)<br></code></pre></td></tr></table></figure>
 </blockquote>
 <h3 id="coalesce"><a href="#coalesce" class="headerlink" title="coalesce"></a>coalesce</h3><p>函数声明：</p>
@@ -550,6 +550,7 @@
 <p><strong>reduceByKey</strong>与<strong>groupByKey</strong>的区别：</p>
 <p>从Shuffle的角度来看：reduceByKey和groupByKey都存在Shuffle的操作，但是reduceByKey可以在Shuffle之前对分区内相同Key的数据进行<strong>预聚合</strong>（combine）功能，这样可以减少落盘的数据量，性能较高。而groupByKey只是进行分组，不存在数据量减少的问题。</p>
 <p>从功能的角度来看，reduceByKey其实包含了分组和聚合的功能，而groupByKey只能进行分组，不能聚合。</p>
+<p>上面的落盘，指的是在执行过程中，程序在执行完毕之前无法判断自己的分组是否已经没有下一个元素，于是需要等待到执行完毕才能进行下一步的聚合和分区。如果数据量过大，则在内存中等待的数据可能导致内存溢出，因此数据会落盘等待。</p>
 </blockquote>
 <h3 id="aggregateByKey"><a href="#aggregateByKey" class="headerlink" title="aggregateByKey"></a>aggregateByKey</h3><p>函数声明：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">aggregateByKey</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](zeroValue: <span class="hljs-type">U</span>)(seqOp: (<span class="hljs-type">U</span>, <span class="hljs-type">V</span>) =&gt; <span class="hljs-type">U</span>,<br>                                              combOp: (<span class="hljs-type">U</span>, <span class="hljs-type">U</span>) =&gt; <span class="hljs-type">U</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">U</span>)]<br></code></pre></td></tr></table></figure>
@@ -611,8 +612,6 @@
 
 <p>输出结果为：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">(a,(CompactBuffer(1),CompactBuffer(4)))<br>(b,(CompactBuffer(2, 8),CompactBuffer(5)))<br>(c,(CompactBuffer(3),CompactBuffer(6, 7)))<br></code></pre></td></tr></table></figure>
-
-
 
 <h1 id="RDD行动算子"><a href="#RDD行动算子" class="headerlink" title="RDD行动算子"></a>RDD行动算子</h1><h2 id="行动算子"><a href="#行动算子" class="headerlink" title="行动算子"></a>行动算子</h2><p>所谓的行动算子其实就是触发作业Job执行的方法。行动算子的底层代码会调用环境对象的runJob方法，创建ActiveJob并提交执行。</p>
 <h3 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a>reduce</h3><p>函数声明：</p>
