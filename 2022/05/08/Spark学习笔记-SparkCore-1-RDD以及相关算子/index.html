@@ -24,7 +24,7 @@
 <meta property="og:description" content="Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构以用于处理不同的应用场景。这三大数据结构分别是RDD(弹性分布式数据集)、累加器(分布式共享只写变量)和广播变量(分布式共享只读变量)。本文介绍了RDD的相关概念以及一些相关算子的使用。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-08T06:34:44.000Z">
-<meta property="article:modified_time" content="2022-05-28T13:00:50.917Z">
+<meta property="article:modified_time" content="2022-06-18T13:03:47.086Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Spark">
@@ -370,7 +370,7 @@
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 从内存中的集合创建 </span><br><span class="hljs-comment">// makeRDD()方法</span><br><span class="hljs-keyword">val</span> seq = <span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)<br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(seq)<br><br><span class="hljs-comment">// parallelize()方法</span><br><span class="hljs-keyword">val</span> rdd = sc.parallelize(seq)<br></code></pre></td></tr></table></figure>
 
 <p><code>sc.makeRDD()</code>和<code>sc.parallelize()</code>两种方式都能够从内存的集合创建出RDD，其中<code>makeRDD()</code>方法其实只是<code>parallelize()</code>方法的一层封装</p>
-<p>在创建RDD的时候可以传递第二个参数，这个参数表示分区的数量。默认值采用会采用配置参数<code>spark.default.parallelism</code>，如果该配置参数没有被设置的话，则采用当前环境下的最大可用核数。可用使用<code>saveAsTextFile</code>来查看分区效果，默认情况下一个分区会产生一个保存文件，下面的代码最终会在工作目录下的<code>/ouput</code>保存出5个内容文件：<code>part-00000</code>~&#96;part-00004&#96;</p>
+<p>在创建RDD的时候可以传递第二个参数，这个参数表示分区的数量。默认值采用会采用配置参数<code>spark.default.parallelism</code>，如果该配置参数没有被设置的话，则采用当前环境下的最大可用核数。可用使用<code>saveAsTextFile</code>来查看分区效果，默认情况下一个分区会产生一个保存文件，下面的代码最终会在工作目录下的<code>/ouput</code>保存出5个内容文件：<code>part-00000</code> ~ <code>part-00004</code></p>
 <p>（具体的分区逻辑会在后面进行说明）</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>)<br>sparkConf.set(<span class="hljs-string">&quot;spark.default.parallelism&quot;</span>, <span class="hljs-string">&quot;5&quot;</span>)<br><span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br><br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>))<br><br>rdd.saveAsTextFile(<span class="hljs-string">&quot;output&quot;</span>)<br></code></pre></td></tr></table></figure>
 
