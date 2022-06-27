@@ -23,15 +23,15 @@
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="该笔记为Java学习过程中的记录，包括Java的快速入门、面向对象、枚举、集合、泛型、反射等知识">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Java基础笔记/Collention.png">
-<meta property="og:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Java基础笔记/Map.png">
+<meta property="og:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Collention.png">
+<meta property="og:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Map.png">
 <meta property="article:published_time" content="2022-06-27T06:31:52.000Z">
-<meta property="article:modified_time" content="2022-06-27T06:39:02.592Z">
+<meta property="article:modified_time" content="2022-06-27T06:42:33.868Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Java基础笔记/Collention.png">
+<meta name="twitter:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Collention.png">
   
   
   
@@ -2112,10 +2112,10 @@
 </blockquote>
 <p>集合的框架：</p>
 <p>（单列集合：Collention）</p>
-<img src="Java基础笔记/Collention.png" srcset="/img/bilibiliTV.gif" lazyload alt="Collention" style="zoom:80%;" />
+<img src="/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Collention.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Collection">
 
 <p>（双列集合：Map）</p>
-<img src="Java基础笔记/Map.png" srcset="/img/bilibiliTV.gif" lazyload alt="Map" style="zoom: 25%;" />
+<img src="/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Map.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Map">
 
 <blockquote>
 <p>集合主要分为两组：单列集合（Collention）和双列集合（Map）</p>
@@ -3148,7 +3148,6 @@
 
 <p>通过反射访问类中的方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; stuClass = Class.forName(<span class="hljs-string">&quot;Student&quot;</span>);<br><span class="hljs-type">Object</span> <span class="hljs-variable">o</span> <span class="hljs-operator">=</span> stuClass.newInstance();<br><span class="hljs-comment">//调用pubilc的方法</span><br><span class="hljs-type">Method</span> <span class="hljs-variable">hi</span> <span class="hljs-operator">=</span> stuClass.getMethod(<span class="hljs-string">&quot;hi&quot;</span>, String.class);<br>hi.invoke(o, <span class="hljs-string">&quot;hahaha&quot;</span>);<br><span class="hljs-comment">//调用private的方法</span><br><span class="hljs-type">Method</span> <span class="hljs-variable">say</span> <span class="hljs-operator">=</span> stuClass.getDeclaredMethod(<span class="hljs-string">&quot;say&quot;</span>, String.class);<br>say.setAccessible(<span class="hljs-literal">true</span>);<br>say.invoke(o, <span class="hljs-string">&quot;lalala&quot;</span>);<br><span class="hljs-comment">//在反射中，如果方法有返回值，则统一返回Object，但运行类型与定义的返回类型一致</span><br></code></pre></td></tr></table></figure>
-
 
 
 
