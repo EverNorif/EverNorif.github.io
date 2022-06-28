@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title></title>
+      <link href="/2022/06/28/Liunx%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+      <url>/2022/06/28/Liunx%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h1 id="基础概述"><a href="#基础概述" class="headerlink" title="基础概述"></a>基础概述</h1><h2 id="Liunx发行版"><a href="#Liunx发行版" class="headerlink" title="Liunx发行版"></a>Liunx发行版</h2><p>Liunx发行版：主要分为由商业公司维护的收费版本和开源社区维护的免费版本：</p><img src="/2022/06/28/Liunx%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Liunx%E5%8F%91%E8%A1%8C%E7%89%88.png" class="" title="Liunx发行版"><h2 id="文件与目录结构"><a href="#文件与目录结构" class="headerlink" title="文件与目录结构"></a>文件与目录结构</h2><p>Linux中一切皆文件，从根目录开始构成了一棵树，下面介绍了根目录下的文件夹的作用：（目录结构和物理的底层存储没有绝对的关系，是一种逻辑结构。具体的物理存放与挂载位置有关）</p><img src="/2022/06/28/Liunx%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.png" class="" title="目录结构"><ul><li><code>/bin</code>：bin -&gt; usr&#x2F;bin。Binary的缩写，目录中存放了系统中经常使用的命令</li><li><code>/sbin</code>：sbin -&gt; usr&#x2F;bin。s指的是Super User，其中存放了系统管理员使用的系统管理程序</li><li><code>/home</code>：存放普通用户的家目录</li><li><code>/root</code>：该目录为root用户的家目录</li><li><code>/lib</code>：lib -&gt; usr&#x2F;lib。系统开机时所需要的最基本的动态链接共享库，类似于Windows中的dll文件。几乎所有的应用程序都需要用到这些共享库</li><li><code>/lost+found</code>：一般情况下是空文件夹。当系统非法关机之后，这里就存放了一些文件</li><li><code>/etc</code>：其中存放了所有的系统管理所需要的配置文件和子目录</li><li><code>/usr</code>：非常重要的目录，用户的很多应用程序和文件都存放在该目录下。类似Windows中的program files目录</li><li><code>/boot</code>：存放了启动Linux时使用的一些核心文件，包括一些连接文件以及镜像文件</li><li><code>/proc</code>：一个虚拟的目录，是系统内存的映射。可以通过直接访问这个目录来获取系统信息</li><li><code>/srv</code>：service的缩写，其中存放了一些服务启动之后需要提取的数据</li><li><code>/sys</code>：系统文件目录</li><li><code>/tmp</code>：存放临时文件</li><li><code>/dev</code>：类似于Windows的设备管理器，将所有的硬件以文件的形式存储</li><li><code>/media</code>：挂载一些移动媒体</li><li><code>/mnt</code>：让用户临时挂载其他的文件系统</li><li><code>/opt</code>：给主机额外安装软件所存放的目录。用户额外安装的软件一般建议存放在该目录下</li><li><code>/var</code>：该目录中存放不断扩充的东西，一般将经常被修改的目录放在该目录下，如各种日志文件等</li></ul><h2 id="Vi-x2F-Vim编辑器"><a href="#Vi-x2F-Vim编辑器" class="headerlink" title="Vi&#x2F;Vim编辑器"></a>Vi&#x2F;Vim编辑器</h2><p>Vi是Unix操作系统和类Unix操作系统中最通用的文本编辑器。</p><p>Vim是从Vi发展出来的一个性能更加强大的文本编辑器，可以主动以字体颜色来辨别语法的正确性，方便程序设计。</p><p>Vim编辑器主要分为三种模式，一般模式，编辑模式以及命令模式。</p><h3 id="一般模式"><a href="#一般模式" class="headerlink" title="一般模式"></a>一般模式</h3><p>使用Vim打开文件则进入一般模式，这是默认的模式。在一般模式中，通常完成的是内容的删除、复制、粘贴等操作。</p><table><thead><tr><th align="left">语法</th><th>功能描述</th></tr></thead><tbody><tr><td align="left">yy</td><td>复制光标所在的当前行（只是复制，还没有粘贴）</td></tr><tr><td align="left">y+数字+y</td><td>复制一段（从当前行开始复制xx行）</td></tr><tr><td align="left">p</td><td>在当前行进行粘贴</td></tr><tr><td align="left">数字+p</td><td>从当前行开始复制xx次</td></tr><tr><td align="left">u</td><td>撤销上一步操作</td></tr><tr><td align="left">dd</td><td>删除当前行</td></tr><tr><td align="left">d+数字+d</td><td>删除一段（从当前行开始删除xx行）</td></tr><tr><td align="left">y+$</td><td>复制从光标位置开始到该行结尾的所有内容</td></tr><tr><td align="left">y+^</td><td>复制从该行开头到光标位置的所有内容</td></tr><tr><td align="left">yw</td><td>复制一个词</td></tr><tr><td align="left">dw</td><td>删除一个词</td></tr><tr><td align="left">gg</td><td>移动到文件头部</td></tr><tr><td align="left">G</td><td>移动到文件末尾</td></tr><tr><td align="left">数字+G</td><td>移动到对应行</td></tr></tbody></table><h3 id="编辑模式"><a href="#编辑模式" class="headerlink" title="编辑模式"></a>编辑模式</h3><p>在一般模式中无法编辑文件内容，需要按键一些按钮才能进入编辑模式，按键以及对应的含义如下：</p><table><thead><tr><th>按键</th><th>功能</th></tr></thead><tbody><tr><td>i</td><td>当前光标前</td></tr><tr><td>a</td><td>当前光标后</td></tr><tr><td>o</td><td>当前光标行的下一行</td></tr><tr><td>I</td><td>光标所在行的行首</td></tr><tr><td>A</td><td>光标所在行的行尾</td></tr><tr><td>O</td><td>当前光标行的上一行</td></tr></tbody></table><p>一般情况下使用<code>i</code>即可，退出编辑模式则使用<code>Esc</code></p><h3 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h3><p>在一般模式中，输入<code>: / ?</code>三个中的任意一个按键，可以进入命令模式。在命令模式中，可以完成一些命令的输入，常用的命令如下：</p><table><thead><tr><th>命令</th><th>功能</th></tr></thead><tbody><tr><td>:w</td><td>保存</td></tr><tr><td>:q</td><td>退出</td></tr><tr><td>:!</td><td>强制执行</td></tr><tr><td>&#x2F;要查找的词</td><td>n查找下一个，N查找上一个</td></tr><tr><td>:noh</td><td>取消高亮显示</td></tr><tr><td>:set nu</td><td>显示行号</td></tr><tr><td>:set nonu</td><td>关闭行号</td></tr><tr><td>:s&#x2F;old&#x2F;new</td><td>替换当前行匹配到的第一个old为new</td></tr><tr><td>:s&#x2F;old&#x2F;new&#x2F;g</td><td>替换当前行匹配到的所有old为new</td></tr><tr><td>:%s&#x2F;old&#x2F;new</td><td>替换文档中每一行匹配到的第一个old为new</td></tr><tr><td>:%s&#x2F;old&#x2F;new &#x2F;g</td><td>替换文档中匹配到的所有old为new</td></tr></tbody></table><h2 id="系统管理"><a href="#系统管理" class="headerlink" title="系统管理"></a>系统管理</h2><ul><li>进程（process）：计算机中一个正在执行的程序和命令</li><li>服务（service）：启动之后常驻内存的进程</li></ul><h3 id="系统管理相关的常用命令"><a href="#系统管理相关的常用命令" class="headerlink" title="系统管理相关的常用命令"></a>系统管理相关的常用命令</h3><table><thead><tr><th>命令</th><th>作用</th></tr></thead><tbody><tr><td>chkconfig –list</td><td>列出系统服务</td></tr><tr><td>service &lt;服务名&gt; status</td><td>查看某个服务</td></tr><tr><td>service &lt;服务名&gt; start</td><td>启动某个服务</td></tr><tr><td>service &lt;服务名&gt; stop</td><td>终止某个服务</td></tr><tr><td>service &lt;服务名&gt; restart</td><td>重启某个服务</td></tr><tr><td>systemctl status &lt;服务名&gt;</td><td>查看某个服务</td></tr><tr><td>systemctl start &lt;服务名&gt;</td><td>启动某个服务</td></tr><tr><td>systemctl stop &lt;服务名&gt;</td><td>终止某个服务</td></tr><tr><td>systemctl restart &lt;服务名&gt;</td><td>重启某个服务</td></tr><tr><td>systemctl enable &lt;服务名&gt;</td><td>开启服务自启动</td></tr><tr><td>systemctl disable &lt;服务名&gt;</td><td>关闭服务自启动</td></tr></tbody></table><h3 id="关机重启命令"><a href="#关机重启命令" class="headerlink" title="关机重启命令"></a>关机重启命令</h3><table><thead><tr><th>命令</th><th>作用</th></tr></thead><tbody><tr><td>sync</td><td>将数据由内存同步到硬盘中</td></tr><tr><td>halt</td><td>停机，关闭系统但是不断电</td></tr><tr><td>poweroff</td><td>关机，断电</td></tr><tr><td>reboot</td><td>重启</td></tr><tr><td>shutdown -h now</td><td>现在关机</td></tr><tr><td>shutdown -h 10</td><td>10分钟后关机</td></tr><tr><td>shutdown -h 12:34</td><td>预定时间在12：34关机</td></tr><tr><td>shutdown -r now</td><td>现在重启</td></tr><tr><td>shutdown -r 10</td><td>10分钟后重启</td></tr><tr><td>shutdown -h 12:34</td><td>预定时间在12：34重启</td></tr><tr><td>shutdown -c</td><td>取消预定关机操作</td></tr></tbody></table><h2 id="软件包管理"><a href="#软件包管理" class="headerlink" title="软件包管理"></a>软件包管理</h2><h1 id="常用Shell命令"><a href="#常用Shell命令" class="headerlink" title="常用Shell命令"></a>常用Shell命令</h1><h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><ul><li><code>man &lt;命令或配置文件&gt;</code> ：获得帮助信息</li><li><code>help 命令</code>：获取shell内置命令的帮助信息<ul><li>一部分基础功能的系统命令是直接内嵌在shell中的，系统加载启动之后会随着shell一起加载，常驻在系统内存中，这部分命令被称为内置命令；相应的其他命令被称为外部命令</li><li>可以使用<code>type 命令</code>来判断命令的类型</li></ul></li><li><code>命令 --help</code>：获取命令的帮助信息</li></ul><h2 id="文件目录类"><a href="#文件目录类" class="headerlink" title="文件目录类"></a>文件目录类</h2><table><thead><tr><th>命令</th><th>作用</th></tr></thead><tbody><tr><td>cd</td><td>进入目录</td></tr><tr><td>pwd</td><td>显示当前的绝对路径</td></tr><tr><td>ls</td><td>查看文件目录列表<br />-ls</td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr></tbody></table><h2 id="时间日期"><a href="#时间日期" class="headerlink" title="时间日期"></a>时间日期</h2><h2 id="用户管理"><a href="#用户管理" class="headerlink" title="用户管理"></a>用户管理</h2><h2 id="文件权限"><a href="#文件权限" class="headerlink" title="文件权限"></a>文件权限</h2><h2 id="磁盘分区"><a href="#磁盘分区" class="headerlink" title="磁盘分区"></a>磁盘分区</h2><h2 id="进程线程"><a href="#进程线程" class="headerlink" title="进程线程"></a>进程线程</h2><h2 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h2>]]></content>
+      
+      
+      <categories>
+          
+          <category> 操作系统 </category>
+          
+          <category> Linux </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 笔记 </tag>
+            
+            <tag> Linux </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Pandas基础笔记</title>
       <link href="/2022/06/27/Pandas%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/"/>
       <url>/2022/06/27/Pandas%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</url>
@@ -22,9 +51,9 @@
       
         <tags>
             
-            <tag> Pandas </tag>
-            
             <tag> python </tag>
+            
+            <tag> Pandas </tag>
             
         </tags>
       
