@@ -26,7 +26,7 @@
 <meta property="og:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Collention.png">
 <meta property="og:image" content="http://example.com/2022/06/27/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/Map.png">
 <meta property="article:published_time" content="2022-06-27T06:31:52.000Z">
-<meta property="article:modified_time" content="2022-06-27T06:58:12.841Z">
+<meta property="article:modified_time" content="2022-06-28T02:53:37.819Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Java">
@@ -266,7 +266,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          48k 字
+          47k 字
         
       </span>
     
@@ -278,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          399 分钟
+          393 分钟
         
       </span>
     
@@ -501,11 +501,21 @@
 <p><strong>5.类型转换</strong></p>
 <p>自动类型转换：按照精度向上自动转换（精度小 -&gt; 精度大）</p>
 <ul>
-<li><p>byte：把具体的数赋值给byte的时候，先判断该数是否在范围内，如果在范围内就可以进行复制；但是如果是将变量赋值给byte的话，则直接进行类型判断</p>
-</li>
-<li><p>&#96;&#96;&#96;java<br>byte a &#x3D; 10; &#x2F;&#x2F; 正确<br>int b &#x3D; 1;<br>byte c &#x3D; b; &#x2F;&#x2F; 错误</p>
-<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><br>- <span class="hljs-type">byte</span>（<span class="hljs-type">short</span>）、<span class="hljs-type">char</span>之间不会进行自动转换（<span class="hljs-type">char</span>直接到<span class="hljs-type">int</span>层面）<br><br>- <span class="hljs-type">byte</span>、<span class="hljs-type">short</span>、<span class="hljs-type">char</span>可以进行运算，在（单独或者混合）运算的时候直接提升到<span class="hljs-type">int</span>，<br><br>强制类型转换：需要加上强制转换符（），可能会造成精度降低或者溢出<br><br><br><br>**<span class="hljs-number">6.</span>基本数据类型和<span class="hljs-type">String</span>的转换**<br><br>基本数据类型转<span class="hljs-type">String</span>：**加双引号**<br><br>```java<br><span class="hljs-type">int</span> n1 = <span class="hljs-number">100</span>;<br><span class="hljs-type">String</span> n1S = n1 + <span class="hljs-string">&quot;&quot;</span>;<br></code></pre></td></tr></table></figure></li>
+<li>byte：把具体的数赋值给byte的时候，先判断该数是否在范围内，如果在范围内就可以进行复制；但是如果是将变量赋值给byte的话，则直接进行类型判断</li>
 </ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">byte</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>; <span class="hljs-comment">// 正确</span><br><span class="hljs-type">int</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-type">byte</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> b; <span class="hljs-comment">// 错误</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>byte（short）、char之间不会进行自动转换（char直接到int层面）</p>
+</li>
+<li><p>byte、short、char可以进行运算，在（单独或者混合）运算的时候直接提升到int，</p>
+</li>
+</ul>
+<p>强制类型转换：需要加上强制转换符（），可能会造成精度降低或者溢出</p>
+<p><strong>6.基本数据类型和String的转换</strong></p>
+<p>基本数据类型转String：<strong>加双引号</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">n1</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">n1S</span> <span class="hljs-operator">=</span> n1 + <span class="hljs-string">&quot;&quot;</span>;<br></code></pre></td></tr></table></figure>
+
 <p>String转基本数据类型：<strong>通过包装类某某调用parse某某方法</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;123&quot;</span>;<br><span class="hljs-type">int</span> <span class="hljs-variable">si</span> <span class="hljs-operator">=</span> Integer.parseInt(s);<br><span class="hljs-type">double</span> <span class="hljs-variable">sd</span> <span class="hljs-operator">=</span> Double.parseDouble(s);<br><span class="hljs-type">byte</span> <span class="hljs-variable">sb</span> <span class="hljs-operator">=</span> Byte.parseByte(s);<br></code></pre></td></tr></table></figure>
 
@@ -679,26 +689,32 @@
 <li><p>可以重载（overload）</p>
 </li>
 <li><p>可变参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">calculate</span><span class="hljs-params">(<span class="hljs-type">int</span>... nums)</span>&#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; nums.length; i++) &#123;<br>        res += nums[i];<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-comment">//基本语法：访问修饰符 返回类型 方法名(数据类型...形参名)</span><br><span class="hljs-comment">//可以接收多个参数</span><br><span class="hljs-comment">//使用可变参数的时候，可以将nums看作一个数组来使用</span><br></code></pre></td></tr></table></figure>
+
 <ul>
-<li><p>&#96;&#96;&#96;java<br>public int calculate(int… nums){<br>int res &#x3D; 0;<br>for (int i &#x3D; 0; i &lt; nums.length; i++) {<br>    res +&#x3D; nums[i];<br>}<br>return res;<br>}</p>
-<p>&#x2F;&#x2F;基本语法：访问修饰符 返回类型 方法名(数据类型…形参名)<br>&#x2F;&#x2F;可以接收多个参数<br>&#x2F;&#x2F;使用可变参数的时候，可以将nums看作一个数组来使用</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><br><span class="hljs-bullet">  -</span> 可变参数可以和普通类型的参数一起放在形参列表，但是必须保证可变参数在最后<br><br><span class="hljs-bullet">  -</span> 一个形参列表中只能有一个可变参数<br><br><span class="hljs-bullet">-</span> 作用域：全局变量有默认值、局部变量没有默认值、全局变量可以加修饰符、局部变量不可以加修饰符<br><br><span class="hljs-bullet">-</span> 同样具有<span class="hljs-code">`this`</span>关键字<br><br><br><br><span class="hljs-strong">**15.构造方法（构造器）**</span><br><br>构造方法完成初始化<br><br><span class="hljs-code">```java</span><br><span class="hljs-code">Person(my_name, my_age)&#123;</span><br><span class="hljs-code">    this.name = my_name;</span><br><span class="hljs-code">    this.age = my_age;</span><br><span class="hljs-code">&#125;</span><br></code></pre></td></tr></table></figure></li>
+<li><p>可变参数可以和普通类型的参数一起放在形参列表，但是必须保证可变参数在最后</p>
+</li>
+<li><p>一个形参列表中只能有一个可变参数</p>
+</li>
 </ul>
 </li>
-<li><p>构造器的修饰符可以默认，也可以是public、protected，不能是private</p>
+<li><p>作用域：全局变量有默认值、局部变量没有默认值、全局变量可以加修饰符、局部变量不可以加修饰符</p>
 </li>
-<li><p>没有返回值</p>
+<li><p>同样具有<code>this</code>关键字</p>
 </li>
-<li><p>方法名和类名一致</p>
-</li>
-<li><p>系统自动调用</p>
-</li>
-<li><p>构造方法可以进行重载</p>
-</li>
-<li><p>同样有默认的无参构造器，如果定义了自己的构造器，则默认的构造器会被覆盖，就不能使用默认的无参构造器了，如果要使用，需要显式定义</p>
-</li>
-<li><p>在构造器方法中可以调用其他构造器方法，使用<code>this(参数列表)</code></p>
+</ul>
+<p><strong>15.构造方法（构造器）</strong></p>
+<p>构造方法完成初始化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">Person(my_name, my_age)&#123;<br>    <span class="hljs-built_in">this</span>.name = my_name;<br>    <span class="hljs-built_in">this</span>.age = my_age;<br>&#125;<br></code></pre></td></tr></table></figure>
+
 <ul>
+<li>构造器的修饰符可以默认，也可以是public、protected，不能是private</li>
+<li>没有返回值</li>
+<li>方法名和类名一致</li>
+<li>系统自动调用</li>
+<li>构造方法可以进行重载</li>
+<li>同样有默认的无参构造器，如果定义了自己的构造器，则默认的构造器会被覆盖，就不能使用默认的无参构造器了，如果要使用，需要显式定义</li>
+<li>在构造器方法中可以调用其他构造器方法，使用<code>this(参数列表)</code><ul>
 <li>这个<code>this()</code><strong>必须在构造器中的第一行，所以最多只能有一个</strong></li>
 </ul>
 </li>
@@ -1137,11 +1153,12 @@
 </li>
 <li><p>如果都没有，则是默认值</p>
 </li>
-<li><p>&#96;&#96;&#96;java<br>class Person {<br>&#x2F;&#x2F;方法1，在类中直接赋值，id &#x3D; 1<br>public static int id &#x3D; 1;<br><br>&#x2F;&#x2F;方法2，在static代码块中赋初值，id &#x3D; 2<br>public static int id &#x3D; 1;<br>static {<br>    id &#x3D; 1;<br>}<br><br>&#x2F;&#x2F;方法3，不写，为默认值 id &#x3D; 0<br>public static int id;<br>}</p>
-<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey"><br>     <br><br><br><br>类方法（静态方法）：<br><br>```java<br>访问修饰符 static 数据返回类型 方法名()&#123;&#125;<br></code></pre></td></tr></table></figure></li>
 </ul>
-</li>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> &#123;<br>    <span class="hljs-comment">//方法1，在类中直接赋值，id = 1</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <br>    <span class="hljs-comment">//方法2，在static代码块中赋初值，id = 2</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">static</span> &#123;<br>        id = <span class="hljs-number">1</span>;<br>    &#125;<br>    <br>    <span class="hljs-comment">//方法3，不写，为默认值 id = 0</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> id;<br>&#125;<br></code></pre></td></tr></table></figure></li>
 </ol>
+<p>类方法（静态方法）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">访问修饰符 <span class="hljs-keyword">static</span> 数据返回类型 方法名()&#123;&#125;<br></code></pre></td></tr></table></figure>
+
 <p>细节：</p>
 <ol>
 <li>当方法中不涉及到任何和对象实例相关的成员，不生成实例也可以使用，则可以将方法设计成静态方法，提高开发效率</li>
@@ -2890,10 +2907,76 @@
 </tr>
 </tbody></table>
 </li>
-<li><p>&#96;&#96;&#96;java<br>&#x2F;&#x2F; 读取配置文件<br>Properties p &#x3D; new Properties();<br>p.load(new FileReader(path));<br>p.list(System.out);<br>p.getProperty(“user”);</p>
-<p>&#x2F;&#x2F; 修改配置文件<br>&#x2F;&#x2F; 没有key则创建，有key则修改<br>p.setProperty(“pwd”, “123”);<br>p.store(new FileOutputSteam(path), null);<br>&#x2F;&#x2F;这里的null是注释，可以传入字符串</p>
-<figure class="highlight node-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs node-repl"><br><br>## 十一.网络编程<br><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">**网络相关的简单前置知识**：</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-title class_">IPV4</span>：使用<span class="hljs-number">4</span>个字节来表示，一个字节的范围是<span class="hljs-number">0</span>~<span class="hljs-number">255</span></span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-title class_">IPV6</span>：使用的是<span class="hljs-number">128</span>位来表示地址（<span class="hljs-number">16</span>个字节），一般使用十六进制来表示</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-title class_">IPV4</span>的地址分类：</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">- A类：<span class="hljs-number">0</span>+<span class="hljs-number">7</span>位网络号+<span class="hljs-number">24</span>位主机号</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">- B类：<span class="hljs-number">10</span>+<span class="hljs-number">14</span>位网络号+<span class="hljs-number">16</span>位主机号</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">- C类：<span class="hljs-number">110</span>+<span class="hljs-number">21</span>位网络号+<span class="hljs-number">8</span>位主机号</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">- D类：<span class="hljs-number">1110</span>+<span class="hljs-number">28</span>位多播组号</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">- E类：<span class="hljs-number">11110</span>+<span class="hljs-number">27</span>位留待后用</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">端口号：用于标识计算机上某个特定的网络程序，以整数形式表示，范围为<span class="hljs-number">0</span>~<span class="hljs-number">65535</span></span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">- <span class="hljs-number">0</span>~<span class="hljs-number">1024</span>已经被占用了，比如 ssh <span class="hljs-number">22</span>、ftp <span class="hljs-number">21</span>、smtp <span class="hljs-number">25</span>、http <span class="hljs-number">80</span></span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">- 常见的网络程序端口号：tomcat（<span class="hljs-number">8080</span>）、mysql（<span class="hljs-number">3306</span>）、oracle（<span class="hljs-number">1521</span>）、sqlserver（<span class="hljs-number">1433</span>） </span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-variable constant_">TCP</span>/<span class="hljs-variable constant_">IP</span>协议：传输控制协议</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-variable constant_">TCP</span>协议：传输控制协议</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">1.</span> 使用协议前，必须先建立<span class="hljs-variable constant_">TCP</span>连接，形成数据传输通道</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">2.</span> 传输前，采用三次握手的方式，是**可靠**的</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">   - （A -&gt; B）A：你听得到吗</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">   - （B -&gt; A）B：我听得到，你听得到吗</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript">   - （A -&gt; B）A：我听得到</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">3.</span> <span class="hljs-variable constant_">TCP</span>协议进行通行的两个应用进程：客户端、服务端</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">4.</span> 在连接中可以进行大数据量的传输</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">5.</span> 传输完毕，需要释放已建立的连接，使用四次挥手，**效率低**</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-variable constant_">UDP</span>协议：用户数据协议</span><br><span class="hljs-meta">&gt;</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">1.</span> 将数据、源、目的封装成数据包，不需要建立连接</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">2.</span> 每个数据包的大小限制在64k内，不适合传输大量数据</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">3.</span> 因为无需连接，所以是**不可靠**的</span><br><span class="hljs-meta">&gt;</span> <span class="language-javascript"><span class="hljs-number">4.</span> 发送数据结束的时候不需要释放资源，**速度快**</span><br><br>**InetAddress类的使用**<br><br>| InetAddress类            |                                      |<br>| ------------------------ | ------------------------------------ |<br>| getLocalHost【静态方法】 | 获取本机InetAddress对象              |<br>| getByName【静态方法】    | 根据指定主机名或者域名获取ip地址对象 |<br>| getHostName              | 获取InetAddress对象的主机名          |<br>| getHostAddress           | 获取InerAddress对象的地址            |<br><br>```java<br>InetAddress localHost = InetAddress.getLocalHost();<br>System.out.println(localHost);<br><br>InetAddress host = InetAddress.getByName(&quot;www.bilibili.com&quot;);<br>System.out.println(host);<br></code></pre></td></tr></table></figure></li>
 </ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 读取配置文件</span><br><span class="hljs-type">Properties</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>p.load(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>(path));<br>p.list(System.out);<br>p.getProperty(<span class="hljs-string">&quot;user&quot;</span>);<br><br><span class="hljs-comment">// 修改配置文件</span><br><span class="hljs-comment">// 没有key则创建，有key则修改</span><br>p.setProperty(<span class="hljs-string">&quot;pwd&quot;</span>, <span class="hljs-string">&quot;123&quot;</span>);<br>p.store(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputSteam</span>(path), <span class="hljs-literal">null</span>);<br><span class="hljs-comment">//这里的null是注释，可以传入字符串</span><br></code></pre></td></tr></table></figure>
+
+
+<h2 id="十一-网络编程"><a href="#十一-网络编程" class="headerlink" title="十一.网络编程"></a>十一.网络编程</h2><blockquote>
+<p><strong>网络相关的简单前置知识</strong>：</p>
+<p>IPV4：使用4个字节来表示，一个字节的范围是0~255</p>
+<p>IPV6：使用的是128位来表示地址（16个字节），一般使用十六进制来表示</p>
+<p>IPV4的地址分类：</p>
+<ul>
+<li>A类：0+7位网络号+24位主机号</li>
+<li>B类：10+14位网络号+16位主机号</li>
+<li>C类：110+21位网络号+8位主机号</li>
+<li>D类：1110+28位多播组号</li>
+<li>E类：11110+27位留待后用</li>
+</ul>
+<p>端口号：用于标识计算机上某个特定的网络程序，以整数形式表示，范围为0~65535</p>
+<ul>
+<li>0~1024已经被占用了，比如 ssh 22、ftp 21、smtp 25、http 80</li>
+<li>常见的网络程序端口号：tomcat（8080）、mysql（3306）、oracle（1521）、sqlserver（1433）</li>
+</ul>
+<p>TCP&#x2F;IP协议：传输控制协议</p>
+<p>TCP协议：传输控制协议</p>
+<ol>
+<li>使用协议前，必须先建立TCP连接，形成数据传输通道</li>
+<li>传输前，采用三次握手的方式，是<strong>可靠</strong>的<ul>
+<li>（A -&gt; B）A：你听得到吗</li>
+<li>（B -&gt; A）B：我听得到，你听得到吗</li>
+<li>（A -&gt; B）A：我听得到</li>
+</ul>
+</li>
+<li>TCP协议进行通行的两个应用进程：客户端、服务端</li>
+<li>在连接中可以进行大数据量的传输</li>
+<li>传输完毕，需要释放已建立的连接，使用四次挥手，<strong>效率低</strong></li>
+</ol>
+<p>UDP协议：用户数据协议</p>
+<ol>
+<li>将数据、源、目的封装成数据包，不需要建立连接</li>
+<li>每个数据包的大小限制在64k内，不适合传输大量数据</li>
+<li>因为无需连接，所以是<strong>不可靠</strong>的</li>
+<li>发送数据结束的时候不需要释放资源，<strong>速度快</strong></li>
+</ol>
+</blockquote>
+<p><strong>InetAddress类的使用</strong></p>
+<table>
+<thead>
+<tr>
+<th>InetAddress类</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getLocalHost【静态方法】</td>
+<td>获取本机InetAddress对象</td>
+</tr>
+<tr>
+<td>getByName【静态方法】</td>
+<td>根据指定主机名或者域名获取ip地址对象</td>
+</tr>
+<tr>
+<td>getHostName</td>
+<td>获取InetAddress对象的主机名</td>
+</tr>
+<tr>
+<td>getHostAddress</td>
+<td>获取InerAddress对象的地址</td>
+</tr>
+</tbody></table>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">InetAddress</span> <span class="hljs-variable">localHost</span> <span class="hljs-operator">=</span> InetAddress.getLocalHost();<br>System.out.println(localHost);<br><br><span class="hljs-type">InetAddress</span> <span class="hljs-variable">host</span> <span class="hljs-operator">=</span> InetAddress.getByName(<span class="hljs-string">&quot;www.bilibili.com&quot;</span>);<br>System.out.println(host);<br></code></pre></td></tr></table></figure>
+
 <p><strong>Socket</strong></p>
 <p>Socket的基本介绍：</p>
 <ol>
