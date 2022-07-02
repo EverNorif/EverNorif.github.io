@@ -4,6 +4,66 @@
   
   
   <entry>
+    <title>Hive学习笔记-入门(2)-Hive概述以及集群搭建</title>
+    <link href="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/"/>
+    <url>/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Hive概述"><a href="#Hive概述" class="headerlink" title="Hive概述"></a>Hive概述</h1><p>Hive是一款建立在Hadoop之上的开源<strong>数据仓库</strong>系统，可以将存储在<strong>HDFS</strong>中的<strong>结构化</strong>、<strong>半结构化</strong>的数据文件<strong>映射为一张数据库表</strong>。之后基于表提供了一种类SQL的查询模型，称为<strong>Hive查询语言（HQL）</strong>，用于访问和分析存储在HDFS中的大型数据集</p><p>Hive的核心是将HQL转换成MapReduce程序（后续也提供了其他的计算引擎），然后将程序提交的Hadoop集群中执行</p><p>使用Hive的好处：</p><ol><li>直接使用MapReduce编程，学习成本较高。利用MapReduce实现复杂查询逻辑开发难度较大</li><li>使用Hive提供的HQL语法，学习成本较低，更加简单，容易上手</li><li>支持自定义函数，功能扩展很方便</li><li>依赖于Hadoop，擅长于存储分析海量数据集</li></ol><p>从功能上来说，数据仓库软件至少需要具备<strong>存储数据</strong>和<strong>分析数据</strong>的能力，Hive作为一款大数据时代的数据仓库软件，当然也具备这两种能力，但是这并不是它自己实现的，而是借助于Hadoop来实现的。<strong>Hive利用HDFS来存储数据，利用MapReduce来查询和分析数据</strong>。而Hive本身最大的意义在于能够<strong>让用户专注于编写HQL，然后让Hive将其转换成MapReduce程序，完成对数据的分析</strong></p><h1 id="Hive架构和组件"><a href="#Hive架构和组件" class="headerlink" title="Hive架构和组件"></a>Hive架构和组件</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>考虑Hive完成的功能，它能够将HDFS上的数据文件映射成为一张表，并在其上提供HQL的查询功能。</p><ul><li>数据文件到表的映射，需要<strong>记录文件和表之间的对应关系</strong>，这类数据我们称之为元数据信息（描述数据的数据）。具体来说，元信息中可能需要记录表的位置信息、字段的顺序信息、字段之间的分隔符等</li><li>HQL的查询功能，需要提供SQL的语法解析和编译功能。用户写完SQL之后，Hive需要对语句进行语法校验，并根据记录的元数据信息来解读语句的含义，指定执行计划，并将执行计划转换成MapReduce程序来执行，然后将执行结果封装返回给用户</li></ul><p>总体来说，Hive架构如下：</p><img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E6%9E%B6%E6%9E%84.png" class="" title="Hive架构"><p>用户编写查询语句之后，Hive对其进行语法解析，语句编译和执行计划优化。在语句编译的过程中，需要使用到元数据，因此需要从存储元数据的数据库中查询对应的信息。之后Hive将语句转换成MapReduce程序后提交给Yarn进行执行，得到结果后返回给用户。</p><h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p>Hive的组件主要包括如下的内容，如用户接口、元数据存储、Driver驱动程序、执行引擎等，图中还包括与集群的交互等信息</p><img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E7%BB%84%E4%BB%B6.png" class="" title="Hive组件"><ul><li><p>用户接口：包括命令行接口CLI、JDBC&#x2F;ODBC、WebGUI等。其中，Hive中的Thrift服务器允许外部客户端通过网络与Hive进行交互，类似于JDBC或者ODBC协议；WebGUI则是通过浏览器来访问Hive</p></li><li><p>元数据存储：Hive的元数据通常是存储在关系数据库如MySQL或者derby中。Hive中的元数据包括表的名字、表的列和分区及其属性、表的属性、表数据所在目录等</p></li><li><p>Driver驱动程序：包括语法解析器、计划编译器、优化器、执行器等，主要完成HQL查询语句的词法分析、语法分析、编译、优化，以及查询计划的生成，生成的查询计划存储在HDFS中，并有执行引擎调用执行</p></li><li><p>执行引擎：Hive本身并不处理数据文件，而是通过执行引擎来处理。当前Hive支持MapReduce、Tez、Spark三种执行引擎</p></li></ul><blockquote><p>Tez：是Apache最新的支持DAG作业的开源计算框架，它可以将多个有依赖的作业转换为一个作业从而大幅提升DAG作业的性能。</p></blockquote><h1 id="Hive数据模型"><a href="#Hive数据模型" class="headerlink" title="Hive数据模型"></a>Hive数据模型</h1><p>Hive中的数据模型类似于关系型数据库的库表结构，在此基础上还有自己特有的模型，Hive中的数据可以在粒度级别上分成三类：Table表、Partition分区和Bucket分桶。</p><p><strong>Database数据库</strong>：</p><ul><li>Hive作为一个数据仓库，其中也有数据库的概念。每个数据库下有属于自己的表。默认存在数据库为default</li><li>Hive中的数据都是存储在HDFS上的，存储目录和数据模型的对应也比较清晰。默认存在根目录，可以在<code>hive-site.xml</code>中定义参数<code>hive.metastore.warehouse.dir</code>来指定，默认值为<code>/user/hive/warehouse</code></li><li>每个数据库在根目录下占据一项，以数据库名称命名，存储路径为<code>$&#123;hive.metastore.warehouse.dir&#125;/databasename.db</code></li></ul><p><strong>Table表</strong>：</p><ul><li>Hive表于类似于关系数据库中的表。Hive中表所对应的数据通常存储在HDFS中，表相关的元数据存储在另外的RDBMS中</li><li>Hive中表数据在HDFS上的存储路径为：<code>$&#123;hive.metastore.warehouse.dir&#125;/databasename.db/tablename</code></li><li>默认数据库中的表直接存放在根目录下</li></ul><p><strong>Partition分区</strong>：</p><ul><li>Partition分区是对Hive的一种优化手段，指的是根据分区列的值来将表划分为不同的分区（例如按照时间列对表进行划分），这样可以更快地对指定分区数据进行查询</li><li>分区在存储层面上的表现是对应表目录下的子文件夹</li><li>一个文件夹表示一个分区，子文件的命名标准为<code>分区列=分区值</code></li><li>Hive支持分区下继续创建分区，即多重分区</li></ul><p><strong>Bucket分桶</strong>：</p><ul><li>Bucket分桶也是Hive的一种优化手段，指的是根据表中字段的值，经过hash计算规则之后将数据文件划分成若干个小文件</li><li>分桶的好处是可以优化join查询和方便抽样查询</li><li>分桶在存储层面的表示是同一个表目录下数据根据hash散列之后变成了多个文件</li></ul><blockquote><p>Hive虽然具有RDBMS数据库的外表，包括数据模型、SQL语法都十分相似，但应用场景却完全不同。Hive只适合用来做海量数据的离线分析。Hive的定位是数据仓库，面向分析的OLAP系统。Hive不是大型数据库，也不是要取代MySQL承担业务数据处理。</p></blockquote><h1 id="Hive部署"><a href="#Hive部署" class="headerlink" title="Hive部署"></a>Hive部署</h1><h2 id="元数据和元数据服务"><a href="#元数据和元数据服务" class="headerlink" title="元数据和元数据服务"></a>元数据和元数据服务</h2><p>元数据：Metadata，又称为中介数据、中继数据，指的是描述数据的数据。它主要是用来描述数据的属性，用来支持相关功能，如指示存储位置、历史数据、资源查找、文件记录等</p><p><strong>Hive Metadata</strong>即Hive中的元数据，其中包含了Hive创建的database、table、表位置、类型、属性、字段顺序、字段类型等元信息。<strong>Hive元数据存储在关系型数据库中</strong>，如Hive内置的Derby，或第三方数据库如MySQL等</p><p><strong>Hive Metastore</strong>即元数据服务，它的作用是管理元数据，对外暴露服务地址，让各种客户端通过连接Metastore服务，再由Metastore去连接MySQL数据库来进行元数据的存取，相当于对元数据的操作有了一个统一的接口</p><blockquote><p>有了Meatstore服务，就可以有多个客户端同时连接，这些客户端不需要知道MySQL数据库的用户名和密码，只需要连接Metastore服务即可，在某种程度上保证了Hive元数据的安全</p></blockquote><h2 id="Hive部署-1"><a href="#Hive部署-1" class="headerlink" title="Hive部署"></a>Hive部署</h2><p>Hive的部署有三种模式，内嵌模式、本地模式和远程模式。三种模式的区分主要在于两点：</p><ol><li>Metastore服务是否需要单独配置，单独启动</li><li>Metadata是存储在Hive内置的Derby中，还是第三方的RDBMS如MySQL中</li></ol><table><thead><tr><th></th><th>内嵌模式</th><th>本地模式</th><th>远程模式</th></tr></thead><tbody><tr><td>Metastore单独配置、启动</td><td>❌</td><td>❌</td><td>✔</td></tr><tr><td>Metadata存储介质</td><td>Derby</td><td>MySQL</td><td>MySQL</td></tr></tbody></table><blockquote><p>Hadoop和Hive之间的版本对应关系可以参考：<a href="https://hive.apache.org/downloads.html">Downloads (apache.org)</a></p><p>目前集群中使用的Hadoop版本为3.1.3，因此这里选择使用的Hive版本为3.1.2</p></blockquote><h3 id="内嵌模式"><a href="#内嵌模式" class="headerlink" title="内嵌模式"></a>内嵌模式</h3><h3 id="本地模式"><a href="#本地模式" class="headerlink" title="本地模式"></a>本地模式</h3><h3 id="远程模式"><a href="#远程模式" class="headerlink" title="远程模式"></a>远程模式</h3><h2 id="Hive客户端"><a href="#Hive客户端" class="headerlink" title="Hive客户端"></a>Hive客户端</h2>]]></content>
+    
+    
+    <categories>
+      
+      <category>大数据</category>
+      
+      <category>Hive</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>笔记</tag>
+      
+      <tag>Hive</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Hive学习笔记-入门(1)-数据仓库基础理论</title>
+    <link href="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/"/>
+    <url>/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/</url>
+    
+    <content type="html"><![CDATA[<h1 id="数据仓库概念"><a href="#数据仓库概念" class="headerlink" title="数据仓库概念"></a>数据仓库概念</h1><p>数据仓库（Data Warehouse，简称为数仓，DW），指的是用于<strong>存储</strong>、<strong>分析</strong>、<strong>报告</strong>的数据系统。它的目的是构建<strong>面向分析</strong>的集成化数据环境，分析结果为企业提供决策和支持。</p><ul><li>数据仓库本身<strong>不生产任何数据</strong>，其数据来源于不同的外部系统</li><li>数据仓库自身不需要消费任何数据，其结果开放给各个外部应用使用</li></ul><p>数据仓库的产生对应于企业对于数据分析的需要。数据仓库为了分析数据而来，分析的结果为企业决策提供支撑。在企业中，数据信息往往分为操作型记录的保存和分析型决策的指定。操作性记录即记录用户的操作信息，联机事务处理系统（OLTP）可以用来满足该业务的需求，前台接收的用户数据可以立即传送到后台进行处理，并在很短的时间内给出处理结果。分析型决策指定信息，即需要一个面向分析、支持分析的系统，对应成为联机分析处理系统（OLAP），数据仓库就是OLAP的一种。</p><blockquote><p>联机<strong>事务</strong>处理OLTP（Online <strong>Transaction</strong> Processing）</p><ul><li>主要目标是做数据处理，针对具体业务在数据库联机中的日常操作，通常对少数记录进行查询，修改等</li><li>用户较为关心操作的响应时间、数据的安全性、完整性、并发支持的用户数等</li><li>传统的关系型数据库是数据管理的主要手段</li></ul><p>联机<strong>分析</strong>处理OLAP（Online <strong>Analytical</strong> Processing）</p><ul><li>主要用于分析型处理，目标为数据分析</li><li>针对某些主体的历史数据进行复杂的多维分析，来支持管理和决策</li><li>数据仓库是OLAP系统的一个典型示例，主要用于数据分析</li></ul><table><thead><tr><th></th><th>OLTP</th><th>OLAP</th></tr></thead><tbody><tr><td>数据源</td><td>日常运行的业务数据</td><td>整合来自多个数据源的数据，可能包括OLTP和外部数据来源</td></tr><tr><td>目的</td><td>面向应用，面向业务，支撑事务</td><td>面向分析，支持分析决策</td></tr><tr><td>焦点</td><td>当下</td><td>主要面向历史数据</td></tr><tr><td>任务</td><td>读写操作</td><td>大量读操作，少量写操作</td></tr><tr><td>响应时间</td><td>很快，毫秒级别</td><td>较慢（秒、分钟、小时、天都有可能）</td></tr><tr><td>数据量</td><td>小数据量（MB，GB）</td><td>大数据量（TB、MB）</td></tr><tr><td>典型应用</td><td>关系型数据库</td><td>数据仓库</td></tr></tbody></table></blockquote><p>数据库和数据仓库是两个概念，它们的区别实际上也是OLTP和OLAP的区别</p><ul><li>数据仓库不是大型的数据库，虽然数据仓库存储数据规模大</li><li>数据仓库的出现，并不是要取代数据库</li><li>数据库是面向事务的设计，数据仓库是面向主题设计的</li><li>数据库一般存储业务数据，数据仓库存储的一般是历史数据</li><li>数据库是为捕获数据而设计，数据仓库是为分析数据而设计</li></ul><p>数据仓库概念中，还会涉及到数据集市的概念。可以将数据集市看作是小型的数据仓库。一般在企业中，数据仓库（Data Warehouse）是面向整个企业的数据，而数据集市（Data Mart）是面向单个部门的。数据集市通常只涉及一个主题或者领域，相比数据仓库更小但是更加具体，更加易于管理和维护，有更灵活的结构。</p><h1 id="数据仓库主要特征"><a href="#数据仓库主要特征" class="headerlink" title="数据仓库主要特征"></a>数据仓库主要特征</h1><p>数据仓库的主要特征包括面向主题、集成性、非易失性和时变性。</p><p>面向主题性：</p><ul><li>在数据库中，最大的特点是<strong>面向应用进行数据的组织</strong>，各个业务系统可能是相互分离的。</li><li>数据仓库则是面向主题的。主题是一个抽象的概念，是<strong>较高层次</strong>上企业信息系统中的数据综合、归类并进行分析利用的抽象。在逻辑意义上，它是对应企业中<strong>某一宏观分析领域所涉及的分析对象</strong>。</li><li>操作型处理（传统数据）对数据的划分并不适用于决策分析。而基于主题组织的数据则不同，它们被划分为各自独立的领域，每个领域有各自的逻辑内涵但互不交叉，在抽象层次上对数据进行完整、一致和准确的描述。</li></ul><p>集成性：</p><ul><li>集成性和面向主体性相关，确定主题之后，需要获取和主题相关的数据。这部分数据可能会分布在多个操作性系统中，彼此之间是分散、独立、异构的</li><li>数据在进入数据仓库之前，需要经过统一的处理，对数据进行抽取、清理、转换和汇总。</li></ul><p>非易失性：</p><ul><li>数据仓库是分析数据的平台，而不是创造数据的平台。数据进入数据仓库之后，稳定并且不会改变</li><li>数据仓库中的数据反映的是一段相当长时间内历史数据的综合</li><li>数据进入数据仓库之后，一般情况下会被长时间保留。数据仓库中一般有大量的查询操作，但是修改和删除操作很少</li></ul><p>时变性：</p><ul><li>数据仓库包含各种粒度的历史数据，可能和某个特定日期、星期、月份、季度或者年份有关</li><li>数据仓库中的数据并不是一成不变的，其中的数据应该随着时间而更新，以适应决策的需要</li></ul><h1 id="数据仓库分层架构"><a href="#数据仓库分层架构" class="headerlink" title="数据仓库分层架构"></a>数据仓库分层架构</h1><p>数据仓库的构建一般会遵循分层的架构。每个企业根据自己的业务需求可以分成不同的层次。但是最基础的分层思想，理论上分为三个层：操作型数据层（<strong>ODS</strong>）、数据仓库层(<strong>DW</strong>)和数据应用层(<strong>DA</strong>)。</p><ul><li><p>ODS层（Operation Data Store）</p><ul><li><p>操作型数据层，也被称为源数据层、数据引入层、数据暂存层、临时缓存层</p></li><li><p>此层将未经处理的原始数据存放至数据仓库系统，结构上和与源数据保持一致，是数据仓库的临时准备区</p></li><li><p>主要完成基础数据引入到数仓的职责，和数据源系统进行解耦合，同时记录基础数据的历史变化</p></li></ul></li><li><p>DW层（Data Warehouse）</p><ul><li><p>数据仓库层，由ODS层的数据加工而成</p></li><li><p>主要完成数据加工与整合，建立一致性的维度，构建可以复用的面向分析和统计的明细事实表，汇总公共粒度的指标等</p></li></ul></li><li><p>DA层（Data Application）</p><ul><li><p>数据应用层，面向最终用户，面向业务定制提供给产品和数据分析使用的数据</p></li><li><p>可能包括前端报表、分析图表、KPI、仪表盘、数据挖掘等分析</p></li></ul></li></ul><p>数据仓库分层的主要原因是在管理数据的时候，能够对数据有一个更加清晰的掌控</p><ul><li>清晰的数据结构：每个数据分层都有它的作用域，在使用表的时候能够更加方便地定位和理解</li><li>数据血缘追踪：举例来说，如果最终得到的一张表出现了问题，我们能够根据数据血缘快速定位到问题</li><li>减少重复开发：规范数据分层，开发一些通用的中间层数据，能够减少极大的重复计算</li><li>复杂问题简单化：将复杂的问题分解成多个步骤，每一层只处理单一的步骤，比较简单和容易理解</li><li>屏蔽原始数据的异常：屏蔽业务的影响，不必改一次业务就需要重新接入数据</li></ul><p>在数据仓库分层架构中，还存在一个ETL的操作。数据仓库中，从各个数据源获取数据以及在数据仓库中的数据转换和流动都可以认为是ETL（抽取Extract、转换Transfer、装载Load），但是在实际操作中，将数据加载到数据仓库中产生了两种不同的做法：ETL和ELT</p><p>ETL：首先从数据源中提取数据，这些数据源通常是事务性数据库。数据保存在临时暂存数据库中，然后执行转换操作，将数据结构化并转换成适合目标数据仓库系统的形式，然后将结构化数据加载到仓库中以便分析</p><p>ELT：数据从数据源中提取之后立即加载，没有专门的临时数据库。这也就是说数据会立即加载到单一的集中存储库中，数据在数据仓库系统中进行转换。大数据时代的数仓中，这个特点非常明显</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>大数据</category>
+      
+      <category>Hive</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>笔记</tag>
+      
+      <tag>Hive</tag>
+      
+      <tag>数据仓库</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Shell基础学习笔记</title>
     <link href="/2022/06/29/Shell%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     <url>/2022/06/29/Shell%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
@@ -82,9 +142,9 @@
     
     <tags>
       
-      <tag>python</tag>
-      
       <tag>Pandas</tag>
+      
+      <tag>python</tag>
       
     </tags>
     
