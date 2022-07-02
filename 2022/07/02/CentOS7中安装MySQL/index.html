@@ -16,26 +16,23 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Hive概述内容主要包括Hive的相关基本概念、Hive架构、Hive数据模型等。之后介绍了Hive中的元数据以及集群搭建的过程，在过程中介绍了metastore的三种配置方式，以及Hive的不同客户端。最后初步体验了Hive中的功能，包括类SQL的命令语句和对HDFS中结构化数据的映射。">
+    <meta name="description" content="记录了在CentOS7中安装MySQL的过程。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hive学习笔记-入门(2)-Hive概述以及集群搭建">
-<meta property="og:url" content="http://example.com/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:title" content="CentOS7中安装MySQL">
+<meta property="og:url" content="http://example.com/2022/07/02/CentOS7%E4%B8%AD%E5%AE%89%E8%A3%85MySQL/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="Hive概述内容主要包括Hive的相关基本概念、Hive架构、Hive数据模型等。之后介绍了Hive中的元数据以及集群搭建的过程，在过程中介绍了metastore的三种配置方式，以及Hive的不同客户端。最后初步体验了Hive中的功能，包括类SQL的命令语句和对HDFS中结构化数据的映射。">
+<meta property="og:description" content="记录了在CentOS7中安装MySQL的过程。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E6%9E%B6%E6%9E%84.png">
-<meta property="og:image" content="http://example.com/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E7%BB%84%E4%BB%B6.png">
-<meta property="article:published_time" content="2022-07-02T10:44:40.000Z">
-<meta property="article:modified_time" content="2022-07-02T12:37:50.531Z">
+<meta property="article:published_time" content="2022-07-02T13:25:01.000Z">
+<meta property="article:modified_time" content="2022-07-02T13:56:42.903Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="笔记">
-<meta property="article:tag" content="Hive">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E6%9E%B6%E6%9E%84.png">
   
   
   
-  <title>Hive学习笔记-入门(2)-Hive概述以及集群搭建 - EverNorif</title>
+  <title>CentOS7中安装MySQL - EverNorif</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -242,7 +239,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Hive学习笔记-入门(2)-Hive概述以及集群搭建"></span>
+            <span id="subtitle" data-typed-text="CentOS7中安装MySQL"></span>
           
         </div>
 
@@ -253,7 +250,7 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-07-02 18:44" pubdate>
+        <time datetime="2022-07-02 21:25" pubdate>
           2022年7月2日 晚上
         </time>
       </span>
@@ -266,7 +263,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.1k 字
+          1.2k 字
         
       </span>
     
@@ -278,7 +275,7 @@
         
         
           <!-- compatible with older versions-->
-          26 分钟
+          10 分钟
         
       </span>
     
@@ -320,112 +317,20 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Hive学习笔记-入门(2)-Hive概述以及集群搭建</h1>
+            <h1 style="display: none">CentOS7中安装MySQL</h1>
             
             <div class="markdown-body">
               
-              <h1 id="Hive概述"><a href="#Hive概述" class="headerlink" title="Hive概述"></a>Hive概述</h1><p>Hive是一款建立在Hadoop之上的开源<strong>数据仓库</strong>系统，可以将存储在<strong>HDFS</strong>中的<strong>结构化</strong>、<strong>半结构化</strong>的数据文件<strong>映射为一张数据库表</strong>。之后基于表提供了一种类SQL的查询模型，称为<strong>Hive查询语言（HQL）</strong>，用于访问和分析存储在HDFS中的大型数据集</p>
-<p>Hive的核心是将HQL转换成MapReduce程序（后续也提供了其他的计算引擎），然后将程序提交的Hadoop集群中执行</p>
-<p>使用Hive的好处：</p>
-<ol>
-<li>直接使用MapReduce编程，学习成本较高。利用MapReduce实现复杂查询逻辑开发难度较大</li>
-<li>使用Hive提供的HQL语法，学习成本较低，更加简单，容易上手</li>
-<li>支持自定义函数，功能扩展很方便</li>
-<li>依赖于Hadoop，擅长于存储分析海量数据集</li>
-</ol>
-<p>从功能上来说，数据仓库软件至少需要具备<strong>存储数据</strong>和<strong>分析数据</strong>的能力，Hive作为一款大数据时代的数据仓库软件，当然也具备这两种能力，但是这并不是它自己实现的，而是借助于Hadoop来实现的。<strong>Hive利用HDFS来存储数据，利用MapReduce来查询和分析数据</strong>。而Hive本身最大的意义在于能够<strong>让用户专注于编写HQL，然后让Hive将其转换成MapReduce程序，完成对数据的分析</strong></p>
-<h1 id="Hive架构和组件"><a href="#Hive架构和组件" class="headerlink" title="Hive架构和组件"></a>Hive架构和组件</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>考虑Hive完成的功能，它能够将HDFS上的数据文件映射成为一张表，并在其上提供HQL的查询功能。</p>
-<ul>
-<li>数据文件到表的映射，需要<strong>记录文件和表之间的对应关系</strong>，这类数据我们称之为元数据信息（描述数据的数据）。具体来说，元信息中可能需要记录表的位置信息、字段的顺序信息、字段之间的分隔符等</li>
-<li>HQL的查询功能，需要提供SQL的语法解析和编译功能。用户写完SQL之后，Hive需要对语句进行语法校验，并根据记录的元数据信息来解读语句的含义，指定执行计划，并将执行计划转换成MapReduce程序来执行，然后将执行结果封装返回给用户</li>
-</ul>
-<p>总体来说，Hive架构如下：</p>
-<img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E6%9E%B6%E6%9E%84.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Hive架构">
+              <h1 id="安装流程"><a href="#安装流程" class="headerlink" title="安装流程"></a>安装流程</h1><p>（在下面的流程中可能会涉及到需要root权限的地方，使用sudo执行命令即可）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">检查当前系统是否安装过MySQL</span><br>[syh@hadoop102 ~]$ rpm -qa | grep mariadb<br>mariadb-libs-5.5.56-2.el7.x86_64<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">如果安装过则进行卸载</span><br>sudo rpm -e --nodeps mariadb-libs<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">在/opt/software上创建mysql文件夹，作为后续安装的目录</span><br><span class="hljs-meta"># </span><span class="language-bash">将MySQL安装包上传到该目录下</span><br><span class="hljs-meta"># </span><span class="language-bash">解压MySQL安装包</span><br>tar -xvf mysql-5.7.29-1.el7.x86_64.rpm-bundle.tar<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">在安装目录下执行rpm安装</span><br>sudo rpm -ivh mysql-community-common-5.7.29-1.el7.x86_64.rpm mysql-community-libs-5.7.29-1.el7.x86_64.rpm mysql-community-client-5.7.29-1.el7.x86_64.rpm mysql-community-server-5.7.29-1.el7.x86_64.rpm<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">如果是最小化安装的话可能会报错，需要先安装缺少的依赖</span><br>yum -y install libaio<br></code></pre></td></tr></table></figure>
 
-<p>用户编写查询语句之后，Hive对其进行语法解析，语句编译和执行计划优化。在语句编译的过程中，需要使用到元数据，因此需要从存储元数据的数据库中查询对应的信息。之后Hive将语句转换成MapReduce程序后提交给Yarn进行执行，得到结果后返回给用户。</p>
-<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p>Hive的组件主要包括如下的内容，如用户接口、元数据存储、Driver驱动程序、执行引擎等，图中还包括与集群的交互等信息</p>
-<img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E7%BB%84%E4%BB%B6.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Hive组件">
+<p>这样MySQL已经安装好了，下面进行MySQL服务相关的操作</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">初始化数据库</span><br>sudo mysqld --initialize --user=mysql<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">查看临时生成的root用户密码</span><br>sudo cat /var/log/mysqld.log <br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">启动MySQL服务</span><br>sudo systemctl start mysqld<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">登陆MySQL数据库，输入临时生成的密码</span><br>mysql -uroot -p<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">先修改root用户的密码，否则执行其他的操作会报错</span><br><span class="hljs-meta">mysql&gt; </span><span class="language-bash"><span class="hljs-built_in">set</span> password = password(<span class="hljs-string">&quot;新密码&quot;</span>);</span><br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">修改mysql库下的user表中的root用户，允许任意ip进行连接</span><br><span class="hljs-meta">mysql&gt; </span><span class="language-bash">update mysql.user <span class="hljs-built_in">set</span> host=<span class="hljs-string">&#x27;%&#x27;</span> <span class="hljs-built_in">where</span> user=<span class="hljs-string">&#x27;root&#x27;</span>;</span><br><span class="hljs-meta">mysql&gt; </span><span class="language-bash">flush privileges;</span><br></code></pre></td></tr></table></figure>
 
-<ul>
-<li><p>用户接口：包括命令行接口CLI、JDBC&#x2F;ODBC、WebGUI等。其中，Hive中的Thrift服务器允许外部客户端通过网络与Hive进行交互，类似于JDBC或者ODBC协议；WebGUI则是通过浏览器来访问Hive</p>
-</li>
-<li><p>元数据存储：Hive的元数据通常是存储在关系数据库如MySQL或者derby中。Hive中的元数据包括表的名字、表的列和分区及其属性、表的属性、表数据所在目录等</p>
-</li>
-<li><p>Driver驱动程序：包括语法解析器、计划编译器、优化器、执行器等，主要完成HQL查询语句的词法分析、语法分析、编译、优化，以及查询计划的生成，生成的查询计划存储在HDFS中，并有执行引擎调用执行</p>
-</li>
-<li><p>执行引擎：Hive本身并不处理数据文件，而是通过执行引擎来处理。当前Hive支持MapReduce、Tez、Spark三种执行引擎</p>
-</li>
-</ul>
-<blockquote>
-<p>Tez：是Apache最新的支持DAG作业的开源计算框架，它可以将多个有依赖的作业转换为一个作业从而大幅提升DAG作业的性能。</p>
-</blockquote>
-<h1 id="Hive数据模型"><a href="#Hive数据模型" class="headerlink" title="Hive数据模型"></a>Hive数据模型</h1><p>Hive中的数据模型类似于关系型数据库的库表结构，在此基础上还有自己特有的模型，Hive中的数据可以在粒度级别上分成三类：Table表、Partition分区和Bucket分桶。</p>
-<p><strong>Database数据库</strong>：</p>
-<ul>
-<li>Hive作为一个数据仓库，其中也有数据库的概念。每个数据库下有属于自己的表。默认存在数据库为default</li>
-<li>Hive中的数据都是存储在HDFS上的，存储目录和数据模型的对应也比较清晰。默认存在根目录，可以在<code>hive-site.xml</code>中定义参数<code>hive.metastore.warehouse.dir</code>来指定，默认值为<code>/user/hive/warehouse</code></li>
-<li>每个数据库在根目录下占据一项，以数据库名称命名，存储路径为<code>$&#123;hive.metastore.warehouse.dir&#125;/databasename.db</code></li>
-</ul>
-<p><strong>Table表</strong>：</p>
-<ul>
-<li>Hive表于类似于关系数据库中的表。Hive中表所对应的数据通常存储在HDFS中，表相关的元数据存储在另外的RDBMS中</li>
-<li>Hive中表数据在HDFS上的存储路径为：<code>$&#123;hive.metastore.warehouse.dir&#125;/databasename.db/tablename</code></li>
-<li>默认数据库中的表直接存放在根目录下</li>
-</ul>
-<p><strong>Partition分区</strong>：</p>
-<ul>
-<li>Partition分区是对Hive的一种优化手段，指的是根据分区列的值来将表划分为不同的分区（例如按照时间列对表进行划分），这样可以更快地对指定分区数据进行查询</li>
-<li>分区在存储层面上的表现是对应表目录下的子文件夹</li>
-<li>一个文件夹表示一个分区，子文件的命名标准为<code>分区列=分区值</code></li>
-<li>Hive支持分区下继续创建分区，即多重分区</li>
-</ul>
-<p><strong>Bucket分桶</strong>：</p>
-<ul>
-<li>Bucket分桶也是Hive的一种优化手段，指的是根据表中字段的值，经过hash计算规则之后将数据文件划分成若干个小文件</li>
-<li>分桶的好处是可以优化join查询和方便抽样查询</li>
-<li>分桶在存储层面的表示是同一个表目录下数据根据hash散列之后变成了多个文件</li>
-</ul>
-<blockquote>
-<p>Hive虽然具有RDBMS数据库的外表，包括数据模型、SQL语法都十分相似，但应用场景却完全不同。Hive只适合用来做海量数据的离线分析。Hive的定位是数据仓库，面向分析的OLAP系统。Hive不是大型数据库，也不是要取代MySQL承担业务数据处理。</p>
-</blockquote>
-<h1 id="Hive部署"><a href="#Hive部署" class="headerlink" title="Hive部署"></a>Hive部署</h1><h2 id="元数据和元数据服务"><a href="#元数据和元数据服务" class="headerlink" title="元数据和元数据服务"></a>元数据和元数据服务</h2><p>元数据：Metadata，又称为中介数据、中继数据，指的是描述数据的数据。它主要是用来描述数据的属性，用来支持相关功能，如指示存储位置、历史数据、资源查找、文件记录等</p>
-<p><strong>Hive Metadata</strong>即Hive中的元数据，其中包含了Hive创建的database、table、表位置、类型、属性、字段顺序、字段类型等元信息。<strong>Hive元数据存储在关系型数据库中</strong>，如Hive内置的Derby，或第三方数据库如MySQL等</p>
-<p><strong>Hive Metastore</strong>即元数据服务，它的作用是管理元数据，对外暴露服务地址，让各种客户端通过连接Metastore服务，再由Metastore去连接MySQL数据库来进行元数据的存取，相当于对元数据的操作有了一个统一的接口</p>
-<blockquote>
-<p>有了Meatstore服务，就可以有多个客户端同时连接，这些客户端不需要知道MySQL数据库的用户名和密码，只需要连接Metastore服务即可，在某种程度上保证了Hive元数据的安全</p>
-</blockquote>
-<h2 id="Hive部署-1"><a href="#Hive部署-1" class="headerlink" title="Hive部署"></a>Hive部署</h2><p>Hive的部署有三种模式，内嵌模式、本地模式和远程模式。三种模式的区分主要在于两点：</p>
-<ol>
-<li>Metastore服务是否需要单独配置，单独启动</li>
-<li>Metadata是存储在Hive内置的Derby中，还是第三方的RDBMS如MySQL中</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>内嵌模式</th>
-<th>本地模式</th>
-<th>远程模式</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Metastore单独配置、启动</td>
-<td>❌</td>
-<td>❌</td>
-<td>✔</td>
-</tr>
-<tr>
-<td>Metadata存储介质</td>
-<td>Derby</td>
-<td>MySQL</td>
-<td>MySQL</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>Hadoop和Hive之间的版本对应关系可以参考：<a target="_blank" rel="noopener" href="https://hive.apache.org/downloads.html">Downloads (apache.org)</a></p>
-<p>目前集群中使用的Hadoop版本为3.1.3，因此这里选择使用的Hive版本为3.1.2</p>
-</blockquote>
-<h3 id="内嵌模式"><a href="#内嵌模式" class="headerlink" title="内嵌模式"></a>内嵌模式</h3><h3 id="本地模式"><a href="#本地模式" class="headerlink" title="本地模式"></a>本地模式</h3><h3 id="远程模式"><a href="#远程模式" class="headerlink" title="远程模式"></a>远程模式</h3><h2 id="Hive客户端"><a href="#Hive客户端" class="headerlink" title="Hive客户端"></a>Hive客户端</h2>
+<p>推荐将MySQL服务设置为开机启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">mysql的启动，关闭和状态查看</span><br>systemctl stop mysqld<br>systemctl status mysqld<br>systemctl start mysqld<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">将mysql设置为开机自启</span><br>systemctl enable mysqld<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">查看是否已经设置自启动成功</span><br>systemctl list-unit-files | grep mysqld<br></code></pre></td></tr></table></figure>
+
+
               
             </div>
             <hr/>
@@ -442,12 +347,12 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hive/" class="category-chain-item">Hive</a>
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" class="category-chain-item">MySQL</a>
   
   
 
@@ -464,9 +369,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+        <a href="/tags/MySQL/">#MySQL</a>
       
-        <a href="/tags/Hive/">#Hive</a>
+        <a href="/tags/Linux/">#Linux</a>
       
     </div>
   
@@ -478,8 +383,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Hive学习笔记-入门(2)-Hive概述以及集群搭建</div>
-      <div>http://example.com/2022/07/02/Hive学习笔记-入门-2-Hive概述以及集群搭建/</div>
+      <div>CentOS7中安装MySQL</div>
+      <div>http://example.com/2022/07/02/CentOS7中安装MySQL/</div>
     </div>
     <div class="license-meta">
       
@@ -521,18 +426,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/07/02/CentOS7%E4%B8%AD%E5%AE%89%E8%A3%85MySQL/" title="CentOS7中安装MySQL">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CentOS7中安装MySQL</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" title="Hive学习笔记-入门(1)-数据仓库基础理论">
-                        <span class="hidden-mobile">Hive学习笔记-入门(1)-数据仓库基础理论</span>
+                      <a href="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" title="Hive学习笔记-入门(2)-Hive概述以及集群搭建">
+                        <span class="hidden-mobile">Hive学习笔记-入门(2)-Hive概述以及集群搭建</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
