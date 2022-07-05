@@ -23,12 +23,14 @@
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="在实际执行的时候，Hive可能出现性能问题。本笔记简单学习了不同情形下的优化手段，包括Hive中分区表、分桶表以及索引的设计和应用场景；文件格式以及数据压缩的优化、存储优化；explain解析命令的使用；MapReduce的属性优化、join方案的优化；优化器的使用以及数据倾斜问题的处理方案。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png">
 <meta property="article:published_time" content="2022-07-05T12:45:58.000Z">
-<meta property="article:modified_time" content="2022-07-05T15:19:39.803Z">
+<meta property="article:modified_time" content="2022-07-05T15:23:31.847Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Hive">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png">
   
   
   
@@ -403,7 +405,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 2.0版本之前的控制属性<br>hive.mapjoin.smalltable.filesize=25M<br>-- 2.0版本开始由以下参数控制<br>hive.auto.convert.join.noconditionaltask.size=512000000<br></code></pre></td></tr></table></figure>
 
 <p><strong>reduce join</strong>的场景是没法使用map join的大表join大表情况。这时候由于内存中无法存放某张大表的所有数据，就没法使用map join。reduce join指的是在Reduce阶段完成join。两张表按照关联字段进行分组，然后通过shuffle过程进入到同一个Reduce Task完成join操作</p>
-
+<img src="/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="reduce join">
 
 <p>可以看到上面的reduce join会经过shuffle阶段，因此效率并不是很高。Hive还提供<strong>bucket join</strong>对大表join大表的情况进行优化。这就是前面提到的分桶表。我们首先将两张表都按照相同的字段进行分桶，然后分桶值对应的数据之间进行join，减少了比较次数，提高了性能。</p>
 <p>使用bucket join的前提是开启了对应的功能，同时要求分桶字段&#x3D;join字段，并且两个表桶个数相等或者成倍数（这样才能根据hash规则得到的余数找到对应规则）</p>
