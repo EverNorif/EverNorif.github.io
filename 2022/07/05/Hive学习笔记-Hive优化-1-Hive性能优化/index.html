@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png">
 <meta property="article:published_time" content="2022-07-05T12:45:58.000Z">
-<meta property="article:modified_time" content="2022-07-05T15:23:31.847Z">
+<meta property="article:modified_time" content="2022-07-07T15:24:53.156Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Hive">
@@ -265,7 +265,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          9.7k 字
+          11k 字
         
       </span>
     
@@ -277,7 +277,7 @@
         
         
           <!-- compatible with older versions-->
-          81 分钟
+          90 分钟
         
       </span>
     
@@ -453,6 +453,18 @@
 <p><strong>方案三是使用skew join。</strong>skew join是Hive中一种专门为了避免数据倾斜而设计的特殊的join过程。这种join的原理是将map join和reduce join进行合并，如果某个值出现了数据倾斜，就会将产生数据倾斜的数据单独使用map join来实现。其他没有产生数据倾斜的数据由reduce join来实现，这样就避免了reduce join中产生数据倾斜的问题。最终将map join的结果和reduce join的结果进行union合并。配置如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 开启运行过程中skewjoin<br>set hive.optimize.skewjoin=true;<br>-- 如果这个key的出现的次数超过这个范围<br>set hive.skewjoin.key=100000;<br>-- 在编译时判断是否会产生数据倾斜<br>set hive.optimize.skewjoin.compiletime=true;<br>-- 不合并，提升性能<br>set hive.optimize.union.remove=true;<br>-- 如果Hive的底层走的是MapReduce，必须开启这个属性，才能实现不合并<br>set mapreduce.input.fileinputformat.input.dir.recursive=true;<br></code></pre></td></tr></table></figure>
 
+<h2 id="Fetch抓取"><a href="#Fetch抓取" class="headerlink" title="Fetch抓取"></a>Fetch抓取</h2><p>Hive会将我们写的SQL语句转换成MapReduce程序，但是在某些情况下，Hive的查询没有必要使用MapReduce程序。这就是Fectch抓取。类似于语句<code>select * from table_name</code>，只需要简单读取<code>table_name</code>对应存储目录下的文件，然后输出查询结果即可。不过只有一些简单的查询可以被优化，不能包括子查询、聚合查询、侧视图、join等复杂操作。</p>
+<p>控制该行为的参数是<code>hive.fetch.task.conversion</code>。字段描述如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.fetch.task.conversion<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>more<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span><br>      Expects one of [none, minimal, more].<br>      Some select queries can be converted to single FETCH task minimizing latency.<br>      Currently the query should be single sourced not having any subquery and should not have<br>      any aggregations or distincts (which incurs RS), lateral views and joins.<br>      0. none : disable hive.fetch.task.conversion<br>      1. minimal : SELECT STAR, FILTER on partition columns, LIMIT only<br>      2. more  : SELECT, FILTER, LIMIT only (support TABLESAMPLE and virtual columns)<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>若属性为null，则不使用fetch优化，任何语句都会转化成MapReduce程序</li>
+<li>若属性为minimal，则只有<code>select *</code>语句，在分区列上的过滤语句（包括<code>having</code>和<code>where</code>），和<code>limit</code>关键字可以被优化成fetch任务</li>
+<li>若属性为more，则简单的<code>select</code>语句（可以全表查询、特定列查询、或者函数表达式等，包括UDF函数，但是表生成函数UDTF还不支持）、过滤语句（<code>where</code>或<code>having</code>）、和<code>limit</code>关键字可以被优化成fetch任务</li>
+</ul>
+<blockquote>
+<p>在Hive 0.10.0版本开始加入该属性，默认值为minmal；Hive 0.14.0之后，默认值为more</p>
+</blockquote>
 
               
             </div>
@@ -548,6 +560,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/07/07/Zookeeper%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" title="Zookeeper学习笔记-入门(1)-概述以及集群搭建">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Zookeeper学习笔记-入门(1)-概述以及集群搭建</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
