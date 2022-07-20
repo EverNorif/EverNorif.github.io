@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-3-Hive%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE-%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/%E4%BE%A7%E8%A7%86%E5%9B%BE%E6%95%88%E6%9E%9C.png">
 <meta property="article:published_time" content="2022-07-04T13:52:48.000Z">
-<meta property="article:modified_time" content="2022-07-05T06:59:17.478Z">
+<meta property="article:modified_time" content="2022-07-11T02:36:22.401Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Hive">
@@ -405,7 +405,7 @@
 <p>UDF分类标准扩大化：</p>
 <p>UDF分类标准本来针对的是用户自己编写开发实现的函数，但是现在可以扩大到Hive的所有函数中，包括内置函数和用户自定义函数。因为内置函数也可以满足根据输入输出划分的要求</p>
 </blockquote>
-<p>自定义函数实现步骤：</p>
+<p>自定义UDF函数实现步骤：</p>
 <ol>
 <li>自己写一个Java类，<strong>继承UDF，并重载evaluate方法</strong>，方法中实现函数的业务逻辑（注意重载）</li>
 <li>将程序打包成jar包，上传到服务器环境中（本地或者HDFS）</li>
@@ -418,6 +418,9 @@
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.apache.hadoop.hive.ql.exec.UDF;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyUDF</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">UDF</span> &#123;<br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">evaluate</span><span class="hljs-params">(...)</span>&#123;<br>        ...<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
+<blockquote>
+<p>自定义其他函数如UDTF，规则不尽相同。</p>
+</blockquote>
 <h1 id="Hive-函数高级用法"><a href="#Hive-函数高级用法" class="headerlink" title="Hive 函数高级用法"></a>Hive 函数高级用法</h1><h2 id="explode函数和侧视图"><a href="#explode函数和侧视图" class="headerlink" title="explode函数和侧视图"></a>explode函数和侧视图</h2><p>explode函数可以接受map、array类型的数据作为输入，然后把输入数据中的每个元素拆开成为一行数据。array类型则一行对应一列，map类型则一行对应两列（Key-Value）</p>
 <p>explode函数是一个UDTF函数，它的执行结果可以理解成为一张虚拟的表，数据来源于源表。我们可以在select中查询源表数据，也可以只查询explode生成的虚拟表数据，但是不能直接查询源表和虚拟表的数据。（不能不做任何处理就查询分别属于两张表的字段）</p>
 <p>explode函数将复杂类型展开之后，展开的每一行和源表的行会有一个对应关系，即源表中一行对应到展开表中的多行，根据这种关系我们可以使用join连接两张表，不过在Hive中给我们提供了侧视图lateral view语法来实现这种效果。explode函数一般会结合侧视图lateral view一起使用</p>

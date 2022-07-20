@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-2-%E6%95%B0%E6%8D%AE%E6%93%8D%E6%8E%A7%E8%AF%AD%E8%A8%80DML%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80DQL/select%E8%AF%AD%E6%B3%95%E6%A0%91.png">
 <meta property="article:published_time" content="2022-07-04T05:32:42.000Z">
-<meta property="article:modified_time" content="2022-07-04T13:50:44.214Z">
+<meta property="article:modified_time" content="2022-07-13T08:04:39.768Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Hive">
@@ -478,7 +478,7 @@
 <li><p>join时最后一个表会通过Reducer进行流式传输，并在其中缓存之前的其他表（相当于是将最后一个表流式传输，进来一个join一个）。因此将大表放置在最后有助于减少Reducer阶段缓存数据所需要的内存（也是我们通常习惯的<strong>小表接大表</strong>）</p>
 </li>
 <li><p>在join的时候，也可以通过关键字<code>streamtable</code>显式指定需要流式传输的表。如果省略，则Hive将流式传输最右边的表</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">select stramtable(a) a.val, b.val c.val<br>from a join b on (a.key = b.key1)<br>join c on (c.key = b.key1)<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">select streamtable(a) a.val, b.val c.val<br>from a join b on (a.key = b.key1)<br>join c on (c.key = b.key1)<br></code></pre></td></tr></table></figure>
 </li>
 <li><p>如果除了一个要连接的表之外的所有表都很小，则可以将其作为仅map作业执行（mapjoin，没有Reduce阶段）</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">select mapjoin(b) a.key, a.value <br>from a join b on a.key=b.key<br>--这样就不需要启动reducer，对于a的每个Mapper，b表数据都会被完全读取。<br>--限制是不能执行full/right outer join b<br>--因为full join b或者right outer join b，b表中的一行都要去找所有的a表数据<br></code></pre></td></tr></table></figure></li>
