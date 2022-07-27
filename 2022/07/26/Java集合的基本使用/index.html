@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2022/07/26/Java%E9%9B%86%E5%90%88%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/Java%E9%9B%86%E5%90%88.png">
 <meta property="article:published_time" content="2022-07-26T06:06:30.000Z">
-<meta property="article:modified_time" content="2022-07-26T08:05:01.540Z">
+<meta property="article:modified_time" content="2022-07-27T14:52:56.942Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary_large_image">
@@ -264,7 +264,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.9k 字
+          5k 字
         
       </span>
     
@@ -276,7 +276,7 @@
         
         
           <!-- compatible with older versions-->
-          41 分钟
+          42 分钟
         
       </span>
     
@@ -344,7 +344,7 @@
 <h4 id="PriorityQueue"><a href="#PriorityQueue" class="headerlink" title="PriorityQueue"></a>PriorityQueue</h4><p>优先队列，可以用来模拟堆。默认为小根堆，可以通过比较函数来指定称为大根堆。（比较函数可以通过定义匿名类或者Lambda表达式实现）</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 小根堆</span><br>PriorityQueue&lt;Integer&gt; qmin = <span class="hljs-keyword">new</span> <span class="hljs-title class_">PriorityQueue</span>&lt;&gt;();<br><span class="hljs-comment">// 大根堆-匿名类</span><br>PriorityQueue&lt;Integer&gt; qmax = <span class="hljs-keyword">new</span> <span class="hljs-title class_">PriorityQueue</span>&lt;&gt;(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Comparator</span>&lt;Integer&gt;()&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">compare</span><span class="hljs-params">(Integer a, Integer b)</span>&#123;<br>        <span class="hljs-keyword">return</span> b - a;<br>    &#125;<br>&#125;);<br><span class="hljs-comment">// 大根堆-lambda表达式</span><br>PriorityQueue&lt;Integer&gt; qmax = <span class="hljs-keyword">new</span> <span class="hljs-title class_">PriorityQueue</span>((x, y) -&gt; y - x)<br>    <br><span class="hljs-comment">// 大根堆-使用Collections接口</span><br>PriorityQueue&lt;Integer&gt; qmax = <span class="hljs-keyword">new</span> <span class="hljs-title class_">PriorityQueue</span>&lt;&gt;(Collections.reverseOrder());<br><br><span class="hljs-comment">// 添加</span><br>qmax.offer(<span class="hljs-number">4</span>);<br><br><span class="hljs-comment">// 返回并删除</span><br>qmax.poll();<br><br><span class="hljs-comment">// 查看堆顶</span><br>qmax.peek();<br></code></pre></td></tr></table></figure>
 
-<h3 id="Set-常见方法"><a href="#Set-常见方法" class="headerlink" title="Set 常见方法"></a>Set 常见方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 返回集合中小于等于给定元素的最大元素，不存在则返回null</span><br>floor(E e);<br><span class="hljs-comment">// 返回集合中大于等于给定元素的最小元素，不存在则返回null</span><br>ceiling(E e);<br></code></pre></td></tr></table></figure>
+<h3 id="Set-常见方法"><a href="#Set-常见方法" class="headerlink" title="Set 常见方法"></a>Set 常见方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 返回集合中小于等于给定元素的最大元素，不存在则返回null</span><br>floor(E e);<br><span class="hljs-comment">// 返回集合中大于等于给定元素的最小元素，不存在则返回null</span><br>ceiling(E e);<br><span class="hljs-comment">// 返回集合中小于给定元素的最大元素，不存在则返回null</span><br>lower(E e);<br><span class="hljs-comment">// 返回集合中大于给定元素的最小元素，不存在则返回null</span><br>higher(E e);<br></code></pre></td></tr></table></figure>
 
 <h4 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 创建</span><br>HashSet&lt;String&gt; set = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;String&gt;();<br><br><span class="hljs-comment">// 基本与ArrayList相同</span><br><span class="hljs-comment">// 添加</span><br>set.add(<span class="hljs-string">&quot;xxx&quot;</span>);<br><br><span class="hljs-comment">// 删除</span><br>set.remove(<span class="hljs-string">&quot;yyy&quot;</span>);<br><br><span class="hljs-comment">// 返回大小</span><br>set.size();<br><br><span class="hljs-comment">// 判断是否包含元素</span><br>set.contains(<span class="hljs-string">&quot;xxx&quot;</span>);<br><br><span class="hljs-comment">// 清空</span><br>set.clear();<br></code></pre></td></tr></table></figure>
 
