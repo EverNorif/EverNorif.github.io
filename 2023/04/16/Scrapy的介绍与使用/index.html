@@ -1,0 +1,844 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Scrapy是一个基于Python的爬虫框架。本篇主要是学习了Scrapy框架的相关概念，以及常用的操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scrapy的介绍与使用">
+<meta property="og:url" content="http://example.com/2023/04/16/Scrapy%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Scrapy是一个基于Python的爬虫框架。本篇主要是学习了Scrapy框架的相关概念，以及常用的操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/04/16/Scrapy%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/Scrapy%E6%9E%B6%E6%9E%84.png">
+<meta property="article:published_time" content="2023-04-16T02:15:09.000Z">
+<meta property="article:modified_time" content="2023-04-16T02:18:04.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Scrapy">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/04/16/Scrapy%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/Scrapy%E6%9E%B6%E6%9E%84.png">
+  
+  
+  
+  <title>Scrapy的介绍与使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Scrapy的介绍与使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-16 10:15" pubdate>
+          2023年4月16日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          74 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Scrapy的介绍与使用</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="Scrapy"><a href="#Scrapy" class="headerlink" title="Scrapy"></a>Scrapy</h1><h2 id="框架概述"><a href="#框架概述" class="headerlink" title="框架概述"></a>框架概述</h2><p>Scrapy是一个非常流行的基于Python的网络爬虫框架，可以用来抓取Web站点并从页面中提取结构化的数据。利用Scrapy框架，我们仅需要关注核心的网页解析框架，而不用关注其他的一些常规流程，例如发送请求，下载请求，失败重试等等，极大地简化了爬虫程序的开发。下面是Scrapy的核心组件以及它的工作流程示意图：</p>
+<img src="/2023/04/16/Scrapy%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/Scrapy%E6%9E%B6%E6%9E%84.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Scrapy架构">
+
+<p>在Scrapy中，有如下的核心组件：</p>
+<ol>
+<li>Scrapy引擎（Engine）：用来控制整个系统的数据处理流程</li>
+<li>调度器（Scheduler）：调度器从引擎接受请求并排序列入队列，同时接受引擎的调度请求</li>
+<li>下载器（Downloader）：负责抓取网页并将网页内容返回给爬虫程序</li>
+<li>爬虫程序（Spiders）：爬虫程序是用户自定义的用来解析网页并抓取特定URL的类，每个蜘蛛都能够处理一个域名或者一组域名。简单来说，就是用来定义特定网站的抓取和解析规则的模块</li>
+<li>数据管道（Item Pipeline）：主要负责处理爬虫程序从网页中抽取的数据条目，负责数据的清理，验证和存储。</li>
+<li>中间件（Middleware）：提供自定义的代码来扩展Scrapy的功能，包括下载器中间件以及爬虫中间件</li>
+</ol>
+<p>下面是Scrapy的工作流程：</p>
+<ol>
+<li>引擎询问爬虫程序需要处理哪个或者哪些网站，爬虫程序将第一个需要处理的URL返回</li>
+<li>引擎将需要处理的URL传送给调度器，调度器负责URL的调度</li>
+<li>引擎从调度器中获取接下来需要爬取的URL，并将其发送给下载器</li>
+<li>当网页被下载器下载完成之后，响应内容通过下载中间件被发送到引擎当中；如果下载失败，则引擎会通知调度器记录这个URL，等待后续重试</li>
+<li>引擎收到了下载器的响应之后，将其通过爬虫程序进行处理</li>
+<li>爬虫程序处理响应，并返回爬取到的数据条目，此外还需要将新的URL发送给引擎</li>
+<li>引擎将爬取到的数据条目送入数据管道，并将新的URL传送给调度器</li>
+<li>重复以上过程，直到调度器中没有需要请求的URL</li>
+</ol>
+<h2 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started"></a>Getting Started</h2><p>我们可以通过下面的案例，利用Scrapy快速创建一个爬虫项目。首先需要安装Scrapy，通过pip或者conda进行安装都可以。安装完成之后，可以执行下面的<code>scrapy startproject</code>命令来创建一个模板项目，其中会提供Scrapy项目所需要的基本文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install scrapy<br><br>scrapy startproject xxx<br></code></pre></td></tr></table></figure>
+
+<p>这里我们选择创建一个项目，名称为<code>scrapytest</code>。进入创建好的目录中，我们可以看到如下的项目结构：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sh">- scrapytest<br>	- scrapytest<br>		- spiders<br>			- __init__.py<br>		- __init__.py<br>		- items.py<br>		- middlewares.py<br>		- pipelines.py<br>		- settings.py<br>- scrapy.cfg<br></code></pre></td></tr></table></figure>
+
+<p>可以看到这里的文件或者目录名称，与Scrapy中的相关组件可以相互对应。其中我们首先需要关注的就是爬虫程序，这里是存放在<code>spiders</code>目录下。根据创建项目时命令行中打印的提示，我们可以通过<code>scrapy genspider example example.com</code>来创建示例爬虫程序。我们这里拿一个经典新手例子，豆瓣电影Top250。创建douban爬虫程序，会生成如下的基本内容：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> scrapy<br><span class="hljs-keyword">from</span> scrapy <span class="hljs-keyword">import</span> Selector, Request<br><span class="hljs-keyword">from</span> scrapy.http <span class="hljs-keyword">import</span> HtmlResponse<br><span class="hljs-keyword">from</span> scrapytest.items <span class="hljs-keyword">import</span> MovieItem<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">DouBanSpider</span>(scrapy.Spider):<br>    name = <span class="hljs-string">&quot;douban&quot;</span><br>    allowed_domains = [<span class="hljs-string">&quot;movie.douban.com&quot;</span>]<br>    start_urls = [<span class="hljs-string">&quot;https://movie.douban.com/top250&quot;</span>]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self, response: HtmlResponse</span>):<br>        <span class="hljs-keyword">pass</span><br></code></pre></td></tr></table></figure>
+
+<p>这里就是我们需要核心关注的地方。其中，name是这个爬虫的识别名称，必须是唯一的，在不同的爬虫必须定义不同的名字。</p>
+<p><code>allow_domains </code>是搜索的域名范围，也就是爬虫的约束区域，规定爬虫只爬取这个域名下的网页，不存在的URL会被忽略。</p>
+<p><code>start_urls</code>是爬取的URL元祖&#x2F;列表。爬虫从这里开始抓取数据，所以，第一次下载的数据将会从这些urls开始。其他子URL将会从这些起始URL中继承性生成。</p>
+<p>parse方法接收响应，然后对响应进行解析。在这里我们主要需要将网页中的内容进行解析，解析成一个<code>Item</code>类的形式，以便持久化到后续的文件当中。同时我们还可以解析网页中的相关url，将其传送给核心引擎，进行下一轮的爬取。在这里，我们首先可以定义一个相关的Item类，来进行数据的承接。这个类需要继承<code>Scrapy.Item</code>，且需要定义在<code>item.py</code>文件当中。这里我们简单的利用三个属性来进行承接。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MovieItem</span>(scrapy.Item):<br>    title = scrapy.Field()<br>    rank = scrapy.Field()<br>    subject = scrapy.Field()<br></code></pre></td></tr></table></figure>
+
+<p>之后我们就可以完成parse方法，进行网页内容的解析。相关代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self, response: HtmlResponse</span>):<br>    sel = Selector(response)<br>    list_items = sel.css(<span class="hljs-string">&#x27;#content &gt; div &gt; div.article &gt; ol &gt; li&#x27;</span>)<br>    <span class="hljs-keyword">for</span> list_item <span class="hljs-keyword">in</span> list_items:<br>        movie_item = MovieItem()<br>        movie_item[<span class="hljs-string">&#x27;title&#x27;</span>] = list_item.css(<span class="hljs-string">&#x27;span.title::text&#x27;</span>).extract_first()<br>        movie_item[<span class="hljs-string">&#x27;rank&#x27;</span>] = list_item.css(<span class="hljs-string">&#x27;span.rating_num::text&#x27;</span>).extract_first()<br>        movie_item[<span class="hljs-string">&#x27;subject&#x27;</span>] = list_item.css(<span class="hljs-string">&#x27;span.inq::text&#x27;</span>).extract_first()<br><br>        <span class="hljs-keyword">yield</span> movie_item<br><br>    hrefs_list = sel.css(<span class="hljs-string">&quot;div.paginator &gt; a::attr(href)&quot;</span>)<br>    <span class="hljs-keyword">for</span> href <span class="hljs-keyword">in</span> hrefs_list:<br>        url = response.urljoin(href.extract())<br>        <span class="hljs-keyword">yield</span> Request(url=url)<br></code></pre></td></tr></table></figure>
+
+<p>这里我们首先将<code>HtmlResponse</code>包装成一个选择器，然后通过XPath进行解析，获取到我们需要的内容。有关XPath的具体内容这里不进行赘述，总之我们可以获取到对应的信息，将其赋值给<code>MovieItem</code>对象的对应属性，之后使用<code>yield</code>进行生成。之后我们也可以通过类似的方式获取到该网页中的相关链接，将其包装成<code>Request</code>对象之后，使用<code>yield</code>进行生成。需要注意的是，这里的<code>yield</code>生成的对象包括Item对象以及Request对象，核心引擎接收之后，会分别传递给数据管道以及调度器，然后分别进行不同的处理。调度器会持续接收URL，并判断是否爬取过，再决定是否发送给下载器进行爬取。</p>
+<blockquote>
+<p>不过这里需要注意，调度器判断是否爬取是根据url的名称进行判断的，而不是通过网页内容进行判断的。可能出现不同的url对应的网页内容是相同的，这种情况会重复爬取。</p>
+</blockquote>
+<p>这样，一个简单的爬虫程序就完成了。不过在运行之前，我们还需要调整一些相关配置。整个爬虫程序相关的设置都存放在<code>settings.py</code>文件中，其中定义了许多的常量，包括User-Agent、随机延迟、绕过robots协议、并发请求数量等等，这些都可以直接通过常量的定义来进行调整。</p>
+<p>完成之后，我们就可以启动项目了。在项目目录下执行下面的命令，就可以启动爬虫项目。这个命令表示我们需要启动<code>douban</code>爬虫，也就是对应爬虫程序中的<code>douban.py</code>。<code>-o</code>则表示将爬取的内容持久化到对应的路径中。项目执行会打印一些日志，可以使用<code>--nolog</code>来禁止日志打印。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">scrapy crawl douban -o douban.csv<br></code></pre></td></tr></table></figure>
+
+<p>Scrapy保存信息的基本格式有四种，分别是<code>json</code>，<code>jsonl</code>，<code>csv</code>和<code>xml</code>。</p>
+<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p>利用数据管道，我们可以将数据存储到更多形式的文件中，例如excel，mysql中，同时可以进行更多的数据处理。数据管道的相关代码都存放在<code>pipelines.py</code>中。初始生成的数据管道中会有一个默认的<code>process_item</code>方法，它不做任何处理直接返回Item对象。当然我们也可以自定义自己的数据管道类，进行定制化的处理。</p>
+<p>除了<code>process_item(self, item, spider)</code>方法，在数据管道中还可以定义其他的方法，包括爬虫开始时执行，爬虫结束时执行的方法等，详情可以在官方文档中进行查询：<a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/item-pipeline.html">Item Pipeline — Scrapy 2.8.0 documentation</a>。</p>
+<p>数据管道的使用配置同样需要在<code>settings.py</code>中进行，对应常量为<code>ITEM_PIPELINES</code>，这是一个字典对象，Key为数据管道的全类名，Value是一个数值，表示管道执行的优先级，数字越小优先级越高，越先执行。</p>
+<h2 id="Middleware"><a href="#Middleware" class="headerlink" title="Middleware"></a>Middleware</h2><p>中间件分为下载中间件和爬虫中间件。中间件实质上就是一个拦截器，例如下载中间件就可以在发送Request以及接收Response之前对相应的对象进行一次处理，然后再放行。比如再发送Request之前，给请求加上相关的proxy，cookie信息等。</p>
+<p>中间件的内容存放在<code>middlewares.py</code>中，每个中间件类同样有许多方法，可以达到不同的效果。中间件的配置在<code>settings.py</code>中对应<code>xxx_MIDDLEWARES</code>常量，这同样是一个字典常量，与上面的数据管道配置有相同的约定，Key为全类名，Value为数字。数字越小优先级越高。</p>
+<h2 id="不同页面的爬取"><a href="#不同页面的爬取" class="headerlink" title="不同页面的爬取"></a>不同页面的爬取</h2><p>在上面的例子中，我们只定义了一种解析的方式。但是一种更加常见的需求是我们通过第一个页面得到了进一步的网页链接之后，需要进入新的链接，提取新的信息，此时需要使用的parse方式是不同的，这种情况下需要利用到callback方法。</p>
+<p>举例来说，我们还想要得到每一部电影的相关信息，则需要进入详情页查看。我们首先可以通过XPath得到链接信息，但是此时并不能将<code>Item</code>对象进行yield，因为这个对象还没有获取到全部的信息。此时我们应该先yield一个新的<code>Request</code>对象，对应的url就是我们得到的新的detail链接。同时由于对于这个链接的解析需要新的方法，所以我们首先需要实现一个方法<code>parse_detail</code>，然后在<code>Request</code>对象的<code>callback</code>属性中指定。最后，为了最后能够将<code>Item</code>对象进行生成，这里还需要将对应的<code>Item</code>对象传入下一步的<code>parse_detail</code>方法中。改进代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self, response: HtmlResponse</span>):<br>    sel = Selector(response)<br>    list_items = sel.css(<span class="hljs-string">&#x27;#content &gt; div &gt; div.article &gt; ol &gt; li&#x27;</span>)<br>    <span class="hljs-keyword">for</span> list_item <span class="hljs-keyword">in</span> list_items:<br>        detail_url = list_item.css(<span class="hljs-string">&#x27;div.info &gt; div.hd &gt; a::attr(href)&#x27;</span>).extract_first()<br><br>        movie_item = MovieItem()<br>        movie_item[<span class="hljs-string">&#x27;title&#x27;</span>] = list_item.css(<span class="hljs-string">&#x27;span.title::text&#x27;</span>).extract_first()<br>        movie_item[<span class="hljs-string">&#x27;rank&#x27;</span>] = list_item.css(<span class="hljs-string">&#x27;span.rating_num::text&#x27;</span>).extract_first()<br>        movie_item[<span class="hljs-string">&#x27;subject&#x27;</span>] = list_item.css(<span class="hljs-string">&#x27;span.inq::text&#x27;</span>).extract_first()<br><br>        <span class="hljs-keyword">yield</span> Request(url=detail_url, callback=self.parse_detail,<br>                      cb_kwargs=&#123;<span class="hljs-string">&#x27;item&#x27;</span>: movie_item&#125;)<br><br>    hrefs_list = sel.css(<span class="hljs-string">&quot;div.paginator &gt; a::attr(href)&quot;</span>)<br>    <span class="hljs-keyword">for</span> href <span class="hljs-keyword">in</span> hrefs_list:<br>        url = response.urljoin(href.extract())<br>        <span class="hljs-keyword">yield</span> Request(url=url)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse_detail</span>(<span class="hljs-params">self, response, **kwargs</span>):<br>    movie_item = kwargs[<span class="hljs-string">&#x27;item&#x27;</span>]<br><br>    sel = Selector(response)<br>    movie_item[<span class="hljs-string">&#x27;duration&#x27;</span>] = sel.css(<span class="hljs-string">&#x27;span[property=v:runtime]::attr(content)&#x27;</span>).extract()<br>    movie_item[<span class="hljs-string">&#x27;intro&#x27;</span>] = sel.css(<span class="hljs-string">&#x27;span[property=v:summary]::text&#x27;</span>).extract_first()<br><br>    <span class="hljs-keyword">yield</span> movie_item<br></code></pre></td></tr></table></figure>
+
+<p>在第一步的<code>parse</code>方法中，我们先获取到了相关信息和详情链接，yield新的<code>Request</code>对象，这个对象的回调方法是<code>parse_detail</code>，在这个方法中我们进一步获取详情信息，同时yield完整的<code>Item</code>对象。</p>
+<h2 id="爬虫过程中的信号"><a href="#爬虫过程中的信号" class="headerlink" title="爬虫过程中的信号"></a>爬虫过程中的信号</h2><p>在爬虫过程中还会涉及到一些信号的使用。例如我们可能会有这样的需求，就是在爬虫的开始和结束的时候进行一些操作，此时我们可以通过信号以及函数绑定的方式来完成。</p>
+<p>首先我们需要在自定义的爬虫Spider中实现一个<code>from_crawler</code>方法，在其中我们需要先获取到自己的spider，然后利用信号进行函数的方法绑定，这里signals的引入方法为<code>from scrapy import signals</code>。在这里我们绑定了开始行为以及结束行为，分别打印相关的提示信息。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">TestSpider</span>(scrapy.Spider):<br>    name = <span class="hljs-string">&quot;Test&quot;</span><br><br>    allowed_domains = []<br>    start_urls = []<br>    start_url = <span class="hljs-string">&#x27;&#x27;</span><br><br><span class="hljs-meta">    @classmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">from_crawler</span>(<span class="hljs-params">cls, crawler, *args, **kwargs</span>):<br>        spider = <span class="hljs-built_in">super</span>(TestSpider, cls).from_crawler(crawler, *args, **kwargs)<br>        crawler.signals.connect(spider.open_action, signal=signals.spider_opened)<br>        crawler.signals.connect(spider.close_action, signal=signals.spider_closed)<br>        <span class="hljs-keyword">return</span> spider<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">open_action</span>(<span class="hljs-params">self, spider</span>):<br>        spider.logger.info(<span class="hljs-string">&#x27;Spider open: %s&#x27;</span>, spider.name)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">close_action</span>(<span class="hljs-params">self, spider</span>):<br>        spider.logger.info(<span class="hljs-string">&#x27;Spider closed: %s&#x27;</span>, spider.name)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self, response: HtmlResponse</span>):<br>        <span class="hljs-built_in">print</span>(response.text)<br></code></pre></td></tr></table></figure>
+
+<p>在Scrapy中还提供了一些其他的信号，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 可选信号</span><br>engine_started = <span class="hljs-built_in">object</span>()<br>engine_stopped = <span class="hljs-built_in">object</span>()<br>spider_opened = <span class="hljs-built_in">object</span>()<br>spider_idle = <span class="hljs-built_in">object</span>()<br>spider_closed = <span class="hljs-built_in">object</span>()<br>spider_error = <span class="hljs-built_in">object</span>()<br>request_scheduled = <span class="hljs-built_in">object</span>()<br>request_dropped = <span class="hljs-built_in">object</span>()<br>response_received = <span class="hljs-built_in">object</span>()<br>response_downloaded = <span class="hljs-built_in">object</span>()<br>item_scraped = <span class="hljs-built_in">object</span>()<br>item_dropped = <span class="hljs-built_in">object</span>()<br></code></pre></td></tr></table></figure>
+
+<h2 id="链接提取器"><a href="#链接提取器" class="headerlink" title="链接提取器"></a>链接提取器</h2><p>通常爬虫程序应对的都是多网页的爬取，这就要求我们能够从单个网页出发，爬取出多个链接，然后递归进行对应的操作。在上面不同页面的爬取当中，我们可以通过Selector手动从其中抽取出相关的链接，而实际上，Scrapy也提供了相关的链接提取器给我们使用。Scrapy中提供了一个专门用于提取链接的类<code>LinkExtractor</code>，在提取大量链接或者提取规则比较复杂的时候，使用LinkExtractor更加方便。该类的引入为：<code>from scrapy.linkextractors import LinkExtractor</code></p>
+<p>该类的使用非常简单，我们只需要初始化得到一个对象之后，利用它的extract_links方法即可。该方法接收一个Response对象，然后就可以返回其中的存在的链接数组。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self, response: HtmlResponse, *args</span>):<br>    link_extractor = LinkExtractor()<br>    links = link_extractor.extract_links(response)<br>    <span class="hljs-built_in">print</span>([link.url <span class="hljs-keyword">for</span> link <span class="hljs-keyword">in</span> links])<br></code></pre></td></tr></table></figure>
+
+<p>如果在初始化<code>LinkExtractor</code>的时候不提供任何参数，则链接抽取的规则使用默认的全部抽取。当然我们还可以定制化一些提取规则，只需要在初始化的时候提供对应参数即可，相关参数如下</p>
+<ul>
+<li><code>allow</code>：该参数接收一个正则表达式或者一个正则表达式列表，提取绝对url与正则表达式匹配的链接。如果参数为空，则提取全部链接</li>
+<li><code>deny</code>：该参数效果与allow正好相反，排除与正则表达式匹配的链接</li>
+<li><code>allow_domains</code>：接收一个域名或一个域名列表，提取到指定域的链接</li>
+<li><code>deny_domains</code>：与allow_domains正好相反，排除到指定域的链接</li>
+<li><code>restrict_xpaths</code>：接收一个XPath表达式或者一个XPath表达式列表，提取XPath选中区域下的链接</li>
+<li><code>restrict_css</code>：接收一个CSS表达式或者CSS表达式列表，提取选中区域中的链接</li>
+<li><code>tags</code>：接收一个标签或者标签列表，提取指定标签内的链接，默认为<code>[&#39;a&#39;, &#39;area&#39;]</code></li>
+<li><code>attrs</code>：接收一个属性或者属性列表，提取指定属性内的链接，默认为<code>[&#39;href&#39;]</code></li>
+<li><code>procss_value</code>：接收一个形如<code>func(value)</code>的回调函数。如果传递了该参数，则<code>LinkExtractor</code>会调用这个函数对提取的每个链接进行处理，回调函数需要返回一个字符串为最终的处理结果，如果想要抛弃所处理的链接，则需要返回None</li>
+</ul>
+<h2 id="日志管理"><a href="#日志管理" class="headerlink" title="日志管理"></a>日志管理</h2><p>在Scrapy运行的时候，会打印出非常多的日志信息，Scrapy中也提供了相关方法进行日志的管理。默认情况下，所有的日志都是打印在控制台的，同时默认的日志等级是DEBUG。我们可以在<code>setting.py</code>中修改日志等级，例如<code>LOG_LEVEL = &#39;ERROR&#39;</code>，同时我们可以在运行命令的时候指定日志的输出位置以及日志等级：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">scrapy crawl spiderName -s LOG_FILE=spider.log -s LOG_LEVEL=ERROR<br></code></pre></td></tr></table></figure>
+
+<p>Scrapy日志有五种等级，按照范围递增顺序排列如下：</p>
+<ul>
+<li>CRITICAL - 严重错误</li>
+<li>ERROR - 一般错误</li>
+<li>WARNING - 警告信息</li>
+<li>INFO - 一般信息</li>
+<li>DEBUG - 调试信息</li>
+</ul>
+<p>在使用Scrapy的时候，我们也可以在Scrapy中输出日志信息。在每个Spider实例中，都有一个内置的logger，我们可以通过<code>self.logger</code>来获取到日志记录器，然后调用相关方法进行日志输出。使用这个日志记录器输出的日志，将会与Scrapy中的日志放在一起统一管理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">self.logger.info(<span class="hljs-string">&quot;get url:%s&quot;</span>, response.url)<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/">Scrapy 2.8 documentation — Scrapy 2.8.0 documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/scrapy-detail.html">Scrapy 入门教程 | 菜鸟教程 (runoob.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/x2584179909/article/details/102502226">优雅的操作scrapy爬虫的开始和结束</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45617055/article/details/115149001">爬虫框架Scrapy（8）使用 LinkExtractor 提取链接</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pythonClub/p/9853078.html">scrapy 日志处理 - CrossPython - 博客园 (cnblogs.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.yiibai.com/scrapy/scrapy_logging.html">Scrapy日志 - Scrapy教程 (yiibai.com)</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Python/" class="category-chain-item">Python</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Python/">#Python</a>
+      
+        <a href="/tags/Scrapy/">#Scrapy</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Scrapy的介绍与使用</div>
+      <div>http://example.com/2023/04/16/Scrapy的介绍与使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月16日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/17/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-5-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/" title="设计模式(5)-状态管理">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">设计模式(5)-状态管理</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/14/python-watchdog%E4%B8%8E%E5%A2%9E%E9%87%8F%E6%96%87%E4%BB%B6%E7%9B%91%E5%90%AC/" title="python watchdog与增量文件监听">
+                        <span class="hidden-mobile">python watchdog与增量文件监听</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

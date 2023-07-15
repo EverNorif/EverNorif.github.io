@@ -1,0 +1,773 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在Spark中，利用textFile读取文件成为RDD的时候，其中会用到Hadoop中的原生类——FileInputFormat，但是使用的是旧版本中的API。FileInputFormat中一个重要操作是getSplits方法，本文主要对比了getSplits在新旧API中的差别，主要对比切分逻辑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop源码-FileInputFormat在新旧API中切片操作的区别">
+<meta property="og:url" content="http://example.com/2022/05/09/Hadoop%E6%BA%90%E7%A0%81-FileInputFormat%E5%9C%A8%E6%96%B0%E6%97%A7API%E4%B8%AD%E5%88%87%E7%89%87%E6%93%8D%E4%BD%9C%E7%9A%84%E5%8C%BA%E5%88%AB/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="在Spark中，利用textFile读取文件成为RDD的时候，其中会用到Hadoop中的原生类——FileInputFormat，但是使用的是旧版本中的API。FileInputFormat中一个重要操作是getSplits方法，本文主要对比了getSplits在新旧API中的差别，主要对比切分逻辑">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-09T00:35:48.000Z">
+<meta property="article:modified_time" content="2022-05-09T02:56:56.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="details">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Hadoop源码-FileInputFormat在新旧API中切片操作的区别 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Hadoop源码-FileInputFormat在新旧API中切片操作的区别"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-09 08:35" pubdate>
+          2022年5月9日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hadoop源码-FileInputFormat在新旧API中切片操作的区别</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="源码对比"><a href="#源码对比" class="headerlink" title="源码对比"></a>源码对比</h2><h3 id="旧API"><a href="#旧API" class="headerlink" title="旧API"></a>旧API</h3><p>首先来查看旧API中的<code>getSplits</code>，所在的位置为<code>package org.apache.hadoop.mapred.FileInputFormat</code>，以下代码只保留了核心的切分逻辑。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> InputSplit[] getSplits(JobConf job, <span class="hljs-type">int</span> numSplits) <span class="hljs-keyword">throws</span> IOException &#123;<br>    	...<br>    <span class="hljs-type">long</span> <span class="hljs-variable">totalSize</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;                           <span class="hljs-comment">// compute total size</span><br>    	...<br>    <br>    List&lt;FileStatus&gt; files = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(stats.length);<br>    <span class="hljs-keyword">for</span> (FileStatus file: stats) &#123;                <span class="hljs-comment">// check we have valid files</span><br>        ...<br>            files.add(file);<br>            totalSize += file.getLen();<br>        ...<br>    &#125;<br><br>    <span class="hljs-type">long</span> <span class="hljs-variable">goalSize</span> <span class="hljs-operator">=</span> totalSize / (numSplits == <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : numSplits);<br>    <span class="hljs-type">long</span> <span class="hljs-variable">minSize</span> <span class="hljs-operator">=</span> Math.max(job.getLong(org.apache.hadoop.mapreduce.lib.input.<br>                                        FileInputFormat.SPLIT_MINSIZE, <span class="hljs-number">1</span>), minSplitSize);<br><br>    	...<br>                <span class="hljs-type">long</span> <span class="hljs-variable">blockSize</span> <span class="hljs-operator">=</span> file.getBlockSize();<br>                <span class="hljs-type">long</span> <span class="hljs-variable">splitSize</span> <span class="hljs-operator">=</span> computeSplitSize(goalSize, minSize, blockSize);<br><br>                <span class="hljs-type">long</span> <span class="hljs-variable">bytesRemaining</span> <span class="hljs-operator">=</span> length;<br>                <span class="hljs-keyword">while</span> (((<span class="hljs-type">double</span>) bytesRemaining)/splitSize &gt; SPLIT_SLOP) &#123;<br>                    String[][] splitHosts = getSplitHostsAndCachedHosts(blkLocations,<br>                                                                        length-bytesRemaining, splitSize, clusterMap);<br>                    splits.add(makeSplit(path, length-bytesRemaining, splitSize,<br>                                         splitHosts[<span class="hljs-number">0</span>], splitHosts[<span class="hljs-number">1</span>]));<br>                    bytesRemaining -= splitSize;<br>                &#125;<br><br>                <span class="hljs-keyword">if</span> (bytesRemaining != <span class="hljs-number">0</span>) &#123;<br>                    String[][] splitHosts = getSplitHostsAndCachedHosts(blkLocations, length<br>                                                                        - bytesRemaining, bytesRemaining, clusterMap);<br>                    splits.add(makeSplit(path, length - bytesRemaining, bytesRemaining,<br>                                         splitHosts[<span class="hljs-number">0</span>], splitHosts[<span class="hljs-number">1</span>]));<br>                &#125;<br>		...<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>其中的重要参数：</p>
+<ul>
+<li><p><code>totalSize</code>：文件夹中所有文件大小总和</p>
+</li>
+<li><p><code>goalSize</code>：目标分区大小，通过<code>totalSize</code>和传入参数<code>numSplits</code>计算得来（<code>totalSize / numSplits</code>）</p>
+</li>
+<li><p><code>minSize</code>：分区最小大小，由配置参数<code>mapreduce.input.fileinputformat.split.minsize</code>，为该配置参数与<code>minSplitSize=1</code>之间的最大值，默认情况下<code>minSize</code>值为1</p>
+</li>
+<li><p><code>blockSize</code>：文件系统的块大小</p>
+</li>
+<li><p><code>splitSize</code>：分区大小，通过以下方法确定</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">computeSplitSize</span><span class="hljs-params">(<span class="hljs-type">long</span> goalSize, <span class="hljs-type">long</span> minSize, <span class="hljs-type">long</span> blockSize)</span> &#123;<br>    <span class="hljs-keyword">return</span> Math.max(minSize, Math.min(goalSize, blockSize));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>默认情况下，如果<code>goalSize</code>不超过<code>blockSize</code>，则分区大小为<code>goalSize</code>；否则为<code>blockSize</code>。</p>
+</li>
+</ul>
+<p>确认了分区大小之后，就可以进行切片操作。这里需要注意的是<code>SPLIT_SLOP = 1.1</code>，只有当剩余大小和分区大小的比值大于1.1才能继续切片，否则将剩余内容作为一个完整的切片。</p>
+<h3 id="新API"><a href="#新API" class="headerlink" title="新API"></a>新API</h3><p>在新的API中，分区大小的计算逻辑进行改善，并且<code>getSplits</code>不再接受<code>int numSplits</code>参数，以下是新API中的<code>getSplits</code>，位置为<code>org.apache.hadoop.mapreduce.lib.input.FileInputFormat</code>，同样以下代码只保留了核心的切片逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> List&lt;InputSplit&gt; <span class="hljs-title function_">getSplits</span><span class="hljs-params">(JobContext job)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">StopWatch</span> <span class="hljs-variable">sw</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StopWatch</span>().start();<br>    <span class="hljs-type">long</span> <span class="hljs-variable">minSize</span> <span class="hljs-operator">=</span> Math.max(getFormatMinSplitSize(), getMinSplitSize(job));<br>    <span class="hljs-type">long</span> <span class="hljs-variable">maxSize</span> <span class="hljs-operator">=</span> getMaxSplitSize(job);<br><br>    <span class="hljs-comment">// generate splits</span><br>    List&lt;InputSplit&gt; splits = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;InputSplit&gt;();<br>    List&lt;FileStatus&gt; files = listStatus(job);<br>    	<br>    	...<br>    	<br>    <span class="hljs-keyword">for</span> (FileStatus file: files) &#123;<br>		...<br>        <span class="hljs-type">long</span> <span class="hljs-variable">length</span> <span class="hljs-operator">=</span> file.getLen();<br>			<br>        	...<br>                <br>                <span class="hljs-type">long</span> <span class="hljs-variable">blockSize</span> <span class="hljs-operator">=</span> file.getBlockSize();<br>                <span class="hljs-type">long</span> <span class="hljs-variable">splitSize</span> <span class="hljs-operator">=</span> computeSplitSize(blockSize, minSize, maxSize);<br><br>                <span class="hljs-type">long</span> <span class="hljs-variable">bytesRemaining</span> <span class="hljs-operator">=</span> length;<br>                <span class="hljs-keyword">while</span> (((<span class="hljs-type">double</span>) bytesRemaining)/splitSize &gt; SPLIT_SLOP) &#123;<br>                    <span class="hljs-type">int</span> <span class="hljs-variable">blkIndex</span> <span class="hljs-operator">=</span> getBlockIndex(blkLocations, length-bytesRemaining);<br>                    splits.add(makeSplit(path, length-bytesRemaining, splitSize,<br>                                         blkLocations[blkIndex].getHosts(),<br>                                         blkLocations[blkIndex].getCachedHosts()));<br>                    bytesRemaining -= splitSize;<br>                &#125;<br><br>                <span class="hljs-keyword">if</span> (bytesRemaining != <span class="hljs-number">0</span>) &#123;<br>                    <span class="hljs-type">int</span> <span class="hljs-variable">blkIndex</span> <span class="hljs-operator">=</span> getBlockIndex(blkLocations, length-bytesRemaining);<br>                    splits.add(makeSplit(path, length-bytesRemaining, bytesRemaining,<br>                                         blkLocations[blkIndex].getHosts(),<br>                                         blkLocations[blkIndex].getCachedHosts()));<br>                &#125;<br>       <br>        ...<br>       <br>    &#125;<br>    <span class="hljs-keyword">return</span> splits;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中的重要参数：</p>
+<ul>
+<li><p><code>minSize</code>：配置参数<code>mapreduce.input.fileinputformat.split.minsize</code>与1的最大值，在不配置的情况下，<code>minSize=1</code></p>
+</li>
+<li><p><code>maxSize</code>：配置参数<code>mapreduce.input.fileinputformat.split.maxsize</code>的值，在不配置的情况下，<code>maxSize=Long.MAX_VALUE</code></p>
+</li>
+<li><p><code>blockSize</code>：文件系统的块大小</p>
+</li>
+<li><p><code>splitSize</code>：分区大小，通过以下方法确定</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">computeSplitSize</span><span class="hljs-params">(<span class="hljs-type">long</span> blockSize, <span class="hljs-type">long</span> minSize, <span class="hljs-type">long</span> maxSize)</span> &#123;<br>    <span class="hljs-keyword">return</span> Math.max(minSize, Math.min(maxSize, blockSize));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>默认情况下，分区大小为<code>blockSize</code></p>
+</li>
+</ul>
+<p>新API中的分区逻辑改变不大，只是改变了传入参数，删减了<code>goalSize</code>。当然同样存在<code>SPLIT_SLOP = 1.1</code>的逻辑。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hadoop/" class="category-chain-item">Hadoop</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Hadoop/">#Hadoop</a>
+      
+        <a href="/tags/details/">#details</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Hadoop源码-FileInputFormat在新旧API中切片操作的区别</div>
+      <div>http://example.com/2022/05/09/Hadoop源码-FileInputFormat在新旧API中切片操作的区别/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月9日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/10/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-2-RDD%E5%BA%8F%E5%88%97%E5%8C%96-%E4%BE%9D%E8%B5%96-%E6%8C%81%E4%B9%85%E5%8C%96%E4%BB%A5%E5%8F%8A%E5%88%86%E5%8C%BA/" title="Spark学习笔记-SparkCore(2)-RDD序列化,依赖,持久化以及分区">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Spark学习笔记-SparkCore(2)-RDD序列化,依赖,持久化以及分区</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/09/Hadoop%E6%BA%90%E7%A0%81-TextInputFormat%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%88%86%E5%8C%BA%E7%9A%84%E8%A1%8C%E8%AF%BB%E5%8F%96%E9%97%AE%E9%A2%98/" title="Hadoop源码-TextInputFormat解决跨分区的行读取问题">
+                        <span class="hidden-mobile">Hadoop源码-TextInputFormat解决跨分区的行读取问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

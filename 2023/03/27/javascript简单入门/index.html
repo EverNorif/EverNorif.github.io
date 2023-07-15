@@ -1,0 +1,1312 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前端三件套之一的javascript简单入门。并不是详细的学习笔记，而是一些基础要点的记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript简单入门">
+<meta property="og:url" content="http://example.com/2023/03/27/javascript%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="前端三件套之一的javascript简单入门。并不是详细的学习笔记，而是一些基础要点的记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-27T13:21:30.000Z">
+<meta property="article:modified_time" content="2023-03-27T14:25:20.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>javascript简单入门 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="javascript简单入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-03-27 21:21" pubdate>
+          2023年3月27日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          69 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">javascript简单入门</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h1><h2 id="1-简述JavaScript"><a href="#1-简述JavaScript" class="headerlink" title="1. 简述JavaScript"></a>1. 简述JavaScript</h2><p>JavaScript：是一种弱类型脚本语言，其源码不需要经过编译，而是由浏览器解释运行，用于控制网络的行为</p>
+<ul>
+<li><p>jQuery：一个库，封装了许多方法。优点是简化了DOM操作，缺点是DOM操作太频繁，影响前端性能。在前端看来使用它仅仅是为了兼容IE6，7，8。</p>
+</li>
+<li><p>JavaScript几大框架：Angular、React、Vue、Axios</p>
+</li>
+<li><p>UI框架：</p>
+<ul>
+<li>Ant-Design：阿里巴巴出品，基于React的UI框架</li>
+<li>ElementUI、iview、ice：饿了么出品，基于Vue的UI框架</li>
+<li>Bootstrap：Twitter推出的一个用于前端开发的开源工具包</li>
+<li>AmazeUI：一款HTML5跨屏前端框架</li>
+</ul>
+</li>
+<li><p>JavaScript构建工具：Babel、WebPack</p>
+</li>
+<li><p>微信小程序：方便开发微信小程序UI的框架：WeUI</p>
+</li>
+</ul>
+<p>JavaScript的设计思想：</p>
+<ul>
+<li>借鉴C语言的基本语法</li>
+<li>借鉴Java语言的数据类型和内存管理</li>
+<li>借鉴Scheme语言，将函数提升到“第一等公民”（frist class）的地位</li>
+<li>借鉴Self语言，使用基于原型（prototype）的继承机制</li>
+</ul>
+<h2 id="2-基本使用及HelloWorld"><a href="#2-基本使用及HelloWorld" class="headerlink" title="2. 基本使用及HelloWorld"></a>2. 基本使用及HelloWorld</h2><ul>
+<li><p>引入JavaScript</p>
+<ul>
+<li><p>可以直接嵌入在html代码中（内部引入）</p>
+<ul>
+<li><p>利用<code>&lt;script&gt;&lt;/script&gt;</code>标签</p>
+</li>
+<li><p>将其同样放在head标签内部</p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;hello,world&quot;</span>);</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>上代码实现的是弹窗效果</li>
+</ul>
+</li>
+<li><p>可以单独使用一个文件（外部引入）</p>
+<ul>
+<li><p>与CSS类似，也可以单独写一个<code>.js</code>文件，里面是JavaScript的代码</p>
+</li>
+<li><p>然后在html代码中进行引入。引入并不是使用link标签，而还是使用<code>&lt;script&gt;&lt;/script&gt;</code></p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;konjavascript.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br> <br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;js文件路径&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>注意script必须成对出现，不能使用自闭合标签像这个&lt;script…&#x2F;&gt;</li>
+<li>有一个type属性不需要显式定义，默认是JavaScript</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>注释写法：<code>//我是注释</code></p>
+</li>
+</ul>
+<h2 id="3-浏览器控制台使用"><a href="#3-浏览器控制台使用" class="headerlink" title="3. 浏览器控制台使用"></a>3. 浏览器控制台使用</h2><ul>
+<li><p>基本语法</p>
+<ul>
+<li>定义变量：弱类型 变量类型不存在<ul>
+<li>所有都是 <code>var xxx = ...</code></li>
+<li>var可写可不写（弱类型，类比python）</li>
+</ul>
+</li>
+<li>条件控制：<code>if/else/else if </code></li>
+<li>基本语法balabala与c类似</li>
+</ul>
+</li>
+<li><p>JavaScript代码调试</p>
+<ul>
+<li>使用浏览器</li>
+<li>浏览器-审查元素-控制台 里面可以写JavaScript代码</li>
+<li>常用console.log()：打印变量</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-数据类型快速浏览"><a href="#4-数据类型快速浏览" class="headerlink" title="4. 数据类型快速浏览"></a>4. 数据类型快速浏览</h2><p>弱类型指的是在写代码的时候不需要指定类型，但是实际上数据还是有类型的区分</p>
+<p>数据类型（typeof）</p>
+<ul>
+<li><p>number：不区分小数和整数</p>
+<ul>
+<li>特殊的有NaN（not a number，但是类型是number）、Infinity、…</li>
+</ul>
+</li>
+<li><p>string：没有char的概念</p>
+</li>
+<li><p>bool：…</p>
+</li>
+<li><p>…</p>
+</li>
+<li><p>null：空</p>
+</li>
+<li><p>undefined：未定义。例如数组越界的时候不报错但是是undefined</p>
+</li>
+<li><p>一些运算符</p>
+<ul>
+<li>&#x3D; &#x3D;&#x3D; &#x3D;&#x3D;&#x3D;<ul>
+<li>&#x3D;：赋值</li>
+<li>&#x3D;&#x3D;：判断相等（仅需要值相同即可，不需要类型相同）</li>
+<li>&#x3D;&#x3D;&#x3D;：绝对等于（必须类型和值都相同）<ul>
+<li>坚持使用&#x3D;&#x3D;&#x3D;来比较</li>
+<li>NaN&#x3D;&#x3D;&#x3D;NaN：结果为false（NaN与所有东西都不等，包括自己）</li>
+<li>方法：isNaN()</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用规则啥的类似于python</p>
+</li>
+</ul>
+<h2 id="5-严格检模式strict"><a href="#5-严格检模式strict" class="headerlink" title="5. 严格检模式strict"></a>5. 严格检模式strict</h2><p>考虑一些问题：</p>
+<ul>
+<li><p>定义变量的时候：var表示自适应，根据定义的位置决定，不加默认是全局变量</p>
+</li>
+<li><p>定义变量的两个关键字<code>var</code>和<code>let</code></p>
+<ul>
+<li>作用域：var是函数作用域，let是块作用域</li>
+<li>使用：let不能在定义之前访问该变量，但是var可以<ul>
+<li>局部变量建议都是用let</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>严格检查模式：<code>&#39;use strict&#39;</code></p>
+<ul>
+<li>将这个字符写到.js文件的第一行</li>
+<li>使用严格检查模式！</li>
+</ul>
+<h2 id="6-字符串类型详解"><a href="#6-字符串类型详解" class="headerlink" title="6. 字符串类型详解"></a>6. 字符串类型详解</h2><ul>
+<li><p>字符串：双引号单引号都行</p>
+</li>
+<li><p>转义符：<code>\</code></p>
+</li>
+<li><p>长字符串：飘号（自命名的），可以带换行</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> a = <span class="hljs-string">`aksldjkasd</span><br><span class="hljs-string">asdasd</span><br><span class="hljs-string">asdasda</span><br><span class="hljs-string">asdasdasd</span><br><span class="hljs-string">asdasd`</span>;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>格式字符串：利用<code>$&#123;&#125;</code>嵌入变量（EL表达式？）</p>
+</li>
+<li><p>字符串的每一位可以获取，但是不可变（不可用赋值号来直接改变）</p>
+</li>
+<li><p>一些方法：</p>
+<ul>
+<li><code>.length()</code></li>
+<li><code>.toUpperCase()</code></li>
+<li><code>.toLowerCase()</code></li>
+<li><code>.indexof()</code></li>
+<li><code>.substring()</code></li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<h2 id="7-数组类型详解"><a href="#7-数组类型详解" class="headerlink" title="7. 数组类型详解"></a>7. 数组类型详解</h2><p>数组可以包含任意类型的数据。</p>
+<ul>
+<li>长度<code>arr.length</code><ul>
+<li>可以直接给length赋值，这样数组的长度会发生变化，填充元素为empty，使用的时候为未定义</li>
+<li>或者元素丢失</li>
+</ul>
+</li>
+<li>下标索引<code>.indexOf()</code></li>
+<li>截取数组<code>.slice()</code><ul>
+<li>截取数组的一部分，返回一个新数组。类似于substring</li>
+</ul>
+</li>
+<li><code>.push()</code>和<code>.pop()</code></li>
+<li><code>.unshift()</code>和<code>shift</code>:<ul>
+<li>unshift：压入到头部</li>
+<li>shift：弹出头部的第一个元素</li>
+</ul>
+</li>
+<li><code>.sort</code></li>
+<li><code>.reverse</code></li>
+<li><code>.join()</code></li>
+</ul>
+<h2 id="8-对象类型详解"><a href="#8-对象类型详解" class="headerlink" title="8. 对象类型详解"></a>8. 对象类型详解</h2><p>JavaScript也是面向对象的语言。</p>
+<p>JavaScript中键值对，键是字符串，值可以是任意类型</p>
+<p>定义对象是使用键值对的形式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> person = &#123;<br>    <span class="hljs-attr">name</span>:xxx，<br>    <span class="hljs-attr">age</span>:xxx,<br>    <span class="hljs-attr">email</span>:xxx,<br>    <span class="hljs-attr">score</span>:xxx<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>JS中对象使用大括号表示<ul>
+<li>用键值对来描述属性，属性之间使用逗号隔开</li>
+<li>对象赋值，直接用&#x3D;</li>
+<li>使用一个不存在的对象属性，不会报错，而是undefined</li>
+<li>可以动态删减属性<ul>
+<li><code>delete</code></li>
+</ul>
+</li>
+<li>动态添加：直接用&#x3D;</li>
+<li>判断一个属性是否在对象中<code>in</code><ul>
+<li>包括它父类的属性也会查找</li>
+</ul>
+</li>
+<li>判断一个属性是否是这个对象自身拥有的<code>.hasOwnProperty()</code><ul>
+<li>不去查找父类</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="9-分支和循环详解"><a href="#9-分支和循环详解" class="headerlink" title="9.  分支和循环详解"></a>9.  分支和循环详解</h2><p>流程控制：</p>
+<ul>
+<li><p>判断控制</p>
+<ul>
+<li><code>if/else/else if</code></li>
+</ul>
+</li>
+<li><p>循环控制</p>
+<ul>
+<li><p><code>while</code> &#x2F; <code>do while</code></p>
+</li>
+<li><p><code>for</code></p>
+<ul>
+<li>其中循环变量用let</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>;i&lt;xxx;i++)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>引入一个<code>foreach</code>循环</p>
+</li>
+<li><p><code>for in</code> 循环：与python中的还是有一些区别，需要注意</p>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> arr = [<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>];<br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> x <span class="hljs-keyword">in</span> arr)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(x)<br>&#125;<br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> y <span class="hljs-keyword">in</span> arr)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(y)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>第一个循环打印0，1，2</li>
+<li>第二个循环打印3，4，5</li>
+<li><code>for in</code>获取的是下标或者是key</li>
+<li><code>for of</code>获取的是真实值value<ul>
+<li>for of不能用于不可迭代的类型</li>
+</ul>
+</li>
+</ul>
+<h2 id="10-Map和Set集合"><a href="#10-Map和Set集合" class="headerlink" title="10. Map和Set集合"></a>10. Map和Set集合</h2><p>ES6的新特性</p>
+<p>Map：类似python中的字典</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>()<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>可以用二维数组来初始化（小数组存放键值对的关系）</li>
+<li>通过<code>.get(key)</code>方法来获取值value</li>
+<li>通过<code>.set(key,value)</code>来设置值</li>
+<li><code>delete</code></li>
+</ul>
+<p>Set：无需不重复的集合</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> set = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>()<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>用数组来初始化</p>
+</li>
+<li><p>一些方法：</p>
+<ul>
+<li><code>.add()</code></li>
+<li><code>delete</code></li>
+<li><code>has()</code></li>
+</ul>
+</li>
+<li><p>遍历Map和Set只能使用<code>for of</code></p>
+<ul>
+<li>使用<code>for in</code>没有效果</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>([[<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-number">1</span>],[<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-number">2</span>],[<span class="hljs-string">&#x27;c&#x27;</span>,<span class="hljs-number">3</span>]]);<br><span class="hljs-keyword">var</span> set = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>([<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>])<br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> x <span class="hljs-keyword">of</span> map)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(x);<br>&#125;;<br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> x <span class="hljs-keyword">of</span> set)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(x);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="11-函数的定义和参数获取"><a href="#11-函数的定义和参数获取" class="headerlink" title="11. 函数的定义和参数获取"></a>11. 函数的定义和参数获取</h2><ul>
+<li>定义函数一：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> 方法名(参数)<br>&#123;<br>    ...<br>    <span class="hljs-keyword">return</span> xxx<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">abs</span>(<span class="hljs-params">x</span>)<br>&#123;<br>    <span class="hljs-keyword">return</span> x&gt;<span class="hljs-number">0</span>?<span class="hljs-attr">x</span>:-x; <span class="hljs-comment">//这个运算符也是存在的</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>不用显式指定返回类型</p>
+</li>
+<li><p>用<code>function</code>表示定义函数</p>
+</li>
+<li><p>如果没有执行return，函数执行也会返回结果，结果是NaN（再次表明JavaScript很随意，很难报错）</p>
+</li>
+<li><p>定义方式二：</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> abs = <span class="hljs-keyword">function</span>(<span class="hljs-params">x</span>)&#123;<br>    <span class="hljs-keyword">return</span> x&gt;<span class="hljs-number">0</span>?<span class="hljs-attr">x</span>:-x;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>function(x)&#123;...&#125;</code>是一个匿名函数，但是可以把结果赋值给abs，通过abs就可以调用</p>
+</li>
+<li><p>参数问题：可以传递任意参数，也可以不传递参数</p>
+<ul>
+<li><p>这样的随意性就会带来不好</p>
+</li>
+<li><p>假设参数不存在，如何规避？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">abs</span>(<span class="hljs-params">x</span>)<br>&#123;<br>    <span class="hljs-keyword">if</span>(<span class="hljs-title function_">typeof</span>(x) !== <span class="hljs-string">&#x27;number&#x27;</span>)<br>        &#123;<br>            <span class="hljs-keyword">throw</span>(<span class="hljs-string">&#x27;Not a Number&#x27;</span>)<br>        &#125;<br>    <span class="hljs-keyword">return</span> x&gt;<span class="hljs-number">0</span>?<span class="hljs-attr">x</span>:-x;<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>假设参数存在多个：</p>
+<ul>
+<li><p>使用<code>arguments</code>，这是JavaScript免费赠送的一个关键字</p>
+<ul>
+<li>代表传递进来的所有参数，组织成数组形式</li>
+<li>但是最终生效的x，还是第一个传进来的生效（即<code>arguments[0]</code>）</li>
+</ul>
+</li>
+<li><p>使用<code>rest</code>，可以获取除了第一个参数之外的后面的参数，组织为数组形式</p>
+<ul>
+<li>ES6引入的新特性</li>
+<li>使用的时候，放在最后面<code>...rest</code>，接收多余参数。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">abs</span>(<span class="hljs-params">x,...rest</span>)<br>&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">arguments</span>);<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(rest);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>对于上面的函数，调用<code>abs(1,2,3)</code></li>
+<li>输出结果为：[1,2,3] [2,3]</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="12-变量的作用域、let、const详解"><a href="#12-变量的作用域、let、const详解" class="headerlink" title="12. 变量的作用域、let、const详解"></a>12. 变量的作用域、let、const详解</h2><ul>
+<li><p>var定义变量实际是有作用域的</p>
+<ul>
+<li>在函数体内定义的变量在函数体外不能使用</li>
+<li>（如果一定要在函数体外使用，需要使用‘闭包’相关概念）</li>
+<li>自己有就找自己的，不然往上找</li>
+</ul>
+</li>
+<li><p>自动提升声明，但是不提升赋值？？</p>
+</li>
+<li><p>养成规范：所有的变量定义都放在函数的开头，不要乱</p>
+<ul>
+<li>类似C</li>
+</ul>
+</li>
+<li><p>全局对象，默认所有的全局对象都会绑定在window对象上</p>
+<ul>
+<li>JavaScript的实际上的仅仅一个全局作用域</li>
+</ul>
+</li>
+<li><p>由于所有的全局对象都会绑定到window对象上，多个文件之间就可能会出现命名冲突的情况</p>
+</li>
+<li><p>所以一般会有以下规范，在一个文件中，所有的全局对象都绑定在自己的一个对象上</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 这是一个.js文件</span><br><span class="hljs-meta">&#x27;use strict&#x27;</span>;<br><span class="hljs-keyword">var</span> xxx = &#123;&#125;;<span class="hljs-comment">// 定义一个用来绑定其他对象的对象</span><br><br><span class="hljs-comment">//下面定义对象（包括变量和函数）</span><br>xxx.<span class="hljs-property">a</span> = <span class="hljs-number">1</span>;<br>xxx.<span class="hljs-property">b</span> = <span class="hljs-number">2</span>;<br>xxx.<span class="hljs-property">f</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>    ....<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>类似于C++中的命名空间</li>
+</ul>
+</li>
+<li><p>局部作用域 let</p>
+<ul>
+<li>ES6引入的新特性</li>
+</ul>
+</li>
+<li><p>举个栗子：<code>for(let i=0;i&lt;100;i++)</code></p>
+</li>
+<li><p>建议使用var</p>
+</li>
+<li><p>常量 <code>const</code>：常量定义的之后不允许修改</p>
+</li>
+</ul>
+<h2 id="13-方法的定义和调用、apply"><a href="#13-方法的定义和调用、apply" class="headerlink" title="13. 方法的定义和调用、apply"></a>13. 方法的定义和调用、apply</h2><p>方法：对象里面的函数</p>
+<ul>
+<li>重新提示，JavaScript的对象类似于python中的字典，利用<code>&#123;&#125;</code></li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> student1 = &#123;<br>    <span class="hljs-attr">name</span>:zhangsan;<br>    <span class="hljs-attr">age</span>:<span class="hljs-number">18</span>;<br>    <span class="hljs-comment">// 方法</span><br>    run = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;逃离罗翔老师&quot;</span>)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>依然存在<code>this</code>关键字，指向调用它的对象</p>
+</li>
+<li><p><code>apply</code>：在JS中可以控制this的指向</p>
+</li>
+<li><p><code>函数名.apply(需要调用这个函数的对象，函数需要的参数[组织成数组的形似])</code></p>
+</li>
+</ul>
+<h2 id="14-JSON对象"><a href="#14-JSON对象" class="headerlink" title="14. JSON对象"></a>14. JSON对象</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/JSON">JSON</a>(<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/JavaScript">JavaScript</a> Object Notation, JS 对象简谱) 是一种轻量级的数据交换格式。它基于 <a target="_blank" rel="noopener" href="https://baike.baidu.com/item/ECMAScript">ECMAScript</a> (欧洲计算机协会制定的js规范)的一个子集，采用完全独立于编程语言的文本格式来存储和表示数据。简洁和清晰的层次结构使得 JSON 成为理想的数据交换语言。 易于人阅读和编写，同时也易于机器解析和生成，并有效地提升网络传输效率。</p>
+</li>
+<li><p>在JavaScript中，一切皆对象</p>
+</li>
+<li><p>任何JS支持的类型都可以使用JSON来表示</p>
+</li>
+<li><p>格式：</p>
+<ul>
+<li>对象使用<code>&#123;&#125;</code></li>
+<li>数组使用<code>[]</code></li>
+<li>键值对使用<code>key:value</code></li>
+</ul>
+</li>
+<li><p>对象转化为json字符串：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(对象)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>json字符串转化为对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-title class_">JSON</span>字符串)<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="15-面向对象原型继承"><a href="#15-面向对象原型继承" class="headerlink" title="15. 面向对象原型继承"></a>15. 面向对象原型继承</h2><p>JavaScript的面向对象有点区别：</p>
+<p>传统的面向对象：</p>
+<ul>
+<li>类：模板</li>
+<li>对象：实例</li>
+</ul>
+<p>类似继承的原型<code>__proto__</code></p>
+<p>可以通过指定这个参数，来指定某个对象的原型是谁：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">xiaoming.<span class="hljs-property">__proto__</span> = <span class="hljs-title class_">Student</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>这种方法可以随意指定，在运行期间也可以修改</p>
+</li>
+<li><p>实际效果就是父类，于是改进成为父类</p>
+</li>
+</ul>
+<h2 id="16-面向对象class继承"><a href="#16-面向对象class继承" class="headerlink" title="16. 面向对象class继承"></a>16. 面向对象class继承</h2><ul>
+<li><code>class</code>关键字<ul>
+<li>ES6</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><p>定义一个类，属性和方法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span>&#123;<br>    <span class="hljs-title function_">constuctor</span>(<span class="hljs-params">name</span>)&#123; <span class="hljs-comment">//构造器（类似c++构造函数）</span><br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = name;<br>    &#125;<br>    <span class="hljs-title function_">hello</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-title function_">alert</span>(<span class="hljs-string">&#x27;Hello&#x27;</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">var</span> xiaoming = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Student</span>(<span class="hljs-string">&#x27;xiaoming&#x27;</span>);<br><span class="hljs-keyword">var</span> xiaohong = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Student</span>(<span class="hljs-string">&#x27;xiaohong&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>开始正规了起来</li>
+</ul>
+</li>
+<li><p>继承</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">xiaoxuesheng</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Student</span>&#123;<br>    <span class="hljs-title function_">constructor</span>(<span class="hljs-params">name, grade</span>)&#123;<br>        <span class="hljs-variable language_">super</span>(name);<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">grade</span> = grade;<br>    &#125;<br>    <span class="hljs-title function_">xiaoxueshengnohello</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;hello,woshixiaoxuesheng&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>本质还是修改了原型，就是写法上对后端更加友好</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>原型链：原型的原型的原型，开始套娃<ul>
+<li>原型一直追溯，最终肯定到oject，而object的原型也是object（点不完）</li>
+</ul>
+</li>
+</ul>
+<h2 id="17-操作BOM对象"><a href="#17-操作BOM对象" class="headerlink" title="17. 操作BOM对象"></a>17. 操作BOM对象</h2><ul>
+<li>JavaScript诞生是为了能够在浏览器中运行</li>
+</ul>
+<p>DOM：一套操作HTML标签的API</p>
+<p>BOM：一套操作浏览器的API</p>
+<ul>
+<li><p>浏览器对象模型</p>
+</li>
+<li><p>window对象：（最顶层对象）</p>
+<ul>
+<li>window代表浏览器窗口</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-variable language_">window</span>.<span class="hljs-title function_">alert</span>(xxx)<br><span class="hljs-variable language_">window</span>.<span class="hljs-property">innerHeight</span><br><span class="hljs-variable language_">window</span>.<span class="hljs-property">innerWidth</span><br><span class="hljs-variable language_">window</span>.<span class="hljs-property">outerHeight</span><br><span class="hljs-variable language_">window</span>.<span class="hljs-property">outerwidth</span><br>...<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>下面的重要对象都附属于window对象</p>
+</li>
+<li><p>Navigator：封装了浏览器的信息</p>
+<ul>
+<li>navigator</li>
+<li>里面的信息可以人为修改，不建议使用这些属性来判断和编写代码</li>
+</ul>
+</li>
+<li><p>screen：屏幕信息（width，height）</p>
+</li>
+<li><p>location：</p>
+<ul>
+<li>代表当前页面的url信息<ul>
+<li>host：主机</li>
+<li>href：链接</li>
+<li>protocol：协议</li>
+<li>reload()：方法，刷新</li>
+<li>assign(url)：跳转到设定的url</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>document：代表当前的页面</p>
+<ul>
+<li>HTML，DOM文档树</li>
+<li>获取具体的文档树结点，达到控制网页行为的目的</li>
+<li>可以获取网页的cookie</li>
+<li>服务器端可以设置cookie：httpOnly</li>
+</ul>
+</li>
+<li><p>history：浏览器的历史记录</p>
+<ul>
+<li>实现了前进，后退操作</li>
+<li>back()、forward()</li>
+</ul>
+</li>
+</ul>
+<p>浏览器网页就是一个DOM树形结构</p>
+<ul>
+<li>更新DOM节点</li>
+<li>遍历DOM节点（得到）</li>
+<li>删除DOM节点</li>
+<li>增加DOM节点</li>
+</ul>
+<p>DOM对象：文档对象模型</p>
+<ul>
+<li>DOM节点，树形结构中的节点</li>
+</ul>
+<p>后面的操作都是要调用document中的方法：</p>
+<ul>
+<li><p>获取DOM节点</p>
+<ul>
+<li>在html，css中，获取是通过选择器来实现的，选择器又有基于标签，id和类等等。</li>
+<li>这里也是同样的思想</li>
+<li><code>document.getElementsByTagName()</code></li>
+<li><code>document.getElementById()</code></li>
+<li><code>document.getElementsByClassName()</code><ul>
+<li>这里同样有css中选择器的返回规则</li>
+<li>id选择器返回具体的某一个元素</li>
+<li>标签选择器和类选择器返回元素的列表</li>
+</ul>
+</li>
+<li>获取子节点：<code>.children</code></li>
+<li>…</li>
+</ul>
+</li>
+<li><p>要想操作就首先需要定位到那个节点</p>
+</li>
+</ul>
+<p>获取了节点之后才能进行相关的操作。假设已经获得了节点为<code>id1</code>，则可以调用相关的方法。</p>
+<ul>
+<li>操作文本：（利用&#x3D;赋值）<ul>
+<li><code>.innerText</code>：修改文本的值</li>
+<li><code>.innerHTML</code>：增加html代码，可以增加一些样式（可以解析html文本标签）</li>
+</ul>
+</li>
+<li><code>.style</code>：可以修改风格，其中又有很多属性可以设置<ul>
+<li><code>.color</code></li>
+<li><code>.fontSize</code></li>
+<li><code>.padding</code></li>
+</ul>
+</li>
+</ul>
+<p>删除节点的步骤：（不能自己删除自己）</p>
+<ol>
+<li>获取父节点</li>
+<li>通过父节点删除自己</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;father&#x27;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span><br>        标题一<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;p1&#x27;</span>&gt;</span><br>        p1<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&#x27;p2&#x27;</span>&gt;</span><br>        p2<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-comment">//下面要删除p1节点</span></span><br><span class="language-javascript">    <span class="hljs-keyword">var</span> self = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;p1&#x27;</span>);</span><br><span class="language-javascript">    <span class="hljs-keyword">var</span> father = p1.<span class="hljs-property">parentElement</span>;</span><br><span class="language-javascript">    father.<span class="hljs-title function_">removeChild</span>(self)</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>father.removeChild()</code>：需要传入的参数是将要删除的那个DOM对象节点</li>
+</ul>
+<p>插入节点：</p>
+<ul>
+<li><code>.appendChild()</code></li>
+<li>传入参数为需要添加的DOM节点<ul>
+<li>可以是新创建的节点，也可以是事先存在的节点</li>
+<li>如果是事先存在的节点，会造成位置的移动而不是复制过来</li>
+</ul>
+</li>
+</ul>
+<p>创建节点：</p>
+<ul>
+<li><code>.createElement()</code></li>
+<li>传入标签的值，例如<code>document.createElement(&#39;p&#39;)</code>表示创建一个空的p标签</li>
+</ul>
+<h2 id="18-获得和设置表单的值"><a href="#18-获得和设置表单的值" class="headerlink" title="18. 获得和设置表单的值"></a>18. 获得和设置表单的值</h2><p>表单标签，form。它也是DOM树中的一个节点。</p>
+<ul>
+<li><p>表单的目的是提交信息</p>
+</li>
+<li><p><code>.value</code>：得到输入框的值</p>
+</li>
+<li><p>…多种方法</p>
+</li>
+</ul>
+<h2 id="19-表单提交验证及前端密码MD5加密"><a href="#19-表单提交验证及前端密码MD5加密" class="headerlink" title="19. 表单提交验证及前端密码MD5加密"></a>19. 表单提交验证及前端密码MD5加密</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>= <span class="hljs-string">&#x27;en&#x27;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&#x27;UTF-8&#x27;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Title<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&#x27;post&#x27;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>用户名<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&#x27;text&#x27;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;username&#x27;</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>用户名<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&#x27;passward&#x27;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&#x27;passward&#x27;</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>            <br>            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&#x27;button&#x27;</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&quot;aaa()&quot;</span>&gt;</span><br>                提交<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br>        <br>        <br>        <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">            <span class="hljs-keyword">function</span> <span class="hljs-title function_">aaa</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">                <span class="hljs-keyword">var</span> uname = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;username&#x27;</span>);</span><br><span class="language-javascript">                <span class="hljs-keyword">var</span> pwd = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;passward&#x27;</span>);</span><br><span class="language-javascript">                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(uname.<span class="hljs-property">value</span>);</span><br><span class="language-javascript">                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(pwd.<span class="hljs-property">value</span>);</span><br><span class="language-javascript">             </span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript">        </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1022910821149312">JavaScript教程 - 廖雪峰的官方网站 (liaoxuefeng.com)</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%89%8D%E7%AB%AF/" class="category-chain-item">前端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%89%8D%E7%AB%AF/%E5%9F%BA%E7%A1%80/" class="category-chain-item">基础</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/javascript/">#javascript</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>javascript简单入门</div>
+      <div>http://example.com/2023/03/27/javascript简单入门/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年3月27日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/29/Vue%E5%9F%BA%E7%A1%80%E4%B8%8E%E7%9B%B8%E5%85%B3%E4%BD%BF%E7%94%A8/" title="Vue基础与相关使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Vue基础与相关使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/27/html%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/" title="html简单入门">
+                        <span class="hidden-mobile">html简单入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

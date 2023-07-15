@@ -1,0 +1,927 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="学习MapReduce的全流程，每个阶段所做的事情。在过程中学习MapReduce框架的原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop学习笔记-MapReduce(3)-MapReduce流程">
+<meta property="og:url" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="学习MapReduce的全流程，每个阶段所做的事情。在过程中学习MapReduce框架的原理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E5%88%9D%E5%8D%B0%E8%B1%A1.png">
+<meta property="og:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/InputFormat.png">
+<meta property="og:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E6%B5%81%E7%A8%8B1.png">
+<meta property="og:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E6%B5%81%E7%A8%8B2.png">
+<meta property="og:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/OutputFormat.png">
+<meta property="article:published_time" content="2022-02-22T00:41:34.000Z">
+<meta property="article:modified_time" content="2022-03-10T06:54:14.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="MapReduce">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E5%88%9D%E5%8D%B0%E8%B1%A1.png">
+  
+  
+  
+  <title>Hadoop学习笔记-MapReduce(3)-MapReduce流程 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Hadoop学习笔记-MapReduce(3)-MapReduce流程"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-02-22 08:41" pubdate>
+          2022年2月22日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          59 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hadoop学习笔记-MapReduce(3)-MapReduce流程</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="流程初印象"><a href="#流程初印象" class="headerlink" title="流程初印象"></a>流程初印象</h2><img src="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E5%88%9D%E5%8D%B0%E8%B1%A1.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="初印象">
+
+<p>上面是MapReduce的工作流程图的大致版本，主要可以分为以下几个部分。我首先用通俗的话语描述每个流程需要完成的事情，然后再分别介绍每个环节的具体步骤和细节。</p>
+<ol>
+<li><p>MapReduce的输入一般来说是一个或者多个文件，在代码中通过指定路径获取。</p>
+</li>
+<li><p>有了文件之后，需要决定这些文件要分配给多少个Mapper，需要如何分配给这些Mapper，即采用什么样的切片机制。这个过程由InputFormat来完成。</p>
+</li>
+<li><p>每个Mapper得到自己对应的那部分文件，之后以某种形式形成键值对输入，经过Mapper的逻辑之后形成键值对输出。</p>
+<blockquote>
+<p>某种形式指可以是&lt;偏移量，一行&gt;或者&lt;偏移量，多行&gt;等，允许用户指定</p>
+</blockquote>
+</li>
+<li><p>每个Mapper的键值对输出，最终都需要持久化成为一个文件，但是并不是一下子形成的，在形成过程中，会涉及到排序，溢写，分区等操作，还有可能Combiner合并操作。最终每个Mapper对应得到一个输出文件。</p>
+</li>
+<li><p>Mapper的任务完成之后启动Reducer，启动Reducer的个数可以由用户指定。Reducer根据分区从不同的Mapper取来对应的数据，然后将其归并成输入文件。以键值对的形式输入，经过Reducer的逻辑之后形成键值对输出。</p>
+</li>
+<li><p>来自Reducer的键值对输出需要持久化为文件，并且每个Reducer最终对应生成一个文件。而键值对应该如何输出成为文件，这个过程由OutputFormat来控制。</p>
+</li>
+</ol>
+<h2 id="InputFormat数据输入"><a href="#InputFormat数据输入" class="headerlink" title="InputFormat数据输入"></a>InputFormat数据输入</h2><p>这一部分完成的操作是采用<strong>切片机制</strong>决定如何将文件分配给不同的Mapper。并且在这一部分，会讲到Job任务提交的过程。</p>
+<h3 id="1-数据切片"><a href="#1-数据切片" class="headerlink" title="1. 数据切片"></a>1. 数据切片</h3><p>在MapReduce中，使用数据切片来对输入的数据进行划分，从而决定一个MapReduce任务需要开启多少个Mapper，称为MapTask并行度。</p>
+<blockquote>
+<p>这里可能会涉及到的概念辨析：</p>
+<ul>
+<li><p>数据块：数据块是HDFS在物理上将数据以块状进行划分存储，<strong>数据块是HDFS的存储数据单位</strong></p>
+</li>
+<li><p>数据切片：数据切片是在逻辑上对输入进行划分，并不会在磁盘上对它进行切分存储。<strong>数据切片是MapReduce程序计算输入数据的单位</strong>，一个切片会对应启动一个MapTask</p>
+</li>
+</ul>
+</blockquote>
+<p>对于一个MapReduce任务来说，它的MapTask并行度在客户端提交任务的时候携带的切片文件信息来决定，切片文件信息中描述了该如何对输入文件进行切片。</p>
+<h3 id="2-Job提交流程"><a href="#2-Job提交流程" class="headerlink" title="2. Job提交流程"></a>2. Job提交流程</h3><p>Job的提交流程如下：</p>
+<ol>
+<li>确认当前Job的状态</li>
+<li>处理新旧API之间的兼容性（setUseNewAPI）</li>
+<li>connect（连接本地或者连接集群）</li>
+<li>将Job提交到系统<ol>
+<li>检查输入和输出路径</li>
+<li>创建提交信息的路径，设置必要的集群信息</li>
+<li>拷贝jar包到集群中</li>
+<li><strong>计算Job的数据切片，生成切片规划文件</strong></li>
+<li>向路径中写入配置文件</li>
+<li>提交Job，返回提交状态</li>
+</ol>
+</li>
+</ol>
+<blockquote>
+<p>在计算数据切片的过程中，会根据配置信息来获取一个InputFormat的子类用于计算数据切片，默认是<strong>FileInputFormat</strong>。</p>
+</blockquote>
+<h3 id="3-InputFormat"><a href="#3-InputFormat" class="headerlink" title="3. InputFormat"></a>3. InputFormat</h3><p>在MapReduce中，InputFormat是一个抽象类，描述了如何来进行数据切片。里面提供了两个抽象方法<code>getSplits</code>和<code>createRecordReader</code>，其他具体完成数据切片的类都是这个抽象类的子类。</p>
+<blockquote>
+<p>这里说的InputFormat类来自于<code>package org.apache.hadoop.mapreduce</code>。而在Hadoop源码中，还存在一个InputFormat接口，这个接口内容与inputFormat类基本一致，但是它来自于<code>package org.apache.hadoop.mapred</code></p>
+<p>这两个包分别是新旧版本的API。<code>package org.apache.hadoop.mapreduce</code>表示更新的版本，值得注意。</p>
+</blockquote>
+<p>在IDEA中通过<code>ctrl+H</code>查看InputFromat的实现类，如下图所示：</p>
+<img src="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/InputFormat.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="InputFormat">
+
+<h4 id="3-1-FileInputFormat"><a href="#3-1-FileInputFormat" class="headerlink" title="3.1 FileInputFormat"></a>3.1 FileInputFormat</h4><p>FileInputFormat直接继承了抽象类InputFormat。在FileInputFormat中，实现了InputFormat的抽象方法getSplits，但是没有实现createRecordReader。<strong>FileInputFormat仍然是个抽象类</strong>。</p>
+<p>FileInputFormat切片机制：</p>
+<ol>
+<li>简单地按照文件的内容长度进行切分</li>
+<li>切片大小默认等于数据块Block大小</li>
+<li>切片的时候不考虑数据集整体，而是逐个针对每个文件进行单独切片</li>
+</ol>
+<p>FileInputFormat切片流程：</p>
+<ol>
+<li><p>找到输入的路径，遍历其中的每个文件</p>
+</li>
+<li><p>对于遍历的每个文件：</p>
+<ol>
+<li><p>获取文件大小</p>
+</li>
+<li><p>计算切片大小</p>
+</li>
+<li><p>形成切片（<strong>每次切片的时候，都需要判断切完剩下的部分是否大于块的1.1倍，如果大于就可以再分，否则剩余的就作为一个块</strong>）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">while</span> (((<span class="hljs-type">double</span>) bytesRemaining)/splitSize &gt; SPLIT_SLOP) <span class="hljs-comment">//SPLIT_SLOP=1.1</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>将切片信息写入一个切片规划文件当中</p>
+</li>
+<li><p>InputSplit只记录了切片的元数据信息，比如起始位置、长度以及所在的节点列表等。</p>
+</li>
+</ol>
+</li>
+<li><p>提交切片规划文件到Yarn上，Yarn上的MrAppMaster就可以根据切片规划文件计算开启MapTask个数</p>
+</li>
+</ol>
+<p>FileInputFormat中计算切片大小的公式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">Math.max(minSize, Math.min(maxSize, blockSize));<br>mapreduce.input.fileinputformat.split.minsize=<span class="hljs-number">1</span>; <span class="hljs-comment">//默认值为1</span><br>mapreduce.input.fileinputformat.split.maxsize= Long.MAXValue; <span class="hljs-comment">//默认值Long.MAXValue</span><br></code></pre></td></tr></table></figure>
+
+<p>因此在默认情况下，切片大小 &#x3D; blocksize。</p>
+<p>于是，根据这个计算公式我们可以对切片大小进行调整。</p>
+<ul>
+<li>maxsize：参数如果调得比blockSize小，则会让切片变小，而且就等于配置的这个参数的值</li>
+<li>minsize：参数调的比blockSize大，则可以让切片变得比blockSize还大</li>
+</ul>
+<blockquote>
+<p>可以使用的信息：获取切片信息的API</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 获取切片的文件名称</span><br><span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> inputSplit.getPath().getName();<br><span class="hljs-comment">// 根据文件类型获取切片信息</span><br><span class="hljs-type">FileSplit</span> <span class="hljs-variable">inputSplit</span> <span class="hljs-operator">=</span> (FileSplit) context.getInputSplit();<br></code></pre></td></tr></table></figure>
+</blockquote>
+<p>注意在切片的过程中，会判断文件是否是可以切分的。如果不可以切分，则一个文件还是一个文件。（如部分压缩文件的情况）</p>
+<h4 id="3-2-TextInputFormat"><a href="#3-2-TextInputFormat" class="headerlink" title="3.2 TextInputFormat"></a>3.2 TextInputFormat</h4><p>TextInputFormat是FileInputFormat的直接子类，实现了其中没有实现的createRecordReader方法。在createRecordReader中它返回了一个LineRecordReader，按行读取每条记录形成键值对。键是存储该行在整个文件中的起始字节偏移量， LongWritable 类型。值是这行的内容，不包括任何行终止符（换行符和回车符），Text 类型。</p>
+<h4 id="3-3-CombineTextInputFormat"><a href="#3-3-CombineTextInputFormat" class="headerlink" title="3.3 CombineTextInputFormat"></a>3.3 CombineTextInputFormat</h4><p>CombineTextInputFormat是FileInputFormat的直接子类，适用于小文件过多的场景。默认的Text Input Format切片机制按照文件进行切片，不管文件多小，至少会形成一个单独的切片。这样如果有大量的小文件的话，就会产生大量的MapTask，处理效率低下。</p>
+<p>CombineTextInputFormat 用于小文件过多的场景，它可以将多个小文件从逻辑上规划到 一个切片中，这样，多个小文件就可以交给一个 MapTask 处理。</p>
+<p>在CombineTextInputFormat中可以使用setMaxInputSplitSize值进行设置。下面是CombineTextInputFormat进行切片的机制：</p>
+<p>首先进行虚拟存储过程：</p>
+<p>将输入目录下所有文件大小，依次和设置的 setMaxInputSplitSize 值比较，如果不 大于设置的最大值，逻辑上划分一个块。如果输入文件大于设置的最大值且大于两倍， 那么以最大值切割一块；当剩余数据大小超过设置的最大值且不大于最大值 2 倍，此时 将文件均分成 2 个虚拟存储块（防止出现太小切片）。</p>
+<blockquote>
+<p>例如 setMaxInputSplitSize 值为 4M，输入文件大小为 8.02M，则先逻辑上分成一个 4M。剩余的大小为 4.02M，如果按照 4M 逻辑划分，就会出现 0.02M 的小的虚拟存储 文件，所以将剩余的 4.02M 文件切分成（2.01M 和 2.01M）两个文件。</p>
+</blockquote>
+<p>切片过程：</p>
+<ol>
+<li>判断虚拟存储的文件大小是否大于setMaxInputSplitSize的值，如果大于则单独形成一个切片</li>
+<li>如果不大于则和下一个虚拟存储文件进行合并，共同形成一个切片</li>
+<li>继续判断下一个切片</li>
+</ol>
+<h4 id="3-4-设置使用的InputFormat"><a href="#3-4-设置使用的InputFormat" class="headerlink" title="3.4 设置使用的InputFormat"></a>3.4 设置使用的InputFormat</h4><p>在Driver类中进行配置</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 如果不设置 InputFormat，它默认用的是 TextInputFormat.class</span><br>job.setInputFormatClass(CombineTextInputFormat.class);<br><span class="hljs-comment">//虚拟存储切片最大值设置 4m</span><br>CombineTextInputFormat.setMaxInputSplitSize(job, <span class="hljs-number">4194304</span>);<br></code></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="Map和Reduce流程"><a href="#Map和Reduce流程" class="headerlink" title="Map和Reduce流程"></a>Map和Reduce流程</h2><p>在前面的流程当中，以及完成了切片信息的获取，Yarn根据切片信息决定启动Mapper的个数，以及每个Mapper对应的数据。</p>
+<h3 id="1-RecordReader"><a href="#1-RecordReader" class="headerlink" title="1. RecordReader"></a>1. RecordReader</h3><p>现在每个Mapper有了自己对应的数据，但是我们知道Mapper的输入是键值对形式的，所以需要有一个中间流程将数据转化成键值对的形式，这就是RecordReader做的事情。</p>
+<p>在前面的TextInputFormat中我们也提到了它实现的<code>createRecordReader</code>中返回了<code>LineRecordReader</code>。这就是RecordReader的一种，它将数据文件组织成<code>&lt;偏移量, 每行内容&gt;</code>的键值对形式。</p>
+<h3 id="2-MapReduce流程"><a href="#2-MapReduce流程" class="headerlink" title="2. MapReduce流程"></a>2. MapReduce流程</h3><img src="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E6%B5%81%E7%A8%8B1.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="流程1">
+
+<img src="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/%E6%B5%81%E7%A8%8B2.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="流程2">
+
+
+
+<p>上面是MapReduce的全流程，我们可以看到，在第6步是Mapper里面的逻辑，是用户自定义实现的输入键值对，输出键值对逻辑。在第14步之后的Reducer，则是对应用户自定义实现的输入键值对组，输出键值对的逻辑。</p>
+<p>在Mapper和Reducer之间，还有很多流程，这些流程统称为Shuffle过程。</p>
+<h2 id="Shuffle机制"><a href="#Shuffle机制" class="headerlink" title="Shuffle机制"></a>Shuffle机制</h2><h3 id="1-shuffle过程"><a href="#1-shuffle过程" class="headerlink" title="1. shuffle过程"></a>1. shuffle过程</h3><p>在前面的图中我们可以看到，在Mapper和Reducer之间还存在很多步骤，并不是一下到达的，这个过程我们称为Shffle过程。</p>
+<ol>
+<li>MapTask收集map方法输出的键值对，放在内存缓冲区中</li>
+<li>内存缓冲区无法一次性存放所有的输出，于是会存在不断的溢写，可能会溢出多个文件</li>
+<li>在溢写的过程中，需要将内存中的文件持久化到本地，在此之前会对文件内部的数据按照分区进行快排，快排的依据是key值。排序完成之后，形成本地文件</li>
+<li>在过程中会可能会出现多个溢写文件，这些文件各自内部按照分区有序，但是最终需要形成一个分区有序的大文件，所以再对所有的溢写文件进行归并排序</li>
+<li>在上面的合并过程中，可以出现Combiner过程（可选）</li>
+<li>启动ReduceTask。ReduceTask按照自己的分区号，去各个MapTask机器上取得对应的分区数据</li>
+<li>它从每个MapTask上远程拷贝相应的数据文件，如果文件大 小超过一定阈值，则溢写磁盘上，否则存储在内存中。如果磁盘上文件数目达到 一定阈值，则进行一次归并排序以生成一个更大文件；如果内存中文件大小或者 数目超过一定阈值，则进行一次合并后将数据溢写到磁盘上</li>
+<li>Reducer需要得到一个统一的输入文件，所以当所有数据拷贝完毕之后，需要再对这些不同文件进行归并排序</li>
+<li>合成大文件之后，Shuffle的过程就结束了，后面进入ReduceTask的逻辑运算过程。</li>
+</ol>
+<blockquote>
+<p><strong>注意事项</strong>：</p>
+<ol>
+<li><p>Shuffle中的缓冲区大小会影响到MapReduce程序的执行效率，原则上来说，缓冲区越大，磁盘IO的次数越少，执行的速度也就越快</p>
+</li>
+<li><p>缓冲区的大小可以通过参数调整：mapreduce.task.io.sort.mb，默认为100M</p>
+</li>
+<li><p>Shuffle过程在Map阶段结束之后，Reduce阶段开启之前。如果整个任务根本没有Reduce阶段，那么也就没有Shffle阶段，直接在Map阶段键值对输出那里就退出了。</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="2-Partition分区"><a href="#2-Partition分区" class="headerlink" title="2. Partition分区"></a>2. Partition分区</h3><p>在Reduce阶段，每个Reducer得到的是相同分区的数据。默认情况下进行的Partitioner分区如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HashPartitioner</span>&lt;K, V&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Partitioner</span>&lt;K, V&gt; &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getPartition</span><span class="hljs-params">(K key, V value, <span class="hljs-type">int</span> numReduceTasks)</span> &#123;<br>        <span class="hljs-keyword">return</span> (key.hashCode() &amp; Integer.MAX_VALUE) % numReduceTasks;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>分区和Reducer的个数之间存在紧密联系，默认的分区逻辑如上所示，按照hashcode的值对Reducer的个数取余，得到不同的分区。</p>
+<blockquote>
+<p>前面说到Mapper的个数和数据切片有关，但是这里Reducer的个数则可以由程序员直接指定，默认只开启一个Reducer。</p>
+<p>实际情况中，指定多少个Reducer应该需要通过进行测试来确定。</p>
+</blockquote>
+<p>如果要自定义实现分区逻辑的化，需要自定义类继承Partioner，并且重写其中的getPartition方法，具体可以查看后续笔记。</p>
+<h3 id="3-WritableComparable排序"><a href="#3-WritableComparable排序" class="headerlink" title="3. WritableComparable排序"></a>3. WritableComparable排序</h3><p>在Shuffle过程中，存在多处排序操作，排序是MapReduce框架中最重要的操作之一。在Mapper溢写过程中，存在快排操作；多个溢写文件的合并，使用的是归并排序；在Reducer获取输入文件的时候，会进行归并排序。</p>
+<p>MapTask和ReduceTask均会对数据<strong>按照key</strong>进行排序，该操作属于Hadoop的默认行为，任何应用程序中的数据均会被排序，而不管逻辑上是否需要。因此在指定键值对的时候（Mapper的输出键值对和Reducer的输入键值对，当然这两者是相同的），key能够排序是必要的。</p>
+<p>默认排序按照字典顺序进行排序，如果使用的是自定义类作为key值的化，那么需要实现WritableComparable接口，重写其中的compareTo方法，具体可以查看后续笔记。</p>
+<h3 id="4-Combiner合并"><a href="#4-Combiner合并" class="headerlink" title="4. Combiner合并"></a>4. Combiner合并</h3><p>Combiner是MapReduce程序中，Mapper和Reducer之外的一种组件，它出现的背景是为了减轻Reducer的负担，所以提前在Mapper阶段进行合并操作。它的意义就是对每一个MapTask的输出进行局部汇总，以减少网络传输量。</p>
+<p>Combiner和Reducer做的事情在逻辑上是一致的，<strong>而Combiner组件的父类正是Reducer</strong>。它和Reducer之间的区别在于运行的位置不同，Combiner是在每一个MapTask所在的节点运行的，而Reducer是接收全局的所有Mapper的输出结果。</p>
+<p>我们可以自定义实现Combiner的逻辑，需要自定义Combiner继承Reducer，重写Reducer方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyCombiner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Reducer</span>&lt;Text, IntWritable, Text, IntWritable&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">reduce</span><span class="hljs-params">(Text key, Iterable&lt;IntWritable&gt; values, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        ...<span class="hljs-comment">//合并逻辑</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后在驱动Driver中进行配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">job.setCombinerClass(MyCombiner.class)<br></code></pre></td></tr></table></figure>
+
+<p>而我们前面也说了，Combiner和Reducer完成的事情基本是相同的，所以在可以使用Combiner的情况下，也可以这样指定：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">job.setCombinerClass(MyReducer.class)<br></code></pre></td></tr></table></figure>
+
+<p><strong>不过需要注意的是，并不是所有情况下都能使用Combiner的</strong>，是否能够使用Combiner，需要根据业务逻辑来进行判断。</p>
+<h2 id="OutputFormat数据输出"><a href="#OutputFormat数据输出" class="headerlink" title="OutputFormat数据输出"></a>OutputFormat数据输出</h2><p>在Reducer得到键值对输出之后，需要最终输出得到结果。从键值对输出到结果，则是OutputFormat完成的事情。OutputFormat是MapReduce输出的基类，所有MapReduce的输出类都继承了OutputFormat类。</p>
+<p>下面是MapReduce中自带的一些输出类，默认使用的是TextOutputFormat。</p>
+<img src="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-3-MapReduce%E6%B5%81%E7%A8%8B/OutputFormat.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="OutputFormat">
+
+<p>当然我们也可以自定义一个OutputFormat类，我们自定义的MyOutputFormat可以继承上面的类，并且实现里面的getRecordWriter方法。在getRecordWriter中需要返回一个RecordWriter，里面重写对应的write和close方法，来完成我们的输出逻辑。当然最后还是需要在驱动类中完成绑定。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hadoop/" class="category-chain-item">Hadoop</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Hadoop/">#Hadoop</a>
+      
+        <a href="/tags/MapReduce/">#MapReduce</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Hadoop学习笔记-MapReduce(3)-MapReduce流程</div>
+      <div>http://example.com/2022/02/22/Hadoop学习笔记-MapReduce-3-MapReduce流程/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年2月22日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02/22/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-4-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E5%8C%BA%E5%92%8C%E6%8E%92%E5%BA%8F/" title="Hadoop学习笔记-MapReduce(4)-自定义分区和排序">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(4)-自定义分区和排序</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/20/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-MapReduce-2-MapReduce%E5%BA%8F%E5%88%97%E5%8C%96/" title="Hadoop学习笔记-MapReduce(2)-MapReduce序列化">
+                        <span class="hidden-mobile">Hadoop学习笔记-MapReduce(2)-MapReduce序列化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

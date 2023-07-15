@@ -1,0 +1,787 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了设计模式中的访问数据结构与简单化部分。该部分主要包含四种设计模式，分别是将数据结构与访问数据结构分离的Visitor模式，责任传递的Chain of Responsibility模式，简单化复杂系统使用的Facade模式以及进行控制逻辑统一管理的Mediator模式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式(4)-访问数据结构与简单化">
+<meta property="og:url" content="http://example.com/2023/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-4-%E8%AE%BF%E9%97%AE%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%80%E5%8D%95%E5%8C%96/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了设计模式中的访问数据结构与简单化部分。该部分主要包含四种设计模式，分别是将数据结构与访问数据结构分离的Visitor模式，责任传递的Chain of Responsibility模式，简单化复杂系统使用的Facade模式以及进行控制逻辑统一管理的Mediator模式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-04-12T13:11:57.000Z">
+<meta property="article:modified_time" content="2023-04-12T13:13:00.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>设计模式(4)-访问数据结构与简单化 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="设计模式(4)-访问数据结构与简单化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-12 21:11" pubdate>
+          2023年4月12日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          69 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">设计模式(4)-访问数据结构与简单化</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="Vistor"><a href="#Vistor" class="headerlink" title="Vistor"></a>Vistor</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在程序中会有很多数据结构，其中保存了许多元素，我们需要对这些元素进行处理。对于一个类来说，访问其中元素的代码通常是放在表示数据结构的类中。但是如果处理有多种的时候，每增加一种处理，都需要再去修改表示数据结构的类。而在Visitor模式中，数据结构与处理被分离开来。我们通过编写一个表示访问者的类来访问数据结构中的元素，将各个元素的处理交给访问者。这样当需要增加新处理的时候，只需要编写新的访问者，然后让数据结构接受访问者的访问即可。</p>
+<p>在Vistor模式中有如下一些角色：</p>
+<ul>
+<li><code>Vistor</code>：该角色负责对数据结构中的每个具体元素声明一个用于访问某个元素的visit方法，该方法的实现由具体的ConcreteVisitor角色完成</li>
+<li><code>ConcreteVistor</code>：该角色负责实现Visitor角色所定义的接口，实现其中所有的visit方法，确定该如何实现不同的访问</li>
+<li><code>Element</code>：该角色是Visitor角色的访问对象，其中声明了接受访问者的accept方法。该方法接收一个Visitor角色参数</li>
+<li><code>ConcreteElement</code>：该角色负责具体实现Element角色所定义的接口</li>
+<li><code>ObjectStructure</code>：ObjectStructur角色负责处理Element角色的集合，由于ConcreteVisitor角色为每个Element角色都准备了处理方法，因此我们可以轻易地实现Element的遍历访问</li>
+</ul>
+<h2 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h2><p>假设我们现在有两个类<code>Book</code>和<code>Movie</code>，分别代表书籍和电影，其中分别有不同的属性，我们现在希望取访问这些属性，但是是通过visitor模式进行。首先定义一个<code>Visitor</code>类，这是一个抽象类，其中声明了对应的访问方法，包括对Book以及Movie的访问。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Visitor</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(Book book)</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(Movie movie)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后我们需要定义一个<code>Element</code>接口，这个接口表示能够在Visitor模式中被visitor访问。这个接口中只有一个accept方法，用于接受对应的Visitor对象，完成访问操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Element</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(Visitor visitor)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后我们可以完成Book与Movie这两个类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Book</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Element</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> String name;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> String author;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Book</span><span class="hljs-params">(String name, String author)</span> &#123;<br>        <span class="hljs-built_in">this</span>.name = name;<br>        <span class="hljs-built_in">this</span>.author = author;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> name;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getAuthor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> author;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(Visitor visitor)</span> &#123;<br>        visitor.visit(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Movie</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Element</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> String name;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Integer year;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Movie</span><span class="hljs-params">(String name, Integer year)</span> &#123;<br>        <span class="hljs-built_in">this</span>.name = name;<br>        <span class="hljs-built_in">this</span>.year = year;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> name;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getYear</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> year;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(Visitor visitor)</span> &#123;<br>        visitor.visit(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到这里的Book和Movie都实现了Element接口。由于访问操作在Visitor对象中提供，所以这里的accept的实现都是简单的进行方法调用，然后将自身对象this作为参数进行传入即可。</p>
+<p>接下来，我们就可以定义Visitor具体的子类，在其中完成对对象具体的访问操作。这里子类的名称为<code>ShowVisitor</code>，意为访问操作是用于展示对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ShowVisitor</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Visitor</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(Book book)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;now visit one book named &quot;</span> + book.getName() + <span class="hljs-string">&quot;, whose author is &quot;</span> + book.getAuthor());<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(Movie movie)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;now visit one movie named &quot;</span> + movie.getName() + <span class="hljs-string">&quot;, released in &quot;</span> + movie.getYear());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>至此，整个Visitor模式的逻辑就已经完成了，可以用如下代码进行测试。在测试代码中，不同的对象通过接收相应的Visitor对象，来进行访问操作。可以看到在这个过程中，数据结构与实际的访问操作进行了分离。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Book</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-string">&quot;book1&quot;</span>, <span class="hljs-string">&quot;author1&quot;</span>);<br>    <span class="hljs-type">Movie</span> <span class="hljs-variable">movie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Movie</span>(<span class="hljs-string">&quot;movie1&quot;</span>, <span class="hljs-number">2023</span>);<br>    <span class="hljs-type">Visitor</span> <span class="hljs-variable">visitor</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ShowVisitor</span>();<br><br>    book.accept(visitor);<br>    movie.accept(visitor);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>Visitor模式的目的是将处理从数据结构中分离出来。数据结构完成的是元素集合等的关联，而保存数据结构和以数据结构为基础进行处理是两种不同的东西，分离之后我们可以更加有条理地完成管理。同时Visitor模式提高了组件的独立性，在增加处理模式的时候我们不需要去修改原先代表数据结构的类，而只需要新增新的Visitor类的实现即可，这样使得功能扩展和修改变得更加有条理，易于管理。关于功能扩展和修改有一个著名的开闭原则。</p>
+<p>开闭原则（The Open-Close Principle，OCP），它的核心观点可以用一句话来概括，就是“对扩展开放，对修改关闭”。</p>
+<p>对扩展开放指的是在设计类的时候，通常需要考虑到将来可能会扩展类。对修改关闭则是说需要能够在不用修改现有类的前提下进行类的扩展。因为如果每次扩展类的时候都需要修改现有代码，这样就太麻烦了。<strong>在不修改现有代码的前提下进行扩展，这就是开闭原则</strong>。</p>
+<p>但是另一方面，由于在Visitor模式中，对数据结构中元素进行处理的任务被交给了Visitor类，这意味着Element角色必须要向Visitor角色公开足够多的信息。访问者只有从数据结构中获取了足够多的信息之后才能工作。在这种意义上，数据结构需要小心地平衡信息的公开以及处理。</p>
+<h1 id="Chain-of-Responsibility"><a href="#Chain-of-Responsibility" class="headerlink" title="Chain of Responsibility"></a>Chain of Responsibility</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p><code>Chain of Responsibility</code>，含义为责任链。直观地说，就是将多个对象组织成一条责任链，当有需求需要进行处理的时候，就从头开始，依次判断是否能够进行处理。对于责任链上的每一个对象来说，它都是从前面收到需求，如果自己能够处理这个需求，那么就进行处理，如果不能处理，就沿着责任链交给下一个对象进行处理，直到没有下一个对象，则表示无法处理这个需求。使用Chain of Responsibitly模式弱化了请求方和处理方之间的关联关系，让各自都成为可独立复用的组件。同时，使用责任链设计模式的程序，它能够应对的需求时可扩展的，我们可以根据情况的不同增加或者修改负责处理的对象。</p>
+<p>在责任链设计模式中出现了如下角色：</p>
+<ul>
+<li><code>Handler</code>：该角色定义了处理请求的接口，同时持有另一个或者说下一个Handler对象。如果自己无法处理请求，就将请求转给下一对象。向外暴露support方法接口，用于支持问题解决。</li>
+<li><code>ConcreteHandler</code>：该角色实现了Handler角色，是处理请求的具体角色。</li>
+</ul>
+<h2 id="示例程序-1"><a href="#示例程序-1" class="headerlink" title="示例程序"></a>示例程序</h2><p>在示例程序中，我们将模拟一条责任链的构成和运行。首先我们构造一个表示问题或者说需求的类<code>Trouble</code>，每个问题有一个编号ID。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Trouble</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> number;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Trouble</span><span class="hljs-params">(<span class="hljs-type">int</span> number)</span> &#123;<br>        <span class="hljs-built_in">this</span>.number = number;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getNumber</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> number;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;[Trouble &quot;</span> + number + <span class="hljs-string">&quot;]&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后我们定义一个类表示用于解决需求的类<code>Support</code>，这个类是抽象类，其他所有具体的解决需求的类都需要继承该类。在这个抽象类中，有如下几个需要注意的点。首先，每个Support对象内部还会持有一个Support对象，这表示在该对象沿着责任链的下一个对象。之后，我们声明了抽象的resolve方法，它接收一个Trouble对象，这个方法表示该对象应该如何处理对应的Trouble，返回值表示是否成功处理。而Support暴露出来用于支持Trouble处理的方法就是support，这也是整个责任链模式的核心所在。如果当前对象能够处理这个Trouble，就让它进行处理，如果不能，就交给下一个对象进行处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Support</span> &#123;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">private</span> Support next;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Support</span><span class="hljs-params">(String name)</span> &#123;<br>        <span class="hljs-built_in">this</span>.name = name;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> Support <span class="hljs-title function_">setNext</span><span class="hljs-params">(Support next)</span> &#123; <span class="hljs-comment">// 设置返回值为Support方便后续的链式调用</span><br>        <span class="hljs-built_in">this</span>.next = next;<br>        <span class="hljs-keyword">return</span> next;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;[&quot;</span> + name + <span class="hljs-string">&quot;]&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">abstract</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">resolve</span><span class="hljs-params">(Trouble trouble)</span>;<br><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">done</span><span class="hljs-params">(Trouble trouble)</span> &#123;<br>        System.out.println(trouble + <span class="hljs-string">&quot; is resolved by &quot;</span> + <span class="hljs-built_in">this</span> + <span class="hljs-string">&quot;.&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">fail</span><span class="hljs-params">(Trouble trouble)</span> &#123;<br>        System.out.println(trouble + <span class="hljs-string">&quot; cannot be resolved.&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">support</span><span class="hljs-params">(Trouble trouble)</span> &#123;<br>        <span class="hljs-keyword">if</span> (resolve(trouble)) &#123;<br>            done(trouble);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.next != <span class="hljs-literal">null</span>) &#123;<br>            next.support(trouble);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            fail(trouble);<br>        &#125;<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后，我们就可以完成Support的实现类了，不同的实现类处理Trouble的逻辑也不同。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 什么问题都不能解决</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NoSupport</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Support</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">NoSupport</span><span class="hljs-params">(String name)</span> &#123;<br>        <span class="hljs-built_in">super</span>(name);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">resolve</span><span class="hljs-params">(Trouble trouble)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 只能解决序号小于limit的问题</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LimitSupport</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Support</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> limit;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">LimitSupport</span><span class="hljs-params">(String name, <span class="hljs-type">int</span> limit)</span> &#123;<br>        <span class="hljs-built_in">super</span>(name);<br>        <span class="hljs-built_in">this</span>.limit = limit;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">resolve</span><span class="hljs-params">(Trouble trouble)</span> &#123;<br>        <span class="hljs-keyword">return</span> trouble.getNumber() &lt; limit;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 只能解决奇数序号问题</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OddSupport</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Support</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">OddSupport</span><span class="hljs-params">(String name)</span> &#123;<br>        <span class="hljs-built_in">super</span>(name);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">resolve</span><span class="hljs-params">(Trouble trouble)</span> &#123;<br>        <span class="hljs-keyword">return</span> trouble.getNumber() % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 只能解决特定序号问题</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SpecialSupport</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Support</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> number;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SpecialSupport</span><span class="hljs-params">(String name, <span class="hljs-type">int</span> number)</span> &#123;<br>        <span class="hljs-built_in">super</span>(name);<br>        <span class="hljs-built_in">this</span>.number = number;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">resolve</span><span class="hljs-params">(Trouble trouble)</span> &#123;<br>        <span class="hljs-keyword">return</span> trouble.getNumber() == <span class="hljs-built_in">this</span>.number;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>那么最后，我们可以完成一段测试代码来查看对应的效果。在测试代码中我们首先定义了多个Support对象，它们的具体类各有不同，能够处理的Trouble也各不相同。之后我们利用setNext的链式调用构造了一条责任链，最后生成了一系列Trouble，模拟解决过程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">alice</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NoSupport</span>(<span class="hljs-string">&quot;Alice&quot;</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">bob</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LimitSupport</span>(<span class="hljs-string">&quot;Bob&quot;</span>, <span class="hljs-number">100</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">charlie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpecialSupport</span>(<span class="hljs-string">&quot;Charlie&quot;</span>, <span class="hljs-number">429</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">diana</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LimitSupport</span>(<span class="hljs-string">&quot;Diana&quot;</span>,<span class="hljs-number">200</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">elmo</span> <span class="hljs-operator">=</span>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">OddSupport</span>(<span class="hljs-string">&quot;Elmo&quot;</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">fred</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LimitSupport</span>(<span class="hljs-string">&quot;Fred&quot;</span>, <span class="hljs-number">300</span>);<br><br>    alice.setNext(bob).setNext(charlie).setNext(diana).setNext(elmo).setNext(fred);<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">500</span>; i+=<span class="hljs-number">33</span>) &#123;<br>        alice.support(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Trouble</span>(i));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最终的输出效果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs shell">[Trouble 0] is resolved by [Bob].<br>[Trouble 33] is resolved by [Bob].<br>[Trouble 66] is resolved by [Bob].<br>[Trouble 99] is resolved by [Bob].<br>[Trouble 132] is resolved by [Diana].<br>[Trouble 165] is resolved by [Diana].<br>[Trouble 198] is resolved by [Diana].<br>[Trouble 231] is resolved by [Elmo].<br>[Trouble 264] is resolved by [Fred].<br>[Trouble 297] is resolved by [Elmo].<br>[Trouble 330] cannot be resolved.<br>[Trouble 363] is resolved by [Elmo].<br>[Trouble 396] cannot be resolved.<br>[Trouble 429] is resolved by [Charlie].<br>[Trouble 462] cannot be resolved.<br>[Trouble 495] is resolved by [Elmo].<br></code></pre></td></tr></table></figure>
+
+<h2 id="说明-1"><a href="#说明-1" class="headerlink" title="说明"></a>说明</h2><p>Chain of Responsibility模式的最大优点就是它弱化了发出请求的角色（Client）和处理请求的角色（ConcreteHandler）之间的关系。Client角色只需要向第一个ConcreteHandler角色发出请求，之后请求会在责任链中进行传播，直到某个ConcreteHandler角色处理了该请求。不过也是因为Chain of Responsibility模式一直在推卸责任，直到找到合适的处理请求的对象，这一方面提高了程序的灵活性，另一方面导致了延迟的处理。这是一个需要权衡的问题。实际上，如果请求和处理者之间的对应关系是能够确定的，而且需要非常快的响应时间，此时不使用Chain of Responsibility模式会更好。</p>
+<h1 id="Facade"><a href="#Facade" class="headerlink" title="Facade"></a>Facade</h1><h2 id="说明-2"><a href="#说明-2" class="headerlink" title="说明"></a>说明</h2><p>在进行复杂程序开发的时候，我们会涉及到许许多多的类，这些类之间相互关联，导致程序结构变得越来越复杂。在使用这些类之前，我们需要格外注意它们之间的关系，这导致在开发时会增加许多复杂度。而Facade模式就能够帮助我们将这种情况进行简单化。Facade源自一个法语单词，意思为建筑物的正面。使用Facade模式，我们可以将互相关联在一起的错综复杂的类整理出高层API，其中Facade角色让系统对外只有一个简单接口，而内部实际类的关系和调用则由Facade角色来完成。Facade模式本质上就是对一个复杂系统进行包装，向外暴露简单的API，对使用者隐藏内部的复杂逻辑。</p>
+<h1 id="Mediator"><a href="#Mediator" class="headerlink" title="Mediator"></a>Mediator</h1><h2 id="说明-3"><a href="#说明-3" class="headerlink" title="说明"></a>说明</h2><p>在一个复杂程序的运行过程中，一种常见的情况是许多不同的类都需要对某种状态进行维护或者更改，根据不同情况做出不同反应。如果将状态控制的代码分散在各个相关类中，会导致使用和调试变得非常困难，而Mediator模式则可以帮助我们简单化这种情况。Mediator意为仲裁者，它来决定程序中如何进行状态的维护以及后续行为的定义。每个相关类发现状态更新，则报告给仲裁者，由仲裁者来决定如何进行下一步的行为。Mediator模式本质上就是将分散的控制逻辑统一集中在一个类中，便于管理和调试。当其他相关类需要使用到其中的某种逻辑时，就通知仲裁者即可。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Technique/" class="category-chain-item">Technique</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">#设计模式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>设计模式(4)-访问数据结构与简单化</div>
+      <div>http://example.com/2023/04/12/设计模式-4-访问数据结构与简单化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月12日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/13/ElementUI%E4%B8%AD%E7%9A%84%E5%88%86%E9%A1%B5%E5%8A%9F%E8%83%BD/" title="ElementUI中的分页功能">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ElementUI中的分页功能</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/03/Python%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-logging/" title="Python日志模块-logging">
+                        <span class="hidden-mobile">Python日志模块-logging</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,1007 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Hive SQL是Hive中提供的类似于SQL的数据查询语言，本笔记首先介绍了其中的数据定义语言，其中着重介绍了Hive SQL中的建表语法，当然也包括了其他的DDL语法。同时也也需要着重关注Hive中的内部表、外部表、分区表、分桶表等概念。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive学习笔记-HiveSQL(1)-数据定义语言DDL">
+<meta property="og:url" content="http://example.com/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Hive SQL是Hive中提供的类似于SQL的数据查询语言，本笔记首先介绍了其中的数据定义语言，其中着重介绍了Hive SQL中的建表语法，当然也包括了其他的DDL语法。同时也也需要着重关注Hive中的内部表、外部表、分区表、分桶表等概念。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/Hive%E5%BB%BA%E8%A1%A8%E8%AF%AD%E6%B3%95.png">
+<meta property="og:image" content="http://example.com/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/%E5%8D%95%E5%88%86%E5%8C%BA%E5%9C%A8hdfs%E4%B8%8A%E7%9A%84%E5%AD%98%E5%82%A8.png">
+<meta property="og:image" content="http://example.com/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/%E5%88%86%E6%A1%B6%E8%A1%A8.png">
+<meta property="article:published_time" content="2022-07-03T09:54:49.000Z">
+<meta property="article:modified_time" content="2022-07-05T06:24:26.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/Hive%E5%BB%BA%E8%A1%A8%E8%AF%AD%E6%B3%95.png">
+  
+  
+  
+  <title>Hive学习笔记-HiveSQL(1)-数据定义语言DDL - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Hive学习笔记-HiveSQL(1)-数据定义语言DDL"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-03 17:54" pubdate>
+          2022年7月3日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          106 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hive学习笔记-HiveSQL(1)-数据定义语言DDL</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="数据定义语言概述"><a href="#数据定义语言概述" class="headerlink" title="数据定义语言概述"></a>数据定义语言概述</h1><p>数据定义语言（Data Definition Language， DDL），是SQL中对数据库内部的对象结构进行创建，删除，修改等操作的语言，核心语法由create、alter和drop三个部分组成，并不涉及表内部数据的操作</p>
+<p>Hive SQL与标准SQL的语法大体相同，在细节处存在少量差异。</p>
+<blockquote>
+<p>推荐使用IDEA中的DataBase来连接Hive，其中需要下载指定对应版本的驱动。</p>
+</blockquote>
+<h1 id="Hive-SQL-DDL-建表语法"><a href="#Hive-SQL-DDL-建表语法" class="headerlink" title="Hive SQL DDL 建表语法"></a>Hive SQL DDL 建表语法</h1><h2 id="完整语法树"><a href="#完整语法树" class="headerlink" title="完整语法树"></a>完整语法树</h2><p>Hive建表语法的完整语法树如下：</p>
+<img src="/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/Hive%E5%BB%BA%E8%A1%A8%E8%AF%AD%E6%B3%95.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Hive建表语法">
+
+<ul>
+<li>蓝色字体是建表语法的关键字，用于指定某些特定的功能</li>
+<li>【】中括号的语法表示可选</li>
+<li>| 表示使用的时候，左右语法需要二选一</li>
+<li><strong>建表语法中，语法顺序需要和语法树中的顺序保持一致</strong></li>
+</ul>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>Hive中的数据类型整体上分为原生数据类型和复杂数据类型</p>
+<ul>
+<li>原生数据类型包括：数值类型、时间日期类型、字符串类型、杂项数据类型</li>
+<li>复杂数据类型包括：Array数组、Map映射、Struct结构、Union联合体</li>
+</ul>
+<p>注意事项：</p>
+<ol>
+<li>HQL中，数据类型<strong>大小写不敏感</strong></li>
+<li>除了SQL数据类型之外，也支持Java数据类型</li>
+<li>复杂数据类型的使用通常需要和分隔符指定语法来配合使用</li>
+<li>如果定义的数据类型和文件中的内容不一致，Hive会尝试隐式转换，但是不保证成功</li>
+<li>也提供显示类型转换的函数CAST</li>
+</ol>
+<h2 id="读写文件机制"><a href="#读写文件机制" class="headerlink" title="读写文件机制"></a>读写文件机制</h2><p>首先介绍SerDE。SerDe是Serializer、Deserializer的简称，目的是用于序列化和反序列化。Hive中使用SerDE读取和写入表中的行对象。</p>
+<p>具体来说，在读取HDFS文件的时候，首先通过InputFileFormat以键值对的形式读取一行的数据，然后通过SerDE进行反序列化得到行对象。在写HDFS文件的时候，先通过SerDe进行行对象的序列化，得到键值对的形式，然后通过OutputFileFormat写入HDFS文件中。（需要注意的是键值对中的Key表示行偏移量，在读取的时候会被忽略，在写入的时候key始终是常数，行对象基本存储在value中）</p>
+<p>我们可以通过<code>desc formatted table_name</code>来查看表的相关SerDe的信息。默认情况下：</p>
+<ul>
+<li>SerDe使用的是：<code>org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe</code></li>
+<li>InputFormat使用的是：<code>org.apache.hadoop.mapred.TextInputFormat</code></li>
+<li>OutputFormat使用的是：<code>org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat</code></li>
+</ul>
+<p>在语法树中，相关语法是<code>row format</code>，用于指定使用哪个SerDe类进行序列化，以及如何指定分隔符</p>
+<p>row format是语法关键字，后面需要跟上delimited和serde二选一</p>
+<ul>
+<li>delimited表示使用默认的LazySimpleSerDe类来处理数据，也是默认使用的关键字</li>
+<li>serde表示指定其他的SerDe类，或者自己自定义的SerDE类来处理数据</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs hive">--默认使用delimited<br>row format delimited<br>	[fields terminated by &#x27;xxx&#x27;] --指定字段之间的分隔符<br>	[collection items terminated by &#x27;xxx&#x27;] --指定集合元素之间的分隔符<br>	[map keys terminated by &#x27;xxx&#x27;] --指定Map里面KV之间的分隔符<br>	[lines terminated by &#x27;xxx&#x27;] --指定行数据之间的分隔符<br></code></pre></td></tr></table></figure>
+
+<p>如果在建表的时候如果没有使用row format指定分隔符，则采用默认分隔符，默认分隔符为<code>\001</code>，是一种特殊字符，在Vim编辑器中表现为<code>^A</code>，在一些文本编辑器中，可以显示的表示法显示为<code>SOH</code></p>
+<ul>
+<li>这里的分隔符都是单字节，类型为char的分隔符</li>
+</ul>
+<h2 id="数据存储路径"><a href="#数据存储路径" class="headerlink" title="数据存储路径"></a>数据存储路径</h2><p>一般情况下，我们使用建表语句创建表之后，会在HDFS中对应目录下创建一个文件夹，代表该表，之后我们向其中上传HDFS文件，如果文件中的内容和表模式匹配上的话，Hive就会帮我们完成文件到表的映射。</p>
+<p>Hive表默认存储路径是由<code>$&#123;HIVE_HOME&#125;/conf/hive-site.xml</code>配置文件的<code>hive.metastore.warehouse.dir</code>属性指定，默认值为：**&#x2F;user&#x2F;hive&#x2F;warehouse**。在该路径下，文件将根据所属的库、表，有规律地存储在对应的文件夹下。</p>
+<p>当然我们也可以不使用默认的存储路径，而在创建表的时候指定该表读取哪个目录下的文件，通过<strong>location</strong>语法来指定数据在HDFS上的存储路径，使得建表加载数据更加灵活方便。</p>
+<blockquote>
+<p>如果指定了数据的路径，那么对应的默认路径下将没有该表的文件夹</p>
+</blockquote>
+<h2 id="Hive-内部表和外部表"><a href="#Hive-内部表和外部表" class="headerlink" title="Hive 内部表和外部表"></a>Hive 内部表和外部表</h2><p>在Hive中存在内部表和外部表的概念。</p>
+<p><strong>内部表</strong>：</p>
+<ul>
+<li>内部表（Internal Table），也称为托管表（Managed Table）</li>
+<li>Hive拥有内部表的结构和文件，完全管理表（元数据+真实数据）的声明周期</li>
+<li><strong>当我们删除表的时候，会删除真实数据以及表的元数据</strong></li>
+<li>默认情况下创建的表属于内部表</li>
+</ul>
+<p><strong>外部表</strong>：</p>
+<ul>
+<li>外部表（External Table），其中的数据不是Hive拥有或者管理的，Hive只管理外部表元数据的生命周期</li>
+<li>创建外部表，只需要在创建表的时候增加<code>external</code>关键字</li>
+<li><strong>删除外部表只会删除元数据，不会删除实际数据</strong>。在Hive外部，HDFS上仍然可以访问到真实数据</li>
+</ul>
+<blockquote>
+<p>通常我们会使用外部表搭配location语法来指定数据的路径，让数据更加安全。但是需要注意的是，location的使用与否与是否是外部表没有绝对的联系。</p>
+</blockquote>
+<h2 id="Hive-Partitioned-分区表"><a href="#Hive-Partitioned-分区表" class="headerlink" title="Hive Partitioned 分区表"></a>Hive Partitioned 分区表</h2><p>分区表是Hive中的一种优化手段。当Hive表中的数据量变大，文件个数变多的时候，为了避免查询的时候进行全表扫描，Hive支持根据指定的字段对表进行分区，分区的字段可以是日期、地域、种类等具有标识意义的字段。</p>
+<p>表现在HDFS文件的存储上，表文件夹下会有多个分区文件夹，命名形式为<code>分区字段=分区值</code>，在不同的分区文件夹下，存放了分区对应的数据文件</p>
+<img src="/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/%E5%8D%95%E5%88%86%E5%8C%BA%E5%9C%A8hdfs%E4%B8%8A%E7%9A%84%E5%AD%98%E5%82%A8.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="单分区在hdfs上的存储">
+
+<p>在建表语法中，分区功能通过<code>partitioned by</code>关键字来完成</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">partitioned by &#123;col_name data_type [comment col_comment],...&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>注意：<strong>分区字段不能是表中已经存在的字段</strong>，因为分区字段最终会以虚拟字段的形式显示在表结构上</li>
+</ul>
+<p>我们既然不能指定分区字段是表中已经存在的字段，但是总得有一种方式告诉Hive我们的数据是处在哪个分区中。Hive中提供两种分区表数据加载的模式，分别是静态分区和动态分区加载。</p>
+<p>首先明确一个前提，我们已经执行了建表语句，其中指定了分区字段假设为<code>col_name</code>，注意分区字段的名称不和实际字段重复。此时在HDFS上已经存在了对应的表文件夹</p>
+<p><strong>静态分区加载</strong>：</p>
+<p>静态分区指的是我们人为指定某个文件属于哪一个分区，这样我们应该保证在实际场景下，文件中的所有行都是对应分区下的数据。</p>
+<p>使用如下语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">load data [local] inpath &lt;file_path&gt; into table &lt;table_name&gt; partition(分区字段=&#x27;分区值&#x27;)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>local参数用于指定待加载的数据是位于本地文件系统还是HDFS文件系统</li>
+<li>需要指定文件路径、表名、该文件下数据对应的分区值</li>
+</ul>
+<p>总结来说，如果使用静态分区加载，我们需要事先准备不同的文件，每个文件下的数据，分区值都是相同的，然后按照分区值手动进行文件加载。这样Hive就会将文件组织成分区文件夹的格式，并且在底层按照分区表来管理数据。</p>
+<p><strong>动态分区加载</strong>：</p>
+<p>动态分区指的是分区的字段值是基于查询结果（参数位置自动推断出来的），核心语法为<strong>insert+select</strong>。具体来说，我们插入表中的结果是从其他的表查询得到的，在查询的过程中根据分区字段的值来划分到不同的分区中，因此，我们需要事先有一张数据表。</p>
+<p>启用Hive动态分区，需要在Hive会话中设置下面两个参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs hive">--是否开启动态分区<br>set hive.exec.dynamic.partition=ture;<br><br>-- 指定动态分区模式，分为nonstrict非严格模式和strict严格模式<br>-- strict严格模式下，要求至少有一个分区为静态分区<br>set hive.exec.dynamic.partition.mode=nonstrict<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>严格模式经常和多分区匹配使用，其中至少要有一个分区为jing’tai</p>
+</blockquote>
+<p>之后结合insert和select进行动态分区加载：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs hive">insert into table 动态分区表 partition(role) <br>select tmp.*,tmp.role_main from 查询表 as tmp;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>role为我们指定的分区字段</li>
+<li>role_main为查询表中的具体字段，我们将这个字段的值作为分区的依据</li>
+<li>根据位置进行分区字段的对应，即tmp.role_main对应到分区字段</li>
+</ul>
+<p>总结来说，如果使用动态分区加载，完成的逻辑就是从已有的表中进行查询，然后将需要作为分区依据的字段查询到最后，然后插入分区表中。这样Hive会在查询的过程中判断分区字段，然后存放到不同的分区文件夹中。</p>
+<p>上面说的是单分区，实际上观察建表语句中分区的相关语法，我们可以发现Hive也支持多重分区，只需要在partitioned by后面指定多个分区字段即可。但是分区字段有先后之分，是一种递进的关系。具体来说会在前一个分区文件夹下继续划分子文件夹。</p>
+<p>分区表的本质在于提供了一种将Hive表数据分离成多个目录的方法。不同分区对应不同文件夹，同一分区的数据存储在同一个文件夹下。在查询过滤的时候只需要根据分区值找到对应的文件夹，然后扫描文件夹下本分区的文件即可，这样就避免了全表扫描。这种指定分区查询的方式就叫做<strong>分区裁剪</strong>。</p>
+<p>分区表的使用重点在于，建表的时候要根据业务场景设置合适的分区字段，例如日期、地域、类别等，然后在查询的时候尽量先使用where进行分区过滤，查询指定分区的数据来避免全表扫描。</p>
+<blockquote>
+<p>简单总结：</p>
+<ol>
+<li>分区表不是建表的必要语法规则，是一种优化手段，可选</li>
+<li>分区字段不能是表中已有的字段，不能重复</li>
+<li>分区字段是虚拟字段，其数据并不存储在底层的文件中</li>
+<li>分区字段值的确定来自于用户手动指定（静态分区）或者根据查询结果位置自动推断（动态分区）</li>
+<li>Hive支持多重分区，也就是说在分区的基础上继续分区，划分更加细粒度</li>
+</ol>
+</blockquote>
+<h2 id="Hive-Bucketed-分桶表"><a href="#Hive-Bucketed-分桶表" class="headerlink" title="Hive Bucketed 分桶表"></a>Hive Bucketed 分桶表</h2><p>分桶表也是Hive中的一种优化方式。分桶表对应的数据文件在HDFS底层会被分解为若干个部分，即被拆分成多个独立的小文件。拆分的依据在建表的时候指定要根据哪个字段将数据分为几个部分。</p>
+ <img src="/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/%E5%88%86%E6%A1%B6%E8%A1%A8.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="分桶表">
+
+<p>具体语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">clustered by (col_name) <br>[sorted by (xxx desc|asc)]<br>into n buckets;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>分别指定分桶的字段和分成几个桶</li>
+<li>需要注意的是<strong>分桶的字段必须是表中已经存在的字段</strong></li>
+<li>在创建分桶表的时候，还可以指定分桶内的数据排序规则</li>
+<li>分桶规则如下：桶编号相同的数据会被分到一个桶当中</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs markdown">Bucket number = hash<span class="hljs-emphasis">_function(bucketing_</span>column) mod num<span class="hljs-emphasis">_buckets</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>哈希方法取决于分桶字段的类型，如果是ini则直接是原值，如果是其他复杂数据类型，哈希方法是从该类型派生出来的某个数字，例如hashcode值</li>
+</ul>
+<p>分桶表的数据加载需要经过如下的流程，核心语法也是<strong>insert+select</strong>：</p>
+<ol>
+<li><p>开启分桶的功能（从Hive2.0开始不需要设置，默认开启）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">set hive.enforce.bucketing=ture<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>将源数据加载到普通的hive表中，包括hive表创建以及文件上传到HDFS对应路径两个步骤</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 普通hive表这里命名为tmp<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>使用分桶语法创建分桶表</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 分桶表这里命名为bucket_table<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>使用insert+select语法将数据加载到分桶表中（类似于分区表的动态架加载）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">insert into bucket_table select * from tmp;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>经过以上的流程之后，就可以将数据加载到分桶表中。并且在HDFS上查看对应目录可以发现数据被分成了几个部分，分桶字段一样的数据就一定被分到了同一个桶中。</p>
+<p>分桶表的核心在于原始的数据被拆分成了不同的文件，分桶字段对应值相同的数据进入同一个桶（同一个桶中，数据的对应字段可能不同）</p>
+<p>使用分桶表可以带来下面的好处：</p>
+<ol>
+<li>基于分桶字段查询的时候，减少全表扫描</li>
+<li>在Join的时候可以提高效率，减少笛卡尔积的数量（基于分桶字段join）</li>
+<li>分桶表数据进行高效抽样</li>
+</ol>
+<h2 id="Hive-Transactional-事务表"><a href="#Hive-Transactional-事务表" class="headerlink" title="Hive Transactional 事务表"></a>Hive Transactional 事务表</h2><p>Hive本身从设计之初时，就是不支持事务的，因为Hive的核心目标是将已经存在的结构化数据文件映射成为表，然后提供基于表的SQL分析处理，是一款面向分析的工具。且映射的数据通常存储于HDFS上，而HDFS是不支持随机修改文件数据的。这个定位就意味着在早期的Hive的SQL语法中是没有update，delete操作的，也就没有所谓的事务支持了，因为都是select查询分析操作。</p>
+<p>从Hive0.14版本开始，事务开始添加到Hive中，解决一些可能需要事务的场景，例如流式传输数据、数据修正、插入或更新单条记录等场景。</p>
+<p>但是Hive毕竟不是专门用于这类场景的工具，虽然支持了具有ACID性质的事务，在使用的时候还是有很多局限性：</p>
+<ul>
+<li>不支持事务的begin、commit和rollback，操作都是自动提交</li>
+<li>仅支持orc文件格式</li>
+<li>默认情况下事务配置关闭，需要手动配置参数开启</li>
+<li>表参数transactional必须为true</li>
+<li>外部表不能成为ACID表，不允许从非ACID会话读取或写入ACID表</li>
+</ul>
+<p>对于一个普通表，我们执行update、delete和insert操作，只有insert语句可以执行，update和delete操作会报错，这是因为insert操作底层是直接把数据写在了一个新的文件当中</p>
+<p>而开启了事务之后，可以执行update和delete操作，但是底层并不是随机修改的（由于HDFS不支持随机修改），而是通过标记机制来达到对应的效果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs hive">--Hive中事务表的创建使用<br>--1、开启事务配置（可以使用set设置当前session生效 也可以配置在hive-site.xml中）<br>set hive.support.concurrency = true; --Hive是否支持并发<br>set hive.enforce.bucketing = true; --从Hive2.0开始不再需要  是否开启分桶功能<br>set hive.exec.dynamic.partition.mode = nonstrict; --动态分区模式  非严格<br>set hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager; --<br>set hive.compactor.initiator.on = true; --是否在Metastore实例上运行启动线程和清理线程<br>set hive.compactor.worker.threads = 1; --在此metastore实例上运行多少个压缩程序工作线程。<br><br>--2、创建Hive事务表<br>drop table if exists trans_student;<br>create table trans_student(<br>   id int,<br>   name String,<br>   age int<br>)clustered by (id) into 2 buckets stored as orc TBLPROPERTIES(&#x27;transactional&#x27;=&#x27;true&#x27;);<br>--注意 事务表创建几个要素：开启参数、分桶表、存储格式orc、表属性<br></code></pre></td></tr></table></figure>
+
+<p>关于事务表更加详细的说明可以查看后续的笔记。</p>
+<h2 id="Hive-Views-视图"><a href="#Hive-Views-视图" class="headerlink" title="Hive Views 视图"></a>Hive Views 视图</h2><p>Hive中的视图View是一张虚拟的表，只保存定义，而不实际存储数据。我们可以将视图看作是一张普通的Hive表</p>
+<ul>
+<li>通常从真实的物理表查询中创建生成视图，也可以从已经存在的视图上创建新视图</li>
+<li>创建视图的时候，会冻结视图的架构。如果删除或更改基础表，则视图失效</li>
+<li>视图是用来简化操作的，不会缓冲记录，也不会提高查询的性能</li>
+</ul>
+<p>视图的语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 创建视图<br>create view &lt;视图名称&gt; as select * from xxx;<br><br>-- 删除视图<br>drop view &lt;视图名称&gt;<br><br>-- 更改视图属性<br>alter view &lt;视图名称&gt; set tblproperties(&#x27;comment&#x27;=&#x27;new_comment&#x27;)<br><br>-- 更改视图定义<br>alter view &lt;视图名称&gt; as [新的selet语句]<br></code></pre></td></tr></table></figure>
+
+<p>使用视图可以将真实表中的特定列数据提供给用户，保护数据的隐私；也可以降低查询的复杂度，优化查询语句。</p>
+<h2 id="Hive-Materialized-Views-物化视图"><a href="#Hive-Materialized-Views-物化视图" class="headerlink" title="Hive Materialized Views 物化视图"></a>Hive Materialized Views 物化视图</h2><p>物化视图是Hive3.0中的新特性，指的是一个包括查询结果的数据库对象，可以用于预先计算并保存操作的结果。相当于一个预处理和缓存的操作，在执行查询的时候，可以避免进行这些耗时的操作，从而快速地得到结果。</p>
+<p>使用物化视图的目的就是通过预先计算来提高查询性能，当然相应的需要占用一定的存储空间。</p>
+<ul>
+<li>Hive3.0开始尝试引入物化视图，并提供对于物化视图的查询自动重写机制（基于Apache Calcite实现）</li>
+<li>Hive的物化视图还提供了物化视图存储选择机制，可以本地存储在Hive，也可以通过用户自定义storage handlers存储在其他系统（如Druid）</li>
+<li>Hive引入物化视图的目的就是为了优化数据查询访问的效率,相当于从数据预处理的角度优化数据访问</li>
+<li>Hive从3.0丢弃了index索引的语法支持，推荐使用物化视图和列式存储文件格式来加快查询的速度</li>
+</ul>
+<blockquote>
+<p>视图 VS 物化视图：</p>
+<ol>
+<li>视图是虚拟的，只有定义没有存储数据</li>
+<li>物化视图是真实的，里面存储了预计算的数据</li>
+<li>使用物化视图的时候，直接将物化视图当作一张表，将数据缓存</li>
+<li>使用视图的时候，对于用户来说这是可以当作一张表，但是对于Hive来说实际查询的时候还是再去执行SQL去访问实际的数据表</li>
+<li>视图的目的是简化降低查询的复杂度</li>
+<li>物化视图的目的是提高查询性能</li>
+</ol>
+</blockquote>
+<p>物化视图的语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs hive">create materialized view &lt;物化视图名称&gt;<br>as select语句<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>物化视图创建之后，会自动执行select来查询。直到查询完成之后物化视图才变成可用状态</p>
+</li>
+<li><p>当数据源发生变更，物化视图也应该需要更新来保持数据的一致性，但是目前需要用户主动触发rebuild进行重构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">alter materialized view &lt;物化视图名称&gt; rebuild;<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>基于物化视图的查询重写</strong>：这是一种查询的优化手段，物化视图创建之后可以用于相关查询的加速。如果用户提交了一个查询，而这个查询正好和某个物化视图的定义相同，则可以直接通过物化视图返回结果，以实现查询的加速</p>
+<p>是否使用基于物化视图的查询重写可以通过全局参数控制，默认为true</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">hive.materializedview.rewriting=true;<br></code></pre></td></tr></table></figure>
+
+<p>用户也可以选择性的控制，指定特定的物化视图用于重写机制</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">alter materialized view &lt;物化视图名称&gt; enable|disable rewrite;<br></code></pre></td></tr></table></figure>
+
+<h1 id="Hive-SQL-DDL-其他语法"><a href="#Hive-SQL-DDL-其他语法" class="headerlink" title="Hive SQL DDL 其他语法"></a>Hive SQL DDL 其他语法</h1><h2 id="DataBase-数据库操作"><a href="#DataBase-数据库操作" class="headerlink" title="DataBase 数据库操作"></a>DataBase 数据库操作</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs hive">--创建数据库<br>create database if not exists test_database<br>comment &quot;数据库注释说明&quot; --指定数据库的注释说明<br>location hdfs_path --指定数据库在hdfs上的存储位置<br>with dbproperties (&#x27;createdBy&#x27;=&#x27;xxx&#x27;); -- 指定数据库的属性配置<br><br>--描述数据库信息<br>describe database test_database;<br>describe database extended test_database; --显示更多信息<br>desc database extended test_database; --简写<br><br>--切换数据库<br>use default;<br>use test_database;<br><br>--删除数据库<br>--注意 CASCADE关键字慎重使用<br>--默认情况下只有在数据库为空的时候才可以删除，使用的是restrict，但是我们可以使用CASCADE来强制删除<br>drop (database|schema) [if exists] database_name [restrict|cascade];<br>drop database test_database cascade ;<br><br>--更改数据库属性<br>alter (database|schema) database_name set dbproperties (property_name=property_value, ...);<br>--更改数据库所有者<br>alter (database|schema) database_name set owner [user|role] user_or_role;<br>--更改数据库位置<br>alter (database|schema) database_name set location hdfs_path;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Table-表操作"><a href="#Table-表操作" class="headerlink" title="Table 表操作"></a>Table 表操作</h2><p>Hive中针对表的操作是DDL中的核心操作，包括建表、修改表、删除表、描述表元数据信息，其中的建表语句又是一个核心。</p>
+<blockquote>
+<p>由于Hive建表之后加载映射数据很快，实际中如果建表有问题，更多可以直接删除重建</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs hive">--查询指定表的元数据信息<br>describe formatted test_database.test_table;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">--删除表<br>--删除表的元数据和数据<br>drop table [if exists] table_name [purge]<br>--清空表(从表中删除所有行，但是保留表的元数据结构)<br>truncate table table_name<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>如果配置了垃圾桶但是没有指定purge，则该表对应的数据实际上移动到HDFS垃圾桶，但是元数据完全丢失；如果指定了purge，则表数据跳过HDFS垃圾桶，直接删除实际数据</li>
+<li>删除外部表，只删除元数据</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs hive">--修改操作<br>--1、更改表名<br>alter table table_name rename to new_table_name;<br><br>--2、更改表属性<br>alter table table_name set tblproperties (property_name = property_value, ... );<br>--更改表注释<br>alter table student set tblproperties (&#x27;comment&#x27; = &quot;new comment for student table&quot;);<br><br>--3、更改serde属性<br>alter table table_name set serde serde_class_name [with serdeproperties (property_name = property_value, ... )];<br>alter table table_name [partition partition_spec] set serdeproperties serde_properties;<br>alter table table_name set serdeproperties (&#x27;field.delim&#x27; = &#x27;,&#x27;);<br>--移除serde属性<br>alter table table_name [partition partition_spec] unset serdeproperties (property_name, ... );<br><br>--4、更改表的文件存储格式 该操作仅更改表元数据。现有数据的任何转换都必须在hive之外进行。<br>alter table table_name  set fileformat file_format;<br>--5、更改表的存储位置路径<br>alter table table_name set location &quot;new location&quot;;<br><br>--6、更改列名称/类型/位置/注释<br>create table test_change (a int, b int, c int);<br>alter table test_change change a a1 int;<br>alter table test_change change a1 a2 string after b;<br>alter table test_change change c c1 int first;<br>alter table test_change change a1 a1 int comment &#x27;this is column a1&#x27;;<br><br>--7、添加/替换列<br>--使用add columns，可以将新列添加到现有列的末尾但在分区列之前。<br>--replace columns 将删除所有现有列，并添加新的列集。<br>alter table table_name add|replace columns (col_name data_type,...);<br></code></pre></td></tr></table></figure>
+
+<h2 id="Partition-分区操作"><a href="#Partition-分区操作" class="headerlink" title="Partition 分区操作"></a>Partition 分区操作</h2><p>Hive中针对分区Partition的操作主要包括增加分区、删除分区、重命名分区、修复分区和修改分区。</p>
+<p>增加分区：增加分区会更改表的元数据，但是不会加载数据。如果分区位置中不存在数据，则查询的时候不会返回结果。（需要自己将数据加载到增加的分区当中）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs hive">--添加分区<br>alter table table_name add partition (分区字段=&#x27;分区值&#x27;) <br>location hdfs_path;<br><br>--一次性添加多个分区<br>alter table table_name add <br>partition (分区字段=&#x27;分区值&#x27;) location hdfs_path<br>partition (分区字段=&#x27;分区值&#x27;) location hdfs_path;<br></code></pre></td></tr></table></figure>
+
+<p>删除分区：删除分区会删除该分区的数据和元数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs hive">alter table table_name drop [if exists] partition (dt=&#x27;2008-08-08&#x27;, country=&#x27;us&#x27;);<br>alter table table_name drop [if exists] partition (dt=&#x27;2008-08-08&#x27;, country=&#x27;us&#x27;) purge; --直接删除数据 不进垃圾桶<br></code></pre></td></tr></table></figure>
+
+<p>重命名分区：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">alter table table_name partition (分区字段 =&quot;旧值&quot;) rename to partition (分期字段 =&quot;新值&quot;);<br></code></pre></td></tr></table></figure>
+
+<p>修改分区：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs hive">--更改分区文件存储格式<br>alter table table_name partition (分区字段=&#x27;分区值&#x27;) set fileformat file_format;<br>--更改分区位置<br>alter table table_name partition (分区字段=&#x27;分区值&#x27;) set location &quot;new location&quot;;<br></code></pre></td></tr></table></figure>
+
+<p>修复分区：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">msck [repair] table table_name [add/drop/sync partitions];<br></code></pre></td></tr></table></figure>
+
+<p>在前面我们都是使用Hive来进行分区数据加载，之后Hive会维护元数据，以及在HDFS上有规律地组织文件夹结构。具体表现为在表文件夹下存在对应的分区文件夹。</p>
+<p>那么如果我们直接手动创建或者删除HDFS上的分区文件夹，Metastore将不会意识到分区信息的更改，我们也无法查询到对应的信息。而msck就是Metastore Check的缩写，表示元数据检查操作，可以用于元数据的修复。</p>
+<ul>
+<li>msck默认行为为add partitions：将hdfs上存在但是元数据中不存在的分区添加到metastore（也可以看作是一种数据导入的方法）</li>
+<li>drop partitions：将hdfs上不存在但是元数据中存在的分区信息删除</li>
+<li>sync partitions：同步分区信息，等效于上面两个的综合</li>
+<li>如果存在大量未跟踪的分区，则可以批量运行msck repair table，以避免内存不足的错误</li>
+</ul>
+<h1 id="Hive-Show-语法"><a href="#Hive-Show-语法" class="headerlink" title="Hive Show 语法"></a>Hive Show 语法</h1><p>show语法主要功能是展示数据库、数据表的一些相关信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">--显示所有数据库 schemas和databases的用法 功能一样<br>show databases;<br>show schemas;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs hive">--显示当前数据库所有表/视图/物化视图/分区/索引<br>show tables;<br>show tables [in database_name]; --指定某个数据库<br><br>--显示当前数据库下所有视图<br>show views;<br>show views &#x27;test_*&#x27;; --正则匹配，展示所有以test_开头的view<br>show views [in/from database_name]; -- 展示数据库test的所有视图<br><br>--显示当前数据库下所有物化视图<br>show materialized views [in/from database_name];<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs hive">--显示表分区信息，分区按字母顺序列出，不是分区表执行该语句会报错<br>show partitions table_name;<br>show partitions test_database.table_name;<br><br>--显示表/分区的扩展信息<br>show table extended [in|from database_name] like table_name;<br>show table extended like student;<br>describe formatted test_database.table_name;<br><br>--显示表的属性信息<br>show tblproperties table_name;<br><br>--显示表、视图的创建语句<br>show create table ([db_name.]table_name|view_name);<br><br>--显示表中的所有列，包括分区列。<br>show columns (from|in) table_name [(from|in) db_name];<br><br>--显示当前支持的所有自定义和内置的函数<br>show functions;<br><br>--查看表信息<br>desc extended table_name;<br>--查看表信息（格式化美观-以表格形式展示）<br>desc formatted table_name;<br>--查看数据库相关信息<br>describe database database_name;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hive/" class="category-chain-item">Hive</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Hive/">#Hive</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Hive学习笔记-HiveSQL(1)-数据定义语言DDL</div>
+      <div>http://example.com/2022/07/03/Hive学习笔记-HiveSQL-1-数据定义语言DDL/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月3日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-2-%E6%95%B0%E6%8D%AE%E6%93%8D%E6%8E%A7%E8%AF%AD%E8%A8%80DML%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80DQL/" title="Hive学习笔记-HiveSQL(2)-数据操控语言DML与数据查询语言DQL">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hive学习笔记-HiveSQL(2)-数据操控语言DML与数据查询语言DQL</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07/02/CentOS7%E4%B8%AD%E5%AE%89%E8%A3%85MySQL/" title="CentOS7中安装MySQL">
+                        <span class="hidden-mobile">CentOS7中安装MySQL</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

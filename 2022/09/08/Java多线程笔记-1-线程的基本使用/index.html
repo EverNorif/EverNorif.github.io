@@ -1,0 +1,1045 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="多线程是Java中的一大高级特性。本篇主要介绍了多线程相关的基本知识，以及Java中多线程的基本使用，包括Java中线程创建、线程常用方法等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java多线程笔记(1)-线程的基本使用">
+<meta property="og:url" content="http://example.com/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="多线程是Java中的一大高级特性。本篇主要介绍了多线程相关的基本知识，以及Java中多线程的基本使用，包括Java中线程创建、线程常用方法等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%B1%82%E9%9D%A2%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png">
+<meta property="og:image" content="http://example.com/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/JavaAPI%E5%B1%82%E9%9D%A2%E7%9A%84%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png">
+<meta property="article:published_time" content="2022-09-08T10:07:13.000Z">
+<meta property="article:modified_time" content="2022-09-18T12:34:20.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%B1%82%E9%9D%A2%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png">
+  
+  
+  
+  <title>Java多线程笔记(1)-线程的基本使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java多线程笔记(1)-线程的基本使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-08 18:07" pubdate>
+          2022年9月8日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          73 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java多线程笔记(1)-线程的基本使用</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="基本知识"><a href="#基本知识" class="headerlink" title="基本知识"></a>基本知识</h1><h2 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h2><p>进程：</p>
+<ul>
+<li>程序由指令和数据组成，但是这些指令要运行，数据要读写，就必须将指令加载至CPU，将数据加载至内存；同时在指令运行过程中还需要用到磁盘、网络等设备。而进程就是用来加载指令、管理内存、管理IO的</li>
+<li>当一个程序被执行，从磁盘加载这个程序的代码到内存中，就已经开启了一个进程</li>
+<li>进程可以视为程序的一个实例，大部分程序可以同时运行多个实例进程，有的程序只启动一个实例进程</li>
+</ul>
+<p>线程：</p>
+<ul>
+<li>一个进程可以启动一个或者多个线程</li>
+<li>一个线程就是一个指令流，指令流中的指令按照一定的顺序交给CPU执行</li>
+<li>Java中，线程是调度的基本单位，进程是资源分配的基本单位</li>
+</ul>
+<p>两者对比：</p>
+<ul>
+<li>进程之间相互独立，而线程是存在于进程内部</li>
+<li>线程会共享进程拥有的资源</li>
+<li>进程间的通信较为复杂，同一台计算机的进程通信称为IPC（Inter-Process Communication），不同计算机之间的进程通信，则需要通过网络进行，遵循共同的协议</li>
+<li>线程间的通信较为简单，因为它们共享进程的内存</li>
+<li>线程更加轻量级，线程上下文的切换成本一般要低于进程上下文的切换</li>
+</ul>
+<p>线程的作用：</p>
+<ul>
+<li>使多道程序更好的并发执行</li>
+<li>提高资源利用率和系统吞吐量</li>
+<li>增强操作系统的并发性能</li>
+</ul>
+<h2 id="并行与并发"><a href="#并行与并发" class="headerlink" title="并行与并发"></a>并行与并发</h2><ul>
+<li>并行（parallel）：在同一时刻，多个指令在多个CPU上同时执行。（真正同时）</li>
+<li>并发（concurrent）：在同一时刻，多个指令在单个CPU上交替执行（模拟同时，微观串行，宏观并行）</li>
+</ul>
+<h2 id="同步与异步"><a href="#同步与异步" class="headerlink" title="同步与异步"></a>同步与异步</h2><p>从方法调用的角度来看：</p>
+<ul>
+<li>需要等待结果返回，才能继续运行就是同步</li>
+<li>不需要等待结果返回，就能继续运行就是异步</li>
+</ul>
+<blockquote>
+<p>IO不占用CPU，只是我们一般拷贝文件使用的是阻塞IO，这时相当于线程虽然不用CPU，但是需要一直等待IO结束，没能充分利用线程。所以才有后面的非阻塞IO和异步IO的优化。</p>
+</blockquote>
+<h1 id="Java线程"><a href="#Java线程" class="headerlink" title="Java线程"></a>Java线程</h1><h2 id="线程创建"><a href="#线程创建" class="headerlink" title="线程创建"></a>线程创建</h2><h3 id="方法1：Thread"><a href="#方法1：Thread" class="headerlink" title="方法1：Thread"></a>方法1：Thread</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyThread</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Thread</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyThread</span><span class="hljs-params">(String name)</span> &#123;<br>        <span class="hljs-built_in">super</span>(name);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">MyThread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyThread</span>(<span class="hljs-string">&quot;thread1&quot;</span>); <span class="hljs-comment">// 继承Thread</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-string">&quot;thread2&quot;</span>) &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>                log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>            &#125;<br>        &#125;<br>    &#125;; <span class="hljs-comment">// 匿名内部类形式</span><br><br>    thread1.start();<br>    thread2.start();<br><br>    <span class="hljs-comment">// 主线程执行</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>        log.info(i + <span class="hljs-string">&quot;&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>继承Thread，重写run方法。也可以使用匿名内部类来完成</p>
+</li>
+<li><p>Thread 相关构造器：</p>
+<ul>
+<li><code>public Thread()</code>：默认构造器</li>
+<li><code>public Thread(String name)</code>：指定线程名称</li>
+</ul>
+</li>
+<li><p>优点：编码简单</p>
+</li>
+<li><p>缺点：线程类已经继承了 Thread 类无法继承其他类了，功能不能通过继承拓展（单继承的局限性）</p>
+</li>
+</ul>
+<blockquote>
+<ol>
+<li><p>start() 方法向 CPU 注册当前线程，并且触发 run() 方法执行</p>
+</li>
+<li><p>线程的启动必须调用 start() 方法，如果线程直接调用 run() 方法，相当于变成了普通类的执行，此时主线程将只有执行该线程</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="方法2：Runnable"><a href="#方法2：Runnable" class="headerlink" title="方法2：Runnable"></a>方法2：Runnable</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyRunnable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">Runnable</span> <span class="hljs-variable">target</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyRunnable</span>(); <span class="hljs-comment">// 实现Runnable接口</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(target, <span class="hljs-string">&quot;thread1&quot;</span>);<br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;, <span class="hljs-string">&quot;thread2&quot;</span>); <span class="hljs-comment">// lambda表达式</span><br><br>    thread1.start();<br>    thread2.start();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>实现Runnable，实现run（没有返回值，不能抛异常），之后传递给Thread构造方法</p>
+</li>
+<li><p>Thread 相关构造器：</p>
+<ul>
+<li><code>public Thread(Runnable target)</code></li>
+<li><code>public Thread(Runnable target, String name)</code></li>
+</ul>
+</li>
+<li><p>优点：</p>
+<ol>
+<li>线程任务类只是实现了 Runnable 接口，可以继续继承其他类，避免了单继承的局限性</li>
+<li>将线程和任务分开，让任务类脱离了Thread继承体系，更加灵活</li>
+<li>更容易与线程池等高级API配合，线程池可以放入实现 Runnable 或 Callable 线程任务对象</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>Thread和Runnable之间的关系</p>
+<ul>
+<li>方法1直接重写Thread的run方法</li>
+<li>方法2中将Runnable对象赋值给Thread类内部的一个Runnable类型的target属性，然后在run方法中调用target的run方法</li>
+</ul>
+</blockquote>
+<h3 id="方法3：Callable"><a href="#方法3：Callable" class="headerlink" title="方法3：Callable"></a>方法3：Callable</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyCallable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Callable</span>&lt;Integer&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">call</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        log.info(<span class="hljs-string">&quot;Hello1&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">100</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ExecutionException, InterruptedException &#123;<br>    Callable&lt;Integer&gt; myCallable = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyCallable</span>();<br>    FutureTask&lt;Integer&gt; futureTask1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FutureTask</span>&lt;&gt;(myCallable); <span class="hljs-comment">// 实现Callable接口</span><br>    FutureTask&lt;Integer&gt; futureTask2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FutureTask</span>&lt;&gt;(() -&gt; &#123;<br>        log.info(<span class="hljs-string">&quot;Hello2&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">200</span>;<br>    &#125;); <span class="hljs-comment">// Lambda表达式</span><br><br>    <span class="hljs-comment">// 包装成Thread对象</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(futureTask1, <span class="hljs-string">&quot;thread1&quot;</span>);<br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(futureTask2, <span class="hljs-string">&quot;thread2&quot;</span>);<br><br>    thread1.start();<br>    thread2.start();<br><br>    <span class="hljs-type">Integer</span> <span class="hljs-variable">res1</span> <span class="hljs-operator">=</span> futureTask1.get(); <span class="hljs-comment">// 调用FutureTask的get方法获取返回值</span><br>    <span class="hljs-type">Integer</span> <span class="hljs-variable">res2</span> <span class="hljs-operator">=</span> futureTask2.get();<br>    log.info(<span class="hljs-string">&quot;res1: &quot;</span> + res1);<br>    log.info(<span class="hljs-string">&quot;res2: &quot;</span> + res2);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>实现Callable接口，重写其中的call方法。在这个call方法中可以有泛型，也可以有返回值</li>
+<li>创建一个Callable的线程任务对象，将其包装成一个FutureTask</li>
+<li>FutureTask能够接收Callable类型的参数，用来处理有结果的情况</li>
+<li>将FutureTask再包装成Thread，获得线程对象</li>
+<li>同样可以用Lambda表达式简化</li>
+</ul>
+<blockquote>
+<p><strong>FutureTask补充</strong>：</p>
+<p>FutureTask继承了Runnable、Future接口，用于包装Callable对象，实现任务的提交</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 相关类和接口的定义</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FutureTask</span>&lt;V&gt; <span class="hljs-keyword">implements</span> <span class="hljs-title class_">RunnableFuture</span>&lt;V&gt;;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">RunnableFuture</span>&lt;V&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Runnable</span>, Future&lt;V&gt;<br></code></pre></td></tr></table></figure>
+
+<p>相关API：</p>
+<p><code>public FutureTask(Callable&lt;V&gt; callable)</code>：在线程执行完后得到线程的执行结果</p>
+<ul>
+<li>FutureTask 就是 Runnable 对象，因为 <strong>Thread 类只能执行 Runnable 实例的任务对象</strong>，所以把 Callable 包装成FutureTask</li>
+</ul>
+<p><code>public FutureTask(Runnable runnable, V result)</code>：也可以将Runnable再进行包装</p>
+<p><code>public V get()</code>：同步等待 task 执行完毕的结果，如果在线程中获取另一个线程执行结果，会阻塞等待，用于线程同步</p>
+<ul>
+<li>get() 线程会阻塞等待任务执行完成</li>
+<li>run() 执行完后会把结果设置到 FutureTask  的一个成员变量，get() 线程可以获取到该变量的值</li>
+</ul>
+</blockquote>
+<h2 id="线程查看"><a href="#线程查看" class="headerlink" title="线程查看"></a>线程查看</h2><p>Windows：</p>
+<ul>
+<li>任务管理器可以查看进程和线程数，也可以用来杀死进程</li>
+<li><code>tasklist</code> 查看进程</li>
+<li><code>taskkill</code> 杀死进程</li>
+</ul>
+<p>Linux：</p>
+<ul>
+<li><code>ps -ef</code> 查看所有进程</li>
+<li><code>ps -fT -p &lt;PID&gt;</code> 查看某个进程（PID）的所有线程</li>
+<li><code>kill</code> 杀死进程</li>
+<li><code>top</code> 按大写 H 切换是否显示线程</li>
+<li><code>top -H -p &lt;PID&gt;</code> 查看某个进程（PID）的所有线程</li>
+</ul>
+<p>Java：</p>
+<ul>
+<li><code>jps</code> 命令查看所有 Java 进程</li>
+<li><code>jstack &lt;PID&gt;</code> 查看某个 Java 进程（PID）的所有线程状态</li>
+<li><code>jconsole</code> 来查看某个 Java 进程中线程的运行情况（图形界面）</li>
+</ul>
+<h2 id="线程原理"><a href="#线程原理" class="headerlink" title="线程原理"></a>线程原理</h2><p>一个方法对应一个栈帧中的内容，其中包括了局部变量表、返回地址，锁记录，操作数栈等。一个线程对应一块栈内存，不同的线程使用不同的栈空间，里面有多个栈帧。即使用不同的Java虚拟机栈，每个线程启动后，虚拟机就会为其分配一块栈内存</p>
+<ul>
+<li>每个栈由多个栈帧（Frame）组成，对应着每次方法调用时所占用的内存</li>
+<li>每个线程只能有一个活动栈帧，对应着当前正在执行的那个方法</li>
+</ul>
+<p>线程上下文切换（Thread Context Switch）：一些原因导致 CPU 不再执行当前线程，转而执行另一个线程。可能发生上下文切换的情况如下：</p>
+<ul>
+<li>线程的 CPU 时间片用完</li>
+<li>垃圾回收</li>
+<li>有更高优先级的线程需要运行</li>
+<li>线程自己调用了 sleep、yield、wait、join、park 等方法</li>
+</ul>
+<p>当 Context Switch 发生时，需要由操作系统保存当前线程的状态（PCB 中），并恢复另一个线程的状态，包括程序计数器、虚拟机栈中每个栈帧的信息，如局部变量、操作数栈、返回地址等。可以预见的是，上下文切换频繁会影响性能，因此线程数不是越多越好。</p>
+<h2 id="线程常用方法"><a href="#线程常用方法" class="headerlink" title="线程常用方法"></a>线程常用方法</h2><h3 id="API-列表"><a href="#API-列表" class="headerlink" title="API 列表"></a>API 列表</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public void start()</td>
+<td>启动一个新线程，Java虚拟机调用此线程的 run 方法</td>
+</tr>
+<tr>
+<td>public void run()</td>
+<td>线程启动后被调用的方法</td>
+</tr>
+<tr>
+<td>public void setName(String name)</td>
+<td>给当前线程设置名称</td>
+</tr>
+<tr>
+<td>public void getName()</td>
+<td>获取当前线程的名称<br />线程存在默认名称：子线程是 Thread-索引，主线程是 main</td>
+</tr>
+<tr>
+<td>public static Thread currentThread()</td>
+<td>获取当前线程对象，代码在哪个线程中执行</td>
+</tr>
+<tr>
+<td>public static void sleep(long time)</td>
+<td>让当前线程休眠多少毫秒再继续执行<br /><strong>Thread.sleep(0)</strong> : 让操作系统立刻重新进行一次 CPU 竞争</td>
+</tr>
+<tr>
+<td>public static native void yield()</td>
+<td>提示线程调度器让出当前线程对 CPU 的使用</td>
+</tr>
+<tr>
+<td>public final int getPriority()</td>
+<td>返回此线程的优先级</td>
+</tr>
+<tr>
+<td>public final void setPriority(int priority)</td>
+<td>更改此线程的优先级，常用 1 5 10</td>
+</tr>
+<tr>
+<td>public void interrupt()</td>
+<td>中断这个线程，异常处理机制</td>
+</tr>
+<tr>
+<td>public static boolean interrupted()</td>
+<td>判断当前线程是否被打断，清除打断标记</td>
+</tr>
+<tr>
+<td>public boolean isInterrupted()</td>
+<td>判断当前线程是否被打断，不清除打断标记</td>
+</tr>
+<tr>
+<td>public final void join()</td>
+<td>等待这个线程结束</td>
+</tr>
+<tr>
+<td>public final void join(long millis)</td>
+<td>等待这个线程，最多等待millis 毫秒，0 意味着永远等待</td>
+</tr>
+<tr>
+<td>public final native boolean isAlive()</td>
+<td>判断线程是否存活（还没有运行完毕）</td>
+</tr>
+<tr>
+<td>public final void setDaemon(boolean on)</td>
+<td>将此线程标记为守护线程或用户线程</td>
+</tr>
+</tbody></table>
+<h3 id="start-vs-run"><a href="#start-vs-run" class="headerlink" title="start vs run"></a>start vs run</h3><p>如果要使用多线程启动Thread，必须要调用Thread的start方法。如果直接调用run方法，则只是简单的方法调用，而不是多线程执行</p>
+<p>start不能多次调用，多次调用会抛出异常<code>java.lang.IllegalThreadStateException</code></p>
+<h3 id="sleep-vs-yield"><a href="#sleep-vs-yield" class="headerlink" title="sleep vs yield"></a>sleep vs yield</h3><p>sleep：</p>
+<ul>
+<li>调用 sleep 会让当前线程从 <code>Running</code> 进入 <code>Timed Waiting</code> 状态</li>
+<li>sleep() 方法的过程中，<strong>线程不会释放对象锁</strong></li>
+<li>其它线程可以<strong>使用 interrupt 方法打断正在睡眠的线程</strong>，这时 sleep 方法会抛出 InterruptedException，可以使用try&#x2F;catch来进行代码执行</li>
+<li>睡眠结束后的线程未必会立刻得到执行，需要抢占 CPU</li>
+<li>建议用 TimeUnit 的 sleep 代替 Thread 的 sleep 来获得更好的可读性</li>
+</ul>
+<blockquote>
+<p>sleep通常用来防止CPU占用100%。</p>
+<p>在没有利用CPU来计算的时候，我们希望不要让while(true)空转占用CPU，这时候就可以使用sleep来让出CPU的使用权给其他程序</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;<br>    <span class="hljs-keyword">try</span>&#123;<br>        Thread.sleep(<span class="hljs-number">50</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e)&#123;<br>        e.printStackTrace();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>在一些服务端监听的场景下会用到 while(true)</li>
+</ul>
+</blockquote>
+<p>yield：</p>
+<ul>
+<li>调用yield会让当前线程从<code>Running</code>进入<code>Runnable</code>状态</li>
+</ul>
+<ul>
+<li>调用yield之后调度执行其他同优先级的线程。但是如果这时没有同优先级的线程，那么不能保证达到让当前线程暂停的效果</li>
+<li>具体的实现依赖于操作系统的任务调度器</li>
+<li><strong>会放弃 CPU 资源，锁资源不会释放</strong></li>
+</ul>
+<blockquote>
+<p>线程优先级：</p>
+<ul>
+<li>线程优先级会提示（hint）调度器优先调度该线程。但是仅仅是一个提示，调度器可以忽略</li>
+<li>如果CPU忙，那么优先级高的线程会获得更多的时间片，如果CPU空闲，则优先级几乎没有用。</li>
+<li>最小优先级1，最大优先级10，默认优先级5。数字越大，优先级越高</li>
+</ul>
+</blockquote>
+<h3 id="join"><a href="#join" class="headerlink" title="join"></a>join</h3><p>join可以等待线程结束，底层原理是调用者轮询检查线程的alive状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">join</span><span class="hljs-params">(<span class="hljs-type">long</span> millis)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>    <span class="hljs-comment">// 调用者线程进入 thread 的 waitSet 等待, 直到当前线程运行结束</span><br>    <span class="hljs-comment">// wait(0)和wait()方法的实际意义是一样的，都表示在没有唤醒的情况下该线程一直处于等待状态</span><br>    ...<br>    <span class="hljs-keyword">while</span> (isAlive()) &#123;<br>        wait(<span class="hljs-number">0</span>);<br>    &#125;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>可以设置超时时间</li>
+<li>join 方法是一个Thread类的成员方法，并且被 synchronized 修饰</li>
+</ul>
+<h3 id="interrupt"><a href="#interrupt" class="headerlink" title="interrupt"></a>interrupt</h3><p><code>public void interrupt()</code>：打断这个线程，触发<code>InterruptedExecption</code>异常</p>
+<p><code>public static boolean interrupted()</code>：Thread类的静态方法，判断当前线程是否被打断，打断返回 true，<strong>清除打断标记</strong>，连续调用两次一定返回 false</p>
+<p><code>public boolean isInterrupted()</code>：Thread类的成员方法，判断当前线程是否被打断，不清除打断标记</p>
+<blockquote>
+<p>打断并不是停下线程，而是干扰。而被打断的线程会知道有人在干扰自己。线程判断打断标记，再决定自己要干什么。优雅的停止线程】</p>
+</blockquote>
+<ul>
+<li>线程被打断之后，会出现<code>InterruptedException</code></li>
+<li>打断标记用于标记该线程被打断</li>
+<li>打断阻塞状态的线程，<strong>会清除打断标记</strong></li>
+<li>打断正常情况下的线程，不会清除打断标记</li>
+</ul>
+<p>打断阻塞状态的线程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    log.debug(<span class="hljs-string">&quot;sleeping....&quot;</span>);<br>    <span class="hljs-keyword">try</span> &#123;<br>        Thread.sleep(<span class="hljs-number">5000</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br>&#125;, <span class="hljs-string">&quot;thread1&quot;</span>);<br><br>thread1.start();<br><br>Thread.sleep(<span class="hljs-number">1000</span>); <br><span class="hljs-comment">// 注意主线程需要先等一会，才会出现打断睡眠状态线程的情况</span><br><span class="hljs-comment">// 如果主线程不等的话，可能就不是打断睡眠状态的线程了</span><br>thread1.interrupt();<br>log.debug(<span class="hljs-string">&quot;打断标记: &#123;&#125;&quot;</span>, thread1.isInterrupted());<br></code></pre></td></tr></table></figure>
+
+<p>输出如下：可以看到会清除打断标记</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">15:08:55.136 [thread1] c.ThreadTest - sleeping....<br>java.lang.InterruptedException: sleep interrupted<br>	at java.lang.Thread.sleep(Native Method)<br>	at ThreadTest.lambda$main$0(ThreadTest.java:14)<br>	at java.lang.Thread.run(Thread.java:748)<br>15:08:56.140 [main] c.ThreadTest - 打断标记: false<br></code></pre></td></tr></table></figure>
+
+<p>打断正常运行的线程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">current</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">interrupted</span> <span class="hljs-operator">=</span> current.isInterrupted();<br>        <span class="hljs-keyword">if</span> (interrupted) &#123;<br>            log.debug(<span class="hljs-string">&quot;退出循环&quot;</span>);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br><br>    &#125;<br>&#125;, <span class="hljs-string">&quot;thread1&quot;</span>);<br><br>thread1.start();<br><br>Thread.sleep(<span class="hljs-number">1000</span>);<br>thread1.interrupt();<br>log.debug(<span class="hljs-string">&quot;打断标记: &#123;&#125;&quot;</span>, thread1.isInterrupted());<br></code></pre></td></tr></table></figure>
+
+<p>输出如下：可以看到没有清除打断标记</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">15:18:35.108 [main] c.ThreadTest - 打断标记: true<br>15:18:35.108 [thread1] c.ThreadTest - 退出循环<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>利用interrupt，可以完成多线程设计模式-两阶段终止。具体实现可以参考后面的多线程设计模式笔记。</p>
+</blockquote>
+<h3 id="daemon"><a href="#daemon" class="headerlink" title="daemon"></a>daemon</h3><p>守护线程的生命周期与其他非守护线程相同，它是服务于用户线程的。只要其它非守护线程运行结束了，即使守护线程代码没有执行完，也会强制结束。JVM中的垃圾回收线程就是一种守护线程</p>
+<p>设置守护线程需要在线程启动之前调用方法<code>setDaemon(boolean on)</code>，将其中的标志位设置为true。</p>
+<h2 id="线程状态"><a href="#线程状态" class="headerlink" title="线程状态"></a>线程状态</h2><p>从操作系统层面来看，分为初始状态、就绪状态、运行状态、阻塞状态、终止状态。</p>
+<img src="/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%B1%82%E9%9D%A2%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="操作系统层面线程状态">
+
+<p>从Java API层面来看，在 API 中 <code>java.lang.Thread.State</code> 这个枚举中给出了六种线程状态，分为新建New、可运行Runnable、阻塞Blocked、等待Waiting、超时等待Timed Waiting、结束Terminated。</p>
+<img src="/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/JavaAPI%E5%B1%82%E9%9D%A2%E7%9A%84%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="JavaAPI层面的线程状态">
+
+<blockquote>
+<ul>
+<li>操作系统层面的阻塞状态指的是因为等待某一事件而不能运行，例如等待IO。</li>
+<li>Java API层面的可运行，对应操作系统层面的就绪、运行和阻塞状态</li>
+<li>Java API层面的阻塞，指的是当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入 Blocked 状态；当该线程持有锁时，该线程将变成 Runnable 状态。【阻塞在锁上】</li>
+</ul>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Java/" class="category-chain-item">Java</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Java/">#Java</a>
+      
+        <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java多线程笔记(1)-线程的基本使用</div>
+      <div>http://example.com/2022/09/08/Java多线程笔记-1-线程的基本使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月8日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/09/09/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-2-synchronized%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86/" title="Java多线程笔记(2)-synchronized的使用与原理">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java多线程笔记(2)-synchronized的使用与原理</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/04/Java8%E6%96%B0%E7%89%B9%E6%80%A7/" title="Java8新特性">
+                        <span class="hidden-mobile">Java8新特性</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

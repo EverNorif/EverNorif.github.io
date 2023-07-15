@@ -1,0 +1,1095 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前端三件套之一的css简单入门。并不是详细的学习笔记，而是一些基础要点的记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="css简单入门">
+<meta property="og:url" content="http://example.com/2023/03/27/css%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="前端三件套之一的css简单入门。并不是详细的学习笔记，而是一些基础要点的记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-27T13:10:43.000Z">
+<meta property="article:modified_time" content="2023-03-27T14:20:12.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>css简单入门 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="css简单入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-03-27 21:10" pubdate>
+          2023年3月27日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">css简单入门</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="CSS基础"><a href="#CSS基础" class="headerlink" title="CSS基础"></a>CSS基础</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>css：层叠样式表</p>
+<ul>
+<li><p>可以在html中内嵌CSS代码实现格式</p>
+<ul>
+<li>首先不建议这么做，更优方法是前后端分离</li>
+<li>利用标签<code>&lt;style&gt;&lt;/style&gt;</code>，在标签的范围内书写CSS代码</li>
+<li>style标签放在head标签里面</li>
+</ul>
+</li>
+<li><p>将html与CSS分离</p>
+<ul>
+<li><p>CSS文件同样是如上面的<code>&lt;style&gt;&lt;/style&gt;</code>标签中的内容</p>
+<ul>
+<li>但是在单独的文件中无需再次使用style标签</li>
+</ul>
+</li>
+<li><p>将其单独写进一个<code>.css</code>文件中</p>
+</li>
+<li><p>然后需要将其链接到html文件中来</p>
+<ul>
+<li>在html文件中<code>head</code>标签中引入</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;./koncss.css&quot;</span>&gt;</span>、<br><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;需要引入的css文件的位置&quot;</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>此时在浏览器中可以点击看到css文件</li>
+<li>建议使用html和css分离的方式</li>
+</ul>
+</li>
+<li><p>css中的注释是使用<code>/*注释*/</code></p>
+</li>
+</ul>
+<p>CSS的优势：</p>
+<ol>
+<li>内容和表现分离</li>
+<li>网页结构表现统一，可以实现复用</li>
+<li>样式十分丰富</li>
+<li>建议使用独立于html的css文件</li>
+<li>利于SEO，容易被搜索引擎收录</li>
+</ol>
+<h2 id="导入方式"><a href="#导入方式" class="headerlink" title="导入方式"></a>导入方式</h2><ul>
+<li><p>内部样式表：css代码嵌套在html中</p>
+</li>
+<li><p>外部样式表：css与html分离</p>
+</li>
+<li><p>行内样式：在html的标签中利用style</p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;color:red&quot;</span>&gt;</span>xxx<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>多种样式生效规则：覆盖原则，外部样式表的按照link引入的位置顺序</p>
+<ul>
+<li>从上到下按顺序执行，每次执行覆盖执行效果</li>
+</ul>
+</li>
+<li><p>扩展：外部样式的两种写法</p>
+<ul>
+<li><p>链接式：link</p>
+</li>
+<li><p>导入式：（CSS2.1）</p>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-keyword">@import</span> url(<span class="hljs-string">&quot;需要导入的css的路径&quot;</span>)</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>弊端：顺序是先展示结构，在渲染效果。在网络卡顿或者网站庞大的时候这种先后效果会更加明显</li>
+<li>不推荐，还是建议使用链接式link</li>
+</ul>
+<h2 id="三种基本选择器"><a href="#三种基本选择器" class="headerlink" title="三种基本选择器"></a>三种基本选择器</h2><p>选择器的作用是选择页面上的某一个或者某一类元素。</p>
+<p>基本选择器：</p>
+<ol>
+<li><p>标签选择器</p>
+<ul>
+<li>会选择到页面中所有的相应标签<ul>
+<li>选择器格式为<code>标签名（如h1）</code></li>
+</ul>
+</li>
+<li>选择所有有时候也是弊端</li>
+</ul>
+</li>
+<li><p>类选择器（class）</p>
+<ul>
+<li><p>首先在标签中可以添加class属性，class属性可以任意命名（应该有意义）</p>
+</li>
+<li><p>然后通过class来选择</p>
+<ul>
+<li>选择器格式为<code>.类名（.class）</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ctitle&quot;</span>&gt;</span>xxx<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>.ctitle<br>&#123;<br>    color:red;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>可以多个标签归类</li>
+</ul>
+</li>
+<li><p>id选择器</p>
+<ul>
+<li>与类选择器类似，需要在标签中定义id，id也可以任意命名，然后通过id来选择<ul>
+<li>选择器格式为<code>#id</code></li>
+</ul>
+</li>
+<li>id必须保证全局唯一（是规范）<ul>
+<li>如果有相同的id，还是能够使用</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>优先级：id选择器&gt;class选择器&gt;标签选择器</p>
+<ul>
+<li>多个选择器共用一个格式，就让选择器之间使用逗号<code>,</code>隔开</li>
+</ul>
+<p>这些是最基本的选择器，还有更加高级的选择器。</p>
+<ul>
+<li><p>id选择器选择到的是唯一确定的一个元素。</p>
+</li>
+<li><p>类选择器和标签选择器返回的是元素的列表。如果只有一个元素也将会组织成列表的形式。</p>
+</li>
+</ul>
+<h2 id="层次选择器"><a href="#层次选择器" class="headerlink" title="层次选择器"></a>层次选择器</h2><p>网页的结构是天然的一种树形结构。层次选择器适应这种树形结构。</p>
+<ol>
+<li><p>后代选择器</p>
+<ul>
+<li><p>在某个元素的后面的所有元素（树形结构的后代关系）</p>
+</li>
+<li><p>使用方法：当前标签 后代标签(中间有一个空格)</p>
+</li>
+<li><p>eg：<code>body p&#123;color:#xxxxxx&#125;</code></p>
+</li>
+</ul>
+</li>
+<li><p>子选择器</p>
+<ul>
+<li>在某个元素的后一代元素</li>
+<li>使用方法：当前标签&gt;后代标签</li>
+</ul>
+</li>
+<li><p>相邻兄弟选择器（弟弟选择器，对下不对上，且只有一个）</p>
+<ul>
+<li>这需要选中许多标签中的一个元素，应该会使用到类选择器</li>
+<li>使用方法：当前元素+后代元素</li>
+</ul>
+</li>
+<li><p>通用选择器</p>
+<ul>
+<li>通用兄弟选择器，同样是对下不对上，但是选择所有（所有弟弟选择器）</li>
+<li>使用方法：当前元素~后代元素</li>
+</ul>
+</li>
+</ol>
+<h2 id="结构伪类选择器"><a href="#结构伪类选择器" class="headerlink" title="结构伪类选择器"></a>结构伪类选择器</h2><p>选择器选择到了某类元素之后，再加条件进行限定（增加条件来进行更加精准地定位）</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html">ul li:first-child<br>ul li:last-child<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>当前元素:first-child</code>：当前元素的第一个子元素</li>
+<li><code>当前元素:last-child</code>：当前元素的最后一个子元素</li>
+<li><code>当前元素:nth-child(x)</code>：找到当前元素的父级元素，再找到父级元素的第x个子元素（无视标签类型），如果这个第x个子元素是与当前元素同标签，就选中生效。否则不生效。</li>
+<li><code>当前元素:nth-of-type(x)</code>：选择父元素中第二个类型与当前元素相同的子元素。（与上相似，找子元素的时候考虑标签类型）</li>
+</ul>
+<p>理解伪类：增加的条件限定（比如找到第几个元素，或者在某些情况下生效，像鼠标悬停，选中之类的）</p>
+<h2 id="属性选择"><a href="#属性选择" class="headerlink" title="属性选择"></a>属性选择</h2><p>功能更加强大，可以使用正则表达式进行匹配操作。</p>
+<p>选择器格式：<code>属性[条件表达式]&#123;声明&#125;</code></p>
+<ul>
+<li>条件表达式中，可以使用正则表达式<ul>
+<li>举例说明：</li>
+<li><code>[attr=&quot;val&quot;]</code>：选择attr属性等于val的元素</li>
+<li><code>[attr]</code>：选择拥有attr属性的元素</li>
+<li><code>[attr~=&quot;val&quot;]</code>：选择attr属性包含val（单词）的元素</li>
+<li><code>[attr$=&quot;val&quot;]</code>：选择attr属性以val结尾的元素</li>
+<li><code>[attr^=&quot;val&quot;]</code>：选择attr属性以val开头的元素</li>
+<li><code>[attr*=&quot;val&quot;]</code>：选择attr属性任意位置包含val（字符）的元素</li>
+<li><code>[attr|=&quot;val&quot;]</code>：选择attr属性的值开头为val（单词）或为val-（单词）的元素</li>
+<li><code>[attr*=&quot;val&quot; I(或者i)]</code>：表示val不区分大小写（i 正则）</li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<h2 id="盒子模型及边框使用"><a href="#盒子模型及边框使用" class="headerlink" title="盒子模型及边框使用"></a>盒子模型及边框使用</h2><ul>
+<li><p>盒子模型：就是一个类似于盒子的东西</p>
+<ul>
+<li>margin：外边距</li>
+<li>padding：内边距</li>
+<li>border：边框</li>
+</ul>
+</li>
+<li><p>很多元素有默认盒子的边距，例如body，h等等</p>
+<ul>
+<li>可以利用一系列初始化动作将其还原</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html">h1,ul,li,a,body&#123;<br>    margin:0;<br>    padding:0;<br>    text-decoration:none;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>盒子模型的参数可以直接指定，也可以分开上下左右来指定（上右下左）</li>
+<li>边框：border<ul>
+<li>border:粗细，边框样式，颜色</li>
+</ul>
+</li>
+<li>外边距：margin<ul>
+<li>外边距妙用：实现元素居中<ul>
+<li><code>margin:0 auto</code></li>
+<li>居中有要求，外元素是一个有宽度的盒子</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>内边距：padding</li>
+<li>盒子元素：来确定整个元素的大小<ul>
+<li>margin+border+padding+内容宽度</li>
+</ul>
+</li>
+</ul>
+<h2 id="display和浮动"><a href="#display和浮动" class="headerlink" title="display和浮动"></a>display和浮动</h2><ul>
+<li>块级元素：独占一行<ul>
+<li><code>h1~h6 p div 列表...</code></li>
+</ul>
+</li>
+<li>行内元素：不独占一行<ul>
+<li><code>span a img strong ...</code></li>
+</ul>
+</li>
+</ul>
+<p>行内元素可以包含在块级元素中，但是反之不可以。</p>
+<ul>
+<li>display：有很多属性，可以修改元素的块级元素或者行内元素等，可以打破上面的规则<ul>
+<li>重要属性值：<ul>
+<li>block：块元素</li>
+<li>inline：行内元素</li>
+<li>inline-block：即使块元素又是行内元素（是块元素，但是可以写在一行）</li>
+<li>none：消失（但是在源码中是有的）</li>
+</ul>
+</li>
+<li>是一种简单的行内元素的排列方式，但是在很多情况下使用的是float</li>
+</ul>
+</li>
+</ul>
+<p>浮动：元素浮动效果</p>
+<ul>
+<li><code>float</code></li>
+<li>浮动的时候会边框塌陷，改变页面大小会造成排版失败等</li>
+</ul>
+<h2 id="overflow及父级边框塌陷问题"><a href="#overflow及父级边框塌陷问题" class="headerlink" title="overflow及父级边框塌陷问题"></a>overflow及父级边框塌陷问题</h2><ul>
+<li><code>clear</code>：对浮动的效果加以一些限制<ul>
+<li>right：清除右侧浮动（右侧不允许有浮动元素）</li>
+<li>left：清除左侧浮动</li>
+<li>both：两侧均不允许浮动</li>
+<li>none：不clear</li>
+</ul>
+</li>
+</ul>
+<p>父级边框塌陷问题解决：</p>
+<ul>
+<li>增加父级元素的高度</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#father</span>&#123;<br>    <span class="hljs-attribute">border</span>:<span class="hljs-number">1px</span> <span class="hljs-number">#000</span> solid;<br>    <span class="hljs-attribute">height</span>:<span class="hljs-number">800px</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>在漂浮块后面增加一个空的div标签并清除浮动</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs css">&lt;<span class="hljs-selector-tag">div</span> class=&quot;xxx&quot;&gt;&lt;/<span class="hljs-selector-tag">div</span>&gt;<br><br><span class="hljs-selector-class">.clear</span>&#123;<br>    <span class="hljs-attribute">clear</span>:both;<br>    <span class="hljs-attribute">margin</span>:<span class="hljs-number">0</span>;<br>    <span class="hljs-attribute">padding</span>:<span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>overflow：可以完成的效果是，在块元素设定了宽高的时候，内容如何显示的问题</p>
+<ul>
+<li>在默认情况下，会展现出所有内容，且内容可以超出边框</li>
+<li>使用overflow：<ul>
+<li>hidden：隐藏超出部分</li>
+<li>scroll：形成滚动条的形式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>在父类中添加一个伪类：after</p>
+</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#father</span><span class="hljs-selector-pseudo">:after</span>&#123;<br>    <span class="hljs-attribute">content</span>:<span class="hljs-string">&#x27;&#x27;</span>;<br>    <span class="hljs-attribute">display</span>:block;<br>    <span class="hljs-attribute">clear</span>:both;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>与增加空div标签的原理类似，只不过不用在html代码中增加空div，可以直接利用伪类完成</li>
+</ul>
+<p>小结：</p>
+<ol>
+<li>设置父元素高度<ul>
+<li>简单，但是父元素有了固定的高度，会被限制</li>
+</ul>
+</li>
+<li>浮动元素后面增加空div<ul>
+<li>简单，但是代码中加入空的div不太好</li>
+</ul>
+</li>
+<li>overflow<ul>
+<li>简单，但是在一些下拉，内容不能清除的地方不建议使用（因为丑）</li>
+</ul>
+</li>
+<li>在父类增加伪类<ul>
+<li>简单，推荐使用</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p>对比</p>
+<ul>
+<li><p>display：方向不可控</p>
+</li>
+<li><p>float：方向可控，但是会增加父级边框塌陷的问题</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="绝对定位和固定定位"><a href="#绝对定位和固定定位" class="headerlink" title="绝对定位和固定定位"></a>绝对定位和固定定位</h2><p>绝对定位：基于xxx定位的情况，给定上下左右</p>
+<ul>
+<li><p>不在标准文档流中，原来的位置不会被保留</p>
+</li>
+<li><p>在父级元素没有定位的情况下，相对于浏览器定位</p>
+<ul>
+<li>这种情况一般会使用后面的fixed</li>
+</ul>
+</li>
+<li><p>如果父级元素有定位（即指定了position属性），相对于父级元素定位</p>
+<ul>
+<li>更过情况是这个</li>
+</ul>
+</li>
+<li><p><code>postion:absolute</code></p>
+</li>
+<li><p>需要上下左右来确定元素如何偏移</p>
+<ul>
+<li>top bottom left right</li>
+</ul>
+</li>
+</ul>
+<p>固定定位：</p>
+<ul>
+<li><p>直接定死，定死在画面中。也并非是相对于浏览器，而相对于屏幕画面（可以这样理解）</p>
+</li>
+<li><p><code>postion:fixed</code></p>
+</li>
+<li><p>需要上下左右来确定元素如何偏移</p>
+<ul>
+<li>top bottom left right</li>
+</ul>
+</li>
+</ul>
+<h2 id="z-index以及透明度"><a href="#z-index以及透明度" class="headerlink" title="z-index以及透明度"></a>z-index以及透明度</h2><p>类似于图层概念。</p>
+<p><code>z-index</code>来指定层级（0最小，往上递增）</p>
+<ul>
+<li>堆叠了才有图层的概念</li>
+</ul>
+<p>透明操作：</p>
+<ul>
+<li>直接指定透明：透明度<code>opacity</code></li>
+<li><code>filter</code>实现：<code>filter:alpha(透明度)</code><ul>
+<li>早期版本使用，历史了不建议使用</li>
+</ul>
+</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%89%8D%E7%AB%AF/" class="category-chain-item">前端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%89%8D%E7%AB%AF/%E5%9F%BA%E7%A1%80/" class="category-chain-item">基础</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/css/">#css</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>css简单入门</div>
+      <div>http://example.com/2023/03/27/css简单入门/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年3月27日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/27/html%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/" title="html简单入门">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">html简单入门</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/25/Flask%E4%B8%AD%E5%BC%82%E5%B8%B8%E7%9A%84%E7%BB%9F%E4%B8%80%E7%AE%A1%E7%90%86/" title="Flask中异常的统一管理">
+                        <span class="hidden-mobile">Flask中异常的统一管理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

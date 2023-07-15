@@ -1,0 +1,862 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在前面的笔记中，我们解决共享资源的问题都是使用加锁的实现，另一种思想是使用无锁并发。Java中提供的CAS操作就可以帮助我们使用无锁并发。本篇主要介绍了CAS的使用以及在JUC中利用CAS机制实现的原子类。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java多线程笔记(4)-CAS与Atomic原子类">
+<meta property="og:url" content="http://example.com/2022/09/11/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-4-CAS%E4%B8%8EAtomic%E5%8E%9F%E5%AD%90%E7%B1%BB/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="在前面的笔记中，我们解决共享资源的问题都是使用加锁的实现，另一种思想是使用无锁并发。Java中提供的CAS操作就可以帮助我们使用无锁并发。本篇主要介绍了CAS的使用以及在JUC中利用CAS机制实现的原子类。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-11T08:10:21.000Z">
+<meta property="article:modified_time" content="2022-09-11T08:18:30.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Java多线程笔记(4)-CAS与Atomic原子类 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java多线程笔记(4)-CAS与Atomic原子类"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-11 16:10" pubdate>
+          2022年9月11日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          55 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java多线程笔记(4)-CAS与Atomic原子类</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h1><p>CAS，全称为Compare-And-Set &#x2F; Compare-And-Swap，它是一个CPU并发原语，保证其是一个原子操作</p>
+<p>CAS完成一个变量的交换操作，需要提供变量的预期值A以及设置值B，然后进行CAS原子操作。CAS会先检测当前变量的值是否是预期值A，如果是就将其赋值为设置值B，如果不是则交换失败，对变量不做其他操作</p>
+<p><strong>CAS的操作必须需要借助volatile</strong>，读取到共享变量的最新值，来实现比较并交换的效果。并且在使用的时候，通常会配合while使用，通过自旋+CAS来实现无锁并发的效果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 自旋+CAS实现无锁并发的伪代码</span><br><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">prev</span> <span class="hljs-operator">=</span> xxx;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">next</span> <span class="hljs-operator">=</span> yyy;<br>    CAS(target, prev, next);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>结合CAS和volatile可以实现无锁并发，基于乐观锁的思想，适用于线程数少，多核CPU的场景下，最好不要超过CPU的核心数。因为没有使用synchronzied，所以线程不会陷入阻塞，这也是效率提升的因素之一。但是如果竞争激烈，可以想到的是重试必然频繁发生，效率反而受到影响</p>
+<p>CAS本身也有一些缺点：</p>
+<ul>
+<li>循环时间长，开销大。如果CAS比较不成功会一直空转，在竞争激烈的情况下会导致效率很低。因此在使用CAS的时候，最好线程数不要超过CPU的核心数</li>
+<li>CAS只能保证一个共享变量的原子操作，如果对于多个共享变量，循环+CAS就无法保证操作的原子性，这个时候只能用锁来保证原子性</li>
+<li>ABA问题。考虑如下场景，线程1希望将共享变量从A修改成C，但是过程中有其他线程先将这个共享变量从A修改成了B，又将其从B修改成了A，线程1仍然能够达到修改效果，但是期间有其他线程修改了共享变量，和我们的预期效果有所不符。这个问题可以通过增加版本来解决，在后续的原子引用中会继续提到</li>
+</ul>
+<p>Java中的CAS，底层都是通过<code>sun.misc.Unsafe</code>类来完成的。在Unsafe类中提供了一个单例的Unsafe对象，其中的所有方法都是native方法，直接调用操作系统底层资源执行相应的任务</p>
+<p>这里，Unsafe指的并不是线程安全，而是说这个类是直接调用操作系统底层的资源，因此不建议程序员直接使用。在Unsafe类中的单例对象也是使用了private进行修饰，无法直接获得，但是可以通过反射进行获取</p>
+<p>Unsafe类中，提供的与CAS相关的方法有<code>getAndSetInt</code>，<code>getAndSetLong</code>，<code>getAndSetObject</code></p>
+<h1 id="原子类"><a href="#原子类" class="headerlink" title="原子类"></a>原子类</h1><p>利用循环+CAS机制可以实现无锁并发，但是如果由程序员直接使用的话会较为复杂，因此Java中也封装了一些比较方便的方法。<code>java.util.concurrent.atomic</code>包提供了许多利用CAS机制实现的原子类和工具类，这些类可以保证不同共享变量的原子性</p>
+<h2 id="原子基本类型"><a href="#原子基本类型" class="headerlink" title="原子基本类型"></a>原子基本类型</h2><p>原子基本类型可以保证基本类型的原子性，常用的类有<code>AtomicInteger</code>、<code>AtomicBoolean</code>、<code>AtomicLong</code>，下面简单介绍其中原子整数的使用</p>
+<p>构造方法：</p>
+<ul>
+<li><code>public AtomicInteger()</code>：初始化一个默认值为 0 的原子型 Integer</li>
+<li><code>public AtomicInteger(int initialValue)</code>：初始化一个指定值的原子型 Integer</li>
+</ul>
+<p>常用API：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public final int get()</td>
+<td>获取 AtomicInteger 的值</td>
+</tr>
+<tr>
+<td>public final boolean compareAndSet(int expect, int update)</td>
+<td>原子方式CAS，判断当前元素值是否是expect<br />如果是则将其设置为update并返回true，否则返回false</td>
+</tr>
+<tr>
+<td>public final int getAndIncrement()</td>
+<td>以原子方式将当前值加 1，返回的是自增前的值</td>
+</tr>
+<tr>
+<td>public final int incrementAndGet()</td>
+<td>以原子方式将当前值加 1，返回的是自增后的值</td>
+</tr>
+<tr>
+<td>pubilc final int getAndDecrement()</td>
+<td>以原子方式将当前值减1，返回的是自减前的值</td>
+</tr>
+<tr>
+<td>public final int decremantAndGet()</td>
+<td>以原子方式将当前值减1，返回的是自减后的值</td>
+</tr>
+<tr>
+<td>public final int getAndSet(int value)</td>
+<td>以原子方式设置为 newValue 的值，返回旧值</td>
+</tr>
+<tr>
+<td>public final int addAndGet(int data)</td>
+<td>以原子方式将输入的数值与实例中的值相加并返回</td>
+</tr>
+<tr>
+<td>public final int getAndUpdate(IntUnaryOperator updateFunction)</td>
+<td>提供一个函数式接口，描述对元素值的操作，以原子方式进行操作<br />返回旧值</td>
+</tr>
+<tr>
+<td>public final int updateAndGet(IntUnaryOperator updateFunction)</td>
+<td>提供一个函数式接口，描述对元素值的操作，以原子方式进行操作<br />返回进行操作后的值</td>
+</tr>
+</tbody></table>
+<h2 id="原子引用"><a href="#原子引用" class="headerlink" title="原子引用"></a>原子引用</h2><p>如果需要保证一个对象的原子性，则需要使用原子引用类。原子引用类可以对某个对象进行原子操作。常用的原子引用类有<code>AtomicReference</code>、<code>AtomicMarkableReference</code>、<code>AtomicStampedReference</code></p>
+<p>AtomicReference类的使用：</p>
+<ul>
+<li><p>构造方法：<code>AtomicReference&lt;T&gt; atomicReference = new AtomicReference&lt;T&gt;()</code></p>
+</li>
+<li><p>常用 API：</p>
+<ul>
+<li><code>public final boolean compareAndSet(V expectedValue, V newValue)</code>：CAS 操作</li>
+<li><code>public final void set(V newValue)</code>：将值设置为 newValue </li>
+<li><code>public final V get()</code>：返回当前值</li>
+</ul>
+</li>
+</ul>
+<p>前面我们提到了CAS中会存在的ABA问题，我们可以使用版本号来解决这种问题。<code>AtomicStampedReference</code>类就是带版本的原子类。考虑下面的代码，模拟ABA问题的流程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">static</span> AtomicStampedReference&lt;String&gt; ref = <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicStampedReference</span>&lt;&gt;(<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-number">0</span>);<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>    <span class="hljs-comment">// 打印初始状态</span><br>    log.debug(<span class="hljs-string">&quot;main start...&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">prev</span> <span class="hljs-operator">=</span> ref.getReference();<br>    <span class="hljs-type">int</span> <span class="hljs-variable">startStamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>    log.debug(<span class="hljs-string">&quot;当前状态: ref:&#123;&#125;, stamp:&#123;&#125;&quot;</span>, prev, startStamp);<br><br>    <span class="hljs-comment">// thread1先将A修改成B</span><br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">stamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;change A-&gt;B:&#123;&#125;&quot;</span>, ref.compareAndSet(ref.getReference(), <span class="hljs-string">&quot;B&quot;</span>, stamp, stamp + <span class="hljs-number">1</span>));<br>        <span class="hljs-type">int</span> <span class="hljs-variable">nowStamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;stamp:&#123;&#125;-&gt;&#123;&#125;&quot;</span>, stamp, nowStamp);<br>    &#125;, <span class="hljs-string">&quot;thread1&quot;</span>).start();<br>    Thread.sleep(<span class="hljs-number">500</span>);<br>    <span class="hljs-comment">// thread2再将B修改成A</span><br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">stamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;change B-&gt;A:&#123;&#125;&quot;</span>, ref.compareAndSet(ref.getReference(), <span class="hljs-string">&quot;A&quot;</span>, stamp, stamp + <span class="hljs-number">1</span>));<br>        <span class="hljs-type">int</span> <span class="hljs-variable">nowStamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;stamp:&#123;&#125;-&gt;&#123;&#125;&quot;</span>, stamp, nowStamp);<br>    &#125;, <span class="hljs-string">&quot;thread2&quot;</span>).start();<br><br>    Thread.sleep(<span class="hljs-number">1000</span>);<br>    <span class="hljs-comment">// main将A修改成C</span><br>    log.debug(<span class="hljs-string">&quot;change A-&gt;C:&#123;&#125;&quot;</span>, ref.compareAndSet(prev, <span class="hljs-string">&quot;C&quot;</span>, startStamp, startStamp + <span class="hljs-number">1</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出如下，发现确实无法修改，解决了ABA问题</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.464</span> [main] c.ThreadTest - main start...<br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.464</span> [main] c.ThreadTest - 当前状态: ref:A, stamp:<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.519</span> [thread1] c.ThreadTest - change A-&gt;B:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.519</span> [thread1] c.ThreadTest - stamp:<span class="hljs-number">0</span>-&gt;<span class="hljs-number">1</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">04.021</span> [thread2] c.ThreadTest - change B-&gt;A:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">04.021</span> [thread2] c.ThreadTest - stamp:<span class="hljs-number">1</span>-&gt;<span class="hljs-number">2</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">05.030</span> [main] c.ThreadTest - change A-&gt;C:<span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+
+<p>如果我们深入到<code>compareAndSet</code>的方法中，可以看到实际上这种版本的机制在底层实际上相当于是多增加了一个stamp的CAS机制，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(V   expectedReference,</span><br><span class="hljs-params">                             V   newReference,</span><br><span class="hljs-params">                             <span class="hljs-type">int</span> expectedStamp,</span><br><span class="hljs-params">                             <span class="hljs-type">int</span> newStamp)</span> &#123;<br>    Pair&lt;V&gt; current = pair;<br>    <span class="hljs-type">return</span><br>        <span class="hljs-variable">expectedReference</span> <span class="hljs-operator">=</span>= current.reference &amp;&amp;<br>        expectedStamp == current.stamp &amp;&amp;<br>        ((newReference == current.reference &amp;&amp;<br>          newStamp == current.stamp) ||<br>         casPair(current, Pair.of(newReference, newStamp)));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果我们在使用的时候不利用stamp的规则，在修改的时候不进行stamp的更新，那么也是无法解决ABA的问题的。即如果将上面的代码中，在指定expectedStamp和newStamp的时候，给定相同的值，不进行+1的操作，那么主线程还是可以完成修改。输出如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.729</span> [main] c.ThreadTest - main start...<br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.729</span> [main] c.ThreadTest - 当前状态: ref:A, stamp:<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.776</span> [thread1] c.ThreadTest - change A-&gt;B:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.776</span> [thread1] c.ThreadTest - stamp:<span class="hljs-number">0</span>-&gt;<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">37.290</span> [thread2] c.ThreadTest - change B-&gt;A:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">37.290</span> [thread2] c.ThreadTest - stamp:<span class="hljs-number">0</span>-&gt;<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">38.305</span> [main] c.ThreadTest - change A-&gt;C:<span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>因此我们在使用带有版本号的原子引用的时候，需要自我约束，遵循版本stamp的使用规则</p>
+</blockquote>
+<p><code>AtomicStampedReference</code>可以给原子引用增加版本号，追踪原子引用整个的变化过程。通过它，我们可以知道引用变量在中途被更改了多少次。但是有的时候，我们可能并不关心引用变量更改了多少次，而只是单纯地关心它是否被更改过，那么可以使用<code>AtomicMarkableReference</code></p>
+<p>相比于前面利用一个整型的stamp记录版本，AtomicMarkableReference将其替换成了一个布尔型的mark，可以记载的状态就只有true和false两种了，而其他的逻辑都基本类似</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 构造方法</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">AtomicMarkableReference</span><span class="hljs-params">(V initialRef, <span class="hljs-type">boolean</span> initialMark)</span> &#123;<br>        pair = Pair.of(initialRef, initialMark);<br>&#125;<br><br><span class="hljs-comment">// cas方法</span><br><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(V       expectedReference,</span><br><span class="hljs-params">                             V       newReference,</span><br><span class="hljs-params">                             <span class="hljs-type">boolean</span> expectedMark,</span><br><span class="hljs-params">                             <span class="hljs-type">boolean</span> newMark)</span> &#123;<br>    Pair&lt;V&gt; current = pair;<br>    <span class="hljs-type">return</span><br>        <span class="hljs-variable">expectedReference</span> <span class="hljs-operator">=</span>= current.reference &amp;&amp;<br>        expectedMark == current.mark &amp;&amp;<br>        ((newReference == current.reference &amp;&amp;<br>          newMark == current.mark) ||<br>         casPair(current, Pair.of(newReference, newMark)));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="原子数组"><a href="#原子数组" class="headerlink" title="原子数组"></a>原子数组</h2><p>原子数组类型可以保护数组内的元素的原子性，常用的原子数组类有<code>AtomicIntegerArray</code>、<code>AtomicLongArray</code>、<code>AtomicReferenceArray</code>。这里简要介绍原子整数数组类的使用</p>
+<p>构造方法：</p>
+<ul>
+<li><code>public AtomicIntegerArray(int length)</code>：提供数组长度，构造一个空数组</li>
+<li><code>public AtomicIntegerArray(int[] array)</code>：传入数组进行构造</li>
+</ul>
+<p>CAS方法：</p>
+<p><code>public final boolean compareAndSet(int i, int expect, int update)</code>：利用CAS修改指定下标上的值</p>
+<h2 id="原子更新器"><a href="#原子更新器" class="headerlink" title="原子更新器"></a>原子更新器</h2><p>原子更新器可以允许我们针对对象的某个属性进行原子操作，常用的原子更新器有<code>AtomicReferenceFieldUpdater</code>、<code>AtomicIntegerFieldUpdater</code>、<code>AtomicLongFieldUpdater</code></p>
+<p>利用原子更新器，可以针对对象的某个属性进行原子操作，但是只能配合 volatile 修饰的字段使用，否则会出现异常 <code>IllegalArgumentException: Must be volatile type</code></p>
+<p>常用 API：</p>
+<ul>
+<li><p><code>static &lt;U&gt; AtomicIntegerFieldUpdater&lt;U&gt; newUpdater(Class&lt;U&gt; c, String fieldName)</code>：构造方法</p>
+<blockquote>
+<p>如果是AtomicReferenceFieldUpdater，则还需要指定一个字段的类型对应的Class类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;U,W&gt; AtomicReferenceFieldUpdater&lt;U,W&gt; <span class="hljs-title function_">newUpdater</span><span class="hljs-params">(Class&lt;U&gt; tclass, Class&lt;W&gt; vclass, String fieldName)</span><br></code></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p><code>abstract boolean compareAndSet(T obj, int expect, int update)</code>：CAS方法，需要指定修改哪个对象的字段</p>
+</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Java/" class="category-chain-item">Java</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Java/">#Java</a>
+      
+        <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java多线程笔记(4)-CAS与Atomic原子类</div>
+      <div>http://example.com/2022/09/11/Java多线程笔记-4-CAS与Atomic原子类/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/09/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-5-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Java多线程笔记(5)-线程池的使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java多线程笔记(5)-线程池的使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/10/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-3-volatile%E4%B8%8EJava%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java多线程笔记(3)-volatile与Java内存模型">
+                        <span class="hidden-mobile">Java多线程笔记(3)-volatile与Java内存模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

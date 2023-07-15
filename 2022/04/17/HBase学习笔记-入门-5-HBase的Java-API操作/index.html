@@ -1,0 +1,832 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="HBase原生支持Java的API操作，本文介绍如何使用Java对HBase进行操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase学习笔记-入门(5)-HBase的Java API操作">
+<meta property="og:url" content="http://example.com/2022/04/17/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-5-HBase%E7%9A%84Java-API%E6%93%8D%E4%BD%9C/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="HBase原生支持Java的API操作，本文介绍如何使用Java对HBase进行操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-17T12:33:09.000Z">
+<meta property="article:modified_time" content="2022-04-19T07:14:44.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="HBase">
+<meta property="article:tag" content="笔记">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>HBase学习笔记-入门(5)-HBase的Java API操作 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HBase学习笔记-入门(5)-HBase的Java API操作"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-04-17 20:33" pubdate>
+          2022年4月17日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          76 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">HBase学习笔记-入门(5)-HBase的Java API操作</h1>
+            
+            <div class="markdown-body">
+              
+              <p>使用Maven构建Java项目，需要引入<code>hbase-client</code>的依赖。</p>
+<h2 id="连接构建"><a href="#连接构建" class="headerlink" title="连接构建"></a>连接构建</h2><p>要完成对应的操作，首先需要建立本地Java程序与集群的连接，而构建连接需要对应的配置文件。</p>
+<p>在分布式环境下，客户端访问HBase需要通过ZooKeeper的地址和端口来获取当前活跃的Master和所需的RegionServer地址。配置文件中至少要指定上面的内容。</p>
+<p>首先将配置文件放在项目中的<code>resources</code>文件夹中，需要的配置文件有HBase的<code>hbase-site.xml</code>和Hadoop的<code>core-site.xml</code>。可以使用<code>HBaseConfiguration</code>的单例方法获取配置。这个方法会去读取我们刚才resource文件夹中的配置文件。如果文件夹中没有放置对应的配置文件也没有关系，可以获取之后使用set方法进行设置（就像下面的情况）。获取配置之后，创建连接。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> Configuration configuration;<br><span class="hljs-keyword">private</span> Connection connection;<br><br><span class="hljs-meta">@Before</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 设置Zookeeper的地址和端口</span><br>    configuration = HBaseConfiguration.create();<br>    <span class="hljs-comment">// 设置和hbase-site.xml中相同</span><br>    configuration.set(<span class="hljs-string">&quot;hbase.zookeeper.quorum&quot;</span>, <span class="hljs-string">&quot;hadoop102, hadoop103, hadoop104&quot;</span>);<br>    configuration.set(<span class="hljs-string">&quot;hbase.zookeeper.property.clientPort&quot;</span>, <span class="hljs-string">&quot;2181&quot;</span>);<br>    <span class="hljs-comment">// 获取连接</span><br>    connection = ConnectionFactory.createConnection(configuration);<br>&#125;<br><br><span class="hljs-meta">@After</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    connection.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>注意连接使用完毕之后需要关闭</li>
+</ul>
+<p>在Java中对于HBase的操作可以分成两大类：对数据表的管理操作和对表中数据的增删改查操作。前者的操作需要获取到<code>Admin</code>对象，后者的操作需要获取到<code>Table</code>对象</p>
+<h2 id="数据表管理操作"><a href="#数据表管理操作" class="headerlink" title="数据表管理操作"></a>数据表管理操作</h2><p>对于数据表的管理等操作需要先得到<code>Admin</code>对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> Configuration configuration;<br><span class="hljs-keyword">private</span> Connection connection;<br><span class="hljs-keyword">private</span> Admin admin;<br><br><span class="hljs-meta">@Before</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 设置Zookeeper的地址和端口</span><br>    configuration = HBaseConfiguration.create();<br>    <span class="hljs-comment">// 设置和hbase-site.xml中相同</span><br>    configuration.set(<span class="hljs-string">&quot;hbase.zookeeper.quorum&quot;</span>, <span class="hljs-string">&quot;hadoop102, hadoop103, hadoop104&quot;</span>);<br>    configuration.set(<span class="hljs-string">&quot;hbase.zookeeper.property.clientPort&quot;</span>, <span class="hljs-string">&quot;2181&quot;</span>);<br>    <span class="hljs-comment">// 获取连接</span><br>    connection = ConnectionFactory.createConnection(configuration);<br>    <span class="hljs-comment">// 获取HBaseAdmin对象</span><br>    admin = connection.getAdmin();<br>&#125;<br><br><span class="hljs-meta">@After</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    admin.close();<br>    connection.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h3><ol>
+<li>调用tableExists判断表是否存在</li>
+<li>创建表需要构建表描述器（TableDescriptor）、列族描述器（ColumnFamilyDescriptor）。这两个对象需要通过对应的描述器构建器使用build来创建</li>
+<li>将列族描述器添加到表描述器中</li>
+<li>使用admin.createTable创建表</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">createTable</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 1. 构建表名</span><br>    <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br><br>    <span class="hljs-comment">// 2.判断表是否存在</span><br>    <span class="hljs-keyword">if</span> (admin.tableExists(tableName)) &#123;<br>        System.out.println(<span class="hljs-string">&quot;表已经存在!&quot;</span>);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 3. 构建表描述构建器</span><br>    <span class="hljs-comment">// TableDescriptor: 表描述器，描述这个表的相关配置，如列族等</span><br>    <span class="hljs-comment">// TableDescriptorBuilder: 表描述构建器，用来构建表描述器</span><br>    <span class="hljs-type">TableDescriptorBuilder</span> <span class="hljs-variable">tableDescriptorBuilder</span> <span class="hljs-operator">=</span> TableDescriptorBuilder.newBuilder(tableName);<br><br>    <span class="hljs-comment">// 4. 构建列族描述构建器</span><br>    <span class="hljs-comment">// ColumnFamilyDescriptor: 列族描述器，描述列族相关信息，一个列族描述器对应一个列族</span><br>    <span class="hljs-comment">// ColumnFamilyDescriptorBuilder: 列族表述构造器，用来构建列族描述器</span><br>    <span class="hljs-type">ColumnFamilyDescriptorBuilder</span> <span class="hljs-variable">columnFamilyDescriptorBuilder</span> <span class="hljs-operator">=</span> ColumnFamilyDescriptorBuilder.newBuilder(Bytes.toBytes(<span class="hljs-string">&quot;C1&quot;</span>));<br><br>    <span class="hljs-comment">// 5. 构建列族描述和表描述</span><br>    <span class="hljs-type">ColumnFamilyDescriptor</span> <span class="hljs-variable">columnFamilyDescriptor</span> <span class="hljs-operator">=</span> columnFamilyDescriptorBuilder.build();<br>    tableDescriptorBuilder.setColumnFamily(columnFamilyDescriptor);<br>    <span class="hljs-type">TableDescriptor</span> <span class="hljs-variable">tableDescriptor</span> <span class="hljs-operator">=</span> tableDescriptorBuilder.build();<br><br>    <span class="hljs-comment">// 6. 创建表</span><br>    admin.createTable(tableDescriptor);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>由于在HBase中存储的都是byte [ ]，所以会经常使用到一个工具类Bytes（hbase包下的Bytes工具类），可以使用这个工具类将字符串、long、double等类型转化成byte [ ]数组，也可以将byte [ ]数组转化成指定类型 </p>
+</blockquote>
+<h3 id="删除表"><a href="#删除表" class="headerlink" title="删除表"></a>删除表</h3><p>直接调用API即可，注意也是需要先禁用，再删除</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteTable</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br>    <span class="hljs-comment">// 判断表是否存在，如果存在则删除，如果不存在则输出提示信息</span><br>    <span class="hljs-keyword">if</span> (admin.tableExists(tableName)) &#123;<br>        admin.disableTable(tableName);<br>        admin.deleteTable(tableName);<br>        System.out.println(<span class="hljs-string">&quot;表&quot;</span> + tableName.toString() + <span class="hljs-string">&quot;已经删除&quot;</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;表&quot;</span> + tableName.toString() + <span class="hljs-string">&quot;不存在&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="增删改查操作"><a href="#增删改查操作" class="headerlink" title="增删改查操作"></a>增删改查操作</h2><p>对于表的增删改查需要先得到Table对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> Configuration configuration;<br><span class="hljs-keyword">private</span> Connection connection;<br><br><span class="hljs-meta">@Before</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 设置Zookeeper的地址和端口</span><br>    configuration = HBaseConfiguration.create();<br>    <span class="hljs-comment">// 设置和hbase-site.xml中相同</span><br>    configuration.set(<span class="hljs-string">&quot;hbase.zookeeper.quorum&quot;</span>, <span class="hljs-string">&quot;hadoop102, hadoop103, hadoop104&quot;</span>);<br>    configuration.set(<span class="hljs-string">&quot;hbase.zookeeper.property.clientPort&quot;</span>, <span class="hljs-string">&quot;2181&quot;</span>);<br>    <span class="hljs-comment">// 获取连接</span><br>    connection = ConnectionFactory.createConnection(configuration);<br>&#125;<br><br><span class="hljs-meta">@After</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    connection.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>HBase的connection对象是一个重量级的对象，编写代码的时候需要避免重复创建，并且它是线程安全的。</p>
+<p>而Table对象施一公轻量级的，使用完之后需要close，它是非线程安全的。</p>
+</blockquote>
+<h3 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h3><ol>
+<li>使用HBase连接获取Table对象</li>
+<li>构建RowKey，列族名和列名</li>
+<li>构建put对象</li>
+<li>添加对应列</li>
+<li>使用Table对象执行put操作</li>
+<li>关闭Table对象</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">//1. 使用HBase连接获取Table对象</span><br>    <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br>    <span class="hljs-type">Table</span> <span class="hljs-variable">table</span> <span class="hljs-operator">=</span> connection.getTable(tableName);<br><br>    <span class="hljs-comment">//2. 构建RowKey，列族名和列名</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">rowKey</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;00001&quot;</span>;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">cfName</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;C1&quot;</span>;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">colName1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Name&quot;</span>;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">colName2</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Age&quot;</span>;<br><br>    <span class="hljs-comment">//3. 利用行键构建put对象</span><br>    <span class="hljs-type">Put</span> <span class="hljs-variable">put</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Put</span>(Bytes.toBytes(rowKey));<br><br>    <span class="hljs-comment">//4. 添加对应列</span><br>    put.addColumn(Bytes.toBytes(cfName), Bytes.toBytes(colName1), Bytes.toBytes(<span class="hljs-string">&quot;syh&quot;</span>));<br>    put.addColumn(Bytes.toBytes(cfName), Bytes.toBytes(colName2), Bytes.toBytes(<span class="hljs-string">&quot;21&quot;</span>));<br><br>    <span class="hljs-comment">//5. 使用Table对象执行put操作</span><br>    table.put(put);<br><br>    <span class="hljs-comment">//6. 关闭Table对象</span><br>    table.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="通过rowkey获取数据"><a href="#通过rowkey获取数据" class="headerlink" title="通过rowkey获取数据"></a>通过rowkey获取数据</h3><ol>
+<li>获取Table对象</li>
+<li>使用rowKey构建get对象</li>
+<li>执行get请求，得到Result对象（表示逻辑一行）</li>
+<li>获取所有单元格</li>
+<li>打印rowkey</li>
+<li>迭代打印单元格列表</li>
+<li>关闭表</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">get</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 1. 获取Table对象</span><br>    <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br>    <span class="hljs-type">Table</span> <span class="hljs-variable">table</span> <span class="hljs-operator">=</span> connection.getTable(tableName);<br><br>    <span class="hljs-comment">// 2. 使用rowKey构建Get对象</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">rowKey</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;00001&quot;</span>;<br>    <span class="hljs-type">Get</span> <span class="hljs-variable">get</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Get</span>(Bytes.toBytes(rowKey));<br><br>    <span class="hljs-comment">// 3. 执行get请求</span><br>    <span class="hljs-type">Result</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> table.get(get);<br><br>    <span class="hljs-comment">// 4. 获取所有单元格</span><br>    List&lt;Cell&gt; cells = result.listCells();<br><br>    <span class="hljs-comment">// 5. 打印rowKey</span><br>    <span class="hljs-type">byte</span>[] row = result.getRow();<br>    System.out.println(Bytes.toString(row));<br><br>    <span class="hljs-comment">// 6. 迭代打印单元格列表</span><br>    <span class="hljs-keyword">for</span> (Cell cell : cells) &#123;<br>        <span class="hljs-comment">// 将字符数组转化成字符串</span><br>        <span class="hljs-comment">// 获取列族的名称</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">colFamily</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(), cell.getFamilyLength());<br>        <span class="hljs-comment">// 获取列的名称</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">colName</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(), cell.getQualifierLength());<br>        <span class="hljs-comment">// 获取值</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());<br><br>        System.out.println(colFamily + <span class="hljs-string">&quot;:&quot;</span> + colName + <span class="hljs-string">&quot;-&gt;&quot;</span> + value);<br>    &#125;<br><br>    <span class="hljs-comment">// 7. 关闭表</span><br>    table.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意在循环内部，获取到的都是Array，需要使用offset和length来指定范围</p>
+<h3 id="获取所有数据"><a href="#获取所有数据" class="headerlink" title="获取所有数据"></a>获取所有数据</h3><ol>
+<li>获取Table对象</li>
+<li>构建scan请求对象</li>
+<li>执行scan扫描请求，得到ResultScanner对象</li>
+<li>循环ResultScanner对象，每次得到一个Result对象</li>
+<li>对每个Result对象，即对每个逻辑行进行输出</li>
+<li>手动关闭ResultScanner</li>
+<li>关闭表</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">scan</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 1. 获取Table对象</span><br>    <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br>    <span class="hljs-type">Table</span> <span class="hljs-variable">table</span> <span class="hljs-operator">=</span> connection.getTable(tableName);<br><br>    <span class="hljs-comment">// 2. 构建scan请求对象</span><br>    <span class="hljs-type">Scan</span> <span class="hljs-variable">scan</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Scan</span>();<br><br>    <span class="hljs-comment">// 3. 执行scan扫描请求，得到ResultScanner对象</span><br>    <span class="hljs-type">ResultScanner</span> <span class="hljs-variable">resultScanner</span> <span class="hljs-operator">=</span> table.getScanner(scan);<br><br>    <span class="hljs-comment">// 4. 循环ResultScanner对象，每次得到一个Result对象</span><br>    <span class="hljs-comment">// 5. 对每个Result对象，即对每个逻辑行进行输出</span><br>    <span class="hljs-keyword">for</span> (Result result : resultScanner) &#123;<br>        <span class="hljs-comment">// 对于每个result(逻辑行)内容的输出可以参考get的代码</span><br>        List&lt;Cell&gt; cells = result.listCells();<br>        <span class="hljs-type">byte</span>[] row = result.getRow();<br>        System.out.println(Bytes.toString(row));<br><br>        <span class="hljs-keyword">for</span> (Cell cell : cells) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">colFamily</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(), cell.getFamilyLength());<br>            <span class="hljs-type">String</span> <span class="hljs-variable">colName</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(), cell.getQualifierLength());<br>            <span class="hljs-type">String</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());<br><br>            System.out.println(colFamily + <span class="hljs-string">&quot;:&quot;</span> + colName + <span class="hljs-string">&quot;-&gt;&quot;</span> + value);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 6. 手动关闭ResultScanner</span><br>    resultScanner.close();<br><br>    <span class="hljs-comment">// 7. 关闭表</span><br>    table.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h3><ol>
+<li>获取Table对象</li>
+<li>根据rowKey构建delete对象</li>
+<li>执行delete请求</li>
+<li>关闭表</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">delete</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 1. 获取Table对象</span><br>    <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br>    <span class="hljs-type">Table</span> <span class="hljs-variable">table</span> <span class="hljs-operator">=</span> connection.getTable(tableName);<br><br>    <span class="hljs-comment">// 2. 根据rowKey构建delete对象</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">rowKey</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;00001&quot;</span>;<br>    <span class="hljs-type">Delete</span> <span class="hljs-variable">delete</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Delete</span>(Bytes.toBytes(rowKey));<br><br>    <span class="hljs-comment">// 3. 执行delete请求</span><br>    table.delete(delete);<br><br>    <span class="hljs-comment">// 4. 关闭表</span><br>    table.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="过滤器使用"><a href="#过滤器使用" class="headerlink" title="过滤器使用"></a>过滤器使用</h3><p>过滤器的使用可以结合scan，在构建scan对象之后，利用setFilter进行设置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">scanWithFilter</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br>    <span class="hljs-type">Table</span> <span class="hljs-variable">table</span> <span class="hljs-operator">=</span> connection.getTable(tableName);<br><br>    <span class="hljs-type">Scan</span> <span class="hljs-variable">scan</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Scan</span>();<br><br>    <span class="hljs-comment">// 构建两个过滤器</span><br>    <span class="hljs-type">SingleColumnValueFilter</span> <span class="hljs-variable">startFilter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SingleColumnValueFilter</span>(<br>        Bytes.toBytes(<span class="hljs-string">&quot;C1&quot;</span>), Bytes.toBytes(<span class="hljs-string">&quot;Age&quot;</span>), CompareOperator.GREATER_OR_EQUAL, Bytes.toBytes(<span class="hljs-string">&quot;19&quot;</span>));<br>    <span class="hljs-type">SingleColumnValueFilter</span> <span class="hljs-variable">endFilter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SingleColumnValueFilter</span>(<br>        Bytes.toBytes(<span class="hljs-string">&quot;C1&quot;</span>), Bytes.toBytes(<span class="hljs-string">&quot;Age&quot;</span>), CompareOperator.LESS_OR_EQUAL, Bytes.toBytes(<span class="hljs-string">&quot;22&quot;</span>));<br>    <span class="hljs-comment">// 综合多个过滤器，得到过滤器列表</span><br>    <span class="hljs-type">FilterList</span> <span class="hljs-variable">filterList</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FilterList</span>(FilterList.Operator.MUST_PASS_ALL, startFilter, endFilter);<br>    <span class="hljs-comment">// 在Scan对象中设置使用过滤器</span><br>    scan.setFilter(filterList);<br><br>    <span class="hljs-type">ResultScanner</span> <span class="hljs-variable">resultScanner</span> <span class="hljs-operator">=</span> table.getScanner(scan);<br><br>    <span class="hljs-keyword">for</span> (Result result : resultScanner) &#123;<br>        List&lt;Cell&gt; cells = result.listCells();<br>        <span class="hljs-type">byte</span>[] row = result.getRow();<br>        System.out.println(Bytes.toString(row));<br><br>        <span class="hljs-keyword">for</span> (Cell cell : cells) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">colFamily</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(), cell.getFamilyLength());<br>            <span class="hljs-type">String</span> <span class="hljs-variable">colName</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(), cell.getQualifierLength());<br>            <span class="hljs-type">String</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> Bytes.toString(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());<br><br>            System.out.println(colFamily + <span class="hljs-string">&quot;:&quot;</span> + colName + <span class="hljs-string">&quot;-&gt;&quot;</span> + value);<br>        &#125;<br>    &#125;<br><br>    resultScanner.close();<br>    table.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="可能出现的错误"><a href="#可能出现的错误" class="headerlink" title="可能出现的错误"></a>可能出现的错误</h2><ol>
+<li><p>出现报错：<code>java.lang.NoSuchMethodError: org.apache.hadoop.security.HadoopKerberosName.setRuleMechanism(Ljava/lang/String;)V</code></p>
+<p>缺少依赖：<code>hadoop-auth</code></p>
+</li>
+<li><p>没有在本地机器的hosts中配置hadoop102、hadoop103和hadoop104的地址映射</p>
+</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/HBase/" class="category-chain-item">HBase</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/HBase/">#HBase</a>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HBase学习笔记-入门(5)-HBase的Java API操作</div>
+      <div>http://example.com/2022/04/17/HBase学习笔记-入门-5-HBase的Java-API操作/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年4月17日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-6-HBase%E8%A1%A8%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1/" title="HBase学习笔记-入门(6)-HBase表结构设计">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">HBase学习笔记-入门(6)-HBase表结构设计</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04/17/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-4-HBase%E7%9A%84Shell%E6%93%8D%E4%BD%9C/" title="HBase学习笔记-入门(4)-HBase的Shell操作">
+                        <span class="hidden-mobile">HBase学习笔记-入门(4)-HBase的Shell操作</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

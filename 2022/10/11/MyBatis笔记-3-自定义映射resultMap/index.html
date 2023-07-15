@@ -1,0 +1,902 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="SQL查询结果的一行与Java中实体类的对应关系，是由resultType和resultMap来指定的。resultType可以完成默认情况下的对应，而一些默认对应不成功的情况，则需要由resultMap来完成。本篇主要介绍了自定义映射resultMap的使用，包括解决字段和属性映射问题，多对一以及一对多的映射处理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MyBatis笔记(3)-自定义映射resultMap">
+<meta property="og:url" content="http://example.com/2022/10/11/MyBatis%E7%AC%94%E8%AE%B0-3-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%98%A0%E5%B0%84resultMap/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="SQL查询结果的一行与Java中实体类的对应关系，是由resultType和resultMap来指定的。resultType可以完成默认情况下的对应，而一些默认对应不成功的情况，则需要由resultMap来完成。本篇主要介绍了自定义映射resultMap的使用，包括解决字段和属性映射问题，多对一以及一对多的映射处理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-10-11T13:33:52.000Z">
+<meta property="article:modified_time" content="2022-10-11T14:47:54.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="SSM">
+<meta property="article:tag" content="MyBatis">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>MyBatis笔记(3)-自定义映射resultMap - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MyBatis笔记(3)-自定义映射resultMap"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-11 21:33" pubdate>
+          2022年10月11日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          89 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MyBatis笔记(3)-自定义映射resultMap</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>在前面的select标签当中，我们提到一定要指定resultType或者resultMap。前面我们一直使用的都是resultType，接下来就来介绍resultMap的使用。</p>
+<p>无论是resultType还是resultMap，它们完成的工作都是确定如何将查询得到的一行数据与Java中的实体类完成映射。在前面的环境中，我们数据库中的users表有如下的表结构：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>username</th>
+<th>password</th>
+<th>age</th>
+<th>gender</th>
+<th>email</th>
+</tr>
+</thead>
+</table>
+<p>而我们的实体类User中的定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> id;<br>    <span class="hljs-keyword">private</span> String username;<br>    <span class="hljs-keyword">private</span> String password;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> age;<br>    <span class="hljs-keyword">private</span> String gender;<br>    <span class="hljs-keyword">private</span> String email;<br>    <br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 省略了构造方法、get set方法、toString方法等</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到的是，表中的字段和实体类中的属性是可以对应上的。（注意这里关于成员变量以及属性的区分）默认属性名和字段名保持一致的话，可以完成映射，因此我们前面一直使用的都是resultType直接指定实体类。而resultMap为自定义映射，解决的是一些属性和字段没有保持一致，或者一些多对一，一对多的映射情况。接下来就进行相关的说明。</p>
+<p>这里说明后续的数据库环境。在数据库中新建了两张表，分别是员工表以及部门表，其中员工表中的字段dept_id表示员工所处的部门，部门表的主键。</p>
+<p>员工表<code>emp</code>中的字段如下，同时准备了一些测试数据：</p>
+<table>
+<thead>
+<tr>
+<th>emp_id</th>
+<th>emp_name</th>
+<th>dept_id</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>甲</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>乙</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>丙</td>
+<td>2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>丁</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>部门表<code>dept</code>中的字段如下：</p>
+<table>
+<thead>
+<tr>
+<th>dept_id</th>
+<th>dept_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>B</td>
+</tr>
+</tbody></table>
+<h1 id="resultMap使用"><a href="#resultMap使用" class="headerlink" title="resultMap使用"></a>resultMap使用</h1><h2 id="字段和属性映射"><a href="#字段和属性映射" class="headerlink" title="字段和属性映射"></a>字段和属性映射</h2><p>在Java中，我们一般遵循的是驼峰命名法，而在数据库中，我们一般使用下划线。这样就可能出现字段和属性无法对应的问题。</p>
+<p>例如现在我们需要查询员工中的数据，我们准备了一个员工的实体类如下，其中的命名遵循的是驼峰命名法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Emp</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> empId;<br>    <span class="hljs-keyword">private</span> String empName;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> deptId;<br>    <br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 省略相关方法</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后我们写一个简单的接口，按照员工id来查询该员工的信息。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Emp getEmpById(@Param(&quot;id&quot;) int empId)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpById&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>    select *<br>    from emp<br>    where emp_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>执行测试方法，发现输出为null。但是实际上我们能够查询到数据的，这实际上就是因为表中的字段名和实体类的属性名没有对应上，我们查出来的一行，它的字段名是<code>emp_id, emp_name, dept_id</code>，而我们的属性名则是<code>empId, empName, deptId</code>，无法对应，因此查出为null。</p>
+<p>解决这个问题有两种方式，第一种是在核心配置文件中开启下划线到驼峰的转换设置，如下所示，这样就可以开启下划线方式与驼峰方式命名之间的对应，二者能够对应上了，也就可以查出结果来了。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">settings</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">setting</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;mapUnderscoreToCamelCase&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">settings</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>第二种方式则是使用resultMap。我们在映射文件中先定义一个resultMap，然后在其中指定属性与字段的对应关系，如下所示。最后在select标签中指定使用对应的resultMap，这样也可以查出结果。这种解决方案同样是给出了对应关系，告诉MyBatis该如何完成对应，因此可以查出结果。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;empMap&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Emp getEmpById(@Param(&quot;id&quot;) int empId)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpById&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;empMap&quot;</span>&gt;</span><br>    select *<br>    from emp<br>    where emp_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>在resultMap标签中，使用了id属性以及type属性：</p>
+<ul>
+<li>id：表示自定义映射的唯一标识</li>
+<li>type：表示查询的数据需要映射到的实体类的类型</li>
+</ul>
+<p>在子标签中，我们使用到了id标签以及result标签，还有property，column属性：</p>
+<ul>
+<li>id 标签：设置主键的对应关系</li>
+<li>result 标签：设置普通字段的映射关系</li>
+<li>property 属性：设置映射关系中实体类的属性名</li>
+<li>column 属性：设置映射关系中表的字段名</li>
+</ul>
+<p>后面我们还会用到association标签以及collection标签，分别解决多对一和一对多的映射关系。</p>
+<h2 id="多对一映射处理"><a href="#多对一映射处理" class="headerlink" title="多对一映射处理"></a>多对一映射处理</h2><p>多对一的关系指的是数据库中表的关系。例如在我们目前的环境中，多个员工对应一个部门，就是一种多对一的关系。我们稍微修改一下实体类的设计，使其能够对应我们的关系。</p>
+<p>修改后的<code>Emp</code>类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Emp</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> empId;<br>    <span class="hljs-keyword">private</span> String empName;<br>    <span class="hljs-keyword">private</span> Dept dept; <span class="hljs-comment">// 一个员工对应一个部门</span><br>    <br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 省略相关方法</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>修改后的<code>Dept</code>类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Dept</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> deptId;<br>    <span class="hljs-keyword">private</span> String deptName;<br>    <span class="hljs-keyword">private</span> List&lt;Emp&gt; empList; <span class="hljs-comment">// 一个部门对应多个员工</span><br>    <br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 省略相关方法    </span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们目前希望完成的查询同样是查询一个员工的信息，可以写出如下的查询语句（这里开启了全局的下划线转驼峰的设置）：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Emp getEmpById(@Param(&quot;id&quot;) int empId)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpById&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>    select *<br>    from emp<br>    left join dept on emp.dept_id = dept.dept_id<br>    where emp.emp_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>但是经过测试输出后，我们发现输出结果如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Emp&#123;<span class="hljs-attribute">empId</span>=1, <span class="hljs-attribute">empName</span>=<span class="hljs-string">&#x27;甲&#x27;</span>, <span class="hljs-attribute">dept</span>=<span class="hljs-literal">null</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中emp相关的属性确实正确的返回了，但是部门信息没有返回。分析原因，同样是MyBatis无法根据现有的信息找到对应关系，查询结果中的字段分别为<code>emp_id, emp_name, emp.dept_id, dept.dept_id, dept_name</code>，能够对应的字段只有emp_id和emp_name，所以也就只有这两个属性能够对应上。</p>
+<p>解决多对一映射问题的方法有三种，分别是级联方式，association标签以及分步查询，下面分别进行介绍。</p>
+<h3 id="级联方式"><a href="#级联方式" class="headerlink" title="级联方式"></a>级联方式</h3><p>使用级联方式，就是让我们在resultMap中指定相关的对应关系。如果存在类之间的级联，使用<code>.</code>来表示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;empMap&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;dept.deptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;dept.deptName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_name&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Emp getEmpById(@Param(&quot;id&quot;) int empId)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpById&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;empMap&quot;</span>&gt;</span><br>    select *<br>    from emp<br>    left join dept on emp.dept_id = dept.dept_id<br>    where emp.emp_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>查出结果如下，发现可以查出对应的部门信息：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Emp&#123;<span class="hljs-attribute">empId</span>=1, <span class="hljs-attribute">empName</span>=<span class="hljs-string">&#x27;甲&#x27;</span>, <span class="hljs-attribute">dept</span>=Dept&#123;<span class="hljs-attribute">deptId</span>=1, <span class="hljs-attribute">deptName</span>=<span class="hljs-string">&#x27;A&#x27;</span>, <span class="hljs-attribute">empList</span>=<span class="hljs-literal">null</span>&#125;&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="association"><a href="#association" class="headerlink" title="association"></a>association</h3><p>第二种方式是使用resultMap下的子标签association，在其中指定对应的信息。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;empMap&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">association</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;dept&quot;</span> <span class="hljs-attr">javaType</span>=<span class="hljs-string">&quot;com.syh.bean.Dept&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">association</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Emp getEmpById(@Param(&quot;id&quot;) int empId)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpById&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;empMap&quot;</span>&gt;</span><br>    select *<br>    from emp<br>    left join dept on emp.dept_id = dept.dept_id<br>    where emp.emp_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>association标签是用来设置多对一的映射关系的，其中的<code>property</code>表示需要映射的实体类中的属性，<code>javaType</code>表示要映射成为哪个类。在association子标签中，同样有id以及result子标签，表示主键以及普通字段。</p>
+<h3 id="分步查询"><a href="#分步查询" class="headerlink" title="分步查询"></a>分步查询</h3><p>分步查询则将这个问题分成两个步骤来进行解决。这个问题可以拆解成两步完成，第一步先查出员工的部门id，第二步则是根据员工所对应的部门id查询部门信息。</p>
+<p>首先第一步，查询员工的信息：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;empMapStep&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">association</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;dept&quot;</span> <span class="hljs-attr">select</span>=<span class="hljs-string">&quot;com.syh.mapper.DeptMapper.getDeptById&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Emp getEmpByIdStep(@Param(&quot;id&quot;) int empId)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpByIdStep&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;empMapStep&quot;</span>&gt;</span><br>    select *<br>    from emp<br>    where emp_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>这里，association中设置的<code>select</code>表示下一步需要指定的操作，<code>column</code>表示提供给它的参数。这里下一步操作即调用对应的接口，这里的操作应该是根据部门id来查询部门的相关信息，因此接下来就实现第二步操作。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Dept getDeptById(@Param(&quot;id&quot;) int dept_id)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getDeptById&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.Dept&quot;</span>&gt;</span><br>    select *<br>    from dept<br>    where dept_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>最终查询的输出如下，可以看到是能够正常查询得到结果的，并且是进行了分步的查询：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">20</span>:<span class="hljs-number">54</span>:<span class="hljs-number">39</span>,<span class="hljs-number">378</span> ==&gt;  Preparing: select * from emp where emp_id = ? (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">20</span>:<span class="hljs-number">54</span>:<span class="hljs-number">39</span>,<span class="hljs-number">414</span> ==&gt; Parameters: <span class="hljs-number">1</span>(Integer) (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">20</span>:<span class="hljs-number">54</span>:<span class="hljs-number">39</span>,<span class="hljs-number">441</span> ====&gt;  Preparing: select * from dept where dept_id = ? (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">20</span>:<span class="hljs-number">54</span>:<span class="hljs-number">39</span>,<span class="hljs-number">442</span> ====&gt; Parameters: <span class="hljs-number">1</span>(Integer) (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">20</span>:<span class="hljs-number">54</span>:<span class="hljs-number">39</span>,<span class="hljs-number">444</span> &lt;====      Total: <span class="hljs-number">1</span> (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">20</span>:<span class="hljs-number">54</span>:<span class="hljs-number">39</span>,<span class="hljs-number">446</span> &lt;==      Total: <span class="hljs-number">1</span> (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">Emp</span>&#123;empId=<span class="hljs-number">1</span>, empName=&#x27;甲&#x27;, dept=Dept&#123;deptId=<span class="hljs-number">1</span>, deptName=&#x27;A&#x27;, empList=null&#125;&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="一对多映射处理"><a href="#一对多映射处理" class="headerlink" title="一对多映射处理"></a>一对多映射处理</h2><p>上面的情况中，多个员工对应一个部门是多对一的情况，那么反过来就是一对多的情况。反映的需求当中，现在我们希望实现根据部门id来查询部门以及部门中员工的信息。在Dept实体类中，存在一个Emp列表，直接查询是无法得到结果的，因此还是需要使用自定义映射来解决。解决问题的方式有两种，分别是使用collection标签和分步查询。</p>
+<h3 id="collection"><a href="#collection" class="headerlink" title="collection"></a>collection</h3><p>使用resultMap中的collection标签可以解决一对多映射处理。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;deptMap&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.Dept&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">collection</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empList&quot;</span> <span class="hljs-attr">ofType</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_id&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;emp_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">collection</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Dept getDeptEmpById(@Param(&quot;id&quot;) int dept_id)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getDeptEmpById&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;deptMap&quot;</span>&gt;</span><br>    select *<br>    from dept<br>    join emp on dept.dept_id = emp.dept_id<br>    where dept.dept_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>在collection标签中，我们需要指定property属性，以及集合中元素的类型<code>ofType</code>，内部子标签id以及result，则同样代表了主键以及普通字段的映射。</p>
+<p>测试输出结果如下，发现可以正常得到结果。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Dept&#123;<span class="hljs-attribute">deptId</span>=1, <span class="hljs-attribute">deptName</span>=<span class="hljs-string">&#x27;A&#x27;</span>, empList=[Emp&#123;<span class="hljs-attribute">empId</span>=1, <span class="hljs-attribute">empName</span>=<span class="hljs-string">&#x27;甲&#x27;</span>, <span class="hljs-attribute">dept</span>=<span class="hljs-literal">null</span>&#125;, Emp&#123;<span class="hljs-attribute">empId</span>=4, <span class="hljs-attribute">empName</span>=<span class="hljs-string">&#x27;丁&#x27;</span>, <span class="hljs-attribute">dept</span>=<span class="hljs-literal">null</span>&#125;]&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中每个Emp的部门显示为null也是因为我们没有在collection中指定对应关系。</p>
+<h3 id="分步查询-1"><a href="#分步查询-1" class="headerlink" title="分步查询"></a>分步查询</h3><p>第二种方式是分步查询。这个问题也可以拆分成两个步骤，第一步查询出部门的相关信息，得到部门id；第二步根据部门id来查询员工信息。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;deptMapStep&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.Dept&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">collection</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empList&quot;</span> <span class="hljs-attr">select</span>=<span class="hljs-string">&quot;com.syh.mapper.EmpMapper.getEmpByDeptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Dept getDeptEmpByIdStep(@Param(&quot;id&quot;) int dept_id)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getDeptEmpByIdStep&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;deptMapStep&quot;</span>&gt;</span><br>    select *<br>    from dept<br>    where dept_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>这里在collection标签中，同样需要指定<code>select</code>表示下一步的操作，<code>column</code>表示传递过去的参数。下一步是根据部门id来查询员工信息，则可以用下面的操作来完成：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--List&lt;Emp&gt; getEmpByDeptId(@Param(&quot;id&quot;) int deptId)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpByDeptId&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.Emp&quot;</span>&gt;</span><br>    select *<br>    from emp<br>    where dept_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>（这里的方法返回类型，定义成<code>List&lt;Emp&gt;</code>还是<code>Emp</code>，都能够得到正确的结果，不过按照场景，定义成列表更加符合逻辑）</p>
+<p>之后进行测试，可以得到下面的输出结果：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">22</span>:<span class="hljs-number">01</span>,<span class="hljs-number">439</span> ==&gt;  Preparing: select * from dept where dept_id = ? (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">22</span>:<span class="hljs-number">01</span>,<span class="hljs-number">474</span> ==&gt; Parameters: <span class="hljs-number">1</span>(Integer) (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">22</span>:<span class="hljs-number">01</span>,<span class="hljs-number">498</span> ====&gt;  Preparing: select * from emp where dept_id = ? (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">22</span>:<span class="hljs-number">01</span>,<span class="hljs-number">499</span> ====&gt; Parameters: <span class="hljs-number">1</span>(Integer) (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">22</span>:<span class="hljs-number">01</span>,<span class="hljs-number">502</span> &lt;====      Total: <span class="hljs-number">2</span> (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">22</span>:<span class="hljs-number">01</span>,<span class="hljs-number">504</span> &lt;==      Total: <span class="hljs-number">1</span> (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">Dept</span>&#123;deptId=<span class="hljs-number">1</span>, deptName=&#x27;A&#x27;, empList=[Emp&#123;empId=<span class="hljs-number">1</span>, empName=&#x27;甲&#x27;, dept=null&#125;, Emp&#123;empId=<span class="hljs-number">4</span>, empName=&#x27;丁&#x27;, dept=null&#125;]&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以发现确实查询到了正确的结果，并且使用了分步查询。</p>
+<h2 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h2><p>在多对一和一对多的映射处理中，我们都使用到了分步查询来解决。分步查询的优点在于可以实现延迟加载。延迟加载指的是可以完成按需加载，当前获取的数据是什么，就执行相应的SQL，而不需要全部执行。</p>
+<p>开启延迟加载需要在核心配置文件中开启全局配置信息：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">settings</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">setting</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;lazyLoadingEnabled&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">setting</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;aggressiveLazyLoading&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">settings</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>lazyLoadingEnabled</code>：延迟加载的全局配置。当设置为true时，所有的关联对象都会延迟加载</li>
+<li><code>aggressiveLazyLoading</code>：加载属性的策略。当设置为true的时候，任何方法的调用都会加载该对象的所有属性。否则按需加载。默认值为<code>false</code></li>
+</ul>
+<p>如果测试代码中，我们只访问部门的id，而不需要访问部门的员工列表，则它会进行按需加载。测试代码和输出分别如下，可以看到其中只访问了部门的id，只执行了第一步的SQL语句。</p>
+<p>关键测试代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">DeptMapper</span> <span class="hljs-variable">mapper</span> <span class="hljs-operator">=</span> sqlSession.getMapper(DeptMapper.class);<br><span class="hljs-type">Dept</span> <span class="hljs-variable">deptEmpById</span> <span class="hljs-operator">=</span> mapper.getDeptEmpByIdStep(<span class="hljs-number">1</span>);<br>System.out.println(deptEmpById.getDeptName());<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">25</span>,<span class="hljs-number">743</span> ==&gt;  Preparing: select * from dept where dept_id = ? (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">25</span>,<span class="hljs-number">772</span> ==&gt; Parameters: <span class="hljs-number">1</span>(Integer) (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">DEBUG</span> <span class="hljs-number">10</span>-<span class="hljs-number">11</span> <span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">25</span>,<span class="hljs-number">841</span> &lt;==      Total: <span class="hljs-number">1</span> (BaseJdbcLogger.java:<span class="hljs-number">137</span>) <br><span class="hljs-attribute">A</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的配置是全局配置信息，对全局生效。实际上每个collection或者association标签也有自己的按需加载的开关，即标签中的<code>fetchType</code>属性。该属性可选的取值有两种，分别是<code>lazy</code>延迟加载，以及<code>eager</code>立即加载，默认取值为<code>lazy</code>。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/MyBatis/" class="category-chain-item">MyBatis</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/SSM/">#SSM</a>
+      
+        <a href="/tags/MyBatis/">#MyBatis</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MyBatis笔记(3)-自定义映射resultMap</div>
+      <div>http://example.com/2022/10/11/MyBatis笔记-3-自定义映射resultMap/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/11/MyBatis%E7%AC%94%E8%AE%B0-4-%E5%8A%A8%E6%80%81SQL%E4%B8%8E%E7%BC%93%E5%AD%98/" title="MyBatis笔记(4)-动态SQL与缓存">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MyBatis笔记(4)-动态SQL与缓存</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/11/MyBatis%E7%AC%94%E8%AE%B0-2-%E5%8F%82%E6%95%B0%E8%8E%B7%E5%8F%96%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8%E4%B8%BE%E4%BE%8B/" title="MyBatis笔记(2)-参数获取以及使用举例">
+                        <span class="hidden-mobile">MyBatis笔记(2)-参数获取以及使用举例</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

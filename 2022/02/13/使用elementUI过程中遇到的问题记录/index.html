@@ -1,0 +1,777 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="这篇文章主要会记录在使用elementUI的过程中遇到的问题记录，会持续补充。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用elementUI过程中遇到的问题记录">
+<meta property="og:url" content="http://example.com/2022/02/13/%E4%BD%BF%E7%94%A8elementUI%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="这篇文章主要会记录在使用elementUI的过程中遇到的问题记录，会持续补充。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-13T05:29:58.000Z">
+<meta property="article:modified_time" content="2022-07-30T12:21:00.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="elementUI">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>使用elementUI过程中遇到的问题记录 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用elementUI过程中遇到的问题记录"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-02-13 13:29" pubdate>
+          2022年2月13日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用elementUI过程中遇到的问题记录</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>目前已经记录的问题简要描述如下：</p>
+<ol>
+<li><p>table组件切换时会有不同程度的长度变化</p>
+</li>
+<li><p>带输入建议的input中，输入建议显示空白</p>
+</li>
+<li><p>input输入建议的模糊查询</p>
+</li>
+<li><p>table的定位跳转</p>
+</li>
+<li><p>侧边栏子菜单展开后会多出1px</p>
+</li>
+<li><p>弹出对话框的抖动问题</p>
+</li>
+</ol>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="1-table组件长度变化"><a href="#1-table组件长度变化" class="headerlink" title="1.table组件长度变化"></a>1.table组件长度变化</h3><p>如果将elementUI table作为动态组件在页面中显示，第一次显示是正常的，而后续来回切换之后再显示，table会出现不同程度的长度变化，据官方所说这好像是内部的一个小bug。</p>
+<p>一种解决方案是在每次切换回表格的时候对数据进行重新加载，在activate生命周期的时候执行下面的方法。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-variable language_">this</span>.$nextTick(<span class="hljs-function">() =&gt;</span> &#123;<br>     <span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>.<span class="hljs-property">multipleTable</span>.<span class="hljs-title function_">doLayout</span>();<br>     <span class="hljs-comment">// el-table加ref=&quot;multipleTable&quot;</span><br> &#125;);<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-带输入建议的input组件显示空白"><a href="#2-带输入建议的input组件显示空白" class="headerlink" title="2.带输入建议的input组件显示空白"></a>2.带输入建议的input组件显示空白</h3><p>elementUI中提供有带输入建议的input组件使用如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">el-autocomplete</span></span><br><span class="hljs-tag"><span class="hljs-attr">class</span>=<span class="hljs-string">&quot;inline-input&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">v-show</span>=<span class="hljs-string">&quot;show&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;searchName&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">:fetch-suggestions</span>=<span class="hljs-string">&quot;querySearch&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;名称搜索&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">:trigger-on-focus</span>=<span class="hljs-string">&quot;false&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">:model-append-to-body</span>=<span class="hljs-string">&quot;false&quot;</span></span><br><span class="hljs-tag">@<span class="hljs-attr">select</span>=<span class="hljs-string">&quot;handleSelect&quot;</span></span><br><span class="hljs-tag">&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">el-autocomplete</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>其中实现返回输入建议的是绑定在<code>:fetch-suggestions</code>里的方法，下面的问题3中会提供一种模糊查询的方式。目前遇到的问题是返回建议是空白的，原因在于显示的数据中，输入建议必须是在<code>value</code>字段当中。</p>
+<h3 id="3-返回模糊查询的输入建议"><a href="#3-返回模糊查询的输入建议" class="headerlink" title="3.返回模糊查询的输入建议"></a>3.返回模糊查询的输入建议</h3><p>input组件通过绑定在<code>:fetch-suggestions</code>里的方法实现输入建议。通常在输入建议当中，我们会返回模糊查询之后的结果，通过以下方式来实现：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//用来实现模糊查找的两个函数</span><br><span class="hljs-title function_">querySearch</span>(<span class="hljs-params">queryString, cb</span>) &#123;<br>    <span class="hljs-keyword">var</span> searchData = <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>;<span class="hljs-comment">//需要查询的全部数据</span><br>    <span class="hljs-keyword">var</span> results = queryString ? searchData.<span class="hljs-title function_">filter</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">createFilter</span>(queryString)) : searchData;<br>    <span class="hljs-comment">// 调用 callback 返回建议列表的数据</span><br>    <span class="hljs-title function_">cb</span>(results);<br>&#125;,<br>    <br><span class="hljs-title function_">createFilter</span>(<span class="hljs-params">queryString</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">searchData</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">return</span> (searchData.<span class="hljs-property">label</span>.<span class="hljs-title function_">toLowerCase</span>().<span class="hljs-title function_">indexOf</span>(queryString.<span class="hljs-title function_">toLowerCase</span>()) &gt; -<span class="hljs-number">1</span>);<br>    &#125;;<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-table的定位跳转"><a href="#4-table的定位跳转" class="headerlink" title="4.table的定位跳转"></a>4.table的定位跳转</h3><p>目前需要完成的任务是，在输入框中输入了数据，然后表格需要将对应数据行显示当前的第一列。这个功能可以通过获取所需数据行在全部数据中的index，然后通过index进行定位跳转来实现。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//element-ui跳转到指定行</span><br><span class="hljs-title function_">tableScrollMove</span>(<span class="hljs-params">refName,index=<span class="hljs-number">0</span></span>)&#123;<br>    <span class="hljs-keyword">if</span>(!refName || !<span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>[refName]) <span class="hljs-keyword">return</span><span class="hljs-comment">//不存在表格的ref vm 则返回</span><br>    <span class="hljs-keyword">let</span> vmEl = <span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>[refName].<span class="hljs-property">$el</span><br>    <span class="hljs-keyword">if</span>(!vmEl) <span class="hljs-keyword">return</span><br>    <span class="hljs-comment">//计算滚动条的位置</span><br>    <span class="hljs-keyword">const</span> targetTop = vmEl.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&#x27;.el-table__body tr&#x27;</span>)[index].<span class="hljs-title function_">getBoundingClientRect</span>().<span class="hljs-property">top</span>;<br>    <span class="hljs-keyword">const</span> containerTop = vmEl.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;.el-table__body&#x27;</span>).<span class="hljs-title function_">getBoundingClientRect</span>().<span class="hljs-property">top</span>;<br>    <span class="hljs-keyword">const</span> scrollParent = vmEl.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;.el-table__body-wrapper&#x27;</span>);<br>    scrollParent.<span class="hljs-property">scrollTop</span> = targetTop - containerTop;<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<p>其中refName表示table表格的ref值，index表示当前需要展示的数据对应的index。</p>
+<p>目前遇到的实现情况是，在输入框中输入了对应数据的名称（声优或者动漫的名称），通过监听目前输入框中数据的变化，动态查找到该数据在全部数据中的index，然后调用上面的定位方式。</p>
+<h3 id="5-侧边栏子菜单展开后会多出1px"><a href="#5-侧边栏子菜单展开后会多出1px" class="headerlink" title="5.侧边栏子菜单展开后会多出1px"></a>5.侧边栏子菜单展开后会多出1px</h3><p>elementUI中提供侧边栏功能，侧边栏展开后子菜单可能会出现宽度多出1px的问题，解决方案如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css">//对<span class="hljs-selector-tag">table</span>设置以下样式<br><span class="hljs-selector-class">.el-menu</span>&#123;<br>    <span class="hljs-attribute">border-right-width</span>: <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-弹出对话框的抖动问题"><a href="#6-弹出对话框的抖动问题" class="headerlink" title="6.弹出对话框的抖动问题"></a>6.弹出对话框的抖动问题</h3><p>弹出对话框的时候会导致页面抖动，这是因为出现滑块的原因，解决方案如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;style scope&gt;<br>/* 防止打开对话框时页面的抖动 */<br>body&#123;<br>  padding-right: 0px !important;<br>  overflow: hidden;<br>&#125;<br>&lt;/style&gt;<br>如果按照上述的设置不会起到作用，因为&quot;&lt;style scope&gt;&quot;中将css样式设定为局部的。所以需要将&quot;scope&quot;去掉。<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000020355390#/">element-ui的table，切换路由后高度变小 - SegmentFault 思否</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wyhstars/article/details/81672195#/">element-ui带输入建议的input框踩坑(输入建议空白以及会闪出上一次的输入建议问题)_wyhstars的博客-CSDN博客_element input</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yuwenjing0727/p/14741875.html#/">element-ui表格定位到某一行 - yuwenjing - 博客园 (cnblogs.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/YingDaoMonkey/article/details/81809865#/">element UI 导航栏展开后子菜单宽度多出1px问题_YingDaoMonkey的博客-CSDN博客</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%89%8D%E7%AB%AF/" class="category-chain-item">前端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%89%8D%E7%AB%AF/%E5%A5%87%E6%80%AA%E3%81%AE%E5%B0%8F%E5%9D%91/" class="category-chain-item">奇怪の小坑</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/elementUI/">#elementUI</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用elementUI过程中遇到的问题记录</div>
+      <div>http://example.com/2022/02/13/使用elementUI过程中遇到的问题记录/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年2月13日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02/13/Vue%E4%B8%AD%E4%BD%BF%E7%94%A8require%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" title="Vue中使用require加载图片遇到的问题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Vue中使用require加载图片遇到的问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/12/%E5%88%A9%E7%94%A8elementUI%E5%AE%8C%E6%88%90%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" title="利用elementUI完成文件上传">
+                        <span class="hidden-mobile">利用elementUI完成文件上传</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

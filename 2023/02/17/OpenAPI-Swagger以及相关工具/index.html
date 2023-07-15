@@ -1,0 +1,1089 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了OpenAPI的相关规范，Swagger以及相关工具的使用。包括在SpringBoot项目中如何生成相关API文档，以及如何通过文档来生成对应的代码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenAPI,Swagger以及相关工具">
+<meta property="og:url" content="http://example.com/2023/02/17/OpenAPI-Swagger%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了OpenAPI的相关规范，Swagger以及相关工具的使用。包括在SpringBoot项目中如何生成相关API文档，以及如何通过文档来生成对应的代码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/02/17/OpenAPI-Swagger%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7/swagger-ui.png">
+<meta property="article:published_time" content="2023-02-17T13:10:23.000Z">
+<meta property="article:modified_time" content="2023-02-17T13:12:32.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Development">
+<meta property="article:tag" content="OpenAPI">
+<meta property="article:tag" content="Swagger">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/02/17/OpenAPI-Swagger%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7/swagger-ui.png">
+  
+  
+  
+  <title>OpenAPI,Swagger以及相关工具 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="OpenAPI,Swagger以及相关工具"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-17 21:10" pubdate>
+          2023年2月17日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          108 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">OpenAPI,Swagger以及相关工具</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="OpenAPI"><a href="#OpenAPI" class="headerlink" title="OpenAPI"></a>OpenAPI</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在日常的项目开发工作中，经常需要完成API的设计，实现和应用等工作。一个好的习惯是在实际进行代码开发之前就将API的相关信息设计好，否则在开发过程中进行API的返工，将会牵连到各方，造成较大的麻烦。这也就是API优先的设计，指的是API先于实现。因此，我们需要使用一个语言无关的方式来描述API的设计。利用API优先的设计，我们可以避免不必要的API改动，提升开发效率。</p>
+<p>OpenAPI就是这样一种规范，它定义一种标准的，与具体编程语言无关的RESTful API的规范。在这种规范下，人类和计算机都能在不借助其他源代码和文档的前提下，理解同一个API的作用。同时由于API文档遵循标准的规范，也会有很多相关的工具来辅助进行工作，例如代码生成工具，文档展示工具等。</p>
+<p>OpenAPI的项目地址为：<a target="_blank" rel="noopener" href="https://github.com/OAI/OpenAPI-Specification">OpenAPI-Github</a></p>
+<h2 id="文档规范"><a href="#文档规范" class="headerlink" title="文档规范"></a>文档规范</h2><p>设计API的过程实际上就是编写OpenAPI文档的过程，最终结果是一个被各方认可的OpenAPI文档。OpenAPI的文档是一个json或者yaml格式的文件，它遵循一定标准的数据结构，其中描述了API的详细信息。一份OpenAPI文档可以是单个文件也可以被拆分为多个文件，可以使用<code>ref</code>来相互使用。推荐将根OpenAPI文档命名为<code>openapi.json</code>或者<code>openapi.yaml</code>。</p>
+<p>下面将介绍在一个OpenAPI文档中存在的所有数据结构。一个对象中可以包含多个字段，每个字段的值可能是某个字面量，也可能是另一个对象，或者对象列表。</p>
+<h3 id="OpenAPI-对象"><a href="#OpenAPI-对象" class="headerlink" title="OpenAPI 对象"></a>OpenAPI 对象</h3><ul>
+<li>OpenAPI 对象：是OpenAPI 文档的根对象<ul>
+<li><code>openapi</code>：string类型，必选。标识当前使用的Open API 版本号</li>
+<li><code>info</code>：Info对象，必选。提供API相关的元数据</li>
+<li><code>servers</code>：Server对象数组，提供到服务器的连接信息。默认值为<code>url</code>为<code>/</code>的Server对象</li>
+<li><code>paths</code>：Paths对象，必选。描述API的路径和操作</li>
+<li><code>components</code>：Components对象，其中包含多种结构</li>
+<li><code>security</code>：Secutiry Requirement对象数组，声明API使用的安全机制</li>
+<li><code>tags</code>：Tag对象数组，提供一系列标签</li>
+<li><code>externalDocs</code>：External Documentation对象，是附加的文档</li>
+</ul>
+</li>
+</ul>
+<h3 id="Info-对象"><a href="#Info-对象" class="headerlink" title="Info 对象"></a>Info 对象</h3><ul>
+<li>Info 对象：提供API的元数据，这些元数据可能会被呈现在编辑工具或者文档生成工具中<ul>
+<li><code>title</code>：stirng类型，必选。标识应用的名称</li>
+<li><code>description</code>：string类型。对应用的简单描述</li>
+<li><code>termsOfService</code>：string类型，指向服务条款的URL地址</li>
+<li><code>contact</code>：Contact对象，标识对应的联系人信息</li>
+<li><code>license</code>：License对象，标识对应的证书信息</li>
+<li><code>version</code>：string类型，必选。标识API的版本信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="Contact-对象"><a href="#Contact-对象" class="headerlink" title="Contact 对象"></a>Contact 对象</h3><ul>
+<li>Contact 对象：联系人信息<ul>
+<li><code>name</code>：string类型，联系人名称</li>
+<li><code>url</code>：string类型，联系人信息的URL地址</li>
+<li><code>email</code>：string类型，联系人的email地址</li>
+</ul>
+</li>
+</ul>
+<h3 id="License-对象"><a href="#License-对象" class="headerlink" title="License 对象"></a>License 对象</h3><ul>
+<li>License 对象：证书信息<ul>
+<li><code>name</code>：string类型，必选。证书名称</li>
+<li><code>url</code>：string类型，证书的URL地址</li>
+</ul>
+</li>
+</ul>
+<h3 id="Server-对象"><a href="#Server-对象" class="headerlink" title="Server 对象"></a>Server 对象</h3><ul>
+<li>Server 对象：标识一个服务器对象<ul>
+<li><code>url</code>：string类型，必选。指向目标主机的URL地址，可以使用模版变量<code>&#123;xxx&#125;</code></li>
+<li><code>description</code>：string类型，简单描述</li>
+<li><code>variables</code>：Map类型，KV分别为string和Server Variable对象。这些值可以用来替换服务器URL地址内的模板参数</li>
+</ul>
+</li>
+</ul>
+<h3 id="Server-Variable对象"><a href="#Server-Variable对象" class="headerlink" title="Server Variable对象"></a>Server Variable对象</h3><ul>
+<li>Server Variable 对象：Server中URL地址模板变量替换的对象<ul>
+<li><code>enum</code>：string数组类型，一组可以枚举的字符串值，表示允许的可替换选项</li>
+<li><code>default</code>：string类型，必选。在没有指定可替换值时的默认值</li>
+<li><code>description</code>：对变量的简单描述</li>
+</ul>
+</li>
+</ul>
+<h3 id="Paths-对象"><a href="#Paths-对象" class="headerlink" title="Paths 对象"></a>Paths 对象</h3><ul>
+<li>Paths 对象：定义各个API的相对路径以及操作，与Server对象中的URL地址组成完整的URL地址<ul>
+<li><code>/&#123;path&#125;</code>：Path Item对象。这里的字段名表示相对路径，值表示对应API的相关信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="Path-Item-对象"><a href="#Path-Item-对象" class="headerlink" title="Path Item 对象"></a>Path Item 对象</h3><ul>
+<li>Path Item 对象：描述对一个路径可执行的有效操作<ul>
+<li><code>$ref</code>：string类型。指定对此路径定义的外部引用。引用的格式也需要满足Path Item的格式</li>
+<li><code>summary</code>：string类型。对该API的简要总结，描述此路径内包含的所有操作</li>
+<li><code>description</code>：string类型。对该API的详细说明字符串</li>
+<li><code>get</code>：Operation 对象。定义适用于此路径的GET操作</li>
+<li><code>put</code>：Operation 对象。定义适用于此路径的PUT操作</li>
+<li><code>post</code>：Operation 对象。定义适用于此路径的POST操作</li>
+<li><code>delete</code>：Operation 对象。定义适用于此路径的DELETE操作</li>
+<li><code>options</code>：Operation 对象。定义适用于此路径的OPTIONS操作</li>
+<li><code>head</code>：Operation 对象。定义适用于此路径的HEAD操作</li>
+<li><code>patch</code>：Operation 对象。定义适用于此路径的PATCH操作</li>
+<li><code>trace</code>：Operation 对象。定义适用于此路径的TRACE操作</li>
+<li><code>servers</code>：Server 对象数组。此处的server也可使用此路径的所有操作</li>
+<li><code>parameters</code>：Parameter 对象。可用于此路径下所有操作的参数列表</li>
+</ul>
+</li>
+</ul>
+<h3 id="Operation-对象"><a href="#Operation-对象" class="headerlink" title="Operation 对象"></a>Operation 对象</h3><ul>
+<li>Operation 对象：描述对路径的某个操作<ul>
+<li><code>tags</code>：string数组。控制API文档的标签列表，用于逻辑上的分组</li>
+<li><code>summary</code>：string类型，对该操作行为进行简单描述</li>
+<li><code>description</code>：string类型，对该操作行为的详细解释</li>
+<li><code>externalDocs</code>：External Documentation对象。表示附加的外部文档</li>
+<li><code>operationId</code>：string类型。用于表示此操作的唯一字符串，推荐在命名时符合一般的编程命名习惯</li>
+<li><code>parameters</code>：Parameter 对象数组。定义可用于此操作的参数列表</li>
+<li><code>requestBody</code>：Request Body对象。可用于此操作的请求体</li>
+<li><code>responses</code>：Responses 对象，必选。定义执行此操作后可能的响应值列表</li>
+<li><code>callbacks</code>：Map[string, Callback对象]。定义可能出现的回调映射</li>
+<li><code>deprecated</code>：boolean类型。标识此操作是否已经被废弃</li>
+<li><code>security</code>：Security Requirement对象数组。声明可用于此操作的安全机制</li>
+<li><code>servers</code>：Server对象数组。定义可以用于此操作的额外的Server 数组</li>
+</ul>
+</li>
+</ul>
+<h3 id="Parameter-对象"><a href="#Parameter-对象" class="headerlink" title="Parameter 对象"></a>Parameter 对象</h3><ul>
+<li>Parameter 对象：描述一个操作参数。一个参数的唯一性由name和location的组合来确定<ul>
+<li><code>name</code>：string类型，必选。参数的名称，区分大小写。</li>
+<li><code>in</code>：string类型，必选。表示参数的位置，可选的值有<code>[query, header, path, cookie]</code></li>
+<li><code>description</code>：string类型。对该参数的简短描述</li>
+<li><code>required</code>：boolean类型。表示该参数是否是必选参数</li>
+<li><code>deprecated</code>：boolean类型。表示该参数是否被弃用</li>
+<li><code>allowEmptyValue</code>：boolean类型，设置是否允许传递空参数</li>
+<li><code>style</code>：String类型。描述根据参数值类型的不同如何序列化参数</li>
+<li><code>explode</code>：boolean类型。表示是否对数组内的值或者对象的键值对生成带分隔符的参数值</li>
+<li><code>allowReserved</code>：boolean类型，表示是否不允许使用<code>%</code>编码保留字符</li>
+<li><code>schema</code>：Schema对象，定义适用于此参数的类型结构</li>
+<li><code>example</code>：Any。不同媒体类型的示例</li>
+<li><code>examples</code>：Map[string, Example对象]。不同媒体类型的示例</li>
+</ul>
+</li>
+</ul>
+<h3 id="Components-对象"><a href="#Components-对象" class="headerlink" title="Components 对象"></a>Components 对象</h3><ul>
+<li>Components 对象：描述各种文档中的可重用对象。此处定义的组件只有在被其他对象引用后才会产生效果。下面所有Map中value都可以是Reference对象，表示对外部的引用<ul>
+<li><code>schemas</code>：Map[string, Schema]类型。定义可重用的Schema对象</li>
+<li><code>responses</code>：Map[string, Response]类型。定义可重用的Response对象</li>
+<li><code>parameters</code>：Map[string, Parameter]类型。定义可重用的Parameter对象</li>
+<li><code>examples</code>：Map[string, Example]类型。定义可重用的Example对象</li>
+<li><code>requestBodies</code>：Map[string, Request Body]类型。定义可重用的Request Body对象</li>
+<li><code>headers</code>：Map[string, Header]类型。定义可重用的Header对象</li>
+<li><code>securitySchemes</code>：Map[string, Security Scheme]类型。定义可重用的Security Scheme对象</li>
+<li><code>links</code>：Map[string, Link]类型。定义可重用的Link对象</li>
+<li><code>callbacks</code>：Map[string, Callback]类型。定义可重用的Callback对象</li>
+</ul>
+</li>
+</ul>
+<h3 id="External-Documentation-对象"><a href="#External-Documentation-对象" class="headerlink" title="External Documentation 对象"></a>External Documentation 对象</h3><ul>
+<li>External Documentation 对象：外部资源文档<ul>
+<li><code>description</code>：对引用外部文档的简短描述</li>
+<li><code>url</code>：string类型，必选。表示外部文档的URL地址</li>
+</ul>
+</li>
+</ul>
+<h3 id="Request-Body-对象"><a href="#Request-Body-对象" class="headerlink" title="Request Body 对象"></a>Request Body 对象</h3><ul>
+<li>Request Body 对象：定义请求体<ul>
+<li><code>description</code>：string类型，对请求体的简要描述</li>
+<li><code>content</code>：Map[string, Media Type对象]，必选。表示请求体的内容。key是一个媒体类型，值是对应的示例数据</li>
+<li><code>required</code>：boolean类型。表示请求体是否应该被包含在请求中，默认值为false</li>
+</ul>
+</li>
+</ul>
+<h3 id="Media-Type-对象"><a href="#Media-Type-对象" class="headerlink" title="Media Type 对象"></a>Media Type 对象</h3><ul>
+<li>Media Type 对象：每种媒体类型对象都有相应的结构和示例来进行描述<ul>
+<li><code>schema</code>：Schema对象。定义此媒体类型的结构</li>
+<li><code>example</code>：Any。媒体类型的示例</li>
+<li><code>examples</code>：Map[string, Example对象]。媒体类型的示例</li>
+<li><code>encoding</code>：Map[string, Encoding对象]。属性名与编码信息的映射</li>
+</ul>
+</li>
+</ul>
+<h3 id="Encoding-对象"><a href="#Encoding-对象" class="headerlink" title="Encoding 对象"></a>Encoding 对象</h3><ul>
+<li>Encoding 对象：编码定义。一个编码定义仅适用于一个结构属性<ul>
+<li><code>contentType</code>：string类型。描述对具体属性的Content-Type编码</li>
+<li><code>headers</code>：Map[string, Header对象]。提供附加信息的请求头键值对映射</li>
+<li><code>style</code>：string类型。描述一个属性根据它的类型将会被如何序列化</li>
+<li><code>explode</code>：boolean类型。表示是否对数组内的值或者对象的键值对生成带分隔符的参数值</li>
+<li><code>allowReserved</code>：boolean类型，表示是否不允许使用<code>%</code>编码保留字符</li>
+</ul>
+</li>
+</ul>
+<h3 id="Responses-对象"><a href="#Responses-对象" class="headerlink" title="Responses 对象"></a>Responses 对象</h3><ul>
+<li>Responses 对象：描述一个操作可能发生的响应的响应码与对应的响应体<ul>
+<li><code>defalut</code>：Response对象。用于描述未被明确声明的HTTP响应码的对应响应</li>
+<li><code>HTTP status Code</code>：Response对象。这里的字段名为HTTP状态码，值为对应的响应</li>
+</ul>
+</li>
+</ul>
+<h3 id="Response-对象"><a href="#Response-对象" class="headerlink" title="Response 对象"></a>Response 对象</h3><ul>
+<li>Response 对象：描述单个响应<ul>
+<li><code>description</code>：string类型，必选。对响应的简短描述</li>
+<li><code>headers</code>：Map[string, Header对象]。HTTP头名称和定义的映射</li>
+<li><code>content</code>：Map[string, Media Type对象]。描述预期的响应content</li>
+<li><code>links</code>：Map[string, Link对象]</li>
+</ul>
+</li>
+</ul>
+<h3 id="Callback-对象"><a href="#Callback-对象" class="headerlink" title="Callback 对象"></a>Callback 对象</h3><ul>
+<li>Callback 对象：描述回调对象<ul>
+<li><code>&#123;expression&#125;</code>：Path Item对象。用于定义回调请求和响应</li>
+</ul>
+</li>
+</ul>
+<h3 id="Example-对象"><a href="#Example-对象" class="headerlink" title="Example 对象"></a>Example 对象</h3><ul>
+<li>Example 对象：示例对象<ul>
+<li><code>summary</code>：string类型。该示例的简单描述</li>
+<li><code>description</code>：string类型。该示例的详细描述</li>
+<li><code>value</code>：Any。</li>
+<li><code>externalValue</code>：string类型</li>
+</ul>
+</li>
+</ul>
+<h3 id="Header-对象"><a href="#Header-对象" class="headerlink" title="Header 对象"></a>Header 对象</h3><ul>
+<li>Header 对象：Header对象与Paramter 对象基本一致。但是有一定的限制<ul>
+<li>name不能被指定</li>
+<li>in不能被指定</li>
+</ul>
+</li>
+</ul>
+<h3 id="Tag-对象"><a href="#Tag-对象" class="headerlink" title="Tag 对象"></a>Tag 对象</h3><ul>
+<li>Tag 对象：<ul>
+<li><code>name</code>：string类型，必选。Tag的名称</li>
+<li><code>description</code>：string类型。Tag的简短描述</li>
+<li><code>externalDocs</code>：ExternalDocumentation对象。外部文档</li>
+</ul>
+</li>
+</ul>
+<h3 id="Reference-对象"><a href="#Reference-对象" class="headerlink" title="Reference 对象"></a>Reference 对象</h3><ul>
+<li>Reference 对象：用于引用规范内部或者外部的对象<ul>
+<li><code>$ref</code>：string类型，必选。用于找到引用的对象位置</li>
+</ul>
+</li>
+</ul>
+<h3 id="Schema-对象"><a href="#Schema-对象" class="headerlink" title="Schema 对象"></a>Schema 对象</h3><ul>
+<li>Schema 对象：用于定义输入和输出的数据类型<ul>
+<li><code>nullable</code>：boolean类型。是否允许发送null值</li>
+<li><code>discriminator</code>：Discriminator对象</li>
+<li><code>readOnly</code>：boolean类型。声明属性是否为readOnly</li>
+<li><code>writeOnly</code>：boolean类型。声明属性是否为writeOnly</li>
+<li><code>xml</code>：XML对象。</li>
+<li><code>externalDocs</code>：External Documentation对象。外部文档</li>
+<li><code>example</code>：Any。示例</li>
+<li><code>deprecated</code>：boolean类型。是否废弃</li>
+</ul>
+</li>
+</ul>
+<h3 id="Discriminator-对象"><a href="#Discriminator-对象" class="headerlink" title="Discriminator 对象"></a>Discriminator 对象</h3><ul>
+<li>Discriminator 对象：用于辅助序列化，反序列化和校验<ul>
+<li><code>propertyName</code>：string类型，必选。在payload中表示discriminator值属性的名称</li>
+<li><code>mapping</code>：Map[string, string]。在payload中值与schema名称的映射</li>
+</ul>
+</li>
+</ul>
+<h3 id="XML-对象"><a href="#XML-对象" class="headerlink" title="XML 对象"></a>XML 对象</h3><ul>
+<li>XML 对象：为XML模型定义的元数据对象<ul>
+<li><code>name</code>：string类型。</li>
+<li><code>namespace</code>：string类型。命名空间URL</li>
+<li><code>prefix</code>：string类型。name前缀</li>
+<li><code>attribute</code>：boolean类型。</li>
+<li><code>wrapped</code>：boolean类型。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Security-Scheme-对象"><a href="#Security-Scheme-对象" class="headerlink" title="Security Scheme 对象"></a>Security Scheme 对象</h3><ul>
+<li>Security Scheme 对象：用于Operation的Security Scheme<ul>
+<li><code>type</code>：string类型，必选。有效值包括<code>[apiKey, http, oauth2, openIdConnect]</code></li>
+<li><code>description</code>：string类型。简单描述</li>
+<li><code>name</code>：string类型，必选。用于header，query或者cookie的参数名称</li>
+<li><code>in</code>：string类型，必选。API key的位置。有效值包括<code>[query, header, cookie]</code></li>
+<li><code>scheme</code>：string类型，必选。用于HTTP Auahorization scheme的名称</li>
+<li><code>bearerFormat</code>：string类型。用于提示客户端所使用的bearer token的格式</li>
+<li><code>flows</code>：OAuth Flows对象，必选。包含所支持的Flow Types的配置信息</li>
+<li><code>openIdConnectUrl</code>：string类型，必选。用于发现OAuth2的配置值</li>
+</ul>
+</li>
+</ul>
+<h3 id="OAuth-Flows-对象"><a href="#OAuth-Flows-对象" class="headerlink" title="OAuth Flows 对象"></a>OAuth Flows 对象</h3><ul>
+<li>OAuth Flows 对象：配置支持的OAuth Flow<ul>
+<li><code>implicit</code>：OAuth Flow对象。OAuth Implicit flow的配置</li>
+<li><code>password</code>：OAuth Flow对象。OAuth Resource Owner Password flow的配置</li>
+<li><code>clientCredentials</code>：OAuth Flow对象。OAuth Client Credentials flow的配置</li>
+<li><code>authorizationCode</code>：OAuth Authroization Code flow的配置</li>
+</ul>
+</li>
+</ul>
+<h3 id="OAuth-Flow-对象"><a href="#OAuth-Flow-对象" class="headerlink" title="OAuth Flow 对象"></a>OAuth Flow 对象</h3><ul>
+<li>OAuth Flow 对象：OAuth Flow的配置详情<ul>
+<li><code>authorizationUrl</code>：string类型，必选。用于此流程的Authorization URL</li>
+<li><code>tokenUrl</code>：string类型，必选。用于此流程的Toke URL</li>
+<li><code>refereshUrl</code>：string类型。用于获取refresh tokens的URL</li>
+<li><code>scopes</code>：Map[string, string]，必选。用于OAuth2 Security Scheme的scope</li>
+</ul>
+</li>
+</ul>
+<h3 id="Security-Requirement-对象"><a href="#Security-Requirement-对象" class="headerlink" title="Security Requirement 对象"></a>Security Requirement 对象</h3><ul>
+<li>Security Requirement 对象：列出执行Operation所需的Security Schemes<ul>
+<li><code>&#123;name&#125;</code>：string数组。</li>
+</ul>
+</li>
+</ul>
+<p>上面列举的是OpenAPI文档中允许存在的所有数据结构，在实际编写过程中，通常并不会全部都有。同时纯手工根据规范编写文档是一件比较耗费力气的事情，事实上也有很多可视化的工具能够帮助我们方便地编写API信息，然后导出成对应的<code>json</code>或<code>yaml</code>文档。下面将会介绍相关的工具。</p>
+<h2 id="相关工具"><a href="#相关工具" class="headerlink" title="相关工具"></a>相关工具</h2><p>与OpenAPI相关的工具有很多，涉及到API开发的各个生命周期。在<a target="_blank" rel="noopener" href="https://openapi.tools/">OpenAPI.tools</a>网站中可以看到相关的工具，我们通常使用的有以下几类工具：</p>
+<ul>
+<li>OpenAPI的文本编辑器：例如<a target="_blank" rel="noopener" href="https://stoplight.io/studio">Stoplight</a>，它提供一个网页的编辑器帮助我们快速创建OpenAPI文档</li>
+<li>Mock服务器：例如Prism。这是一个Mock服务器，由于使用相同的规范，因此API的消费者无需等待后台实现，而是可以使用随机的数据来进行前端的测试</li>
+<li>代码生成工具：例如<a target="_blank" rel="noopener" href="https://openapi-generator.tech/">openapi-generator</a>。由于API使用的是OpenAPI规范，所以可以据此进行代码生成。API的提供者可以用工具来快速生成代码的骨架</li>
+<li>文档生成工具：例如<a target="_blank" rel="noopener" href="https://editor.swagger.io/">swagger UI</a>，它可以将我们的文档展示为对应的网页形式，可读性更高</li>
+</ul>
+<p>还有其他相关的工具，包括OpenAPI文档的验证，文档解析，测试等，在需要使用时可以参考上面提到的工具网站。</p>
+<h1 id="Swagger"><a href="#Swagger" class="headerlink" title="Swagger"></a>Swagger</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>Swagger本身是一个API文档的维护组织，后来成为了OpenAPI标准的主要定义者。OpenAPI就是由这个组织定义并贡献开源的。当然除此之外，Swagger也发布过其他标准，例如Swagger 2，Swagger3等，而OpenAPI的版本直接从3.0开始。Swagger2的包名为<code>io.swagger</code>，Swagger3的包名为<code>io.swagger.core.v3</code>。</p>
+<p>除此以外，Swagger还提供了一系列工具，用于生成，描述，调用和可视化RESTful风格的Web服务。这些工具用来帮助实现OpenAPI规范，在API生命周期的不同阶段使用。例如有：</p>
+<ul>
+<li>Swagger Editor：用于在浏览器中编辑OpenAPI规范，并实时预览文档。当然Swagger编辑器除了能够支持OpenAPI规范，还支持其他规范，如Swagger 2.0等</li>
+<li>Swagger UI：从符合OpenAPI规范的描述文件中生成可视化的文档，使用html进行展示，界面优美，效果直观</li>
+<li>Swagger Codegen：从符合OpenAPI规范的描述文件中生成API客户端代码</li>
+</ul>
+<p>除了使用这些工具之外，在日常的工作中，我们主要也会将Swagge集成到项目中进行使用，例如集成到SpringBoot项目中。所以下面就将介绍Swagger相关工具的使用，以及如何在SpringBoot项目中使用Swagger的相关工具。</p>
+<h2 id="SpringDoc"><a href="#SpringDoc" class="headerlink" title="SpringDoc"></a>SpringDoc</h2><h3 id="概念辨析"><a href="#概念辨析" class="headerlink" title="概念辨析"></a>概念辨析</h3><p>这里首先需要厘清一些相关概念，Swagger提供了相关工具使我们在API开发的各个阶段更加便捷，但是它本身还是单独分离的工具，是不能直接应用在SpringBoot项目当中的。而SpringFox和SpingDoc就是两个项目，帮助我们在SpringBoot项目中集成Swagger服务。</p>
+<p>SpringFox（<a target="_blank" rel="noopener" href="https://springfox.github.io/springfox/">SpringFox by springfox</a>）是 spring 社区维护的一个项目（非官方），它能够帮助使用者将 swagger2 集成到 Spring 中。常常用于 Spring 中帮助开发者生成文档，并可以轻松的在SpringBoot中使用。它支持多种规范，包括Swagger2，Swagger3，OpenAPI3等。但是该项目目前基本已经停止更新了。</p>
+<p>SpringDoc（<a target="_blank" rel="noopener" href="https://springdoc.org/">OpenAPI 3 Library for spring-boot (springdoc.org)</a>）也是 spring 社区维护的一个项目（非官方），帮助使用者将Swagger3 集成到 Spring 中。同样也可以用来在 Spring 中帮助开发者生成文档，并可以轻松的在SpringBoot中使用。相比于SpringFox，SpringDoc虽然只支持OpenAPI3，但是SpringDoc项目目前更加活跃，文档也更加全面。因此这里我们直接使用SpringDoc来集成OpenAPI的支持到SpringBoot项目中。</p>
+<p>SpringDoc完成的功能是通过我们的API代码来生成对应的API文档。我们的API是通过类和方法来实现的。在类和方法上标注对应的注解之后，SpringDoc就可以借助扫描对应的注解来生成API文档，当然使用的是OpenAPI的规范。</p>
+<h3 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started"></a>Getting Started</h3><p>首先在SpringBoot项目的<code>pom.xml</code>文件中增加SpringDoc的依赖如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springdoc<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>springdoc-openapi-ui<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.6.14<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>之后可以写一个简单的API接口，如下所示。可以看到在下面的接口中完成了两个方法，分别提供get和post请求的接口，以及对应的参数内容。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br>    <span class="hljs-meta">@GetMapping(&quot;/getHello/&#123;name&#125;&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getHello</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> String name)</span> &#123;<br>        <span class="hljs-keyword">return</span> String.format(<span class="hljs-string">&quot;Get Hello %s&quot;</span>, name);<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/postHello/&#123;id&#125;&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">postHello</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> Integer id)</span> &#123;<br>        <span class="hljs-keyword">return</span> String.format(<span class="hljs-string">&quot;Post Hello %d&quot;</span>, id);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后启动项目，我们可以直接访问对应的链接查看效果。默认情况下我们可以通过访问<code>http://server:port/&#123;context-path&#125;/swagger-ui.html</code>来访问UI界面，如下所示。访问地址可以在项目配置文件<code>application.yaml</code>中进行设置，设置项为<code>springdoc.swagger-ui.path</code>。例如<code>springdoc:swagger-ui:path:/api</code>。不过这只是一个映射，最终还是会被重定向到上面的地址。</p>
+<img src="/2023/02/17/OpenAPI-Swagger%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7/swagger-ui.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="swagger-ui">
+
+<p>可以看到SpringDoc自动为我们生成了前端文档的展示页面，其中包括了我们刚才写的两个接口。包括请求方式，请求参数等。同时点开详细信息，还可以直接模拟调用请求，得到返回结果。</p>
+<p>同时SpringDoc还自动生成了OpenAPI的规范文档，分别提供json和yaml两种格式，可以通过下面的链接进行访问：</p>
+<ul>
+<li>json：<code>http://server:port/context-path/v3/api-docs</code></li>
+<li>yaml：<code>http://server:port/context-path/v3/api-docs.yaml</code></li>
+</ul>
+<h3 id="配置以及常用注解"><a href="#配置以及常用注解" class="headerlink" title="配置以及常用注解"></a>配置以及常用注解</h3><p>从上面快速开始的案例可以看到，只要我们引入了SpringDoc的依赖，不需要额外添加其他的信息，它就能够自动扫描我们的类代码，生成相关的文档以及UI展示。但是这种展示能够提供的信息还是非常简单和有限的，如果需要更加详细的信息，还需要使用对应的配置类以及相关注解。</p>
+<p>首先是配置类的介绍，在配置类中我们可以提供整个项目的相关信息。可以创建如下的类，首先在主类上标注<code>@Configuration</code>，表示这是一个配置类。之后在其中提供一个方法，返回值为<code>OpenAPI</code>类型，并使用<code>@Bean</code>标注方法，将返回值交由Spring管理。我们可以通过OpenAPI对象的各种方法来指定不同的信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OpenAPIConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> OpenAPI <span class="hljs-title function_">openApi</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenAPI</span>().info(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Info</span>()<br>                .title(<span class="hljs-string">&quot;openapi test title&quot;</span>)<br>                .description(<span class="hljs-string">&quot;test description&quot;</span>)<br>                .version(<span class="hljs-string">&quot;1.0.1&quot;</span>)<br>        );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来是常用注解的介绍。通过在API实现的不同位置上标注对应注解，我们可以为这个API接口提供相关信息，以生成更加详细的接口文档。</p>
+<ul>
+<li><code>@Tag(name=&quot;接口类描述&quot;)</code>：标注在Controller类上，表明这是一个Controller</li>
+<li><code>@Operation(summary=&quot;接口方法描述&quot;)</code>：标注在Controller方法上，表明这是一个API</li>
+<li><code>@Parameters(value=&#123;...&#125;)</code>：标注在Controller方法上，用于注明多个参数信息。<ul>
+<li>其中value的值是一个注解数组，每个元素是<code>@Parameter</code>注解</li>
+</ul>
+</li>
+<li><code>@Parameter(description=&quot;参数描述&quot;)</code>：可以用在上面的<code>@Parameters</code>的value中，也可以直接标注在Controller方法的参数上</li>
+<li><code>@Schema</code>：可以标注在实体类或者实体类的属性上。如果这个实体类被用作请求的返回类型，则会在生成的文档中进行描述</li>
+</ul>
+<p>下面用常用注解来对之前的简单Controller方法进行描述，用作示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@Tag(name = &quot;I am a Hello Controller&quot;, description = &quot;Hello, description&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br>    <span class="hljs-meta">@Operation(summary = &quot;controller function: get Hello&quot;)</span><br>    <span class="hljs-meta">@Parameters(value = &#123;</span><br><span class="hljs-meta">            @Parameter(name = &quot;p-name&quot;)</span><br><span class="hljs-meta">    &#125;)</span><br>    <span class="hljs-meta">@GetMapping(&quot;/getHello/&#123;name&#125;&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getHello</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> String name)</span> &#123;<br>        <span class="hljs-keyword">return</span> String.format(<span class="hljs-string">&quot;Get Hello %s&quot;</span>, name);<br>    &#125;<br><br>    <span class="hljs-meta">@Operation(summary = &quot;controller function: post hello&quot;)</span><br>    <span class="hljs-meta">@PostMapping(&quot;/postHello/&#123;id&#125;&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">postHello</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> <span class="hljs-meta">@Parameter(name = &quot;p-id&quot;)</span> Integer id)</span> &#123;<br>        <span class="hljs-keyword">return</span> String.format(<span class="hljs-string">&quot;Post Hello %d&quot;</span>, id);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Spring-Swagger-CodeGen"><a href="#Spring-Swagger-CodeGen" class="headerlink" title="Spring Swagger-CodeGen"></a>Spring Swagger-CodeGen</h2><p>上面我们已经展示了在项目中集成SpringDoc，让其为我们生成对应的API文档以及UI展示。不过一篇详细的文档，它需要我们利用众多的注解来标识，提供足够的注解信息才能生成。这些注解虽然并不是很复杂，但还是比较繁琐。于是，另一种利用Swagger的思想就是先得到一篇API文档，然后通过这个文档直接辅助生成对应的代码。也就是Swagger提供的Swagger Codegen服务。</p>
+<p>我们可以将Swagger Codegen服务集成到SpringBoot项目中，这需要使用swagger-codegen-maven-plugin插件。插件的官方地址为<a target="_blank" rel="noopener" href="https://github.com/swagger-api/swagger-codegen">swagger-api&#x2F;swagger-codegen(github.com)</a>，其中详细描述了各种配置产生。下面开始介绍插件的相关使用。</p>
+<p>为了使用插件，我们在在<code>pom.xml</code>文件中加入如下内容：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>io.swagger.codegen.v3<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>swagger-codegen-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.0.36<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">executions</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">execution</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">goals</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">goal</span>&gt;</span>generate<span class="hljs-tag">&lt;/<span class="hljs-name">goal</span>&gt;</span><br>                    <span class="hljs-tag">&lt;/<span class="hljs-name">goals</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">inputSpec</span>&gt;</span>$&#123;project.basedir&#125;/src/main/resources/api.yaml<span class="hljs-tag">&lt;/<span class="hljs-name">inputSpec</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">language</span>&gt;</span>java<span class="hljs-tag">&lt;/<span class="hljs-name">language</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">configOptions</span>&gt;</span><br>                            <span class="hljs-tag">&lt;<span class="hljs-name">sourceFolder</span>&gt;</span>src/gen/java/main<span class="hljs-tag">&lt;/<span class="hljs-name">sourceFolder</span>&gt;</span><br>                        <span class="hljs-tag">&lt;/<span class="hljs-name">configOptions</span>&gt;</span><br>                    <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">execution</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">executions</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>这就引入的对应的插件。然后执行<code>mvm clean complie</code>，Maven就会执行对应的生命周期，上面的插件对应的生成功能也会在过程中执行。执行完毕之后，就会生成对应的代码。但是需要注意的是，这里只会生成对应的代码，并不会引入相关的依赖。在代码中会使用到其他相关的依赖，还需要我们自己手动引入。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://openapi.apifox.cn/">OpenAPI规范-中文版</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42759726/article/details/111850907">Spring Boot整合Swagger3(OpenAPI3)生成接口文档</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Tools/" class="category-chain-item">Tools</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Development/">#Development</a>
+      
+        <a href="/tags/OpenAPI/">#OpenAPI</a>
+      
+        <a href="/tags/Swagger/">#Swagger</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>OpenAPI,Swagger以及相关工具</div>
+      <div>http://example.com/2023/02/17/OpenAPI-Swagger以及相关工具/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月17日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/02/21/Gson%E7%9A%84%E7%9B%B8%E5%85%B3%E4%BD%BF%E7%94%A8/" title="Gson的相关使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Gson的相关使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/04/Git%E5%9F%BA%E7%A1%80/" title="Git基础">
+                        <span class="hidden-mobile">Git基础</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

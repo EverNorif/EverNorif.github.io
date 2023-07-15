@@ -1,0 +1,811 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了在单元测试中经常会使用到的Mock，以及一个功能强大的Java测试框架Mockito。利用Mockito我们可以将一些依赖对象进行Mock，然后通过打桩人为定义方法效果，达到隔离依赖，测试核心逻辑的目的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mock与Mockito">
+<meta property="og:url" content="http://example.com/2023/02/25/Mock%E4%B8%8EMockito/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了在单元测试中经常会使用到的Mock，以及一个功能强大的Java测试框架Mockito。利用Mockito我们可以将一些依赖对象进行Mock，然后通过打桩人为定义方法效果，达到隔离依赖，测试核心逻辑的目的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-25T07:52:50.000Z">
+<meta property="article:modified_time" content="2023-02-25T07:55:46.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Development">
+<meta property="article:tag" content="Mockito">
+<meta property="article:tag" content="UnitTest">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Mock与Mockito - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Mock与Mockito"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-25 15:52" pubdate>
+          2023年2月25日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          54 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Mock与Mockito</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="Mock"><a href="#Mock" class="headerlink" title="Mock"></a>Mock</h1><p>在协同开发过程中，我们经常会遇到这样的场景。我们开发了一个类，这个类的功能是依赖于其他服务的接口，或者第三方的功能模块。但是由于是协同开发，可能其他服务的接口此时还没有实现，而我们需要对实现的类进行单元测试，那可能需要等待其他服务的实现。或者是借助的第三方功能模块非常复杂，每次测试都需要比较长的时间，此时单元测试与开发之间体验就会非常割裂。</p>
+<p>Mock就是用来解决上面的问题的。Mock意为模拟，借助Mock我们可以模拟出所需要的对象，并且可以定义这个对象的行为。Mock可以解决如下问题：</p>
+<ul>
+<li><p>解决依赖问题：在测试一个接口或者功能模块的时候，如果这个接口或者功能模块依赖其他接口或者其他模块，且所依赖的接口或功能模块未开发完毕，那么我们可以使用Mock模拟被依赖的接口，完成目标接口的测试</p>
+</li>
+<li><p>模拟复杂业务的接口：依赖一个非常复杂的业务或者第三方接口，可以直接使用Mock来模拟这个复杂的业务接口，定义它能够返回正确的结果</p>
+</li>
+<li><p>单独测试：在对某个类进行测试的时候，可能会涉及到一些RPC的调用，数据库，缓存操作等，这些外部的依赖我们可以将其模拟Mock掉，达到<strong>单独</strong>测试某个类的效果</p>
+</li>
+<li><p>前后端联调：进行前后端分离编程的时候，前端页面开发需要调用后台的接口，但是后台接口还没有开发完成，那么完全可以借助Mock来模拟后台这个接口返回想要的数据</p>
+</li>
+</ul>
+<h1 id="Mockito"><a href="#Mockito" class="headerlink" title="Mockito"></a>Mockito</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Mocito是一个功能强大的Java测试框架。通过Mockito可以创建Mock对象，排除外部依赖对被测试类的干扰。Mocito可以模拟对象，模拟方法的返回值，模拟抛出异常等等，同时也会记录这些模拟方法的调用次数、调用顺序等，从而进行校验，断言程序是否按照我们期望的效果运行。</p>
+<p>在Java中主流的Mock测试工具有Mockito、JMock、EasyMock。其中，Spring Boot默认的测试框架就是Mockito。</p>
+<p>在开始使用Mockito之前，需要介绍几个简单的相关概念：</p>
+<ul>
+<li>Mock对象：在调试期间用来作为真实对象的替代，是<strong>被测试对象所依赖的对象</strong></li>
+<li>Mock测试：在测试过程中，对那些不容易构建的对象用一个虚拟对象来代替测试</li>
+<li>Stub：打桩，为Mock对象的方法指定返回值（可抛出异常），即人为定义Mock对象的行为</li>
+<li>Verify：行为验证，验证指定方法调用情况（是否被调用，调用次数等）</li>
+<li>Assert：断言，判断输出效果是否与我们期望一致</li>
+</ul>
+<h2 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started"></a>Getting Started</h2><p>为了使用Mocito，我们需要在项目中引入相关依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Mocito相关依赖--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.mockito<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mockito-core<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.8.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--单元测试--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.junit.jupiter<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit-jupiter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.9.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>由于SpringBoot默认使用Mockito作为测试框架，因此如果我们正在开发的是SpringBoot项目，那么可以通过引入下面的starter来引入依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"> <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>下面简单描述当前的场景，我们现在已经完成了下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyService</span> &#123;<br><br>    <span class="hljs-keyword">private</span> OtherService otherService;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyService</span><span class="hljs-params">(OtherService otherService)</span> &#123;<br>        <span class="hljs-built_in">this</span>.otherService = otherService;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">plus</span><span class="hljs-params">(Integer integer)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> + otherService.complexFunc(integer);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到在我们的Service，实现的核心方法<code>plus</code>完成的是+1操作。但是它还依赖一个其他的Service，这个Service可能会进行很复杂的运算<code>complexFunc</code>。现在我们需要验证的就是这个+1操作能否正确完成，而不需要验证复杂运算是否能够完成。（实际上我们根本不需要知道复杂运算的逻辑）为了测试，我们可以写如下的单元测试代码（这里使用静态引入方便后续的调用）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.mockito;<br><br><span class="hljs-keyword">import</span> org.junit.jupiter.api.Test;<br><br><span class="hljs-keyword">import</span> <span class="hljs-keyword">static</span> org.junit.jupiter.api.Assertions.*;<br><span class="hljs-keyword">import</span> <span class="hljs-keyword">static</span> org.mockito.Mockito.*;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyServiceTest</span> &#123;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">plus</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// 需要测试MyService MyService依赖OtherService</span><br><br>        <span class="hljs-comment">// mock一个OtherService</span><br>        <span class="hljs-type">OtherService</span> <span class="hljs-variable">mock</span> <span class="hljs-operator">=</span> mock(OtherService.class);<br>        <span class="hljs-comment">// 进行stub 定义mock出来的otherService对象的行为</span><br>        when(mock.complexFunc(any())).thenReturn(<span class="hljs-number">1</span>);<br><br>        <span class="hljs-type">MyService</span> <span class="hljs-variable">myService</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyService</span>(mock);<br>        <span class="hljs-type">Integer</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> myService.plus(<span class="hljs-number">3</span>);<br><br>        assertEquals(<span class="hljs-number">2</span>, res);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在单元测试代码中，我们首先将外部依赖OtherService对象Mock掉，生成了一个mock对象。之后进行stub，人为定义了复杂运算<code>complexFunc()</code>的行为，也就是这一行代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">when(mock.complexFunc(any())).thenReturn(<span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
+
+<p>这行代码的含义是，当mock对象调用到<code>complexFunc()</code>方法的时候，无论接收什么样的输入即<code>any()</code>，都返回1。有了这个保障，我们就可以执行需要测试的plus方法，由于无论传入任何值，复杂运算返回都是1，因此如果我们的plus方法正确，那么返回的res就必然是2，于是我们就可以这样断言，也就是代码中的最后一行。之后我们运行单元测试，就会显示测试通过。这就显示我们的plus方法中的核心+1确实是正常工作的，至于复杂逻辑，由于我们mock掉了，它能否正常运行我们是没有测试的，不过这也并不是我们需要关心的事情，我们这里需要测试的就是核心的+1能否正常运行。（这里也可以选择运行<code>run with Coverage</code>），这样会同时显示测试代码覆盖率等。</p>
+<h2 id="更多功能"><a href="#更多功能" class="headerlink" title="更多功能"></a>更多功能</h2><h3 id="when-then"><a href="#when-then" class="headerlink" title="when then"></a>when then</h3><p>在上面的demo中，我们已经展示了stub的一种方式，即使用<code>when().thenReturn()</code>来确定Mock对象的方法调用返回值。实际上类似的方式还有下面一些：</p>
+<ul>
+<li><code>thenThrow(Throwable t)</code>：抛出异常</li>
+<li><code>thenAnswer(Answer&lt;?&gt; answer)</code>：对方法返回进行拦截处理</li>
+<li><code>thenCallRealMethod()</code>：调用方法的真实实现</li>
+</ul>
+<p>下面我们将Mock一个List对象，举例各种方法的使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">final</span> <span class="hljs-type">ArrayList</span> <span class="hljs-variable">mockList</span> <span class="hljs-operator">=</span> mock(ArrayList.class);<br><br><span class="hljs-comment">// 设置方法调用返回值</span><br>when(mockList.add(<span class="hljs-string">&quot;me&quot;</span>)).thenReturn(<span class="hljs-literal">true</span>);<br><br><span class="hljs-comment">// 设置方法调用抛出异常</span><br>when(mockList.get(<span class="hljs-number">0</span>)).thenThrow(<span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>());<br><br><span class="hljs-comment">// 打桩 无返回值的方法</span><br>doNothing().when(mockList).clear();<br><br><span class="hljs-comment">// 对方法返回进行拦截处理</span><br>Answer&lt;String&gt; answer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Answer</span>&lt;String&gt;() &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">answer</span><span class="hljs-params">(InvocationOnMock invocationOnMock)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br>        <span class="hljs-type">List</span> <span class="hljs-variable">mock</span> <span class="hljs-operator">=</span> (List) invocationOnMock.getMock();<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;mock.size result =&gt; &quot;</span> + mock.size();<br>    &#125;<br>&#125;;<br>when(mockList.get(<span class="hljs-number">1</span>)).thenAnswer(answer);<br></code></pre></td></tr></table></figure>
+
+<p>如果Mock对象的某个方法没有被打桩的话，那么调用该方法会返回默认值。</p>
+<blockquote>
+<p>在较低版本的Mockito中，是不允许对static和final方法进行stub，不过在3.4.0版本之后可以Mock静态方法和final方法等，相关依赖在<code>mockito-inline</code>中。</p>
+</blockquote>
+<h3 id="行为与执行顺序验证"><a href="#行为与执行顺序验证" class="headerlink" title="行为与执行顺序验证"></a>行为与执行顺序验证</h3><p>在创建了Mock对象之后，它就会记住所有的交互，于是我们就可以选择性的记录我们感兴趣的交互，包括调用了多少次Mock对象的方法，不同方法之间的执行顺序等。</p>
+<p>行为验证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 验证方法被调用了一次</span><br>verify(mock).complexFunc(any());<br><span class="hljs-comment">// 验证方法被调用了至少2次</span><br>verify(mock, atLeast(<span class="hljs-number">2</span>)).complexFunc(any());<br><span class="hljs-comment">// 验证方法被调用了最多3次</span><br>verify(mock,atMost(<span class="hljs-number">3</span>)).complexFunc(<span class="hljs-number">1</span>);<br><span class="hljs-comment">// 验证方法没有被调用</span><br>verify(mock,never()).complexFunc(<span class="hljs-number">2</span>);<br><span class="hljs-comment">// 指定方法调用超时时间</span><br>verify(mock, timeout(<span class="hljs-number">100</span>)).complexFunc(<span class="hljs-number">1</span>);<br><span class="hljs-comment">// 指定时间内需要完成的次数</span><br>verify(mock,timeout(<span class="hljs-number">200</span>).atLeastOnce()).complexFunc(any());<br></code></pre></td></tr></table></figure>
+
+<p>执行顺序验证，需要从Mock对象中创建InOrder对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 验证同一个对象多个方法的执行顺序</span><br><span class="hljs-keyword">final</span> <span class="hljs-type">List</span> <span class="hljs-variable">mockList</span> <span class="hljs-operator">=</span> mock(List.class);<br>mockList.add(<span class="hljs-string">&quot;first&quot;</span>);<br>mockList.add(<span class="hljs-string">&quot;second&quot;</span>);<br><span class="hljs-keyword">final</span> <span class="hljs-type">InOrder</span> <span class="hljs-variable">inOrder</span> <span class="hljs-operator">=</span> inOrder(mockList);<br>inOrder.verify(mockList).add(<span class="hljs-string">&quot;first&quot;</span>);<br>inOrder.verify(mockList).add(<span class="hljs-string">&quot;second&quot;</span>);<br><br><span class="hljs-comment">// 验证多个对象多个方法的执行顺序</span><br><span class="hljs-keyword">final</span> <span class="hljs-type">List</span> <span class="hljs-variable">mockList1</span> <span class="hljs-operator">=</span> mock(List.class);<br><span class="hljs-keyword">final</span> <span class="hljs-type">List</span> <span class="hljs-variable">mockList2</span> <span class="hljs-operator">=</span> mock(List.class);<br>mockList1.get(<span class="hljs-number">0</span>);<br>mockList1.get(<span class="hljs-number">1</span>);<br>mockList2.get(<span class="hljs-number">0</span>);<br>mockList1.get(<span class="hljs-number">2</span>);<br>mockList2.get(<span class="hljs-number">1</span>);<br><span class="hljs-keyword">final</span> <span class="hljs-type">InOrder</span> <span class="hljs-variable">inOrder1</span> <span class="hljs-operator">=</span> inOrder(mockList1, mockList2);<br>inOrder1.verify(mockList1).get(<span class="hljs-number">0</span>);<br>inOrder1.verify(mockList1).get(<span class="hljs-number">2</span>);<br>inOrder1.verify(mockList2).get(<span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
+
+<h3 id="Spy监控"><a href="#Spy监控" class="headerlink" title="Spy监控"></a>Spy监控</h3><p>我们可以为真实的依赖对象创建一个Spy对象。这个对象与上面的Mock对象存在一定的区别。</p>
+<p>Mock对象是对真实对象的完全Mock，我们创建的Mock对象与真实对象无关，我们可以对Mock对象的方法进行打桩，人为指定对应的返回值。而没有打桩的方法，则是默认的返回值。我们可以基于接口、实现类创建Mock对象。</p>
+<p>Spy对象则是对真实对象的部分Mock，它是基于真实对象的。我们同样可以对对应的方法进行打桩。但是没有打桩的方法，走的是真实对象的实现。因此我们只能基于实现类来创建Spy对象，因为否则在调用没有打桩的方法时走真实实现的时候会出现异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java">LinkedList&lt;Object&gt; linkedList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedList</span>&lt;&gt;();<br>LinkedList&lt;Object&gt; spy = spy(linkedList);<br><br>spy.add(<span class="hljs-string">&quot;one&quot;</span>);<br>spy.add(<span class="hljs-string">&quot;two&quot;</span>);<br><br><span class="hljs-comment">// 对get(0)打桩</span><br>when(spy.get(<span class="hljs-number">0</span>)).thenReturn(<span class="hljs-string">&quot;1_stub&quot;</span>);<br>System.out.println(spy.get(<span class="hljs-number">0</span>)); <span class="hljs-comment">// stub实现：1_stub</span><br>System.out.println(spy.get(<span class="hljs-number">1</span>)); <span class="hljs-comment">// 真实实现：two</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="注解简化"><a href="#注解简化" class="headerlink" title="注解简化"></a>注解简化</h3><p>在前面的介绍中，我们都是使用<code>mock()</code>或<code>spy()</code>方法来进行Mock对象或Spy对象的创建。事实上我们可以通过相关注解来管理Mock对象的创建。我们可以将外部依赖对象放在成员变量中，然后使用<code>@Mock</code>或者<code>@Spy</code>进行修饰，这就表示我们需要将这个对象创建为Mock对象或Spy对象。注解的使用需要首先开启，即第一步执行下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">MockitoAnnotations.openMocks(<span class="hljs-built_in">this</span>);<br></code></pre></td></tr></table></figure>
+
+<p>由于每个单元测试方法是单独执行的，并且都需要开启注解，所以我们可以将注解的开启放在所有测试方法的前面，即实现一个<code>setUp</code>方法，其中完成注解功能开启。以下是使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AnnotationTest</span> &#123;<br><br>    <span class="hljs-meta">@Mock</span><br>    <span class="hljs-keyword">private</span> OtherService otherService;<br><br>    <span class="hljs-meta">@BeforeEach</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">setUp</span><span class="hljs-params">()</span>&#123;<br>        MockitoAnnotations.openMocks(<span class="hljs-built_in">this</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">testMyService</span><span class="hljs-params">()</span>&#123;<br>        when(otherService.complexFunc(<span class="hljs-number">1</span>)).thenReturn(<span class="hljs-number">2</span>); <span class="hljs-comment">// stub</span><br>        System.out.println(otherService.complexFunc(<span class="hljs-number">1</span>)); <span class="hljs-comment">// 2</span><br>        System.out.println(otherService.complexFunc(<span class="hljs-number">2</span>)); <span class="hljs-comment">// 0(默认值)</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html">Mockito (Mockito 5.1.1 API) (javadoc.io)</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7202666869965520952">手把手教你Mockito的使用 - 掘金 (juejin.cn)</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Tools/" class="category-chain-item">Tools</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Development/">#Development</a>
+      
+        <a href="/tags/Mockito/">#Mockito</a>
+      
+        <a href="/tags/UnitTest/">#UnitTest</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Mock与Mockito</div>
+      <div>http://example.com/2023/02/25/Mock与Mockito/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月25日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/01/JAX-RS%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" title="JAX-RS的介绍与使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">JAX-RS的介绍与使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/22/Scala%E4%B8%AD%E7%9A%84Option/" title="Scala中的Option">
+                        <span class="hidden-mobile">Scala中的Option</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,874 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Java核心技术卷的读书笔记第三篇，记录了Java中的异常处理，断言机制以及日志框架等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java基础笔记(3)-异常、断言和日志">
+<meta property="og:url" content="http://example.com/2022/09/02/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-3-%E5%BC%82%E5%B8%B8%E3%80%81%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Java核心技术卷的读书笔记第三篇，记录了Java中的异常处理，断言机制以及日志框架等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/09/02/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-3-%E5%BC%82%E5%B8%B8%E3%80%81%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97/Java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png">
+<meta property="article:published_time" content="2022-09-02T11:18:06.000Z">
+<meta property="article:modified_time" content="2022-09-02T12:46:24.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/09/02/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-3-%E5%BC%82%E5%B8%B8%E3%80%81%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97/Java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png">
+  
+  
+  
+  <title>Java基础笔记(3)-异常、断言和日志 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java基础笔记(3)-异常、断言和日志"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-02 19:18" pubdate>
+          2022年9月2日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java基础笔记(3)-异常、断言和日志</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><h2 id="异常介绍"><a href="#异常介绍" class="headerlink" title="异常介绍"></a>异常介绍</h2><p>Java中异常整体的架构图如下：</p>
+<img src="/2022/09/02/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-3-%E5%BC%82%E5%B8%B8%E3%80%81%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97/Java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Java异常体系">
+
+<p>在Java中，异常对象都是派生于Throwable类的一个类实例。当然用户也可以创建自己的异常类。所有异常都是由Throwable继承而来，然后分解为两个分支：</p>
+<ol>
+<li>Error（错误）：Java虚拟机无法解决的严重问题，例如JVM系统内部错误，资源耗尽等</li>
+<li>Exception（异常）：其他因编程错误或偶然的外在因素导致的一般性问题，可以使用针对性的代码来进行处理，例如空指针访问等</li>
+</ol>
+<p>在编写Java程序的时候，我们重点管制的时Exception层次，这里又分为两个分支，一个分支派生于RuntimeException，另一个则是其他异常。</p>
+<p>由编程错误导致的异常属于RuntimeException，例如：</p>
+<ul>
+<li>错误的强制类型转换</li>
+<li>数组访问越界</li>
+<li>空指针异常</li>
+</ul>
+<p>程序本身没有问题，但是由于像IO错误这类问题导致的异常属于其他异常，例如：</p>
+<ul>
+<li>试图超越文件末尾继续读取数据</li>
+<li>试图打开一个不存在的文件</li>
+<li>试图根据给定的字符串查找Class对象，但是这个字符串表示的类并不存在</li>
+</ul>
+<p>在Java语言规范中，将派生于Error类或者RuntimeException类的所有异常称为<strong>非检查型（unchecked）异常</strong>，其他的异常称为<strong>检查型（checked）异常</strong>。所有检查型异常都应该在代码中处理，处理包括捕获或者抛出。</p>
+<h2 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h2><p>当程序中出现了某些“错误”，但是这些错误信息并没有在Throwable子类中进行描述处理，这个时候可以自己设计异常类，用于描述该错误信息。实现自定义异常只需要定义一个派生于Exception的类，或者派生于Exception的某个子类。</p>
+<p>习惯的做法是，自定义的这个类应该包含两个构造器，一个是默认的构造器，另一个是包含详细描述信息的构造器。</p>
+<blockquote>
+<p>Throwable的toString方法会返回一个字符串，其中包含了这个详细信息，同时还提供getMessage()方法，用于获得Throwable对象的详细描述信息。</p>
+</blockquote>
+<h2 id="异常处理机制"><a href="#异常处理机制" class="headerlink" title="异常处理机制"></a>异常处理机制</h2><p>异常处理机制包括捕获和抛出。</p>
+<p>抛出指的是<code>throws</code>关键字。如果使用抛出来处理异常，那么一个方法应该声明所有可能抛出的检查型异常。</p>
+<blockquote>
+<p>throws和throw的对比：</p>
+<ul>
+<li><p>throws：用来声明一个方法可能产生的所有异常</p>
+</li>
+<li><p>throw：用来抛出一个具体的异常对象</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>throws</th>
+<th>throw</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>意义</td>
+<td>异常处理的一种方式</td>
+<td>手动生成异常对象的关键字</td>
+</tr>
+<tr>
+<td>位置</td>
+<td>方法声明处</td>
+<td>方法体中</td>
+</tr>
+<tr>
+<td>后面带的东西</td>
+<td>异常类型</td>
+<td>异常对象</td>
+</tr>
+</tbody></table>
+</blockquote>
+<ul>
+<li>注意：子类重写父类的方法的时候，对抛出异常的规定：子类重写的方法，所抛出的异常类型要么和父类抛出的异常一致，要么是父类抛出异常类型的子类型</li>
+</ul>
+<p>捕获指的是<code>try-catch-finally</code>。在代码中捕获了该异常，就无需继续抛出了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span>&#123;<br>    <span class="hljs-comment">// 代码可能有异常</span><br>&#125;<span class="hljs-keyword">catch</span>(Exception e)&#123;<br>    <span class="hljs-comment">// 当异常发生的时候，系统将异常封装成Exception对象e，传递给catch</span><br>&#125;<span class="hljs-keyword">finally</span>&#123;<br>    <span class="hljs-comment">// 无论是否发生异常，finally代码块都需要执行</span><br>    <span class="hljs-comment">// 通常将关闭和释放资源的代码放在这里</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>多个异常的捕获</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span>&#123;<br><br>&#125;<span class="hljs-keyword">catch</span>(FileNotFoundException | UnknownHostException e)&#123;<br><br>&#125;<span class="hljs-keyword">catch</span>(IOException e)&#123;<br><br>&#125;<span class="hljs-keyword">finally</span>&#123;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>捕获多个异常的时候，异常变量隐含为final变量</li>
+<li>可以在catch子句中再次抛出异常，这通常用来改变异常的类型</li>
+<li>不应该在finally代码块中包含return语句，否则返回值会进行覆盖，甚至会吞掉可能的异常</li>
+</ul>
+<blockquote>
+<p>堆栈轨迹（Stack Trace）是程序执行过程中某个特定点上所有挂起方法调用的一个列表。</p>
+<p>可以调用Throwable类的printStackTrace方法访问堆栈轨迹的文本描述信息</p>
+</blockquote>
+<h2 id="try-with-resources"><a href="#try-with-resources" class="headerlink" title="try-with-resources"></a>try-with-resources</h2><p>在finally语句中我们一般执行一些清除资源的流程，try-with-resources语句也能够达到相同的效果。它的最简语法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span>(<span class="hljs-type">Resource</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> ...)&#123;<br>	work with res<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面的代码，在try代码块执行完毕之后，会自动调用<code>res.close()</code>方法。当然这要求我们使用的资源类都实现了<code>AutoCloseable</code>接口，在这个接口中提供的方法<code>void close() throws Exception</code></p>
+<ul>
+<li>在括号中也可以指定多个资源，即使用多个语句定义资源，语句之间使用分号<code>;</code>分开</li>
+<li>try-with-resources语句本身也可以有catch子句和finally子句</li>
+<li>如果try块抛出异常，close方法也抛出异常，那么原来的异常会重新抛出，而close方法抛出的异常会被抑制。这些异常会被自动捕获，并由addSuppreseed方法增加到原来的异常。调用getSuppressed方法，可以生成从close方法抛出并抑制的异常数组</li>
+</ul>
+<h1 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h1><p>断言机制允许在测试期间向代码中插入一些检查，而在生产代码中会自动删除这些检查。断言对应的关键字是<code>assert</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">assert</span> condition;<br><br><span class="hljs-keyword">assert</span> condition: expression;<br></code></pre></td></tr></table></figure>
+
+<p>上面两个语句都会计算条件，如果结果为false，则抛出一个AssertionError异常。在第二种形式中，表达式expression将传入AssertionError对象的构造器，转化成一个消息字符串。</p>
+<blockquote>
+<p>表达式的唯一目的是产生一个消息字符串。AssertionError对象并不存储具体的表达式值。</p>
+</blockquote>
+<p>在默认情况下，断言是禁用的，可以在运行程序的时候使用选项开启。<code>java -enableassertions</code>或者<code>java -ea</code>。我们不必重新编译程序来启动或禁用断言，这是类加载器的职责。禁用断言的时候，类加载器会去除断言代码。</p>
+<p>断言也可以是一种错误处理的机制，但是断言使用的情况往往是下面几种：</p>
+<ul>
+<li>断言失败是致命的，不可恢复的错误</li>
+<li>断言检查只是在开发和测试阶段才会打开</li>
+</ul>
+<p>我们不应该使用断言向程序的其他部分通知错误，不应该利用断言与程序用户沟通问题。断言只应该用于在测试阶段确定程序内部错误的位置。</p>
+<h1 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h1><h2 id="日志优点"><a href="#日志优点" class="headerlink" title="日志优点"></a>日志优点</h2><p>在一些简单的场景下，我们会使用<code>System.out.println</code>来进行一些输出，观察程序的行为。但是这个输出语句毕竟不是专门用来解决日志问题，日志API相比于它，会有更多的优点：</p>
+<ul>
+<li>可以很容易地取消其全部日志记录，或者仅仅取消某个级别以下的日志</li>
+<li>可以很容易地禁止日志记录</li>
+<li>日志记录可以被定向到不同的处理器</li>
+<li>日志记录器和处理器都可以对记录进行过滤</li>
+<li>日志记录可以采用不同的方式进行格式化</li>
+<li>应用程序可以使用多个日志记录器</li>
+<li>日志系统的配置由配置文件控制</li>
+</ul>
+<h2 id="标准Java日志框架"><a href="#标准Java日志框架" class="headerlink" title="标准Java日志框架"></a>标准Java日志框架</h2><p>标准Java日志框架需要引入的包为<code>java.util.logging</code></p>
+<p>下面是一个基本的日志使用方式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 获取全局日志记录器，调用info方法记录日志 </span><br>Logger.getGlobal().info(<span class="hljs-string">&quot;something...&quot;</span>);<br><br><span class="hljs-comment">// 取消日志记录</span><br>Logger.getGlobal().setLevel(Level.OFF);<br></code></pre></td></tr></table></figure>
+
+<p>在一个专业的应用程序中，我们不应该将所有的日志都记录到一个全局的日志记录器中，因此我们可以定义自己的日志记录器，使用<code>getLogger</code>方法创建或者获取日志记录器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">myLogger</span> <span class="hljs-operator">=</span> Logger.getLogger(<span class="hljs-string">&quot;xxx.yyy.zzz&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>日志记录器的名称具有层次结构，父子日志记录器会共享某些属性，如日志级别等。</p>
+<p>通常会有下面7个日志级别：</p>
+<ul>
+<li>SEVERE</li>
+<li>WARNING</li>
+<li>INFO</li>
+<li>CONFIG</li>
+<li>FINE</li>
+<li>FINER</li>
+<li>FINEST</li>
+</ul>
+<p>日志级别从高到底，默认只记录前三个级别的日志。也可以显式地设置日志记录级别，例如<code>logger.setLevel(Level.FINE)</code>，这样就会记录该级别以及更高级别的日志。也可以使用<code>Level.ALL</code>开启所有级别的日志记录，<code>Level.OFF</code>关闭所有级别的日志记录。</p>
+<p>可以通过编辑配置文件来修改日志系统的各个属性。默认情况下，配置文件位于<code>conf/logging.properties</code>目录下，也可以通过设置<code>java.util.logging.config.file</code>的属性来确定配置文件的位置。</p>
+<p>在日志框架中，还有三个比较重要的概念，处理器Handler、过滤器Filter和格式化器Formatter。</p>
+<p>在默认情况下，日志记录器将日志记录发送到自己的处理器以及父日志记录器的处理器，最终会达到祖先处理器的ConsoleHandler中，它默认将记录输出到System.err流中，且日志记录等级为INFO。如果想要将日志记录发送到其他地方，就需要添加其他的处理器。日志API中提供了两个有用的Handler，分别是FileHandler，将日志发送到文件中；和SocketHandler，将日志发送到指定的主机和端口。调用<code>addHandler</code>方法来增加处理器。</p>
+<p>在默认情况下，会根据日志记录的级别进行过滤。每个日志记录器和处理器都有一个可选的过滤器来完成附加的过滤。定义过滤器，需要实现Filter接口，并定义方法<code>boolean isLoggable(LogRecord record)</code>。这个方法对那些应该包含在日志中的记录返回true。使用<code>setFilter</code>方法来设置过滤器，同一时刻最多只能有一个过滤器。</p>
+<p>ConsoleHandler类和FileHandler类可以生成文本和XML格式的日志记录。当然我们也可以自定义格式，这需要继承Formatter类并重写其中的<code>String format(LogRecord record)</code>方法，根据需要对记录中的信息进行格式化，并返回结果字符串。使用<code>setFormatter</code>方法来设置格式化器。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Java/" class="category-chain-item">Java</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Java/">#Java</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java基础笔记(3)-异常、断言和日志</div>
+      <div>http://example.com/2022/09/02/Java基础笔记-3-异常、断言和日志/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/09/03/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-4-%E6%B3%9B%E5%9E%8B/" title="Java基础笔记(4)-泛型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java基础笔记(4)-泛型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/02/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-2-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Java基础笔记(2)-面向对象">
+                        <span class="hidden-mobile">Java基础笔记(2)-面向对象</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

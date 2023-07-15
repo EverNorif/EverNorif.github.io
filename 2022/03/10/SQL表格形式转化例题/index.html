@@ -1,0 +1,1641 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="记录LeetCode上一些关于表格转化类的题目以及题解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL表格形式转化例题">
+<meta property="og:url" content="http://example.com/2022/03/10/SQL%E8%A1%A8%E6%A0%BC%E5%BD%A2%E5%BC%8F%E8%BD%AC%E5%8C%96%E4%BE%8B%E9%A2%98/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="记录LeetCode上一些关于表格转化类的题目以及题解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-10T08:26:41.000Z">
+<meta property="article:modified_time" content="2022-04-18T06:34:18.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="SQL">
+<meta property="article:tag" content="LeetCode">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SQL表格形式转化例题 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SQL表格形式转化例题"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-10 16:26" pubdate>
+          2022年3月10日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          70 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SQL表格形式转化例题</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><h3 id="eg-1179-重新格式化部门表"><a href="#eg-1179-重新格式化部门表" class="headerlink" title="eg.1179.重新格式化部门表"></a>eg.1179.重新格式化部门表</h3><blockquote>
+<p>部门表 Department：</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>revenue</td>
+<td>int</td>
+</tr>
+<tr>
+<td>month</td>
+<td>varchar</td>
+</tr>
+</tbody></table>
+<p>(id, month) 是表的联合主键。这个表格有关于每个部门每月收入的信息。月份（month）可以取下列值 [“Jan”,”Feb”,”Mar”,”Apr”,”May”,”Jun”,”Jul”,”Aug”,”Sep”,”Oct”,”Nov”,”Dec”]。</p>
+<p>编写一个 SQL 查询来重新格式化表，使得新的表中有一个部门 id 列和一些对应 每个月 的收入（revenue）列。</p>
+<p>查询结果格式如下面的示例所示：</p>
+<p>Department 表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>revenue</th>
+<th>month</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>8000</td>
+<td>Jan</td>
+</tr>
+<tr>
+<td>2</td>
+<td>9000</td>
+<td>Jan</td>
+</tr>
+<tr>
+<td>3</td>
+<td>10000</td>
+<td>Feb</td>
+</tr>
+<tr>
+<td>1</td>
+<td>7000</td>
+<td>Feb</td>
+</tr>
+<tr>
+<td>1</td>
+<td>6000</td>
+<td>Mar</td>
+</tr>
+</tbody></table>
+<p>查询得到的结果表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>Jan_Revenue</th>
+<th>Feb_Revenue</th>
+<th>Mar_Revenue</th>
+<th>…</th>
+<th>Dec_Revenue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>8000</td>
+<td>7000</td>
+<td>6000</td>
+<td>…</td>
+<td>null</td>
+</tr>
+<tr>
+<td>2</td>
+<td>9000</td>
+<td>null</td>
+<td>null</td>
+<td>…</td>
+<td>null</td>
+</tr>
+<tr>
+<td>3</td>
+<td>null</td>
+<td>10000</td>
+<td>null</td>
+<td>…</td>
+<td>null</td>
+</tr>
+</tbody></table>
+<p>注意，结果表有 13 列 (1个部门 id 列 + 12个月份的收入列)。</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    id, <br>    max(if(month=&#x27;Jan&#x27;, revenue, NULL)) as Jan_Revenue,<br>    max(if(month=&#x27;Feb&#x27;, revenue, NULL)) as Feb_Revenue,<br>    max(if(month=&#x27;Mar&#x27;, revenue, NULL)) as Mar_Revenue,<br>    max(if(month=&#x27;Apr&#x27;, revenue, NULL)) as Apr_Revenue,<br>    max(if(month=&#x27;May&#x27;, revenue, NULL)) as May_Revenue,<br>    max(if(month=&#x27;Jun&#x27;, revenue, NULL)) as Jun_Revenue,<br>    max(if(month=&#x27;Jul&#x27;, revenue, NULL)) as Jul_Revenue,<br>    max(if(month=&#x27;Aug&#x27;, revenue, NULL)) as Aug_Revenue,<br>    max(if(month=&#x27;Sep&#x27;, revenue, NULL)) as Sep_Revenue,<br>    max(if(month=&#x27;Oct&#x27;, revenue, NULL)) as Oct_Revenue,<br>    max(if(month=&#x27;Nov&#x27;, revenue, NULL)) as Nov_Revenue,<br>    max(if(month=&#x27;Dec&#x27;, revenue, NULL)) as Dec_Revenue<br>from Department<br>group by id<br>order by id<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>group by之后使用if过滤</li>
+</ul>
+<h2 id="行转列"><a href="#行转列" class="headerlink" title="行转列"></a>行转列</h2><h3 id="eg-1795-每个产品在不同商店的价格"><a href="#eg-1795-每个产品在不同商店的价格" class="headerlink" title="eg.1795.每个产品在不同商店的价格"></a>eg.1795.每个产品在不同商店的价格</h3><blockquote>
+<p>表：Products</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>product_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>store1</td>
+<td>int</td>
+</tr>
+<tr>
+<td>store2</td>
+<td>int</td>
+</tr>
+<tr>
+<td>store3</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>这张表的主键是product_id（产品Id）。每行存储了这一产品在不同商店store1, store2, store3的价格。如果这一产品在商店里没有出售，则值将为null。</p>
+<p>请你重构 Products 表，查询每个产品在不同商店的价格，使得输出的格式变为(product_id, store, price) 。如果这一产品在商店里没有出售，则不输出这一行。输出结果表中的 顺序不作要求 。</p>
+<p>查询输出格式请参考下面示例。</p>
+<p>示例 1：</p>
+<p>输入：<br>Products table:</p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>store1</th>
+<th>store2</th>
+<th>store3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>95</td>
+<td>100</td>
+<td>105</td>
+</tr>
+<tr>
+<td>1</td>
+<td>70</td>
+<td>null</td>
+<td>80</td>
+</tr>
+</tbody></table>
+<p>输出：</p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>store</th>
+<th>price</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>store1</td>
+<td>95</td>
+</tr>
+<tr>
+<td>0</td>
+<td>store2</td>
+<td>100</td>
+</tr>
+<tr>
+<td>0</td>
+<td>store3</td>
+<td>105</td>
+</tr>
+<tr>
+<td>1</td>
+<td>store1</td>
+<td>70</td>
+</tr>
+<tr>
+<td>1</td>
+<td>store3</td>
+<td>80</td>
+</tr>
+</tbody></table>
+<p>解释：</p>
+<p>产品0在store1，store2,store3的价格分别为95,100,105。</p>
+<p>产品1在store1，store3的价格分别为70,80。在store2无法买到。</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select <br>    product_id, <br>    &#x27;store1&#x27; as store,<br>    max(store1) as price<br>from Products<br>where store1 is not NULL<br>group by product_id<br>union all<br>select <br>    product_id, <br>    &#x27;store2&#x27; as store,<br>    max(store2) as price<br>from Products<br>where store2 is not NULL<br>group by product_id<br>union all<br>select <br>    product_id, <br>    &#x27;store3&#x27; as store,<br>    max(store3) as price<br>from Products<br>where store3 is not NULL<br>group by product_id<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>利用union all拼接不同情况</li>
+<li>利用where过滤不同情况</li>
+</ul>
+<h2 id="数列构建"><a href="#数列构建" class="headerlink" title="数列构建"></a>数列构建</h2><h3 id="eg-1613-找到遗失的ID"><a href="#eg-1613-找到遗失的ID" class="headerlink" title="eg.1613.找到遗失的ID"></a>eg.1613.找到遗失的ID</h3><blockquote>
+<p>表: Customers</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>customer_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>customer_name</td>
+<td>varchar</td>
+</tr>
+</tbody></table>
+<p>customer_id 是该表主键.该表第一行包含了顾客的名字和id.</p>
+<p>写一个 SQL 语句, 找到所有遗失的顾客id. 遗失的顾客id是指那些不在 Customers 表中, 值却处于 1 和表中最大 customer_id 之间的id.</p>
+<p>注意: 最大的 customer_id 值不会超过 100.返回结果按 ids 升序排列</p>
+<p>查询结果格式如下例所示.</p>
+<p>Customers 表:</p>
+<table>
+<thead>
+<tr>
+<th>customer_id</th>
+<th>customer_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Alice</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Bob</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Charlie</td>
+</tr>
+</tbody></table>
+<p>Result 表:</p>
+<table>
+<thead>
+<tr>
+<th>ids</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+</tr>
+</tbody></table>
+<p>表中最大的customer_id是5, 所以在范围[1,5]内, ID2和3从表中遗失.</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(n) as (<br>    select 1<br>    union all<br>    select n+1<br>    from temp<br>    where n &lt;(<br>        select max(customer_id)<br>        from Customers<br>    )<br>) # 利用with递归查询构造id范围<br><br>select t.n as ids<br>from temp as t<br>where t.n not in (<br>    select customer_id<br>    from Customers<br>)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="eg-1767-寻找没有被执行的任务对"><a href="#eg-1767-寻找没有被执行的任务对" class="headerlink" title="eg.1767.寻找没有被执行的任务对"></a>eg.1767.寻找没有被执行的任务对</h3><blockquote>
+<p>表：Tasks</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>task_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>subtasks_count</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>task_id 是这个表的主键。task_id 表示的为主任务的id,每一个task_id被分为了多个子任务(subtasks)，subtasks_count表示为子任务的个数（n），它的值表示了子任务的索引从1到n。本表保证2 &lt;&#x3D;subtasks_count&lt;&#x3D; 20。</p>
+<p>表： Executed</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>task_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>subtask_id</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>(task_id, subtask_id) 是这个表的主键。每一行表示标记为task_id的主任务与标记为subtask_id的子任务被成功执行。本表保证，对于每一个task_id，subtask_id &lt;&#x3D; subtasks_count。请试写一个SQL查询语句报告没有被执行的（主任务，子任务）对，即没有被执行的（task_id, subtask_id）。</p>
+<p>以 任何顺序 返回即可。</p>
+<p>查询结果格式如下。</p>
+<p>示例 1：</p>
+<p>输入：</p>
+<p>Tasks 表:</p>
+<table>
+<thead>
+<tr>
+<th>task_id</th>
+<th>subtasks_count</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>Executed 表:</p>
+<table>
+<thead>
+<tr>
+<th>task_id</th>
+<th>subtask_id</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>输出：</p>
+<table>
+<thead>
+<tr>
+<th>task_id</th>
+<th>subtask_id</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<p>解释：</p>
+<p>Task 1 被分成了 3 subtasks (1, 2, 3)。只有 subtask 2 被成功执行, 所以我们返回 (1, 1) 和 (1, 3) 这两个主任务子任务对。</p>
+<p>Task 2 被分成了 2 subtasks (1, 2)。没有一个subtask被成功执行, 因此我们返回(2, 1)和(2, 2)。</p>
+<p>Task 3 被分成了 4 subtasks (1, 2, 3, 4)。所有的subtask都被成功执行，因此对于Task 3,我们不返回任何值。</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(task_id, subtask_id) as(<br>    select task_id, subtasks_count as subtask_id<br>    from Tasks<br>    union all<br>    select task_id, subtask_id-1<br>    from temp<br>    where subtask_id &gt; 1<br>) # 主要注意递归查询的书写<br><br>select t.task_id as task_id, t.subtask_id as subtask_id<br>from temp as t<br>left join Executed as e<br>on t.task_id = e.task_id and t.subtask_id = e.subtask_id<br>where e.subtask_id is NULL<br>order by task_id, subtask_id<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="字符串构建"><a href="#字符串构建" class="headerlink" title="字符串构建"></a>字符串构建</h2><h3 id="eg-1384-按年度列出销售总额"><a href="#eg-1384-按年度列出销售总额" class="headerlink" title="eg.1384.按年度列出销售总额"></a>eg.1384.按年度列出销售总额</h3><blockquote>
+<p>Product 表：</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>product_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>product_name</td>
+<td>varchar</td>
+</tr>
+</tbody></table>
+<p>product_id 是这张表的主键。product_name 是产品的名称。</p>
+<p>Sales 表：</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>product_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>period_start</td>
+<td>date</td>
+</tr>
+<tr>
+<td>period_end</td>
+<td>date</td>
+</tr>
+<tr>
+<td>average_daily_sales</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>product_id 是这张表的主键。period_start 和 period_end 是该产品销售期的起始日期和结束日期，且这两个日期包含在销售期内。average_daily_sales 列存储销售期内该产品的日平均销售额。</p>
+<p>编写一段 SQL 查询每个产品每年的总销售额，并包含 product_id, product_name 以及 report_year 等信息。</p>
+<p>销售年份的日期介于 2018 年到 2020 年之间。你返回的结果需要按 product_id 和 report_year 排序。</p>
+<p>查询结果格式如下例所示：</p>
+<p>Product table:</p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>product_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>LC Phone</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LC T-Shirt</td>
+</tr>
+<tr>
+<td>3</td>
+<td>LC Keychain</td>
+</tr>
+</tbody></table>
+<p>Sales table:</p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>period_start</th>
+<th>period_end</th>
+<th>average_daily_sales</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2019-01-25</td>
+<td>2019-02-28</td>
+<td>100</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2018-12-01</td>
+<td>2020-01-01</td>
+<td>10</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2019-12-01</td>
+<td>2020-01-31</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>Result table:</p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>product_name</th>
+<th>report_year</th>
+<th>total_amount</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>LC Phone</td>
+<td>2019</td>
+<td>3500</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LC T-Shirt</td>
+<td>2018</td>
+<td>310</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LC T-Shirt</td>
+<td>2019</td>
+<td>3650</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LC T-Shirt</td>
+<td>2020</td>
+<td>10</td>
+</tr>
+<tr>
+<td>3</td>
+<td>LC Keychain</td>
+<td>2019</td>
+<td>31</td>
+</tr>
+<tr>
+<td>3</td>
+<td>LC Keychain</td>
+<td>2020</td>
+<td>31</td>
+</tr>
+</tbody></table>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with years as (<br>    select<br>        &#x27;2018&#x27; as year,<br>        &#x27;2018-01-01&#x27; as year_start,<br>        &#x27;2018-12-31&#x27; as year_end<br>    union<br>    select<br>        &#x27;2019&#x27; as year,<br>        &#x27;2019-01-01&#x27; as year_start,<br>        &#x27;2019-12-31&#x27; as year_end<br>    union<br>    select<br>        &#x27;2020&#x27; as year,<br>        &#x27;2020-01-01&#x27; as year_start,<br>        &#x27;2020-12-31&#x27; as year_end<br>) # 列出时间范围框架表<br><br>select <br>    temp.product_id as product_id,<br>    p.product_name as product_name,<br>    temp.year as report_year,<br>    (datediff(temp.end,temp.start) + 1) * temp.avg_sales as total_amount<br>from (<br>    select #列出每个产品在每一年的销售时间<br>        s.product_id as product_id, y.year as year, average_daily_sales as avg_sales,<br>        if(s.period_start&gt;y.year_start, s.period_start, y.year_start) as start,<br>        if(s.period_end&lt;y.year_end, s.period_end, y.year_end) as end<br>    from Sales as s<br>    left join years as y<br>    on not(s.period_end &lt; y.year_start or s.period_start &gt; year_end)<br>) as temp<br>join Product as p<br>on temp.product_id = p.product_id<br>order by product_id, report_year<br></code></pre></td></tr></table></figure>
+
+
+
+<p>eg.1635.Hopper公司查询</p>
+<blockquote>
+<p>表: Drivers</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>driver_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>join_date</td>
+<td>date</td>
+</tr>
+</tbody></table>
+<p>driver_id是该表的主键。该表的每一行均包含驾驶员的ID以及他们加入Hopper公司的日期。</p>
+<p>表: Rides</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ride_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>requested_at</td>
+<td>date</td>
+</tr>
+</tbody></table>
+<p>ride_id是该表的主键。该表的每一行均包含行程ID(ride_id)，用户ID(user_id)以及该行程的日期(requested_at)。该表中可能有一些不被接受的乘车请求。</p>
+<p>表: AcceptedRides</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ride_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>driver_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>ride_distance</td>
+<td>int</td>
+</tr>
+<tr>
+<td>ride_duration</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>ride_id是该表的主键。该表的每一行都包含已接受的行程信息。表中的行程信息都在“Rides”表中存在。</p>
+<p>编写SQL查询以报告2020年每个月的以下统计信息：</p>
+<p>截至某月底，当前在Hopper公司工作的驾驶员数量（active_drivers）。该月接受的乘车次数（accepted_rides）。返回按month 升序排列的结果表，其中month 是月份的数字（一月是1，二月是2，依此类推）。</p>
+<p>查询结果格式如下例所示。</p>
+<p>表 Drivers:</p>
+<table>
+<thead>
+<tr>
+<th>driver_id</th>
+<th>join_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10</td>
+<td>2019-12-10</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2020-1-13</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2020-2-16</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2020-3-8</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2020-5-17</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2020-10-24</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2021-1-5</td>
+</tr>
+</tbody></table>
+<p>表 Rides:</p>
+<table>
+<thead>
+<tr>
+<th>ride_id</th>
+<th>user_id</th>
+<th>requested_at</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>6</td>
+<td>75</td>
+<td>2019-12-9</td>
+</tr>
+<tr>
+<td>1</td>
+<td>54</td>
+<td>2020-2-9</td>
+</tr>
+<tr>
+<td>10</td>
+<td>63</td>
+<td>2020-3-4</td>
+</tr>
+<tr>
+<td>19</td>
+<td>39</td>
+<td>2020-4-6</td>
+</tr>
+<tr>
+<td>3</td>
+<td>41</td>
+<td>2020-6-3</td>
+</tr>
+<tr>
+<td>13</td>
+<td>52</td>
+<td>2020-6-22</td>
+</tr>
+<tr>
+<td>7</td>
+<td>69</td>
+<td>2020-7-16</td>
+</tr>
+<tr>
+<td>17</td>
+<td>70</td>
+<td>2020-8-25</td>
+</tr>
+<tr>
+<td>20</td>
+<td>81</td>
+<td>2020-11-2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>57</td>
+<td>2020-11-9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>42</td>
+<td>2020-12-9</td>
+</tr>
+<tr>
+<td>11</td>
+<td>68</td>
+<td>2021-1-11</td>
+</tr>
+<tr>
+<td>15</td>
+<td>32</td>
+<td>2021-1-17</td>
+</tr>
+<tr>
+<td>12</td>
+<td>11</td>
+<td>2021-1-19</td>
+</tr>
+<tr>
+<td>14</td>
+<td>18</td>
+<td>2021-1-27</td>
+</tr>
+</tbody></table>
+<p>表 AcceptedRides:</p>
+<table>
+<thead>
+<tr>
+<th>ride_id</th>
+<th>driver_id</th>
+<th>ride_distance</th>
+<th>ride_duration</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10</td>
+<td>10</td>
+<td>63</td>
+<td>38</td>
+</tr>
+<tr>
+<td>13</td>
+<td>10</td>
+<td>73</td>
+<td>96</td>
+</tr>
+<tr>
+<td>7</td>
+<td>8</td>
+<td>100</td>
+<td>28</td>
+</tr>
+<tr>
+<td>17</td>
+<td>7</td>
+<td>119</td>
+<td>68</td>
+</tr>
+<tr>
+<td>20</td>
+<td>1</td>
+<td>121</td>
+<td>92</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7</td>
+<td>42</td>
+<td>101</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4</td>
+<td>6</td>
+<td>38</td>
+</tr>
+<tr>
+<td>11</td>
+<td>8</td>
+<td>37</td>
+<td>43</td>
+</tr>
+<tr>
+<td>15</td>
+<td>8</td>
+<td>108</td>
+<td>82</td>
+</tr>
+<tr>
+<td>12</td>
+<td>8</td>
+<td>38</td>
+<td>34</td>
+</tr>
+<tr>
+<td>14</td>
+<td>1</td>
+<td>90</td>
+<td>74</td>
+</tr>
+</tbody></table>
+<p>结果表:</p>
+<table>
+<thead>
+<tr>
+<th>month</th>
+<th>active_drivers</th>
+<th>accepted_rides</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+<td>0</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td>6</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>7</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>8</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td>10</td>
+<td>6</td>
+<td>0</td>
+</tr>
+<tr>
+<td>11</td>
+<td>6</td>
+<td>2</td>
+</tr>
+<tr>
+<td>12</td>
+<td>6</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>截至1月底-&gt;两个活跃的驾驶员（10,8），没有被接受的行程。</p>
+<p>截至2月底-&gt;三个活跃的驾驶员（10,8,5），没有被接受的行程。</p>
+<p>截至3月底-&gt;四个活跃的驾驶员（10,8,5,7），一个被接受的行程（10）。</p>
+<p>截至4月底-&gt;四个活跃的驾驶员（10,8,5,7），没有被接受的行程。</p>
+<p>截至5月底-&gt;五个活跃的驾驶员（10,8,5,7,4），没有被接受的行程。</p>
+<p>截至6月底-&gt;五个活跃的驾驶员（10,8,5,7,4），一个被接受的行程（13）。</p>
+<p>截至7月底-&gt;五个活跃的驾驶员（10,8,5,7,4），一个被接受的行程（7）。</p>
+<p>截至8月底-&gt;五个活跃的驾驶员（10,8,5,7,4），一位接受的行程（17）。</p>
+<p>截至9月底-&gt;五个活跃的驾驶员（10,8,5,7,4），没有被接受的行程。</p>
+<p>截至10月底-&gt;六个活跃的驾驶员（10,8,5,7,4,1），没有被接受的行程。</p>
+<p>截至11月底-&gt;六个活跃的驾驶员（10,8,5,7,4,1），两个被接受的行程（20,5）。</p>
+<p>截至12月底-&gt;六个活跃的驾驶员（10,8,5,7,4,1），一个被接受的行程（2）。</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with temp as (<br>    select &#x27;2020-1-31&#x27; as end_date<br>    union all<br>    select &#x27;2020-2-29&#x27; as end_date<br>    union all<br>    select &#x27;2020-3-31&#x27; as end_date<br>    union all<br>    select &#x27;2020-4-30&#x27; as end_date<br>    union all    <br>    select &#x27;2020-5-31&#x27; as end_date<br>    union all<br>    select &#x27;2020-6-30&#x27; as end_date<br>    union all<br>    select &#x27;2020-7-31&#x27; as end_date<br>    union all <br>    select &#x27;2020-8-31&#x27; as end_date<br>    union all <br>    select &#x27;2020-9-30&#x27; as end_date<br>    union all <br>    select &#x27;2020-10-31&#x27; as end_date<br>    union all <br>    select &#x27;2020-11-30&#x27; as end_date<br>    union all <br>    select &#x27;2020-12-31&#x27; as end_date  <br>) # 构建每个月份的最终截止日期<br><br><br>select <br>    month(t1.end_date) as month,<br>    any_value(t1.active_drivers) as active_drivers,<br>    sum(if(t2.ride_date is NULL, 0, 1)) as accepted_rides<br>from(<br>    select # 查询每个月的活跃司机数<br>        t.end_date as end_date, <br>        count(if(d.join_date &lt;= t.end_date, 1, NULL)) as active_drivers<br>    from temp as t <br>    join Drivers as d<br>    group by t.end_date<br>) as t1<br>left join(<br>    select # 查询接受的行程的具体时间<br>    	date_format(r.requested_at,&#x27;%Y-%m&#x27;) as ride_date<br>    from AcceptedRides as a<br>    left join Rides as r<br>    on a.ride_id = r.ride_id<br>) as t2<br>on date_format(t1.end_date, &#x27;%Y-%m&#x27;) = t2.ride_date<br>group by t1.end_date<br>order by month<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/SQL/" class="category-chain-item">SQL</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SQL/">#SQL</a>
+      
+        <a href="/tags/LeetCode/">#LeetCode</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SQL表格形式转化例题</div>
+      <div>http://example.com/2022/03/10/SQL表格形式转化例题/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月10日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-HBase%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/" title="HBase学习笔记-入门(1)-HBase基本介绍">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">HBase学习笔记-入门(1)-HBase基本介绍</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03/10/SQL%E8%A1%A8%E6%A0%BC%E5%BD%A2%E5%BC%8F%E8%BD%AC%E5%8C%96%E9%97%AE%E9%A2%98%E6%8A%80%E5%B7%A7%E6%B1%87%E6%80%BB/" title="SQL表格形式转化问题技巧汇总">
+                        <span class="hidden-mobile">SQL表格形式转化问题技巧汇总</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

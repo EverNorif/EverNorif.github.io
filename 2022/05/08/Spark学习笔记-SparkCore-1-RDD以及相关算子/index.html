@@ -1,0 +1,1133 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构以用于处理不同的应用场景。这三大数据结构分别是RDD(弹性分布式数据集)、累加器(分布式共享只写变量)和广播变量(分布式共享只读变量)。本文介绍了RDD的相关概念以及一些相关算子的使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记-SparkCore(1)-RDD以及相关算子">
+<meta property="og:url" content="http://example.com/2022/05/08/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-1-RDD%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E7%AE%97%E5%AD%90/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构以用于处理不同的应用场景。这三大数据结构分别是RDD(弹性分布式数据集)、累加器(分布式共享只写变量)和广播变量(分布式共享只读变量)。本文介绍了RDD的相关概念以及一些相关算子的使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-08T06:34:44.000Z">
+<meta property="article:modified_time" content="2023-04-29T06:51:16.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Spark">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Spark学习笔记-SparkCore(1)-RDD以及相关算子 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Spark学习笔记-SparkCore(1)-RDD以及相关算子"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-08 14:34" pubdate>
+          2022年5月8日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          132 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Spark学习笔记-SparkCore(1)-RDD以及相关算子</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="RDD"><a href="#RDD" class="headerlink" title="RDD"></a>RDD</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>RDD（Resilient Distributed Dataset），弹性分布式数据集，是Spark中最基本的数据处理模型。在代码中，它是一个抽象类，代表一个弹性的、不可变的、可分区、里面的元素可并行计算的集合。</p>
+<ul>
+<li>弹性：<ul>
+<li>存储的弹性：内存与磁盘的自动切换</li>
+<li>容错的弹性：数据丢失的自动恢复</li>
+<li>计算的弹性：计算出错重试机制</li>
+<li>分片的弹性：可以根据需要重新分片</li>
+</ul>
+</li>
+<li>分布式：数据存储在集群的不同节点上</li>
+<li>数据集：RDD中封装了计算逻辑，并不保存数据</li>
+<li>数据抽象：RDD是一个抽象类，需要子类的具体实现</li>
+<li>不可变：RDD中封装了计算逻辑，是不可以改变的。如果想要改变，只能产生新的RDD，在新的RDD里面封装逻辑</li>
+<li>可分区：分区后进行并行计算</li>
+</ul>
+<blockquote>
+<p>输入数据首先需要组织成RDD的结果，之后可以调用RDD中的方法（后续进行处理）。多个不同功能的算子组合成复杂的业务逻辑，直到调用行动算子，数据进行处理，让数据走过对应的逻辑得到最终的输出。</p>
+<p>RDD中存在分区的概念，由于需要面对分布式计算的场景，实际计算的时候也是将任务分配给其他的Executor来执行。分区机制，即如何将输入数据进行划分，是RDD中一个重要属性。</p>
+</blockquote>
+<h2 id="核心属性"><a href="#核心属性" class="headerlink" title="核心属性"></a>核心属性</h2><p>RDD中有五个核心属性：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-type">Internally</span>, each <span class="hljs-type">RDD</span> is characterized by five main properties:<br>- <span class="hljs-type">A</span> list of partitions<br>- <span class="hljs-type">A</span> function <span class="hljs-keyword">for</span> computing each split<br>- <span class="hljs-type">A</span> list of dependencies on other <span class="hljs-type">RDDs</span><br>- <span class="hljs-type">Optionally</span>, a <span class="hljs-type">Partitioner</span> <span class="hljs-keyword">for</span> key-value <span class="hljs-type">RDDs</span> (e.g. to say that the <span class="hljs-type">RDD</span> is hash-partitioned)<br>- <span class="hljs-type">Optionally</span>, a list of preferred locations to compute each split on (e.g. block locations <span class="hljs-keyword">for</span> an <span class="hljs-type">HDFS</span> file)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>分区列表：RDD中的分区列表，用于实现分布式计算</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPartitions</span></span>: <span class="hljs-type">Array</span>[<span class="hljs-type">Partition</span>]<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>分区计算函数：RDD的计算逻辑，Spark在计算的时候，使用分区函数对每个分区中的数据进行处理</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@DeveloperApi</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compute</span></span>(split: <span class="hljs-type">Partition</span>, context: <span class="hljs-type">TaskContext</span>): <span class="hljs-type">Iterator</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>RDD之间的依赖关系：RDD是计算模型的封装，当需要将多个计算模型进行组合的时候，就需要将多个RDD建立依赖关系</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDependencies</span></span>: <span class="hljs-type">Seq</span>[<span class="hljs-type">Dependency</span>[_]] = deps<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>分区器（可选）：当数据为Key-Value类型数据的时候，可以通过设定分区器自定义数据的分区</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@transient</span> <span class="hljs-keyword">val</span> partitioner: <span class="hljs-type">Option</span>[<span class="hljs-type">Partitioner</span>] = <span class="hljs-type">None</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>首选位置（可选）：可以设置分区的物理位置偏好，设定分区优先选择分配给哪个节点</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPreferredLocations</span></span>(split: <span class="hljs-type">Partition</span>): <span class="hljs-type">Seq</span>[<span class="hljs-type">String</span>] = <span class="hljs-type">Nil</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="执行原理"><a href="#执行原理" class="headerlink" title="执行原理"></a>执行原理</h2><p>从计算的角度来看，在数据处理的过程中，需要将计算资源（例如内存、CPU等）和计算模型进行协调和整合。Spark框架在执行的时候，先申请资源，然后将应用程序中的数据处理逻辑分解成一个个的计算任务，然后将任务分发到已经分配资源的计算节点上。数据按照指定的计算模型进行处理，得到最终的计算结果。</p>
+<p>以Yarn环境举例来说，首先启动Yarn集群环境，集群中会存在Resource Manager和Node Manager两种角色。之后Spark通过申请资源来创建调度节点和计算节点，分别在对应的节点上得到Driver和Executor。然后Spark框架根据需求将计算逻辑<strong>根据分区</strong>划分成不同的任务，调度节点将不同分区的数据送到不同的Executor上进行处理。RDD在整个流程中主要用于将逻辑进行封装，生成Task发送给Executor节点执行计算。</p>
+<h1 id="基础编程"><a href="#基础编程" class="headerlink" title="基础编程"></a>基础编程</h1><h2 id="RDD创建"><a href="#RDD创建" class="headerlink" title="RDD创建"></a>RDD创建</h2><p>首先我们需要能够从数据中创建RDD（生成RDD），有以下4种方法</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 前置环境</span><br><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>)<br><span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>从内存中创建RDD</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 从内存中的集合创建 </span><br><span class="hljs-comment">// makeRDD()方法</span><br><span class="hljs-keyword">val</span> seq = <span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)<br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(seq)<br><br><span class="hljs-comment">// parallelize()方法</span><br><span class="hljs-keyword">val</span> rdd = sc.parallelize(seq)<br></code></pre></td></tr></table></figure>
+
+<p><code>sc.makeRDD()</code>和<code>sc.parallelize()</code>两种方式都能够从内存的集合创建出RDD，其中<code>makeRDD()</code>方法其实只是<code>parallelize()</code>方法的一层封装</p>
+<p>在创建RDD的时候可以传递第二个参数，这个参数表示分区的数量。默认值采用会采用配置参数<code>spark.default.parallelism</code>，如果该配置参数没有被设置的话，则采用当前环境下的最大可用核数。可用使用<code>saveAsTextFile</code>来查看分区效果，默认情况下一个分区会产生一个保存文件，下面的代码最终会在工作目录下的<code>/ouput</code>保存出5个内容文件：<code>part-00000</code> ~ <code>part-00004</code></p>
+<p>（具体的分区逻辑会在后面进行说明）</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>)<br>sparkConf.set(<span class="hljs-string">&quot;spark.default.parallelism&quot;</span>, <span class="hljs-string">&quot;5&quot;</span>)<br><span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br><br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>))<br><br>rdd.saveAsTextFile(<span class="hljs-string">&quot;output&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>从文件中创建RDD</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 从文件中创建,相对路径默认为工作目录开始</span><br><span class="hljs-comment">// 本地文件</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;input/data.txt&quot;</span>)<br><span class="hljs-comment">// 本地目录</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;input&quot;</span>)<br><span class="hljs-comment">// 使用通配符</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;input/data1*.txt&quot;</span>)<br><span class="hljs-comment">// 分布式存储系统路径</span><br><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;hdfs://hadoop102:8020/input&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>可以有外部存储系统的数据集创建RDD包括：本地的文件系统，所有Hadoop支持的数据系统如HDFS、HBase等。并且其中文件路径有很灵活的使用功能。</p>
+<p>有时候我们希望在读取数据的同时知道这些数据的来源，那么可以使用<code>wholeTextFiles</code>方法，得到的rdd读取结果为元组，第一个元素表示文件路径，第二个元素表示文件内容</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.wholeTextFiles(<span class="hljs-string">&quot;data&quot;</span>)<br>rdd.collect().foreach(println)<br></code></pre></td></tr></table></figure>
+
+<p>输出效果如下，其中的折行效果来自于输入文件中的换行符，路径为绝对路径：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">(file:/D:/Java/Spark/data/1.txt,1<br>1<br>)<br>(file:/D:/Java/Spark/data/2.txt,2<br>2<br>)<br></code></pre></td></tr></table></figure>
+
+<p>从文件中同样可以指定分区数量，具体逻辑与从内存中创建有所不同，也会在后续进行对比。</p>
+<ul>
+<li>从其他RDD创建</li>
+</ul>
+<p>从其他RDD创建指的是，一个RDD运算完成之后，得到的是一个新的RDD</p>
+<ul>
+<li>直接创建RDD</li>
+</ul>
+<p>直接使用new的方式构造RDD，一般在Spark框架内部使用</p>
+<h2 id="RDD并行度与分区"><a href="#RDD并行度与分区" class="headerlink" title="RDD并行度与分区"></a>RDD并行度与分区</h2><p>分区：Spark将一个作业切分成多个任务，发送给Executor节点并行计算</p>
+<p>并行度：能够同时并行计算的任务数量称为并行度。</p>
+<p>从内存中生成RDD和从文件中生成RDD，分区逻辑略有区别，分别体现在默认分区数量以及分区划分上。</p>
+<p>读取<strong>内存</strong>数据：</p>
+<p><code>makeRDD</code>的第二个参数为<code>numSlices</code>，表示分区数量。默认的分区数量采用会采用配置参数<code>spark.default.parallelism</code>，如果该配置参数没有被设置的话，则采用当前环境下的最大可用核数。</p>
+<p>分区划分的核心逻辑如下（<code>org.apache.spark.rdd.ParallelCollectionRDD</code>的<code>slice</code>方法），其中<code>numSlices</code>之前传入的参数，<code>length</code>为构建RDD的序列的长度，经过下面代码可以得到<code>numSlices</code>个tuple。每个tuple中保存了<code>start</code>和<code>end</code>，作为参数调用Array的<code>slice(from: Int, until: Int)</code>方法可以切分子数组，即对应分区中的内容。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala">(<span class="hljs-number">0</span> until numSlices).iterator.map &#123; i =&gt;<br>    <span class="hljs-keyword">val</span> start = ((i * length) / numSlices).toInt<br>    <span class="hljs-keyword">val</span> end = (((i + <span class="hljs-number">1</span>) * length) / numSlices).toInt<br>    (start, end)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>举例来说，下面的代码运行后，在<code>output</code>目录下得到4个输出文件</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">List</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>), <span class="hljs-number">4</span>)<br><span class="hljs-comment">// numSlices = 4, length = 10</span><br><span class="hljs-comment">// 0: [0, 2)</span><br><span class="hljs-comment">// 1: [2, 5)</span><br><span class="hljs-comment">// 2: [5, 7)</span><br><span class="hljs-comment">// 3: [7, 10)</span><br>rdd.saveAsTextFile(<span class="hljs-string">&quot;output&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>输出文件内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">part-00000</span><br>0<br>1<br><span class="hljs-meta"># </span><span class="language-bash">part-00001</span><br>2<br>3<br>4<br><span class="hljs-meta"># </span><span class="language-bash">part-00002</span><br>5<br>6<br><span class="hljs-meta"># </span><span class="language-bash">part-00003</span><br>7<br>8<br>9<br></code></pre></td></tr></table></figure>
+
+<p>读取<strong>文件</strong>数据：</p>
+<p><code>textFile</code>的第二个参数为<code>minPartitions</code>，表示最小的分区数量，默认值为<code>defalutMinPartitions</code>，定义如下，即该值只能取1或2：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">defaultMinPartitions</span></span>: <span class="hljs-type">Int</span> = math.min(defaultParallelism, <span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
+
+<p>textFile中返回的RDD是HadoopRDD类，其中使用了FileInputFormat的getPartition方法，并且是旧的API。分区的核心逻辑就在于Hadoop中的FileInputFormat，关于旧API中的getSplits切片逻辑以及行读取的问题可以查看本博客的其他两篇相关文章，这里直接介绍结论</p>
+<ul>
+<li><a href="/2022/05/09/Hadoop%E6%BA%90%E7%A0%81-TextInputFormat%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%88%86%E5%8C%BA%E7%9A%84%E8%A1%8C%E8%AF%BB%E5%8F%96%E9%97%AE%E9%A2%98/" title="Hadoop源码-TextInputFormat解决跨分区的行读取问题">Hadoop源码-TextInputFormat解决跨分区的行读取问题</a>
+</li>
+<li><a href="/2022/05/09/Hadoop%E6%BA%90%E7%A0%81-FileInputFormat%E5%9C%A8%E6%96%B0%E6%97%A7API%E4%B8%AD%E5%88%87%E7%89%87%E6%93%8D%E4%BD%9C%E7%9A%84%E5%8C%BA%E5%88%AB/" title="Hadoop源码-FileInputFormat在新旧API中切片操作的区别">Hadoop源码-FileInputFormat在新旧API中切片操作的区别</a></li>
+</ul>
+<p>在读取文件的时候，默认情况下会使用<code>goalSize</code>作为分区大小，<code>goalSize</code>的大小通过我们传入的<code>minPartitions</code>以及所有文件的总大小来确定。<code>goalSize = totalSize / minPartitions</code>。由于存在切片逻辑是对输入的每个文件来说的，每个文件的最终切片大小可能达不到<code>goalSize</code>，因此最终的分片数量可能会高于<code>minPartitions</code>。得到切片规划之后，读取数据到对应分区中的逻辑可以参考TextInputFormat的行读取，总结来说，在每个分区的数据读取中，我们会跳过第一行（除了第一个分区），并且读取下一个分区中的第一行（可能完整，也可能不完整），从而保证跨分区数据读取的正确性。如果是多文件读取，则在<code>totalSize</code>的计算的时候需要计算所有文件的大小总和，而在分区划分的时候则是按照逐个文件单独进行的。</p>
+<p>举例来说，我们存在下面的文件<code>data/1.txt</code>，总大小为19字节（下面显示写出了CR和LF，为Windows操作系统中的行结束符）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">1 CR LF<br>2 CR LF<br>3 CR LF<br>4 CR LF<br>5 CR LF<br>6 CR LF<br>7<br></code></pre></td></tr></table></figure>
+
+<p>运行下面的代码：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;data/1.txt&quot;</span>)<br>rdd.saveAsTextFile(<span class="hljs-string">&quot;output&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>计算得到分区大小为<code>19 / 2 = 9</code>字节，由于<code>10 / 9 = 1.1..... &gt; 1.1</code>，最终会产生三个切片文件，切片规划如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala">(fileName: .../data/<span class="hljs-number">1.</span>txt, start: <span class="hljs-number">0</span>, length: <span class="hljs-number">9</span>, ...)<br>(fileName: .../data/<span class="hljs-number">1.</span>txt, start: <span class="hljs-number">9</span>, length: <span class="hljs-number">9</span>, ...)<br>(fileName: .../data/<span class="hljs-number">1.</span>txt, start: <span class="hljs-number">18</span>, length: <span class="hljs-number">1</span>, ...)<br></code></pre></td></tr></table></figure>
+
+<p>在第一个切片中，我们读取偏移量<code>[0, 9]</code>的所在行（由于while的特殊逻辑，这里会读取到下个分区的第一行），得到如下数据</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-number">1</span> <span class="hljs-type">LF</span><br><span class="hljs-number">2</span> <span class="hljs-type">LF</span><br><span class="hljs-number">3</span> <span class="hljs-type">LF</span><br><span class="hljs-number">4</span> <span class="hljs-type">LF</span><br></code></pre></td></tr></table></figure>
+
+<p>在第二个切片中，读取偏移量<code>[9, 18]</code>所在行（不是第一个切片，忽略第一行，读取下个分区的第一行），得到如下数据</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-number">5</span> <span class="hljs-type">LF</span><br><span class="hljs-number">6</span> <span class="hljs-type">LF</span><br><span class="hljs-number">7</span> <span class="hljs-type">LF</span><br></code></pre></td></tr></table></figure>
+
+<p>在第三个切片中，读取偏移量<code>[18,19]</code>所在行，由于忽略了分区中的第一行，已经不存在数据了，因此得到空文件</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><br></code></pre></td></tr></table></figure>
+
+<p>实际运行代码，得到的结果和我们分析的是一样的，得到<code>part-00000</code>到<code>part-00002</code>，大小分别为8字节、6字节、0字节</p>
+<blockquote>
+<p>我们还可以利用<code>glom()</code>方法来查看分区数据，glom函数的功能是将同一个分区的数据直接转换为相同类型的内存数组进行处理，分区不变。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.textFile(<span class="hljs-string">&quot;data/1.txt&quot;</span>)<br>rdd.glom().collect().foreach(arr =&gt; &#123;<br>    println(arr)<br>    println(arr.mkString(<span class="hljs-string">&quot;,&quot;</span>))<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>其中arr表示分区数组。glom()会得到一个Array列表，其中每个元素都代表一个分区</p>
+</blockquote>
+<h2 id="RDD算子"><a href="#RDD算子" class="headerlink" title="RDD算子"></a>RDD算子</h2><p>RDD算子即RDD中提供给我们的方法，可以大致梳理出如下脉络。其中RDD转换算子在描述计算逻辑，只有当执行RDD行动算子的时候，才会真正将数据送入，进行执行。RDD算子与普通的方法调用有所不同，RDD算子的外部操作都是在Driver端执行的，而RDD算子内部的操作则是在Executor端</p>
+<ul>
+<li>RDD转换算子：根据数据处理方式的不同将算子整体上分为Value、双Value和Key-Value类型<ul>
+<li>Value类型：map、mapPartitions、mapPartitionsWithIndex、flatMap、glom、groupBy、filter、sample、distinct、coalesce、repartitions、sortBy</li>
+<li>双Value类型：intersection、union、subtract、zip</li>
+<li>Key-Value类型：partitionBy、reduceByKey、groupByKey、aggregateByKey、foldByKey、combineByKey、sortByKey、join、leftOuterJoin、cogroup</li>
+</ul>
+</li>
+<li>RDD行动算子<ul>
+<li>reduce、collect、count、first、take、takeOrdered、aggregate、fold、countByKey、save相关算子、foreach</li>
+</ul>
+</li>
+</ul>
+<h1 id="RDD转换算子"><a href="#RDD转换算子" class="headerlink" title="RDD转换算子"></a>RDD转换算子</h1><h2 id="value类型"><a href="#value类型" class="headerlink" title="value类型"></a>value类型</h2><h3 id="map"><a href="#map" class="headerlink" title="map"></a>map</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](f: <span class="hljs-type">T</span> =&gt; <span class="hljs-type">U</span>): <span class="hljs-type">RDD</span>[<span class="hljs-type">U</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将集合中的数据逐条进行映射转换。<code>T</code>表示集合中的数据类型，<code>U</code>表示转换后的数据类型。</p>
+<p>前面提到RDD中有分区的概念。在分区内，数据是逐个执行相应逻辑的，只有当前面的数据全部逻辑执行完毕之后，才会执行下一个数据，即<strong>分区内数据的执行是有序的</strong>。但是不同分区在不同Executor上执行，执行没有严格的先后顺序，即<strong>分区间的执行是无序的</strong>。</p>
+<h3 id="mapPartitions"><a href="#mapPartitions" class="headerlink" title="mapPartitions"></a>mapPartitions</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mapPartitions</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](<br>    f: <span class="hljs-type">Iterator</span>[<span class="hljs-type">T</span>] =&gt; <span class="hljs-type">Iterator</span>[<span class="hljs-type">U</span>],<br>    preservesPartitioning: <span class="hljs-type">Boolean</span> = <span class="hljs-literal">false</span>): <span class="hljs-type">RDD</span>[<span class="hljs-type">U</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将待处理的数据以分区为单位发送到计算节点进行处理。前面的map是分区内的每一条数据进行对应的处理，而mapPartitions是处理分区内的所有数据。</p>
+<p>这里会将整个分区的数据加载到内存中进行引用，如果处理完的数据不被释放，会存在对象的引用。在内存较小，数据量较大的情况下，容易出现内存溢出的情况。</p>
+<p>注意这里的返回数据类型，<code>f</code>函数接受一个迭代器类型，返回一个迭代器类型。下面的代码可以完成分区内最大值的查找，返回的最大值包装成一个列表，然后返回其迭代器</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">List</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>), <span class="hljs-number">4</span>)<br><span class="hljs-comment">// [0, 1][2, 3, 4][5, 6][7, 8, 9]</span><br><span class="hljs-keyword">val</span> res = rdd.mapPartitions(<br>    iter =&gt;&#123;<br>        <span class="hljs-type">List</span>(iter.max).iterator<br>    &#125;<br>)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>map和mapPartitions的区别</strong>：</p>
+<p>从数据处理的角度来看：map算子是逐个处理分区中的数据，mapPartition算子是以分区为单位进行批处理操作</p>
+<p>从功能的角度来看：map算子的主要目的是将数据源中的数据进行转换和改变，但是不会减少或增多数据；mapPartitions算子接受和返回迭代器类型</p>
+</blockquote>
+<p>迭代器的注意事项：需要注意的是Scala中的迭代器具有懒执行的特性，只有需要的时候才会计算，这点在利用<code>mapPartitions</code>的时候尤其需要注意。通常情况下，我们会在<code>mapPartitions</code>中进行数据库连接之类的操作，然后对iter中的每一条进行操作，如下所示。但是这里使用map的话，由于懒执行，真正的执行是被推后了的，也就是说等到真正的执行，我们的数据库实际上已经关闭连接了，一因此这里需要使用foreach来真正进行执行。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs scala">mapPartitions(iter =&gt; &#123;<br>    <span class="hljs-comment">// 连接数据库</span><br>    <span class="hljs-comment">// iter.map(...) 懒执行</span><br>    <span class="hljs-comment">// 应该使用iter.foreach(...)</span><br>    <span class="hljs-comment">// 断开连接</span><br>&#125;)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="mapPartitionsWithIndex"><a href="#mapPartitionsWithIndex" class="headerlink" title="mapPartitionsWithIndex"></a>mapPartitionsWithIndex</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mapPartitionsWithIndex</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](<br>    f: (<span class="hljs-type">Int</span>, <span class="hljs-type">Iterator</span>[<span class="hljs-type">T</span>]) =&gt; <span class="hljs-type">Iterator</span>[<span class="hljs-type">U</span>],<br>    preservesPartitioning: <span class="hljs-type">Boolean</span> = <span class="hljs-literal">false</span>): <span class="hljs-type">RDD</span>[<span class="hljs-type">U</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>类似于mapPartitions操作，将整个分区的数据发送给计算节点，不过同时可以获取到当前的索引。函数<code>f</code>的输入类型为一个元组，第一个元素即表示分区的索引，第二个元素迭代器即表示分区的内容</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 代码</span><br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">List</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>), <span class="hljs-number">4</span>)<br><span class="hljs-comment">// [0, 1][2, 3, 4][5, 6][7, 8, 9]</span><br><span class="hljs-keyword">val</span> res = rdd.mapPartitionsWithIndex(<br>    (index, data) =&gt; &#123;<br>        data.map((index, _))<br>    &#125;<br>)<br>res.collect().foreach(println)<br><span class="hljs-comment">// 输出内容如下</span><br>(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>)<br>(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>)<br>(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)<br>(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>)<br>(<span class="hljs-number">1</span>,<span class="hljs-number">4</span>)<br>(<span class="hljs-number">2</span>,<span class="hljs-number">5</span>)<br>(<span class="hljs-number">2</span>,<span class="hljs-number">6</span>)<br>(<span class="hljs-number">3</span>,<span class="hljs-number">7</span>)<br>(<span class="hljs-number">3</span>,<span class="hljs-number">8</span>)<br>(<span class="hljs-number">3</span>,<span class="hljs-number">9</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="flatMap"><a href="#flatMap" class="headerlink" title="flatMap"></a>flatMap</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">flatMap</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](f: <span class="hljs-type">T</span> =&gt; <span class="hljs-type">TraversableOnce</span>[<span class="hljs-type">U</span>]): <span class="hljs-type">RDD</span>[<span class="hljs-type">U</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>首先对数据进行映射处理，之后再进行扁平化操作，因此该算子也称为扁平映射。</p>
+<h3 id="glom"><a href="#glom" class="headerlink" title="glom"></a>glom</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">glom</span></span>(): <span class="hljs-type">RDD</span>[<span class="hljs-type">Array</span>[<span class="hljs-type">T</span>]]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将同一个分区的数据直接转换成相同类型的数组进行处理，分区不变。（注意这个算子是转换算子，而不是行动算子）</p>
+<h3 id="groupBy"><a href="#groupBy" class="headerlink" title="groupBy"></a>groupBy</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">groupBy</span></span>[<span class="hljs-type">K</span>](<br>      f: <span class="hljs-type">T</span> =&gt; <span class="hljs-type">K</span>,<br>      numPartitions: <span class="hljs-type">Int</span>)(<span class="hljs-keyword">implicit</span> kt: <span class="hljs-type">ClassTag</span>[<span class="hljs-type">K</span>]): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">Iterable</span>[<span class="hljs-type">T</span>])]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将数据按照指定的规则进行分组，打乱后的数据重新分组。返回的rdd是一个<strong>Key-Value类型的结果</strong>，其中相同key的数据在同一个分组中。groupBy可能发生shuffle操作，其中会满足同一个分组内的数据在一个分区当中，但是并不是说一个分区内只有一个组。在极限情况下，所有数据可能被分在同一个分区。</p>
+<blockquote>
+<p><strong>shuffle</strong>：前面的操作，默认情况下分区不变，指的是本来在一个分区的数据经过处理之后仍然在这个分区，但是groupBy会有一个打乱重新组合的过程，在这个过程中可能存在情况，数据原本在一个分区，经过处理之后被分配到另一个分区中，这个过程就叫做shuffle。我们需要知道跨分区的操作性能是要比分区内的操作低的，所以groupBy的性能较低。</p>
+</blockquote>
+<h3 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">filter</span></span>(f: <span class="hljs-type">T</span> =&gt; <span class="hljs-type">Boolean</span>): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将数据根据指定的规则进行筛选过滤，符合规则的数据保留，不符合规则的数据丢弃。传入的<code>f</code>函数返回一个布尔变量，用于判断是否符合规则。当数据进行筛选过滤之后，分区不变，但是分区内的数据可能不均衡，容易出现数据倾斜。</p>
+<h3 id="sample"><a href="#sample" class="headerlink" title="sample"></a>sample</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sample</span></span>(<br>    withReplacement: <span class="hljs-type">Boolean</span>,<br>    fraction: <span class="hljs-type">Double</span>,<br>    seed: <span class="hljs-type">Long</span> = <span class="hljs-type">Utils</span>.random.nextLong): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>] <br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>按照指定的规则从数据集中抽取数据，具体的规则可以根据传入的参数进行确定。第一个参数表示是否放回，如果为true，则选择泊松算法；如果为false，则选择伯努利算法。两种算法都需要后面两个参数，但是含义不同</p>
+<p>在有放回的泊松算法中，参数2表示每一个元素被抽取到的次数的数学期望，需要大于等于0，参数3表示随机数种子。</p>
+<p>在无放回的伯努利算法中，参数2表示每一个元素被抽取到的概率，概率在<code>[0, 1]</code>之间，参数3表示随机数种子。</p>
+<p>可以不给随机数种子，默认参数为当前系统时间的时间戳。</p>
+<h3 id="distinct"><a href="#distinct" class="headerlink" title="distinct"></a>distinct</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">distinct</span></span>(): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将数据集中重复的数据去重。</p>
+<blockquote>
+<p><strong>集合的distinct</strong> VS. <strong>RDD算子中的distinct</strong></p>
+<p>distinct完成的功能都是完成数据的去重，但是具体的逻辑有所不同。在集合的distinct中，底层实现使用的是HashSet的结构；在RDD算子中的distinct中，底层使用的是连续的算子调用，核心逻辑如下，利用reduceByKey每次聚合只留其中一个重复。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">map(x =&gt; (x, <span class="hljs-literal">null</span>)).reduceByKey((x, _) =&gt; x, numPartitions).map(_._1)<br></code></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="coalesce"><a href="#coalesce" class="headerlink" title="coalesce"></a>coalesce</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">coalesce</span></span>(numPartitions: <span class="hljs-type">Int</span>, shuffle: <span class="hljs-type">Boolean</span> = <span class="hljs-literal">false</span>,<br>             partitionCoalescer: <span class="hljs-type">Option</span>[<span class="hljs-type">PartitionCoalescer</span>] = <span class="hljs-type">Option</span>.empty)<br>	(<span class="hljs-keyword">implicit</span> ord: <span class="hljs-type">Ordering</span>[<span class="hljs-type">T</span>] = <span class="hljs-literal">null</span>): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>] = withScope <br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>改变分区数量。第一个参数为目标分区数量，第二个参数<code>shuffle</code>表示是否经过shuffle过程，如果为false，则不存在打乱重新组合的过程。如果需要缩减分区数量，是否经过shuffle过程都可以完成，没有shuffle的话则相当于合并分区。如果需要扩大分区，则一定需要shuffle过程。</p>
+<h3 id="repartitions"><a href="#repartitions" class="headerlink" title="repartitions"></a>repartitions</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">repartition</span></span>(numPartitions: <span class="hljs-type">Int</span>)(<span class="hljs-keyword">implicit</span> ord: <span class="hljs-type">Ordering</span>[<span class="hljs-type">T</span>] = <span class="hljs-literal">null</span>): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>重新分配分区，该操作内部其实执行的还是<code>coalescs</code>操作，并且其中的shuffle默认值为true。使用<code>repartitions</code>，无论是扩大分区还是缩减分区，都会经过shuffle过程。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">coalesce(numPartitions, shuffle = <span class="hljs-literal">true</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="sortBy"><a href="#sortBy" class="headerlink" title="sortBy"></a>sortBy</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sortBy</span></span>[<span class="hljs-type">K</span>](<br>    f: (<span class="hljs-type">T</span>) =&gt; <span class="hljs-type">K</span>,<br>    ascending: <span class="hljs-type">Boolean</span> = <span class="hljs-literal">true</span>,<br>    numPartitions: <span class="hljs-type">Int</span> = <span class="hljs-keyword">this</span>.partitions.length)<br>	(<span class="hljs-keyword">implicit</span> ord: <span class="hljs-type">Ordering</span>[<span class="hljs-type">K</span>], ctag: <span class="hljs-type">ClassTag</span>[<span class="hljs-type">K</span>]): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>] <br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>该操作用于数据排序。在排序之前，可以将数据通过<code>f</code>函数进行处理，之后按照<code>f</code>函数的处理结果进行排序。默认为升序排序，排序后产生的新的RDD分区数目默认与原RDD的分区数一致，其中存在shuffle的过程。分区规则与前面提到的一致。</p>
+<h2 id="双value类型"><a href="#双value类型" class="headerlink" title="双value类型"></a>双value类型</h2><h3 id="intersection"><a href="#intersection" class="headerlink" title="intersection"></a>intersection</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">intersection</span></span>(other: <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>返回两个数据集合的交集</p>
+<h3 id="union"><a href="#union" class="headerlink" title="union"></a>union</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">union</span></span>(other: <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>返回两个数据集合的并集。这里的集合是广义上的集合，并集中可能存在重复元素。</p>
+<h3 id="subtract"><a href="#subtract" class="headerlink" title="subtract"></a>subtract</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">subtract</span></span>(other: <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]): <span class="hljs-type">RDD</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>返回两个数据集合的差集。</p>
+<h3 id="zip"><a href="#zip" class="headerlink" title="zip"></a>zip</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">zip</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](other: <span class="hljs-type">RDD</span>[<span class="hljs-type">U</span>]): <span class="hljs-type">RDD</span>[(<span class="hljs-type">T</span>, <span class="hljs-type">U</span>)]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>类似于拉链操作，但是与集合的拉链操作不同，zip算子<strong>要求两个数据源的分区数量保持一致，每个分区中的数据量也要保持一致</strong>。数据类型可以不一致。</p>
+<blockquote>
+<p>上面的双value类型算子中，并、交、差集都要求两个数据源的数据类型保持一致，但是zip算子并不要求类型一致</p>
+</blockquote>
+<h2 id="Key-Value类型"><a href="#Key-Value类型" class="headerlink" title="Key-Value类型"></a>Key-Value类型</h2><p>在RDD类中并没有Key-Value类型的RDD算子，但是在Scala中存在隐式转换，转换成PairRDDFunctions类则可以找到对应的算子</p>
+<h3 id="partitionBy"><a href="#partitionBy" class="headerlink" title="partitionBy"></a>partitionBy</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">partitionBy</span></span>(partitioner: <span class="hljs-type">Partitioner</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">V</span>)]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将数据按照指定Partitioner重新进行分区。Spark中默认的分区器是HashPartitioner。如果重分区的分区器和当前RDD的分区器一样，底层会有一个判断逻辑，不做任何操作。也可以自定义数据分区器进行数据分区。</p>
+<h3 id="reduceByKey"><a href="#reduceByKey" class="headerlink" title="reduceByKey"></a>reduceByKey</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduceByKey</span></span>(func: (<span class="hljs-type">V</span>, <span class="hljs-type">V</span>) =&gt; <span class="hljs-type">V</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">V</span>)]<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduceByKey</span></span>(func: (<span class="hljs-type">V</span>, <span class="hljs-type">V</span>) =&gt; <span class="hljs-type">V</span>, numPartitions: <span class="hljs-type">Int</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">V</span>)]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将数据按照相同的Key，对Value进行聚合。注意这里为两两聚合，需要保持数据类型的一致。如果某个key的数据只有一个，那么是不会参与计算的。</p>
+<h3 id="groupByKey"><a href="#groupByKey" class="headerlink" title="groupByKey"></a>groupByKey</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">groupByKey</span></span>(): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">Iterable</span>[<span class="hljs-type">V</span>])]<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">groupByKey</span></span>(numPartitions: <span class="hljs-type">Int</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">Iterable</span>[<span class="hljs-type">V</span>])]<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">groupByKey</span></span>(partitioner: <span class="hljs-type">Partitioner</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">Iterable</span>[<span class="hljs-type">V</span>])]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>根据数据源的数据，按照Key对Value进行分组。形成一个对偶元组，元组中的第一个元素为key，第二个元素为相同key的value集合</p>
+<blockquote>
+<p><strong>reduceByKey</strong>与<strong>groupByKey</strong>的区别：</p>
+<p>从Shuffle的角度来看：reduceByKey和groupByKey都存在Shuffle的操作，但是reduceByKey可以在Shuffle之前对分区内相同Key的数据进行<strong>预聚合</strong>（combine）功能，这样可以减少落盘的数据量，性能较高。而groupByKey只是进行分组，不存在数据量减少的问题。</p>
+<p>从功能的角度来看，reduceByKey其实包含了分组和聚合的功能，而groupByKey只能进行分组，不能聚合。</p>
+<p>上面的落盘，指的是在执行过程中，程序在执行完毕之前无法判断自己的分组是否已经没有下一个元素，于是需要等待到执行完毕才能进行下一步的聚合和分区。如果数据量过大，则在内存中等待的数据可能导致内存溢出，因此数据会落盘等待。</p>
+</blockquote>
+<h3 id="aggregateByKey"><a href="#aggregateByKey" class="headerlink" title="aggregateByKey"></a>aggregateByKey</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">aggregateByKey</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](zeroValue: <span class="hljs-type">U</span>)(seqOp: (<span class="hljs-type">U</span>, <span class="hljs-type">V</span>) =&gt; <span class="hljs-type">U</span>,<br>                                              combOp: (<span class="hljs-type">U</span>, <span class="hljs-type">U</span>) =&gt; <span class="hljs-type">U</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">U</span>)]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将数据根据不同的规则进行分区内计算和分区间计算。在进行分区间计算的时候还提供有初始值。</p>
+<p>第一个参数列表中的参数为初始值，类型（泛型）为<code>U</code>；第二个参数列表中有两个参数，参数1表示分区内的计算规则，参数2表示分区间的计算规则。分区内的计算规则要求最后得到的类型为<code>U</code>，而分区间的计算规则最终也要得到<code>U</code>。aggregateByKey最终的返回数据结果应该和初始值的类型保持一致。（注意这里计算规则的类型指定）</p>
+<h3 id="foldByKey"><a href="#foldByKey" class="headerlink" title="foldByKey"></a>foldByKey</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">foldByKey</span></span>(zeroValue: <span class="hljs-type">V</span>)(func: (<span class="hljs-type">V</span>, <span class="hljs-type">V</span>) =&gt; <span class="hljs-type">V</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">V</span>)]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>功能类似于上面的aggregateByKey，当分区内计算规则和分区内计算规则相同的时候，aggregateByKey就可以简化为foldByKey。需要注意的是这里传入的初始值的数据类型和RDD中的数据类型一致</p>
+<h3 id="combineByKey"><a href="#combineByKey" class="headerlink" title="combineByKey"></a>combineByKey</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">combineByKey</span></span>[<span class="hljs-type">C</span>](<br>    createCombiner: <span class="hljs-type">V</span> =&gt; <span class="hljs-type">C</span>,<br>    mergeValue: (<span class="hljs-type">C</span>, <span class="hljs-type">V</span>) =&gt; <span class="hljs-type">C</span>,<br>    mergeCombiners: (<span class="hljs-type">C</span>, <span class="hljs-type">C</span>) =&gt; <span class="hljs-type">C</span>): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">C</span>)]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>最通用的对于Key-Value类型RDD进行聚集操作的函数，类似于aggregateByKey，但是combineByKey允许用户返回值的类型与输入不一致，并且不设置初始值。有三个重要参数：</p>
+<ul>
+<li><code>createCombiner</code>：将相同Key的第一个参数</li>
+<li><code>mergeValue</code>：分区内的计算规则</li>
+<li><code>mergeCombiners</code>：分区间的计算规则</li>
+</ul>
+<blockquote>
+<p>不同聚集方法的区别和联系：</p>
+<ul>
+<li>reduceByKey：相同的Key，第一个数据不进行任何计算，分区内和分区间的计算规则相同</li>
+<li>foldByKey：相同的Key，第一个数据和初始值进行分区内计算，分区内和分区间的计算规则相同</li>
+<li>aggregateByKey：相同的Key，第一个数据和初始值进行分区内计算，分区内和分区间的计算规则可以不同</li>
+<li>combineByKey：相同的Key，如果第一个数据结构不满足要求，可以转换结构，分区内和分区间的计算规则可以不同</li>
+</ul>
+<p>实际上，它们的底层都是combineByKeyWithClassTag，只是完成了不同程度的封装：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// reduceByKey:</span><br>combineByKeyWithClassTag[<span class="hljs-type">V</span>](<br>    (v: <span class="hljs-type">V</span>) =&gt; v, <span class="hljs-comment">// 第一个值不会参与计算</span><br>    func, <span class="hljs-comment">// 分区内计算规则</span><br>    func, <span class="hljs-comment">// 分区间计算规则</span><br>)<br><br><span class="hljs-comment">//aggregateByKey :</span><br>combineByKeyWithClassTag[<span class="hljs-type">U</span>](<br>    (v: <span class="hljs-type">V</span>) =&gt; cleanedSeqOp(createZero(), v), <span class="hljs-comment">// 初始值和第一个key的value值进行的分区内数据操作</span><br>    cleanedSeqOp, <span class="hljs-comment">// 分区内计算规则</span><br>    combOp,       <span class="hljs-comment">// 分区间计算规则</span><br>)<br><br><span class="hljs-comment">//foldByKey:</span><br>combineByKeyWithClassTag[<span class="hljs-type">V</span>](<br>    (v: <span class="hljs-type">V</span>) =&gt; cleanedFunc(createZero(), v), <span class="hljs-comment">// 初始值和第一个key的value值进行的分区内数据操作</span><br>    cleanedFunc,  <span class="hljs-comment">// 分区内计算规则</span><br>    cleanedFunc,  <span class="hljs-comment">// 分区间计算规则</span><br>)<br><br><span class="hljs-comment">//combineByKey :</span><br>combineByKeyWithClassTag(<br>    createCombiner,  <span class="hljs-comment">// 相同key的第一条数据进行的处理函数</span><br>    mergeValue,      <span class="hljs-comment">// 表示分区内数据的处理函数</span><br>    mergeCombiners,  <span class="hljs-comment">// 表示分区间数据的处理函数</span><br>)<br></code></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="sortByKey"><a href="#sortByKey" class="headerlink" title="sortByKey"></a>sortByKey</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sortByKey</span></span>(ascending: <span class="hljs-type">Boolean</span> = <span class="hljs-literal">true</span>, numPartitions: <span class="hljs-type">Int</span> = self.partitions.length)<br>: <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">V</span>)] <br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>在Key-Value类型的RDD上调用，Key必须实现<code>Ordered</code>特征。调用函数返回按照Key排序的RDD</p>
+<h3 id="join"><a href="#join" class="headerlink" title="join"></a>join</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>[<span class="hljs-type">W</span>](other: <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">W</span>)]): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, (<span class="hljs-type">V</span>, <span class="hljs-type">W</span>))]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>类似数据表之间的join操作，在类型为<code>(K, V)</code>和<code>(K, W)</code>的RDD上调用，返回一个相同Key对应所有元素连接在一起的<code>(K, (V, W))</code>的RDD。</p>
+<ul>
+<li>如果Key存在不相同没法匹配，则在最后的结果中也不会出现。</li>
+<li>如果两个数据源中Key有多个相同的，会依次匹配，可能会出现笛卡尔积的现象</li>
+</ul>
+<h3 id="leftOuterJoin"><a href="#leftOuterJoin" class="headerlink" title="leftOuterJoin"></a>leftOuterJoin</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">leftOuterJoin</span></span>[<span class="hljs-type">W</span>](other: <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">W</span>)]): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, (<span class="hljs-type">V</span>, <span class="hljs-type">Option</span>[<span class="hljs-type">W</span>]))]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>类似SQL语句的左外连接，当然同时还有右外连接<code>rightOuterJoin</code></p>
+<h3 id="cogroup"><a href="#cogroup" class="headerlink" title="cogroup"></a>cogroup</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cogroup</span></span>[<span class="hljs-type">W</span>](other: <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, <span class="hljs-type">W</span>)]): <span class="hljs-type">RDD</span>[(<span class="hljs-type">K</span>, (<span class="hljs-type">Iterable</span>[<span class="hljs-type">V</span>], <span class="hljs-type">Iterable</span>[<span class="hljs-type">W</span>]))]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>先组内分组，然后进行连接</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd1 = sc.makeRDD(<span class="hljs-type">List</span>((<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">1</span>), (<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">2</span>),(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">8</span>), (<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">3</span>)))<br><span class="hljs-keyword">val</span> rdd2 = sc.makeRDD(<span class="hljs-type">List</span>((<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">4</span>), (<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">5</span>), (<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">6</span>), (<span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-number">7</span>)))<br><span class="hljs-keyword">val</span> res = rdd1.cogroup(rdd2)<br><br>res.collect().foreach(println)<br></code></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">(a,(CompactBuffer(1),CompactBuffer(4)))<br>(b,(CompactBuffer(2, 8),CompactBuffer(5)))<br>(c,(CompactBuffer(3),CompactBuffer(6, 7)))<br></code></pre></td></tr></table></figure>
+
+<h1 id="RDD行动算子"><a href="#RDD行动算子" class="headerlink" title="RDD行动算子"></a>RDD行动算子</h1><h2 id="行动算子"><a href="#行动算子" class="headerlink" title="行动算子"></a>行动算子</h2><p>所谓的行动算子其实就是触发作业Job执行的方法。行动算子的底层代码会调用环境对象的runJob方法，创建ActiveJob并提交执行。</p>
+<h3 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a>reduce</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(f: (<span class="hljs-type">T</span>, <span class="hljs-type">T</span>) =&gt; <span class="hljs-type">T</span>)<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>聚集RDD中所有的数据，先聚合分区内的数据，再聚合分区间的数据。注意这里的类型，参与运算的类型以及生成结果的类型都需要保持一致。</p>
+<h3 id="collect"><a href="#collect" class="headerlink" title="collect"></a>collect</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">collect</span></span>(): <span class="hljs-type">Array</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>在驱动程序当中以数组Array的形式返回数据集的所有元素</p>
+<h3 id="count"><a href="#count" class="headerlink" title="count"></a>count</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">count</span></span>(): <span class="hljs-type">Long</span><br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>返回RDD中元素的个数</p>
+<h3 id="first"><a href="#first" class="headerlink" title="first"></a>first</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">first</span></span>(): <span class="hljs-type">T</span><br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>返回RDD中的第一个元素</p>
+<h3 id="take"><a href="#take" class="headerlink" title="take"></a>take</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">take</span></span>(num: <span class="hljs-type">Int</span>): <span class="hljs-type">Array</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>返回一个由RDD的前n个元素组成的数组</p>
+<h3 id="takeOrdered"><a href="#takeOrdered" class="headerlink" title="takeOrdered"></a>takeOrdered</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">takeOrdered</span></span>(num: <span class="hljs-type">Int</span>)(<span class="hljs-keyword">implicit</span> ord: <span class="hljs-type">Ordering</span>[<span class="hljs-type">T</span>]): <span class="hljs-type">Array</span>[<span class="hljs-type">T</span>]<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>返回该RDD排序后的前n个元素组成的数组。默认为升序，如果需要降序，可以传入第二个参数，其中的Int表示比较时采用的泛型</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">rdd.takeOrdered(<span class="hljs-number">8</span>)(<span class="hljs-type">Ordering</span>.<span class="hljs-type">Int</span>.reverse)<br></code></pre></td></tr></table></figure>
+
+<h3 id="aggregate"><a href="#aggregate" class="headerlink" title="aggregate"></a>aggregate</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">aggregate</span></span>[<span class="hljs-type">U</span>: <span class="hljs-type">ClassTag</span>](zeroValue: <span class="hljs-type">U</span>)(seqOp: (<span class="hljs-type">U</span>, <span class="hljs-type">T</span>) =&gt; <span class="hljs-type">U</span>, combOp: (<span class="hljs-type">U</span>, <span class="hljs-type">U</span>) =&gt; <span class="hljs-type">U</span>): <span class="hljs-type">U</span><br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>分区的数据通过初始值与分区内的数据进行聚合，然后再和初始值进行分区间的数据聚合。可以指定分区内的聚合逻辑和分区间的聚合逻辑。</p>
+<blockquote>
+<p>需要注意的是，这里的初始值会参与分区内计算，也会参与分区间计算，而在转换算子中类似的aggregateByKey，初始值只会参与分区内的计算。</p>
+</blockquote>
+<h3 id="fold"><a href="#fold" class="headerlink" title="fold"></a>fold</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fold</span></span>(zeroValue: <span class="hljs-type">T</span>)(op: (<span class="hljs-type">T</span>, <span class="hljs-type">T</span>) =&gt; <span class="hljs-type">T</span>): <span class="hljs-type">T</span><br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>上面aggregateByKey的简化操作，其中分区内和分区间的计算逻辑相同。</p>
+<h3 id="countByKey"><a href="#countByKey" class="headerlink" title="countByKey"></a>countByKey</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">countByKey</span></span>(): <span class="hljs-type">Map</span>[<span class="hljs-type">K</span>, <span class="hljs-type">Long</span>] <br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>统计每种Key的个数</p>
+<h3 id="save相关算子"><a href="#save相关算子" class="headerlink" title="save相关算子"></a>save相关算子</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">saveAsTextFile</span></span>(path: <span class="hljs-type">String</span>): <span class="hljs-type">Unit</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">saveAsObjectFile</span></span>(path: <span class="hljs-type">String</span>): <span class="hljs-type">Unit</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">saveAsSequenceFile</span></span>(<br>    path: <span class="hljs-type">String</span>,<br>    codec: <span class="hljs-type">Option</span>[<span class="hljs-type">Class</span>[_&lt;:<span class="hljs-type">CompressionCodec</span>]] = <span class="hljs-type">None</span>): <span class="hljs-type">Unit</span><br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>将数据保存至不同格式的文件中，上面的函数分别表示</p>
+<ul>
+<li>保存成文本文件</li>
+<li>序列化成对象保存在文件中</li>
+<li>保存成Sequencefile文件。这种方式要求数据的格式必须为Key-Value类型</li>
+</ul>
+<h3 id="foreach"><a href="#foreach" class="headerlink" title="foreach"></a>foreach</h3><p>函数声明：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">foreach</span></span>(f: <span class="hljs-type">T</span> =&gt; <span class="hljs-type">Unit</span>): <span class="hljs-type">Unit</span> = withScope &#123;<br>    <span class="hljs-keyword">val</span> cleanF = sc.clean(f)<br>    sc.runJob(<span class="hljs-keyword">this</span>, (iter: <span class="hljs-type">Iterator</span>[<span class="hljs-type">T</span>]) =&gt; iter.foreach(cleanF))<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<p>分布式遍历RDD中的每个元素，调用指定的函数。注意这里和集合的foreach操作不同。集合的foreach操作其实是在节点中的内存集合的循环遍历，而foreach算子是在Executor端内存数据的循环遍历，是分布式的。分区内的执行有序，而分区间的执行无序。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Spark/" class="category-chain-item">Spark</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Spark/">#Spark</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Spark学习笔记-SparkCore(1)-RDD以及相关算子</div>
+      <div>http://example.com/2022/05/08/Spark学习笔记-SparkCore-1-RDD以及相关算子/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月8日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/09/Hadoop%E6%BA%90%E7%A0%81-TextInputFormat%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%88%86%E5%8C%BA%E7%9A%84%E8%A1%8C%E8%AF%BB%E5%8F%96%E9%97%AE%E9%A2%98/" title="Hadoop源码-TextInputFormat解决跨分区的行读取问题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hadoop源码-TextInputFormat解决跨分区的行读取问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/08/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Spark%E8%BF%90%E8%A1%8C%E6%9E%B6%E6%9E%84/" title="Spark学习笔记-入门(2)-Spark运行架构">
+                        <span class="hidden-mobile">Spark学习笔记-入门(2)-Spark运行架构</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

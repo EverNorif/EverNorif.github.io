@@ -1,0 +1,932 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文主要介绍了一些在HBase中重要的工作机制，包括HBase读写流程、WAL机制、Master和Region Server的工作机制，同时介绍了在HBase中存在的相关数据结构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase学习笔记-高级(2)-HBase工作机制">
+<meta property="og:url" content="http://example.com/2022/04/19/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-2-HBase%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本文主要介绍了一些在HBase中重要的工作机制，包括HBase读写流程、WAL机制、Master和Region Server的工作机制，同时介绍了在HBase中存在的相关数据结构。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-19T13:47:19.000Z">
+<meta property="article:modified_time" content="2022-04-19T14:10:18.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="HBase">
+<meta property="article:tag" content="笔记">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>HBase学习笔记-高级(2)-HBase工作机制 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HBase学习笔记-高级(2)-HBase工作机制"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-04-19 21:47" pubdate>
+          2022年4月19日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          59 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">HBase学习笔记-高级(2)-HBase工作机制</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="数据读取流程"><a href="#数据读取流程" class="headerlink" title="数据读取流程"></a>数据读取流程</h2><p>HBase的核心模块是Region Server。Region Server的主要构成部分是HLog和Region块，HLog中记录该Region的操作日志，Region中存储实际数据。一个Region对象由多个Store组成，每个Store对应当前分区中的一个列族，每个Store包含若干个StoreFile文件，StoreFile文件对应HDFS中的HFile文件。</p>
+<p>读取数据需要知道这个数据存储在哪个Region上，之后找到对应的Region Server。这些信息存储在meta表中，而meta表也是HBase中存储的一张表，同样被存放在某个Region中。因此首先需要获取meta表。找到meta表之后就可以查询到Region的位置，之后就可以到相应的服务器上查找数据。</p>
+<p>整个读取流程如下：</p>
+<ol>
+<li>从Zookeeper中找到meta表所在的Region的位置，然后读取其中的数据。在meta表中存储了用户表的Region信息</li>
+<li>之后，根据namespace、表名、行键找到对应Region信息</li>
+<li>找到对应的Region Server，查找对应的Region</li>
+<li>首先从MemStore中查询数据，再去BlockCache中查询数据，最后找到StoreFile</li>
+</ol>
+<blockquote>
+<p>BlockCache是HBase实现的缓存机制，用于缓存从HDFS中读出的数据。HBase提供了两种不同的BlockCache实现来缓存从HDFS读取的数据：默认的堆上LruBlockCache和通常是堆外的BucketCache。<br> 默认情况下，所有用户表都启用块缓存，这意味着任何读取操作都将加载LRU缓存。</p>
+<p>可以将MemStore理解为一级缓存，BlockCache理解为二级缓存。</p>
+</blockquote>
+<h2 id="数据写入流程"><a href="#数据写入流程" class="headerlink" title="数据写入流程"></a>数据写入流程</h2><p>HBase的数据存储分为如下几个阶段：</p>
+<ol>
+<li>客户端拿到一个Row Key，需要知道这个Row Key存放在哪个Region中</li>
+<li>根据Zookeeper获取到hbase:meta表，根据命名空间，表名，行键来查询对应的Region信息，查询到对应的Region服务器</li>
+<li>数据先写入到内存中的MemStore结构里，在2.x版本之后增加了MemStore的Compaction操作</li>
+<li>MemStore快写满了的时候（默认128M），或者内存中数据已经连续存放超过一定时间，会自动由后台程序将MemStore中的内容flush刷写到HDFS中的HFile中</li>
+<li>当数据量较大的时候，会产生很多的StoreFile，这样对高效读取不利。HBase会将这些小的StoreFIle合并，一般3-10个文件合并成一个更大的StoreFile。</li>
+</ol>
+<h3 id="MemStore溢写以及StoreFile合并"><a href="#MemStore溢写以及StoreFile合并" class="headerlink" title="MemStore溢写以及StoreFile合并"></a>MemStore溢写以及StoreFile合并</h3><p>当MemStore中写入的值变多，会触发溢写操作（flush）进行文件的溢写，成为一个StoreFile。</p>
+<p>当溢写的文件过多的时候，会触发文件的合并操作（Compact），合并有两种方式（Major、Minor）。StoreFile的Compact操作需要对HBase的数据进行多次的重新读写，在这个过程中会产生大量的I&#x2F;O。Compact利用提前的I&#x2F;O操作来换取后续读性能的提高。</p>
+<p><strong>flush触发条件</strong>：</p>
+<ul>
+<li>当MemStore中数据达到128M，触发Region级别溢写flush</li>
+<li>当MemStore的存活时间超过一小时，触发RegionServer级别溢写flush</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.memstore.flush.size<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>134217728<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.regionserver.optionalcacheflushinterval<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>3600000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Region级别溢写：一个Store溢写，在同一个Region中的所有Store都需要溢写。</p>
+<p>RegionServer级别溢写：Region服务器中保存的所有Store对应的MenStore都进行溢写。</p>
+</blockquote>
+<p><strong>Minor Compact</strong>：</p>
+<ul>
+<li>Minor Compact是小范围轻量级合并，用来对部分文件进行合并操作（默认是3-10个文件）</li>
+<li>会清除过期数据（TTL），但是不做多版本数据的清理工作</li>
+<li>Minor Compact的过程一般较快，I&#x2F;O相对较低，并且可以设置闲时和忙时</li>
+</ul>
+<p>触发条件：</p>
+<ul>
+<li>在打开Region或者MemStore的时候会自动检测是否需要进行Compact（包括Minor、Major）</li>
+<li>Minor Compact有一个最小合并数量，默认为3。在Store中的尚未处于Compact阶段的StoreFile数量大于等于3的时候需要做Compact</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hstore.compaction.min<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>3<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">final</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">final</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>Major Compact</strong>：</p>
+<ul>
+<li>Major Compact是全局范围重量级合并，用来对一个Region内部的所有StoreFile执行合并操作，最终合并出一个StoreFile文件</li>
+<li>所有无效数据都会被处理</li>
+</ul>
+<p>触发条件：</p>
+<ul>
+<li>如果判断不需要进行Minor Compact，HBase会继续判断执行Major Compact</li>
+<li>如果在所有StoreFile中，时间戳最小的那个StoreFile的时间间隔大于Major Compact的时间间隔（默认7天），则触发Major Compact</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.majorcompaction<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>604800000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>7 day &#x3D; 168 h &#x3D; 604800 s &#x3D; 604800000 ms</p>
+</blockquote>
+<h3 id="In-Memory-Compaction"><a href="#In-Memory-Compaction" class="headerlink" title="In-Memory Compaction"></a>In-Memory Compaction</h3><p>In-Memory Compaction在HBase 2.x版本后新增的一个步骤。相比于默认的MenStore溢写区别在于实现了在内存中进行合并（Compact），核心思想是尽量延长内存中数据的生命周期，来减少总的IO开销。</p>
+<p>在MemStore中，数据以段（Segment）为单位进行存储，MemStore中包含了多个Segment。</p>
+<ul>
+<li>数据写入时，首先写入到的是Active Segment中，也就是当前可以写入的Segment段</li>
+<li>在2.x之前，如果MemStore中的数据量达到指定的阈值时，会直接将数据flush到磁盘中的一个StoreFile中</li>
+<li>在In-Memory Compaction机制中，当Active Segment中数据满了之后，会将数据移动的pipeline中，一个pipeline 中可以有多个Segment。pipeline中的多个Segment会合并成一个更大更紧凑的Segment</li>
+</ul>
+<p>pipeline中segment的合并策略：</p>
+<p><strong>Basic</strong>：</p>
+<ul>
+<li>Basic Compact策略不清理多余的数据版本，直接合并</li>
+<li>适用于大量写的情况</li>
+</ul>
+<p><strong>Eager</strong>：</p>
+<ul>
+<li>Eager Compact会过滤重复的数据，清理多余版本</li>
+<li>主要针对数据大量过期淘汰的场景</li>
+</ul>
+<p><strong>Adaptive</strong>：</p>
+<ul>
+<li>Adaptive Compact根据数据的重复情况来决定是否使用Eager策略</li>
+</ul>
+<p>可以在<code>hbase-site.xml</code>中配置默认In-Memory Compact的方式</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.compacting.memstore.type<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span> <br>    <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>&lt;none|basic|eager|adaptive&gt;<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>也可以在创建表的时候指定</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">create &quot;MY_TABLE&quot;, &#123;NAME =&gt; &quot;C1&quot;, IN_MEMORY_COMPACTION =&gt; &quot;BASIC&quot;&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="WAL机制"><a href="#WAL机制" class="headerlink" title="WAL机制"></a>WAL机制</h2><p>在分布式环境下，用户必须要考虑系统出错的情形。HBase采取WAL，即预写日志的方式来保证系统发生故障的时候能够恢复到正常状态。</p>
+<p>在每个Region Server都有一个HLog文件，这是一种预写文件，用来记录该Region Server执行过的操作。用户更新数据必须先被记录在日志中才能被写入MemStore缓存。只有当缓存内容对应的日志已经成功写入磁盘之后，缓存内容才能被写入磁盘。</p>
+<p>在日志写入HLog文件的过程中，执行的都是追加写。并且同一个Region Server服务器的Region对象共用一个HLog，这样在记录日志的时候，只需要不断地把日志记录追加到单个日志文件中，而不需要同时打开、写入多个日志文件中，因此减少了磁盘寻址次数，提高对表的写操作性能。</p>
+<p>而Zookeeper会实时监控每个Region Server的状态，当某个Region服务器发生故障时，Zookeeper会通知Master，Master会首先去处理该故障服务器上遗留的HLog文件。由于同一个Region服务器的所有Region对象共用一个HLog，所以这个遗留的HLog文件会包含来自多个Region对象的日志记录。系统根据每条日志记录所属的Region对象对HLog数据进行拆分，并分别存放到相应的Region对象目录下，再将失效的Region重新分配到可用的Region服务器中，并在对应的Region服务器中进行日志回放，将日志记录中的数据写入到MemStore然后刷新到磁盘的StoreFile文件中，完成数据恢复。</p>
+<h2 id="Region管理"><a href="#Region管理" class="headerlink" title="Region管理"></a>Region管理</h2><p>每个Region只能分配给一个Region Server。在Master中记录了当前有哪些可用的Region Server，以及当前Region的分配情况。当需要分配新的Region的时候，Master会选择一个可用的Region Server进行分配。</p>
+<p>当Region Server上线时，会在Zookeeper的Server目录下建立代表自己的ZNode。Master通过订阅机制，使用Zookeeper来跟踪Region Server的状态，当Zookeeper的Server目录下文件出现新增或者删除操作，Master可以得到来自Zookeeper的实时通知，这样一旦一个Region Server上线，Master就可以马上得到对应消息。</p>
+<p>当Region Server下线时，它和Zookeeper的会话就会断开，Zookeeper会自动释放代表这台Region Server的文件上的独占锁。Master也可以通过监听得到这个信息，即该Region Server无法继续提供服务。此时Master会删除Zookeeper的Server目录下对应的ZNode，并将这台Region Server上的Region分配给其他存活节点。（Region最终还是会对应到HDFS上的一个文件，而HDFS存在副本机制）</p>
+<p>当一个Region中的数据逐渐变多，直到达到某一个阈值之后，会自动进行分裂。这个Region会等分成两个Region，并分配到不同的Region Server中，原本的Region则会下线。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml">&lt;-- Region最大文件大小为10G --&gt;<br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.max.filesize<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>10737418240<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">final</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">final</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>以上过程即为自动分区。当Region达到一定大小会自动进行分区，分区大小的计算公式如下：<br>$$<br>Min( R^2 \times \text{hbase.hregion.memstore.flush.size}, \text{hbase.hregion.max.filesize})<br>$$<br>其中R为同一个表中，在同一个Region Server中Region的个数。</p>
+<h2 id="Master工作机制"><a href="#Master工作机制" class="headerlink" title="Master工作机制"></a>Master工作机制</h2><p>Master在启动的时候：</p>
+<ul>
+<li>从Zookeeper上获取唯一一个代表Active Master的锁，用来阻止其他备用节点成为Master</li>
+<li>Master扫描Zookeeper上的Server父节点，获得当前可用的Region Server列表，之后与每个Region Server通信，获得当前已经分配的Region和Region Server的对应关系</li>
+<li>扫描meta表，得到当前还未分配的Region，将他们放入待分配Region列表中</li>
+</ul>
+<p>Master下线：</p>
+<p>由于Master只维护表和Region的元数据，并不参与表数据的IO过程，因此Master下线仅会导致所有元数据的修改操作无法进行（包括创建删除表、表结构修改、Region的负载均衡、处理Region上下线、进行Region合并等）。但是Region的自动分区操作还是可以完成的，表数据的读写还是可以正常完成的。（读写过程设计到Zookeeper、Region Server），因此Master下线短时间内对整个HBase集群没有影响。</p>
+<blockquote>
+<p>Master中保存的都是冗余信息，上线之后可以从系统其他地方收集得到。</p>
+</blockquote>
+<h2 id="相关数据结构"><a href="#相关数据结构" class="headerlink" title="相关数据结构"></a>相关数据结构</h2><h3 id="LSM树"><a href="#LSM树" class="headerlink" title="LSM树"></a>LSM树</h3><p>传统的关系型数据库，一般都选择使用B+树来作为索引结构，而在大数据场景下，数据库的存储引擎选择的是LSM树，即日志结构合并树（Log Structured Merge Tree）。</p>
+<p>使用LSM树的主要目标是快速建立索引，B+树在写入压力较大的时候，需要大量的磁盘随机I&#x2F;O，严重影响创建索引的速度，不适合使用在写入操作非常频繁的场景中。而LSM树通过磁盘的顺序写，来实现较高的性能。</p>
+<p>LSM树是一种存储策略，不同部分采用不同的数据结构。</p>
+<p>LSM树的主要思想就是划分不同等级的结构。在插入记录的时候，先写日志，插入到内存当中。内存中的结构成为C0树，而当内存中的数据达到一定阈值，或者经过一段时间间隔，C0树合并到磁盘的C1树中，C1中的数据进一步合并到C2中，依次类推。</p>
+<p>C0结构在内存中，可以使用B树、红黑树、跳表等结构（HBase中使用跳表），而磁盘中的结构使用B+树。</p>
+<p>C0层保存了最近写入的数据，数据是有序的，并且允许随机更新与查询</p>
+<p>C1层以及之后的数据都是在磁盘中，每一层的Key都是有序存储的。</p>
+<p><strong>LSM数据写入操作</strong>：</p>
+<ul>
+<li>首先将操作写入WAL日志中，由于是顺序写，性能较高</li>
+<li>之后将数据写入到内存中的C0结构中</li>
+<li>当内存中的C0结构超过一定阈值，将内存中的C0和C1进行合并</li>
+<li>合并后的新的C1顺序写入磁盘，替换之前的C1</li>
+<li>C1层达到一定大小会继续和下层合并，合并后旧的文件都可以删除，只保留最新文件</li>
+<li>在整个写入的过程中只使用到了内存结构，合并操作由后台线程异步完成，不会阻塞写入</li>
+</ul>
+<p><strong>LSM数据查询操作</strong>：</p>
+<ul>
+<li>首先查询内存中的C0层，如果没有查到，再不断逐层查询磁盘中的数据。</li>
+<li>C0层是在内存中的数据结构，查询效率较高。由于数据分布在不同的层结构当中，所以一次查询可能需要跨多层进行查询，读取速度较慢</li>
+<li>因此LSM树结构程序适合于大量写入，少量查询的场景</li>
+</ul>
+<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>在HBase中存储着海量数据，要判断某个Row Key或者某个列是否存在，可以使用布隆过滤器。</p>
+<blockquote>
+<p>判断一个元素是否在一个集合当中，可以使用哈希表来判断。在集合较小的情况下，哈希表是可行并且高效的，但是在数据量非常大的情况下，内存中无法存放这样一张哈希表，则无法适用。</p>
+</blockquote>
+<p>布隆过滤器可以判断一个值是否存在某个集合中，但是只能判断一定不存在和可能存在。即如果判断不存在，则一定不存在；如果判断存在，则是可能存在。</p>
+<p>布隆过滤器主要维护一个bit数组，对于存入的每个值value，分别经过K个哈希函数得到K个值，然后对应bit数组对应位置上的值设置为1。</p>
+<p>当利用value查询布隆过滤器时，也是利用这K个哈希函数，得到K个值，然后依次查询bit数组对应位置</p>
+<ul>
+<li>如果K个位置上均为1：则value可能存在</li>
+<li>如果K个位置上存在一个不为1：则value一定不存在</li>
+</ul>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3ecd112c009e">HBase中BlockCache的设计综述 - 简书 (jianshu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/6533.html">HBase WAL机制 (biancheng.net)</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/HBase/" class="category-chain-item">HBase</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/HBase/">#HBase</a>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HBase学习笔记-高级(2)-HBase工作机制</div>
+      <div>http://example.com/2022/04/19/HBase学习笔记-高级-2-HBase工作机制/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年4月19日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04/20/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-3-HBase-Bulk-Loading/" title="HBase学习笔记-高级(3)-HBase Bulk Loading">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">HBase学习笔记-高级(3)-HBase Bulk Loading</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-1-HBase%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B/" title="HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型">
+                        <span class="hidden-mobile">HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        MathJax = {
+          tex    : {
+            inlineMath: { '[+]': [['$', '$']] }
+          },
+          loader : {
+            load: ['ui/lazy']
+          },
+          options: {
+            renderActions: {
+              findScript    : [10, doc => {
+                document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                  const display = !!node.type.match(/; *mode=display/);
+                  const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                  const text = document.createTextNode('');
+                  node.parentNode.replaceChild(text, node);
+                  math.start = { node: text, delim: '', n: 0 };
+                  math.end = { node: text, delim: '', n: 0 };
+                  doc.math.push(math);
+                });
+              }, '', false],
+              insertedScript: [200, () => {
+                document.querySelectorAll('mjx-container').forEach(node => {
+                  let target = node.parentNode;
+                  if (target.nodeName.toLowerCase() === 'li') {
+                    target.parentNode.classList.add('has-jax');
+                  }
+                });
+              }, '', false]
+            }
+          }
+        };
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.0/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,1317 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文总结了一些在LeetCode上出现的SQL表格转化类题目，总结了一些相关技巧，通过举例一些题目来说明，其余相关题目可以在另外一篇文章中找到。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL表格形式转化问题技巧汇总">
+<meta property="og:url" content="http://example.com/2022/03/10/SQL%E8%A1%A8%E6%A0%BC%E5%BD%A2%E5%BC%8F%E8%BD%AC%E5%8C%96%E9%97%AE%E9%A2%98%E6%8A%80%E5%B7%A7%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本文总结了一些在LeetCode上出现的SQL表格转化类题目，总结了一些相关技巧，通过举例一些题目来说明，其余相关题目可以在另外一篇文章中找到。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-10T08:24:13.000Z">
+<meta property="article:modified_time" content="2022-04-18T06:34:04.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="SQL">
+<meta property="article:tag" content="LeetCode">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SQL表格形式转化问题技巧汇总 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SQL表格形式转化问题技巧汇总"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-10 16:24" pubdate>
+          2022年3月10日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          52 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SQL表格形式转化问题技巧汇总</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="表格转化"><a href="#表格转化" class="headerlink" title="表格转化"></a>表格转化</h2><p>表格转化大体上可以分分为两类，一种是原始表格的转化问题，另一种是设计序列构建新表格的问题。而在原始表格转化问题中，又可以分成行转列和列转行；在设计序列构建新表格的问题中，又可以分成数列构建和字符串构建。</p>
+<h2 id="原始表格转化"><a href="#原始表格转化" class="headerlink" title="原始表格转化"></a>原始表格转化</h2><h3 id="1-行转列"><a href="#1-行转列" class="headerlink" title="1. 行转列"></a>1. 行转列</h3><p>第一种情况：原表格有基准id</p>
+<blockquote>
+<p><strong>group by + sum &#x2F; max &#x2F; min + case &#x2F; if &#x2F; where</strong></p>
+</blockquote>
+<p>eg.1777.每家商店的产品价格（简单）</p>
+<blockquote>
+<p>表：Products</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>product_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>store</td>
+<td>enum</td>
+</tr>
+<tr>
+<td>price</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>(product_id,store) 是这个表的主键。store 字段是枚举类型，它的取值为以下三种 (‘store1’, ‘store2’, ‘store3’) 。price 是该商品在这家商店中的价格。写出一个 SQL 查询语句，查找每种产品在各个商店中的价格。可以以 任何顺序 输出结果。</p>
+<p>查询结果格式如下例所示：</p>
+<p>Products 表：</p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>store</th>
+<th>price</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>store1</td>
+<td>95</td>
+</tr>
+<tr>
+<td>0</td>
+<td>store3</td>
+<td>105</td>
+</tr>
+<tr>
+<td>0</td>
+<td>store2</td>
+<td>100</td>
+</tr>
+<tr>
+<td>1</td>
+<td>store1</td>
+<td>70</td>
+</tr>
+<tr>
+<td>1</td>
+<td>store3</td>
+<td>80</td>
+</tr>
+</tbody></table>
+<p>Result 表：</p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>store1</th>
+<th>store2</th>
+<th>store3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>95</td>
+<td>100</td>
+<td>105</td>
+</tr>
+<tr>
+<td>1</td>
+<td>70</td>
+<td>null</td>
+<td>80</td>
+</tr>
+</tbody></table>
+<p>产品 0 的价格在商店 1 为 95 ，商店 2 为 100 ，商店 3 为 105 。产品 1 的价格在商店 1 为 70 ，商店 3 的产品 1 价格为 80 ，但在商店 2 中没有销售。</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    product_id, <br>    max(if(store=&#x27;store1&#x27;, price, NULL)) as store1,<br>    max(if(store=&#x27;store2&#x27;, price, NULL)) as store2,<br>    max(if(store=&#x27;store3&#x27;, price, NULL)) as store3<br>from Products<br>group by product_id<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>首先group by进行分组，然后通过if过滤分别计算不同指标</li>
+</ul>
+<p>第二种情况：原表格没有基准id，需要我们自己构造</p>
+<blockquote>
+<p><strong>row_number() + group by + sum &#x2F; max &#x2F; min + case &#x2F; if &#x2F; where</strong></p>
+</blockquote>
+<p>eg.618.学生地理信息报告</p>
+<blockquote>
+<p>一所美国大学有来自亚洲、欧洲和美洲的学生，他们的地理信息存放在如下 student 表中。</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>continent</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Jack</td>
+<td>America</td>
+</tr>
+<tr>
+<td>Pascal</td>
+<td>Europe</td>
+</tr>
+<tr>
+<td>Xi</td>
+<td>Asia</td>
+</tr>
+<tr>
+<td>Jane</td>
+<td>America</td>
+</tr>
+</tbody></table>
+<p>写一个查询语句实现对大洲（continent）列的 透视表 操作，使得每个学生按照姓名的字母顺序依次排列在对应的大洲下面。输出的标题应依次为美洲（America）、亚洲（Asia）和欧洲（Europe）。</p>
+<p>对于样例输入，它的对应输出是：</p>
+<table>
+<thead>
+<tr>
+<th>America</th>
+<th>Asia</th>
+<th>Europe</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Jack</td>
+<td>Xi</td>
+<td>Pascal</td>
+</tr>
+<tr>
+<td>Jane</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    max(if(continent=&#x27;America&#x27;, name, NULL)) as America,<br>    max(if(continent=&#x27;Asia&#x27;, name, NULL)) as Asia,<br>    max(if(continent=&#x27;Europe&#x27;, name, NULL)) as Europe<br>from(<br>    select # 按照每个州划分，每个州按照name进行排序<br>        name, <br>        continent,<br>        row_number() over(partition by continent order by name) as rk<br>    from student<br>) as temp<br>group by rk<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>首先构造基准id，在这里是rk</li>
+<li>之后与情况一类似</li>
+</ul>
+<p><strong>总结</strong></p>
+<ul>
+<li>观察题中是否有基准id,若题中无基准id，需要先使用row_number()进行构造</li>
+<li>使用的聚合函数sum&#x2F;max&#x2F;min是根据列中的数据格式决定的</li>
+</ul>
+<h3 id="2-列转行"><a href="#2-列转行" class="headerlink" title="2. 列转行"></a>2. 列转行</h3><p>列转行通用技巧是使用<strong>union all</strong></p>
+<p>eg.1435.制作会话柱状图</p>
+<blockquote>
+<p>表：Sessions</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>session_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>session_id 是该表主键，duration 是用户访问应用的时间, 以秒为单位</p>
+<p>你想知道用户在你的 app 上的访问时长情况。因此决定统计访问时长区间分别为 “[0-5&gt;”, “[5-10&gt;”, “[10-15&gt;” 和 “15 or more” （单位：分钟）的会话数量，并以此绘制柱状图。写一个SQL查询来报告（访问时长区间，会话总数）。结果可用任何顺序呈现。</p>
+<p>下方为查询的输出格式：</p>
+<p>Sessions 表：</p>
+<table>
+<thead>
+<tr>
+<th>session_id</th>
+<th>duration</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>30</td>
+</tr>
+<tr>
+<td>2</td>
+<td>199</td>
+</tr>
+<tr>
+<td>3</td>
+<td>299</td>
+</tr>
+<tr>
+<td>4</td>
+<td>580</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1000</td>
+</tr>
+</tbody></table>
+<p>Result 表：</p>
+<table>
+<thead>
+<tr>
+<th>bin</th>
+<th>total</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[0-5&gt;</td>
+<td>3</td>
+</tr>
+<tr>
+<td>[5-10&gt;</td>
+<td>1</td>
+</tr>
+<tr>
+<td>[10-15&gt;</td>
+<td>0</td>
+</tr>
+<tr>
+<td>15 or more</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>对于 session_id 1，2 和 3 ，它们的访问时间大于等于 0 分钟且小于 5 分钟。</p>
+<p>对于 session_id 4，它的访问时间大于等于 5 分钟且小于 10 分钟.</p>
+<p>没有会话的访问时间大于等于 10 分钟且小于 15 分钟。</p>
+<p>对于 session_id 5, 它的访问时间大于等于 15 分钟。</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    &#x27;[0-5&gt;&#x27; as bin,<br>    sum(if(duration &gt;=0 and duration &lt;300, 1, 0)) as total<br>from Sessions<br>union all<br>select<br>    &#x27;[5-10&gt;&#x27; as bin,<br>    sum(if(duration &gt;=300 and duration &lt;600, 1, 0)) as total<br>from Sessions<br>union all<br>select<br>    &#x27;[10-15&gt;&#x27; as bin,<br>    sum(if(duration &gt;=600 and duration &lt;900, 1, 0)) as total<br>from Sessions<br>union all<br>select<br>    &#x27;15 or more&#x27; as bin,<br>    sum(if(duration &gt;=900, 1, 0)) as total<br>from Sessions<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>利用union all完成不同情况下行的拼接</li>
+</ul>
+<h2 id="设计序列构建新表格"><a href="#设计序列构建新表格" class="headerlink" title="设计序列构建新表格"></a>设计序列构建新表格</h2><h3 id="1-数列构建"><a href="#1-数列构建" class="headerlink" title="1. 数列构建"></a>1. 数列构建</h3><p>result中出现了一个无中生有的列，且列中的数据为一个逐渐递增的数列，考虑使用with的递归方法构建</p>
+<blockquote>
+<p><strong>with recursive + left join</strong></p>
+</blockquote>
+<p>eg.1336.每次访问的交易次数</p>
+<blockquote>
+<p>表: Visits</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>visit_date</td>
+<td>date</td>
+</tr>
+</tbody></table>
+<p>(user_id, visit_date) 是该表的主键，该表的每行表示 user_id 在 visit_date 访问了银行</p>
+<p>表: Transactions</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>transaction_date</td>
+<td>date</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>该表没有主键，所以可能有重复行。该表的每一行表示 user_id 在 transaction_date 完成了一笔 amount 数额的交易，可以保证用户 (user) 在 transaction_date 访问了银行 (也就是说 Visits 表包含 (user_id, transaction_date) 行)，银行想要得到银行客户在一次访问时的交易次数和相应的在一次访问时该交易次数的客户数量的图表。</p>
+<p>写一条 SQL 查询多少客户访问了银行但没有进行任何交易，多少客户访问了银行进行了一次交易等等</p>
+<p>结果包含两列：</p>
+<p>transactions_count： 客户在一次访问中的交易次数</p>
+<p>visits_count： 在 transactions_count 交易次数下相应的一次访问时的客户数量transactions_count 的值从 0 到所有用户一次访问中的max(transactions_count) 按 transactions_count 排序</p>
+<p>下面是查询结果格式的例子：</p>
+<p>Visits 表:</p>
+<table>
+<thead>
+<tr>
+<th>user_id</th>
+<th>visit_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2020-01-01</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2020-01-02</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2020-01-01</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2020-01-03</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2020-01-02</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2020-01-03</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2020-01-04</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2020-01-11</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2020-01-25</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2020-01-28</td>
+</tr>
+</tbody></table>
+<p>Transactions 表:</p>
+<table>
+<thead>
+<tr>
+<th>user_id</th>
+<th>transaction_date</th>
+<th>amount</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2020-01-02</td>
+<td>120</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2020-01-03</td>
+<td>22</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2020-01-11</td>
+<td>232</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2020-01-04</td>
+<td>7</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2020-01-25</td>
+<td>33</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2020-01-25</td>
+<td>66</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2020-01-28</td>
+<td>1</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2020-01-25</td>
+<td>99</td>
+</tr>
+</tbody></table>
+<p>结果表:</p>
+<table>
+<thead>
+<tr>
+<th>transactions_count</th>
+<th>visits_count</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>1</td>
+<td>5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<ul>
+<li>对于 transactions_count &#x3D; 0, visits 中 (1, “2020-01-01”), (2, “2020-01-02”), (12, “2020-01-01”) 和 (19, “2020-01-03”) 没有进行交易，所以 visits_count &#x3D; 4 。</li>
+<li>对于 transactions_count &#x3D; 1, visits 中 (2, “2020-01-03”), (7, “2020-01-11”), (8, “2020-01-28”), (1, “2020-01-02”) 和 (1, “2020-01-04”) 进行了一次交易，所以 visits_count &#x3D; 5 。</li>
+<li>对于 transactions_count &#x3D; 2, 没有客户访问银行进行了两次交易，所以 visits_count &#x3D; 0 。</li>
+<li>对于 transactions_count &#x3D; 3, visits 中 (9, “2020-01-25”) 进行了三次交易，所以 visits_count &#x3D; 1 。</li>
+<li>对于 transactions_count &gt;&#x3D; 4, 没有客户访问银行进行了超过3次交易，所以我们停止在 transactions_count &#x3D; 3 。</li>
+</ul>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(transactions_count) as<br>(<br>    select 0<br>    union all<br>    select transactions_count+1 <br>    from temp<br>    where transactions_count&lt;(<br>        select max(num) as max_num<br>        from(<br>            select<br>                count(*) over(partition by transaction_date, user_id) as num<br>            from transactions<br>        ) as temp<br>    )<br>) # 利用with recursive构造出结果表中的第一列<br># 后续使用temp表进行left连接<br>select t.transactions_count, count(t1.id) as visits_count<br>from temp as t<br>left join (<br>    select v.user_id as id, v.visit_date, count(t.amount) as times<br>    from Visits as v<br>    left join Transactions as t<br>    on v.user_id = t.user_id and v.visit_date = t.transaction_date<br>    group by v.user_id, v.visit_date<br>) as t1<br>on t.transactions_count = t1.times<br>group by t.transactions_count<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-字符串构建"><a href="#2-字符串构建" class="headerlink" title="2. 字符串构建"></a>2. 字符串构建</h3><p>result中出现了一个无中生有的列，且列中的数据为未曾出现过的字符串，考虑使用<strong>union all</strong>方法直接构造</p>
+<p>eg.1127.用户购买平台</p>
+<blockquote>
+<p>支出表: Spending</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user_id</td>
+<td>int</td>
+</tr>
+<tr>
+<td>spend_date</td>
+<td>date</td>
+</tr>
+<tr>
+<td>platform</td>
+<td>enum</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>int</td>
+</tr>
+</tbody></table>
+<p>这张表记录了用户在一个在线购物网站的支出历史，该在线购物平台同时拥有桌面端（’desktop’）和手机端（’mobile’）的应用程序。</p>
+<p>这张表的主键是 (user_id, spend_date, platform)。平台列 platform 是一种 ENUM ，类型为（’desktop’, ‘mobile’）。</p>
+<p>写一段 SQL 来查找每天 仅 使用手机端用户、仅使用桌面端用户和 同时 使用桌面端和手机端的用户人数和总支出金额。</p>
+<p>查询结果格式如下例所示：</p>
+<p>Spending table:</p>
+<table>
+<thead>
+<tr>
+<th>user_id</th>
+<th>spend_date</th>
+<th>platform</th>
+<th>amount</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2019-07-01</td>
+<td>mobile</td>
+<td>100</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2019-07-01</td>
+<td>desktop</td>
+<td>100</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2019-07-01</td>
+<td>mobile</td>
+<td>100</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2019-07-02</td>
+<td>mobile</td>
+<td>100</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2019-07-01</td>
+<td>desktop</td>
+<td>100</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2019-07-02</td>
+<td>desktop</td>
+<td>100</td>
+</tr>
+</tbody></table>
+<p>Result table:</p>
+<table>
+<thead>
+<tr>
+<th>spend_date</th>
+<th>platform</th>
+<th>total_amount</th>
+<th>total_users</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2019-07-01</td>
+<td>desktop</td>
+<td>100</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2019-07-01</td>
+<td>mobile</td>
+<td>100</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2019-07-01</td>
+<td>both</td>
+<td>200</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2019-07-02</td>
+<td>desktop</td>
+<td>100</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2019-07-02</td>
+<td>mobile</td>
+<td>100</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2019-07-02</td>
+<td>both</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>在 2019-07-01, 用户1 同时 使用桌面端和手机端购买, 用户2 仅 使用了手机端购买，而用户3 仅 使用了桌面端购买。</p>
+<p>在 2019-07-02, 用户2 仅 使用了手机端购买, 用户3 仅 使用了桌面端购买，且没有用户 同时 使用桌面端和手机端购买。</p>
+</blockquote>
+<p>题解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    temp2.spend_date,<br>    temp1.platform,<br>    sum(if(temp1.platform = temp2.platform, amount, 0)) as total_amount,<br>    count(if(temp1.platform = temp2.platform, 1, null)) as total_users<br>from (<br>    select &#x27;mobile&#x27; as platform<br>    union<br>    select &#x27;desktop&#x27; as platform<br>    union<br>    select &#x27;both&#x27; as platform<br>) as temp1 # 字符串构建<br>join (<br>    select<br>        user_id, spend_date,<br>        any_value(if(count(platform) = 2, &#x27;both&#x27;, platform)) as platform,<br>        sum(amount) as amount<br>    from Spending<br>    group by user_id, spend_date<br>) as temp2<br>group by temp2.spend_date, temp1.platform<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="with的递归查询"><a href="#with的递归查询" class="headerlink" title="with的递归查询"></a>with的递归查询</h2><p>with recursive语法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(n) as<br>(<br>    select 0 #初始条件<br>    union all<br>    select n+1 # 每次递归的操作<br>    from temp # 调用递归<br>    where n&lt;7 # 递归停止条件<br>)<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/students-report-by-geography/solution/zong-jie-ge-lei-biao-ge-ge-shi-hua-wen-t-tl4e/">pipideveloper-总结各类表格格式化问题-leetcode</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/SQL/" class="category-chain-item">SQL</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SQL/">#SQL</a>
+      
+        <a href="/tags/LeetCode/">#LeetCode</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SQL表格形式转化问题技巧汇总</div>
+      <div>http://example.com/2022/03/10/SQL表格形式转化问题技巧汇总/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年3月10日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03/10/SQL%E8%A1%A8%E6%A0%BC%E5%BD%A2%E5%BC%8F%E8%BD%AC%E5%8C%96%E4%BE%8B%E9%A2%98/" title="SQL表格形式转化例题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SQL表格形式转化例题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-2-Yarn%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%93%8D%E4%BD%9C%E4%B8%8E%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE/" title="Hadoop学习笔记-Yarn(2)-Yarn命令行操作与参数配置">
+                        <span class="hidden-mobile">Hadoop学习笔记-Yarn(2)-Yarn命令行操作与参数配置</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

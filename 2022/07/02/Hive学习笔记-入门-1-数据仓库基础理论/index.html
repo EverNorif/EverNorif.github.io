@@ -1,0 +1,874 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Hive是一个数据仓库软件，在学习Hive之前，有必要了解数据仓库的基础理论，包括数据仓库的概念、数据仓库的主要特征、以及数据仓库的分层架构等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive学习笔记-入门(1)-数据仓库基础理论">
+<meta property="og:url" content="http://example.com/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Hive是一个数据仓库软件，在学习Hive之前，有必要了解数据仓库的基础理论，包括数据仓库的概念、数据仓库的主要特征、以及数据仓库的分层架构等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-02T07:59:45.000Z">
+<meta property="article:modified_time" content="2022-07-02T10:43:38.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Hive">
+<meta property="article:tag" content="数据仓库">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Hive学习笔记-入门(1)-数据仓库基础理论 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Hive学习笔记-入门(1)-数据仓库基础理论"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-02 15:59" pubdate>
+          2022年7月2日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hive学习笔记-入门(1)-数据仓库基础理论</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="数据仓库概念"><a href="#数据仓库概念" class="headerlink" title="数据仓库概念"></a>数据仓库概念</h1><p>数据仓库（Data Warehouse，简称为数仓，DW），指的是用于<strong>存储</strong>、<strong>分析</strong>、<strong>报告</strong>的数据系统。它的目的是构建<strong>面向分析</strong>的集成化数据环境，分析结果为企业提供决策和支持。</p>
+<ul>
+<li>数据仓库本身<strong>不生产任何数据</strong>，其数据来源于不同的外部系统</li>
+<li>数据仓库自身不需要消费任何数据，其结果开放给各个外部应用使用</li>
+</ul>
+<p>数据仓库的产生对应于企业对于数据分析的需要。数据仓库为了分析数据而来，分析的结果为企业决策提供支撑。在企业中，数据信息往往分为操作型记录的保存和分析型决策的指定。操作性记录即记录用户的操作信息，联机事务处理系统（OLTP）可以用来满足该业务的需求，前台接收的用户数据可以立即传送到后台进行处理，并在很短的时间内给出处理结果。分析型决策指定信息，即需要一个面向分析、支持分析的系统，对应成为联机分析处理系统（OLAP），数据仓库就是OLAP的一种。</p>
+<blockquote>
+<p>联机<strong>事务</strong>处理OLTP（Online <strong>Transaction</strong> Processing）</p>
+<ul>
+<li>主要目标是做数据处理，针对具体业务在数据库联机中的日常操作，通常对少数记录进行查询，修改等</li>
+<li>用户较为关心操作的响应时间、数据的安全性、完整性、并发支持的用户数等</li>
+<li>传统的关系型数据库是数据管理的主要手段</li>
+</ul>
+<p>联机<strong>分析</strong>处理OLAP（Online <strong>Analytical</strong> Processing）</p>
+<ul>
+<li>主要用于分析型处理，目标为数据分析</li>
+<li>针对某些主体的历史数据进行复杂的多维分析，来支持管理和决策</li>
+<li>数据仓库是OLAP系统的一个典型示例，主要用于数据分析</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>OLTP</th>
+<th>OLAP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据源</td>
+<td>日常运行的业务数据</td>
+<td>整合来自多个数据源的数据，可能包括OLTP和外部数据来源</td>
+</tr>
+<tr>
+<td>目的</td>
+<td>面向应用，面向业务，支撑事务</td>
+<td>面向分析，支持分析决策</td>
+</tr>
+<tr>
+<td>焦点</td>
+<td>当下</td>
+<td>主要面向历史数据</td>
+</tr>
+<tr>
+<td>任务</td>
+<td>读写操作</td>
+<td>大量读操作，少量写操作</td>
+</tr>
+<tr>
+<td>响应时间</td>
+<td>很快，毫秒级别</td>
+<td>较慢（秒、分钟、小时、天都有可能）</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>小数据量（MB，GB）</td>
+<td>大数据量（TB、MB）</td>
+</tr>
+<tr>
+<td>典型应用</td>
+<td>关系型数据库</td>
+<td>数据仓库</td>
+</tr>
+</tbody></table>
+</blockquote>
+<p>数据库和数据仓库是两个概念，它们的区别实际上也是OLTP和OLAP的区别</p>
+<ul>
+<li>数据仓库不是大型的数据库，虽然数据仓库存储数据规模大</li>
+<li>数据仓库的出现，并不是要取代数据库</li>
+<li>数据库是面向事务的设计，数据仓库是面向主题设计的</li>
+<li>数据库一般存储业务数据，数据仓库存储的一般是历史数据</li>
+<li>数据库是为捕获数据而设计，数据仓库是为分析数据而设计</li>
+</ul>
+<p>数据仓库概念中，还会涉及到数据集市的概念。可以将数据集市看作是小型的数据仓库。一般在企业中，数据仓库（Data Warehouse）是面向整个企业的数据，而数据集市（Data Mart）是面向单个部门的。数据集市通常只涉及一个主题或者领域，相比数据仓库更小但是更加具体，更加易于管理和维护，有更灵活的结构。</p>
+<h1 id="数据仓库主要特征"><a href="#数据仓库主要特征" class="headerlink" title="数据仓库主要特征"></a>数据仓库主要特征</h1><p>数据仓库的主要特征包括面向主题、集成性、非易失性和时变性。</p>
+<p>面向主题性：</p>
+<ul>
+<li>在数据库中，最大的特点是<strong>面向应用进行数据的组织</strong>，各个业务系统可能是相互分离的。</li>
+<li>数据仓库则是面向主题的。主题是一个抽象的概念，是<strong>较高层次</strong>上企业信息系统中的数据综合、归类并进行分析利用的抽象。在逻辑意义上，它是对应企业中<strong>某一宏观分析领域所涉及的分析对象</strong>。</li>
+<li>操作型处理（传统数据）对数据的划分并不适用于决策分析。而基于主题组织的数据则不同，它们被划分为各自独立的领域，每个领域有各自的逻辑内涵但互不交叉，在抽象层次上对数据进行完整、一致和准确的描述。</li>
+</ul>
+<p>集成性：</p>
+<ul>
+<li>集成性和面向主体性相关，确定主题之后，需要获取和主题相关的数据。这部分数据可能会分布在多个操作性系统中，彼此之间是分散、独立、异构的</li>
+<li>数据在进入数据仓库之前，需要经过统一的处理，对数据进行抽取、清理、转换和汇总。</li>
+</ul>
+<p>非易失性：</p>
+<ul>
+<li>数据仓库是分析数据的平台，而不是创造数据的平台。数据进入数据仓库之后，稳定并且不会改变</li>
+<li>数据仓库中的数据反映的是一段相当长时间内历史数据的综合</li>
+<li>数据进入数据仓库之后，一般情况下会被长时间保留。数据仓库中一般有大量的查询操作，但是修改和删除操作很少</li>
+</ul>
+<p>时变性：</p>
+<ul>
+<li>数据仓库包含各种粒度的历史数据，可能和某个特定日期、星期、月份、季度或者年份有关</li>
+<li>数据仓库中的数据并不是一成不变的，其中的数据应该随着时间而更新，以适应决策的需要</li>
+</ul>
+<h1 id="数据仓库分层架构"><a href="#数据仓库分层架构" class="headerlink" title="数据仓库分层架构"></a>数据仓库分层架构</h1><p>数据仓库的构建一般会遵循分层的架构。每个企业根据自己的业务需求可以分成不同的层次。但是最基础的分层思想，理论上分为三个层：操作型数据层（<strong>ODS</strong>）、数据仓库层(<strong>DW</strong>)和数据应用层(<strong>DA</strong>)。</p>
+<ul>
+<li><p>ODS层（Operation Data Store）</p>
+<ul>
+<li><p>操作型数据层，也被称为源数据层、数据引入层、数据暂存层、临时缓存层</p>
+</li>
+<li><p>此层将未经处理的原始数据存放至数据仓库系统，结构上和与源数据保持一致，是数据仓库的临时准备区</p>
+</li>
+<li><p>主要完成基础数据引入到数仓的职责，和数据源系统进行解耦合，同时记录基础数据的历史变化</p>
+</li>
+</ul>
+</li>
+<li><p>DW层（Data Warehouse）</p>
+<ul>
+<li><p>数据仓库层，由ODS层的数据加工而成</p>
+</li>
+<li><p>主要完成数据加工与整合，建立一致性的维度，构建可以复用的面向分析和统计的明细事实表，汇总公共粒度的指标等</p>
+</li>
+</ul>
+</li>
+<li><p>DA层（Data Application）</p>
+<ul>
+<li><p>数据应用层，面向最终用户，面向业务定制提供给产品和数据分析使用的数据</p>
+</li>
+<li><p>可能包括前端报表、分析图表、KPI、仪表盘、数据挖掘等分析</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>数据仓库分层的主要原因是在管理数据的时候，能够对数据有一个更加清晰的掌控</p>
+<ul>
+<li>清晰的数据结构：每个数据分层都有它的作用域，在使用表的时候能够更加方便地定位和理解</li>
+<li>数据血缘追踪：举例来说，如果最终得到的一张表出现了问题，我们能够根据数据血缘快速定位到问题</li>
+<li>减少重复开发：规范数据分层，开发一些通用的中间层数据，能够减少极大的重复计算</li>
+<li>复杂问题简单化：将复杂的问题分解成多个步骤，每一层只处理单一的步骤，比较简单和容易理解</li>
+<li>屏蔽原始数据的异常：屏蔽业务的影响，不必改一次业务就需要重新接入数据</li>
+</ul>
+<p>在数据仓库分层架构中，还存在一个ETL的操作。数据仓库中，从各个数据源获取数据以及在数据仓库中的数据转换和流动都可以认为是ETL（抽取Extract、转换Transfer、装载Load），但是在实际操作中，将数据加载到数据仓库中产生了两种不同的做法：ETL和ELT</p>
+<p>ETL：首先从数据源中提取数据，这些数据源通常是事务性数据库。数据保存在临时暂存数据库中，然后执行转换操作，将数据结构化并转换成适合目标数据仓库系统的形式，然后将结构化数据加载到仓库中以便分析</p>
+<p>ELT：数据从数据源中提取之后立即加载，没有专门的临时数据库。这也就是说数据会立即加载到单一的集中存储库中，数据在数据仓库系统中进行转换。大数据时代的数仓中，这个特点非常明显</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hive/" class="category-chain-item">Hive</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Hive/">#Hive</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/">#数据仓库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Hive学习笔记-入门(1)-数据仓库基础理论</div>
+      <div>http://example.com/2022/07/02/Hive学习笔记-入门-1-数据仓库基础理论/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" title="Hive学习笔记-入门(2)-Hive概述以及集群搭建">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hive学习笔记-入门(2)-Hive概述以及集群搭建</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06/29/Shell%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Shell基础学习笔记">
+                        <span class="hidden-mobile">Shell基础学习笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

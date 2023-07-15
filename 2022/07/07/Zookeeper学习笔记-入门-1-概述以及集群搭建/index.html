@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Zookeeper是一个开源的，分布式的，为分布式框架提供协调服务的项目。本笔记对Zookeeper进行概述,简要介绍了其中的重要概念，最后描述了集群搭建的过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper学习笔记-入门(1)-概述以及集群搭建">
+<meta property="og:url" content="http://example.com/2022/07/07/Zookeeper%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Zookeeper是一个开源的，分布式的，为分布式框架提供协调服务的项目。本笔记对Zookeeper进行概述,简要介绍了其中的重要概念，最后描述了集群搭建的过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-07T10:25:01.000Z">
+<meta property="article:modified_time" content="2022-07-07T12:13:24.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Zookeeper">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Zookeeper学习笔记-入门(1)-概述以及集群搭建 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Zookeeper学习笔记-入门(1)-概述以及集群搭建"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-07 18:25" pubdate>
+          2022年7月7日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          40 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Zookeeper学习笔记-入门(1)-概述以及集群搭建</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Zookeeper 是一个开源的分布式的，为分布式框架提供协调服务的 Apache 项目。它的设计目标是将复杂且容易出错的分布式一致性服务封装起来，提供一系列简单易用的接口提供给用户使用。</p>
+<p>在设计方面，Zookeeper上存储和管理了数据，观察者可以监听上面的某些数据。一旦这些数据的状态发生变化，Zookeeper就负责通知对应的观察者，触发对应的行为。可以理解为<strong>Zookeeper&#x3D;文件系统+通知机制</strong></p>
+<p>Zookeeper的特点如下：</p>
+<ol>
+<li>在集群构成方面，集群中存在一个Leader和多个Follower</li>
+<li>只要集群中有半数以上的节点存活，Zookeeper就能够正常提供服务</li>
+<li>Zookeeper集群中数据保持全局的一致性，集群中每个服务器都保存了相同的数据副本。客户端无论连接到哪个服务器上，数据都是一致的</li>
+<li>客户端也可以对Zookeeper中的数据进行写操作，并且更新请求会保持顺序执行，来自同一个Client的更新请求会按照发送顺序依次执行</li>
+<li>数据更新保证原子性，一次数据更新要么成功要么失败</li>
+<li>在一定时间范围内，Client能够读取到最新的数据</li>
+</ol>
+<p>Zookeeper是一个典型的分布式数据一致性解决方案，分布式应用程序可以基于Zookeeper实现诸如数据发布&#x2F;订阅、负载均衡、统一命名服务、统一配置管理、分布式协调&#x2F;通知、统一集群管理、Master选举、分布式锁和分布式队列等功能。</p>
+<blockquote>
+<ul>
+<li>统一配置管理：集群中一般要求所有节点的配置信息是一致的，配置管理可以交由Zookeeper来管理<ul>
+<li>将配置信息写入Zookeeper上的一个Node</li>
+<li>各个客户端服务器监听这个ZNode</li>
+<li>一旦ZNode中的数据被修改，Zookeeper将通知各个客户端服务器</li>
+</ul>
+</li>
+<li>统一集群管理：在分布式环境下，实时掌握每个节点的状态是必要的，而Zookeeper可以实现实时监控节点状态变化<ul>
+<li>节点将自己的信息写入Zookeeper上的一个ZNode</li>
+<li>监听这个ZNode可以获取集群的实时状态</li>
+</ul>
+</li>
+<li>服务器动态上下线：客户端和服务器连接的情形中，客户端希望知道当前服务器的状态<ul>
+<li>服务器向Zookeeper上注册，维护ZNode信息</li>
+<li>客户端监听对应的ZNode</li>
+<li>当服务器动态上下线，ZNode信息发生变化，Zookeeper也会通知对应的客户端</li>
+</ul>
+</li>
+<li>负载均衡：在Zookeeper中记录每台服务器的访问数，让访问数最少的服务器去处理最新的客户端请求</li>
+</ul>
+</blockquote>
+<h1 id="重要概念"><a href="#重要概念" class="headerlink" title="重要概念"></a>重要概念</h1><h2 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h2><p>会话Session，指的是客户端与Zookeeper服务器之间的连接。这里的客户端可以是Zookeeper提供的命令行工具，也可以是Java中的API等。</p>
+<p>客户端启动的时候，首先会与服务器建立一个TCP连接，通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向ZooKeeper服务器发送请求并接受响应，同时还能够通过该连接接收来自服务器的Watch事件通知。而我们也可以设置客户端会话的超时时间等。</p>
+<p>在为客户端创建会话之前，服务端首先会为每个客户端分配一个sessionID。由于sessionID是ZooKeeper会话的一个重要标识，许多与会话相关的而运行机制都是基于这个sessionID的，因此，无论是哪台服务器为客户端分配的sessionID,都务必保证全局唯一。</p>
+<h2 id="ZNode"><a href="#ZNode" class="headerlink" title="ZNode"></a>ZNode</h2><p>Zookeeper中组织数据的模式类似于Unix文件系统，整体上可以看作是一棵树，每个节点称为一个ZNode。（注意这里的节点指的是Zookeeper中的数据存储节点，而不是集群中的服务器节点）<strong>每个ZNode默认存储1MB的数据</strong>，其中会维护一些属性，Zookeeper就根据这些数据来实现特定的功能。这种树形的结构使得每个ZNode都可以通过路径来唯一进行标识。Zookeeper的数据保存在内存中，这意味着Zookeeper可以实现高吞吐量和低延迟。</p>
+<p>在Zookeeper中，ZNode主要可以分为持久节点和临时节点两类。持久节点指的是一旦这个ZNode被创建，除非主动进行ZNode的移除，否则它将会一直保存在Zookeeper上；而临时节点的生命周期与客户端会话绑定，当会话失效后，这个客户端创建的所有临时节点也都会被移除。</p>
+<p>另外，Zookeeper还允许用户为每个节点添加一个特殊的属性<code>SEQUENTIAL</code>，一旦节点被标记上这个属性，那么再被创建的时候，Zookeeper会自动在其节点名称后面追加上一个整型数字，这个整型数字是由父节点维护的一个自增数字。</p>
+<p>Zookeeper向我们提供对数据操作的API，操作的就是ZNode。包括ZNode的创建，数据修改，删除和监听等。</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p>ZooKeeper的每个Znode上都会都会存储数据，对应于每个Znode,ZooKeeper都会为其维护一个叫做Stat的数据结构，Stat中记录了这个Znode的三个数据版本，分别是version(当前Znode的版本)、cversion(当前Znode子节点的版本)和cversion(当前Znode的ACL版本)。</p>
+<h2 id="Watcher"><a href="#Watcher" class="headerlink" title="Watcher"></a>Watcher</h2><p>Watcher，事件监听器，是Zookeeper中一个很重要的特性。Zookeeper允许用户在指定节点上注册一些Watcher。在一些特定事件触发的时候，例如ZNode状态改变的时候，Zookeeper服务端会将事件通知到对应的客户端上。这个机制也是Zookeeper实现分布式协调服务的重要特性。</p>
+<h2 id="ACL"><a href="#ACL" class="headerlink" title="ACL"></a>ACL</h2><p>ACL，AccessControlLists，是Zookeeper用来进行权限控制的策略，类似于UNIX文件系统的权限控制。Zookeeper中定义了如下5种权限：</p>
+<ul>
+<li>create：创建子节点的权限</li>
+<li>read：获取节点数据和子节点列表的权限</li>
+<li>write：更新节点数据的权限</li>
+<li>delete：删除子节点的权限</li>
+<li>admin：设置节点ACL的权限</li>
+</ul>
+<h1 id="集群搭建"><a href="#集群搭建" class="headerlink" title="集群搭建"></a>集群搭建</h1><p>首先将压缩包解压到对应的目录下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">tar -zxvf apache-zookeeper-3.5.7-bin.tar.gz -C /opt/module/<br></code></pre></td></tr></table></figure>
+
+<p>之后在对应目录下创建zkData目录，然后在zkData目录下创建一个名称为myid的文件，在myid文件种添加server对应的编号。例如这里hadoop102，我们给它编号为2。后续这个zkData目录会被配置为Zookeeper数据存储的目录。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">mkdir zkData<br><br>cd zkData<br>vim myid<br><br>2<br></code></pre></td></tr></table></figure>
+
+<p>之后，将Zookeeper安装目录同步到其他集群中，并修改对应myid中的文件内容为3和4。</p>
+<p>下一步需要进行配置文件的配置，将<code>conf</code>目录下的<code>zoo_sample.cfg</code>修改为<code>zoo.cfg</code>，然后修改其中的配置如下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">修改数据存储路径配置</span><br>dataDir=/opt/module/zookeeper-3.5.7/zkData<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">增加集群配置</span><br>server.2=hadoop102:2888:3888<br>server.3=hadoop103:2888:3888<br>server.4=hadoop104:2888:3888<br></code></pre></td></tr></table></figure>
+
+<p>配置参数格式如<code>server.A=B:C:D</code></p>
+<ul>
+<li>A是一个数字，表示这个是第几号服务器，其中的内容对应myid文件中的内容。Zookeeper在启动的时候会读取配置的<code>dataDir</code>目录下的myid文件，拿到里面的数据与zoo.cfg中的配置信息进行对比，从而判断到底是哪个Server</li>
+<li>B为服务器的地址</li>
+<li>C为服务器Follower与集群中Leader服务器交换信息的端口</li>
+<li>D是在Leader选举时服务器相互通信的端口</li>
+</ul>
+<p>之后将配置文件进行同步即可。</p>
+<p>之后，就可以启动集群了：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">启动集群(在三台机器上分别启动)</span><br>bin/zkServer.sh start<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">查看集群状态</span><br>bin/zkServer.sh status<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">关闭集群</span><br>bin/zkServer.sh stop<br></code></pre></td></tr></table></figure>
+
+<p>类似地，我们也可以编写Zookeeper集群的启动停止脚本<code>zk.sh</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-keyword">case</span> <span class="hljs-variable">$1</span> <span class="hljs-keyword">in</span><br><span class="hljs-string">&quot;start&quot;</span>)&#123;<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> hadoop102 hadoop103 hadoop104<br><span class="hljs-keyword">do</span><br> <span class="hljs-built_in">echo</span> ---------- zookeeper <span class="hljs-variable">$i</span> 启动 ------------<br> ssh <span class="hljs-variable">$i</span> <span class="hljs-string">&quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh start&quot;</span><br><span class="hljs-keyword">done</span><br>&#125;;;<br><span class="hljs-string">&quot;stop&quot;</span>)&#123;<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> hadoop102 hadoop103 hadoop104<br><span class="hljs-keyword">do</span><br> <span class="hljs-built_in">echo</span> ---------- zookeeper <span class="hljs-variable">$i</span> 停止 ------------ <br> ssh <span class="hljs-variable">$i</span> <span class="hljs-string">&quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh stop&quot;</span><br><span class="hljs-keyword">done</span><br>&#125;;;<br><span class="hljs-string">&quot;status&quot;</span>)&#123;<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> hadoop102 hadoop103 hadoop104<br><span class="hljs-keyword">do</span><br> <span class="hljs-built_in">echo</span> ---------- zookeeper <span class="hljs-variable">$i</span> 状态 ------------ <br> ssh <span class="hljs-variable">$i</span> <span class="hljs-string">&quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh status&quot;</span><br><span class="hljs-keyword">done</span><br>&#125;;;<br><span class="hljs-keyword">esac</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="选举机制"><a href="#选举机制" class="headerlink" title="选举机制"></a>选举机制</h1><p>Zookeeper中的角色分为Leader和Follower。Leader是通过Zookeeper中的服务选举得来的。而Leader的选举又分为首次启动的选举和非首次启动的选举。</p>
+<p>首先我们明确下面几个概念：</p>
+<ul>
+<li>SID：服务器ID，用来唯一标识Zookeeper集群中的一台机器，与myid一致</li>
+<li>ZXID：事务ID，用来标识一次服务器状态的变更。在某一时刻，集群中每台机器的ZXID值不一定完全一致，这和Zookeeper服务器对于客户端更新请求的处理逻辑有关</li>
+<li>Epoch：每个Leader任期的代号</li>
+</ul>
+<p>首次启动时，肯定会存在不同启动顺序。当服务器启动之后，会首先投自己一票，但是只有一票，不够半数以上，选举无法完成，则服务器状态保持Looking。随着集群其他机器启动，会再次发起选举，服务器在给自己投票之后不超过半数，则和其他机器交换投票信息，推举myid高的那个机器。如果仍然没有机器获得超过半数的票，则均保持Looking状态；如果有机器获得超过半数的票，则被推举为Leader。后续加入服务的机器，在已有Leader的情况下，直接以Follower角色加入。<strong>可以说，Leader的选举由启动顺序和myid共同决定</strong>。</p>
+<p>当Zookeeper集群中的一台服务器出现以下两种情况之一的时候，就会进入Leader选举阶段，分别是服务器初始化启动，以及服务器运行期间无法和Leader保持连接。</p>
+<p>而当一台服务器进入Leader选举流程的时候，当前集群也可能会处于两种状态：分别是集群中已经存在Leader，以及集群中确实不存在Leader。</p>
+<p>如果是第一种状况，集群中已经存在Leader，那么机器试图进行选举的时候，会被告知当前集群的Leader信息，那么当前服务器仅需要和Leader机器进行对接，然后进行状态同步即可</p>
+<p>如果是第二种情况，集群中确实不存在Leader，那么则根据特定的规则进行Leader选举，主要就是利用前面说到的3个值的大小，优先级为Epoch&gt;ZXID&gt;SID，即Epoch大的直接胜出；Epoch相同，则事务ID大的胜出；事务ID相同，则服务器ID大d</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45569634/article/details/104903030?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-104903030-blog-107553902.pc_relevant_multi_platform_whitelistv2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-104903030-blog-107553902.pc_relevant_multi_platform_whitelistv2&utm_relevant_index=2">ZooKeeper的各种各样及各样各种概念_叽里呱啦啦啦。的博客-CSDN博客</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Zookeeper/" class="category-chain-item">Zookeeper</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Zookeeper/">#Zookeeper</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Zookeeper学习笔记-入门(1)-概述以及集群搭建</div>
+      <div>http://example.com/2022/07/07/Zookeeper学习笔记-入门-1-概述以及集群搭建/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/07/07/Zookeeper%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%93%8D%E4%BD%9C%E4%BB%A5%E5%8F%8A%E5%BA%94%E7%94%A8%E4%B8%BE%E4%BE%8B/" title="Zookeeper学习笔记-入门(2)-客户端操作以及应用举例">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Zookeeper学习笔记-入门(2)-客户端操作以及应用举例</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="Hive学习笔记-Hive优化(1)-Hive性能优化">
+                        <span class="hidden-mobile">Hive学习笔记-Hive优化(1)-Hive性能优化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

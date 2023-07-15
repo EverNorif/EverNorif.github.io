@@ -1,0 +1,823 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在一些海量数据的存储场景下，如何设计HBase中表的结构是非常重要的，包括行键的设计、列族的设计、预分区的操作等等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase学习笔记-入门(6)-HBase表结构设计">
+<meta property="og:url" content="http://example.com/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-6-HBase%E8%A1%A8%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="在一些海量数据的存储场景下，如何设计HBase中表的结构是非常重要的，包括行键的设计、列族的设计、预分区的操作等等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-18T04:19:23.000Z">
+<meta property="article:modified_time" content="2022-04-19T08:36:00.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="HBase">
+<meta property="article:tag" content="笔记">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>HBase学习笔记-入门(6)-HBase表结构设计 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HBase学习笔记-入门(6)-HBase表结构设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-04-18 12:19" pubdate>
+          2022年4月18日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">HBase学习笔记-入门(6)-HBase表结构设计</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="HBase表结构设计"><a href="#HBase表结构设计" class="headerlink" title="HBase表结构设计"></a>HBase表结构设计</h2><h3 id="命名空间：NameSpace"><a href="#命名空间：NameSpace" class="headerlink" title="命名空间：NameSpace"></a>命名空间：NameSpace</h3><p>在一个项目中，需要使用HBase来保存多张表，不同的表可能有不同的业务关系，可以按照某种业务域来划分这些表。为了方便管理，不同的业务域以命名空间（NameSpace）来划分。</p>
+<p>HBase初始存在两个命名空间，<code>defalut</code>和<code>hbase</code>。</p>
+<ul>
+<li>在<code>hbase</code>中存放了系统的内建表：meta和namespace</li>
+<li><code>default</code>是默认的命名空间，在不指定的情况下，表将创建在该命名空间下</li>
+</ul>
+<p>命名空间相关语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">创建命名空间</span><br>create_namespace &quot;MY_NAMESPACE&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">查看命名空间列表</span><br>list_namespace<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">查看某张表的命名空间</span><br>describe_namespace &quot;MY_NAMESPACE&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">在创建表的时候指定命名空间</span><br>create &quot;MY_NAMESPACE:MY_TABLE&quot;, &quot;C1&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">删除命名空间</span><br>drop_namespace &quot;MY_NAMESPACE&quot;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>这里需要注意，如果命名空间中还有表的话，是无法删除的。删除之前需要保证该命名空间中已经没有表了，否则会报错</li>
+</ul>
+<h3 id="列族设计"><a href="#列族设计" class="headerlink" title="列族设计"></a>列族设计</h3><p>在HBase中，列族的数量应该越少越好</p>
+<ul>
+<li>过多的列族会影响HBase的性能</li>
+<li>列族按照stroe存储，当一个store存储的数据达到阈值之后，会进行flush。而这个flush操作会引起表中其他列族的flush操作，即表中所有的列族同时进行flush操作。这样会带来不必要的I&#x2F;O开销，列族越多，对性能的影响越大</li>
+<li>一般来说，我们只设置一个列族即可</li>
+</ul>
+<h3 id="版本设置"><a href="#版本设置" class="headerlink" title="版本设置"></a>版本设置</h3><p>版本<code>VERIONS</code>属性，表示在HBase中，一个单元格会存放几份历史版本的数据，该值的设计需要考虑到具体的业务逻辑。HBase默认创建表的版本为1，即不保留历史版本的数据。</p>
+<h3 id="数据压缩"><a href="#数据压缩" class="headerlink" title="数据压缩"></a>数据压缩</h3><p>在HBase中可以是使用多种压缩编码，包括LZO、SNAPPY、GZIP等。根据压缩算法的不同特点进行选择</p>
+<ul>
+<li>GZIP：压缩率最高，是CPU密集型，对CPU的消耗算法比其他算法要多，压缩和解压速度也慢</li>
+<li>LZO：压缩率居中，压缩和解压速度明显快于GZIP</li>
+<li>Zippy &#x2F; Snappy：压缩率最低，压缩和解压速度快于LZO</li>
+</ul>
+<p>压缩方式的设置是以列族为单位的，即每个列族可以设置一个压缩方式。具体修改属性为<code>COMPRESSION</code>，举例如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">alter &quot;MY_NAMESPACE:MY_TABLE&quot;, &#123;NAEM =&gt; &quot;C1&quot;, COMPRESSION =&gt; &quot;GZ&quot;&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="行键Row-Key设计原则"><a href="#行键Row-Key设计原则" class="headerlink" title="行键Row Key设计原则"></a>行键Row Key设计原则</h3><p>行键唯一标识了一个逻辑行的数据，在HBase中具有相当的重要性。因此在设计行键的时候也应当遵循一定的设计原则。</p>
+<p>官方提供的行键设计原则：</p>
+<ol>
+<li><p>避免使用递增或者时序数据作为行键</p>
+<p>由于在存储的过程中，数据会按照行键进行顺序存储，如果使用的是递增或者时序数据，会导致负载都在一台或某几台机器上，不利于负载均衡。</p>
+</li>
+<li><p>避免行键和列的长度过大</p>
+<p>在HBase中，如果要访问一个单元格，需要有对应的行键、列族名、列标识符，如果这些名称的长度过大，则会占用较大的内存空间。因此行键和列的长度应该尽可能短，其中行键的最大长度支持64KB。</p>
+</li>
+<li><p>需要保证行键的唯一性</p>
+<p>在设计行键的时候，必须保证它的唯一性。在HBase中数据的存储是键值对形式，如果向HBase中同一张表插入相同行键的数据，原先的数据会被覆盖。</p>
+</li>
+</ol>
+<h3 id="避免数据热点"><a href="#避免数据热点" class="headerlink" title="避免数据热点"></a>避免数据热点</h3><p>HBase原生支持分布式存储，并且它的应用场景也多是分布式的，因此避免数据热点是一个非常重要的方面。数据热点指的是大量的客户端直接访问集群中的一个或者某几个节点（进行读写操作），而其他节点一直处于空闲状态。大量的访问操作可能会导致某个服务器节点超出承受能力，导致整个RegionServer的性能下降，其他的Region也会受影响。</p>
+<p>应对数据热点问题，可以从分区和行键设计两个方面着手。</p>
+<h4 id="预分区"><a href="#预分区" class="headerlink" title="预分区"></a>预分区</h4><p>HBase中存在自动分区的机制，当然我们也可以手动进行预分区。默认情况，一个HBase的表只有一个Region，由一个RegionServer进行管理。</p>
+<ul>
+<li>每个Region存在两个重要的属性：<code>start key</code>和<code>end key</code>。这两个属性表示这个Region维护的行键范围，在存储的时候，根据行键的不同存储到不同的Region中</li>
+<li>如果只有一个Region，那么start key和end key都为空，表示均可存储。当数据量越来越大的时候，HBase会进行Region分裂</li>
+<li>我们也可以预先设置预分区，建议预分区的个数设置为节点的倍数，让Region均匀地分布在各个节点上</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">指定预分区</span><br><span class="hljs-meta"># </span><span class="language-bash">1. 指定start key和end key</span><br>create &quot;MY_TABLE&quot;, &quot;C1&quot;, &#123;SPLITS =&gt; [&#x27;10&#x27;, &#x27;20&#x27;, &#x27;30&#x27;, &#x27;40&#x27;]&#125;<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">2. 指定分区数量和分区策略</span><br>create &quot;MY_TABLE&quot;, &quot;C1&quot;， &#123;NUMREGIONS =&gt; 5, SPLITALGO =&gt; &#x27;HexStringSplit&#x27;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>第一种方式通过指定start key和end key进行预分区，给定SPLITS列表表示指定划分界限，如示例中所示，切分4处，形成了5个分区。</p>
+<p>第二种方式通过指定分区数量和分区策略来进行预分区，支持的分区策略有以下几种：</p>
+<ul>
+<li>HexStringSplit： 适用于形式为十六进制的字符串的行键，预定义范围为<code>00000000</code>-&gt;<code>FFFFFFFF</code>。对于位数不够的行键，则使用0在填充高位。</li>
+<li>DecimalStringSplit： 适用于形式为十进制的字符串的行键。</li>
+<li>UniformSplit： 适用于形式为随机字节数组的行键。</li>
+</ul>
+<h4 id="行键设计"><a href="#行键设计" class="headerlink" title="行键设计"></a>行键设计</h4><p>可以通过一些常见策略来设计行键，避免热点</p>
+<ul>
+<li><strong>反转策略</strong></li>
+</ul>
+<p>如果设计的行键在数据分布上不均匀，但是行键的尾部数据呈现出良好的随机性，则可以考虑将行键反转，或者直接将尾部的bytes提前到行键的开头（例如手机号码、时间戳等）</p>
+<p>优点：使得Row Key随机分布，利于数据均匀分布在不同Region中，利于Get操作</p>
+<p>缺点：不利于Scan操作，牺牲了Row Key的有序性，因为数据在原Row Key上的自然顺序已经被打乱</p>
+<ul>
+<li><strong>加盐策略</strong></li>
+</ul>
+<p>加盐的原理是在原Row Key的前面添加固定长度的随机数，即给Row Key分配一个随机的前缀</p>
+<p>优点：随机数使得Row Key随机分布，利于负载均衡</p>
+<p>缺点：由于添加的是随机数，因此基于Row Key进行查询的时候无法得知随机数是什么，最后只能进行全表扫描，效率低</p>
+<ul>
+<li><strong>哈希策略</strong></li>
+</ul>
+<p>对原Row Key进行哈希，得到哈希值完整或部分替换原Row Key的前缀部分。可以使用的哈希算法包括MD5、sha1、sha256、sha512等算法</p>
+<p>优点：利于负载均衡</p>
+<p>缺点：不利于Scan操作，因为打乱了原Row Key的自然顺序</p>
+<blockquote>
+<p>补充阅读：</p>
+<p>HBase默认只支持对行键的索引，如果要针对其他的列进行查询，那么只能全表扫描，这样的效率是不高的，尤其在表存储数据量很大的情况下表现更加明显。</p>
+<p>Apache Phoenix可以帮助解决这样的问题。（<a target="_blank" rel="noopener" href="https://phoenix.apache.org/">Overview | Apache Phoenix</a> ）</p>
+<p>Apache Phoenix可以很好地和其他Hadoop组件整合在一起，包括Spark、Hive、MapReduce等，使得支持低延迟OLTP和业务操作分析。简单来说，它提供标准的SQL以及完备的ACID事务分析；通过利用HBase作为存储，通过SQL进行操作，如创建表、对数据增删改查等。</p>
+</blockquote>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://hbase.apache.org/book.html">Apache HBase ™ Reference Guide</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/HBase/" class="category-chain-item">HBase</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/HBase/">#HBase</a>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HBase学习笔记-入门(6)-HBase表结构设计</div>
+      <div>http://example.com/2022/04/18/HBase学习笔记-入门-6-HBase表结构设计/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年4月18日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-1-HBase%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B/" title="HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">HBase学习笔记-高级(1)-HBase的架构与逻辑结构模型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04/17/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-5-HBase%E7%9A%84Java-API%E6%93%8D%E4%BD%9C/" title="HBase学习笔记-入门(5)-HBase的Java API操作">
+                        <span class="hidden-mobile">HBase学习笔记-入门(5)-HBase的Java API操作</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

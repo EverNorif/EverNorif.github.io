@@ -1,0 +1,827 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在控制器方法中，我们使用@RequestMapping注解来匹配请求和方法，它的一些属性能够帮助我们达到更多的效果。在SpringMVC中，也提供了较为方便的请求参数获取方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC笔记(2)-@RequestMapping与请求参数获取">
+<meta property="og:url" content="http://example.com/2022/10/17/SpringMVC%E7%AC%94%E8%AE%B0-2-RequestMapping%E4%B8%8E%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E8%8E%B7%E5%8F%96/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="在控制器方法中，我们使用@RequestMapping注解来匹配请求和方法，它的一些属性能够帮助我们达到更多的效果。在SpringMVC中，也提供了较为方便的请求参数获取方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-10-17T12:40:25.000Z">
+<meta property="article:modified_time" content="2022-10-18T06:39:24.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="SSM">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SpringMVC笔记(2)-@RequestMapping与请求参数获取 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SpringMVC笔记(2)-@RequestMapping与请求参数获取"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-17 20:40" pubdate>
+          2022年10月17日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          40 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SpringMVC笔记(2)-@RequestMapping与请求参数获取</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="RequestMapping注解"><a href="#RequestMapping注解" class="headerlink" title="@RequestMapping注解"></a>@RequestMapping注解</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在控制器方法中，我们会使用<code>@RequestMapping</code>注解来说明该方法匹配的请求路径，该注解的功能也就是将请求和处理请求的控制器方法进行关联，建立起映射关系。SpringMVC接收到指定的请求之后，就会在映射关系中找到对应的控制器方法来处理这个请求。</p>
+<p><code>@RequestMapping</code>注解可以用来标识一个类，也可以用来标识一个方法</p>
+<ul>
+<li>标识类：设置请求路径的初始信息</li>
+<li>标识方法：设置请求路径的具体信息</li>
+</ul>
+<p>如果一个控制器被该注解标识了，那么它的方法对应的实际完整路径应该要加上类注解中的路径。</p>
+<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><p>下面介绍<code>@RequestMapping</code>中的相关属性。</p>
+<p>首先是value属性。<code>@RequestMapping</code>注解的value属性用来指定匹配的请求地址。这是一个字符串数组，表示该请求方法能够匹配多个请求地址。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(value=&#123;&quot;/test1&quot;,&quot;/test2&quot;&#125;)</span><br></code></pre></td></tr></table></figure>
+
+<p>method属性表示通过请求的请求方式来进行匹配。这是一个RequestMethod类型的数组，表示该请求方法能够匹配的请求对应的请求方式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(</span><br><span class="hljs-meta">    value = &quot;test&quot;, </span><br><span class="hljs-meta">    method = &#123;RequestMethod.GET, RequestMethod.POST&#125;</span><br><span class="hljs-meta">)</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>结合请求方式的不同，SpringMVC中提供了一系列基于<code>@RequestMapping</code>的派生注解，用来处理不同的请求，如下所示，基本都能见名知义：</p>
+<ul>
+<li>处理get请求：<code>@GetMapping</code></li>
+<li>处理post请求：<code>@PostMapping</code></li>
+<li>处理put请求：<code>@PutMapping</code></li>
+<li>处理delete请求：<code>@DeleteMapping</code></li>
+</ul>
+</blockquote>
+<p>params属性表示通过请求的请求参数来匹配请求。这是一个字符串类型的数组，其中每一个字符串都是一个表达式。浏览器发送的请求，只有当它的参数满足params属性中全部表达式时，才能被响应。表达式主要有如下四种：</p>
+<ol>
+<li><code>param</code>：请求必须携带param参数</li>
+<li><code>!param</code>：请求不能携带param参数</li>
+<li><code>param=value</code>：请求必须携带param参数，并且值必须为value</li>
+<li><code>param!=value</code>：请求可以不携带param参数，如果携带值那么值不能为value</li>
+</ol>
+<p>例如下面的例子，能够被响应的请求，应该满足参数必须携带username，不能携带password，必须携带age且值为18，可以携带email，如果携带了值不能为<code>haha@haha.com</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(</span><br><span class="hljs-meta">    value = &quot;/test&quot;,</span><br><span class="hljs-meta">    params = &#123;&quot;username&quot;, &quot;!password&quot;, &quot;age=18&quot;, &quot;email!=haha@haha.com&quot;&#125;</span><br><span class="hljs-meta">)</span><br></code></pre></td></tr></table></figure>
+
+<p>headers属性和params属性基本类似，它通过请求的请求头信息来匹配。该属性也是一个字符串类型的数组，也可以通过上面相同的四种表达式来决定约束条件。</p>
+<blockquote>
+<p>SpringMVC支持ant风格的路径，具体如下：</p>
+<ul>
+<li><code>?</code>：表示任意的单个字符</li>
+<li><code>*</code>：表示任意的0个或者多个字符，但是不能跨目录层级</li>
+<li><code>**</code>：表示任意层数的任意目录</li>
+</ul>
+<p>但是在使用的过程中需要注意，在url中，<code>?</code>是请求链接和参数的分隔符，不能被匹配；<code>/</code>表示一层新的目录，不能被匹配。</p>
+</blockquote>
+<h2 id="路径占位符"><a href="#路径占位符" class="headerlink" title="路径占位符"></a>路径占位符</h2><p>SpringMVC同样支持路径的占位符，简单来说就是通过参数形式解析链接中的值。这种方式在获取REST方式的请求参数时非常方便。REST方式的请求中会将请求参数作为路径的一部分，举例来说，我们利用可以结合参数访问如下请求<code>/testRest?id=123&amp;username=root</code>，这也是我们一开始接触的方式，即路径与参数分离，而采用REST方式的话，请求可能就是<code>/testRest/123/root</code>。</p>
+<p>通过路径的占位符，我们可以获取REST方式请求中的参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testRest/&#123;id&#125;/&#123;username&#125;&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testRest</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> String id, <span class="hljs-meta">@PathVariable(&quot;username&quot;)</span> String name)</span> &#123;<br>    System.out.println(id);<br>    System.out.println(name);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br><span class="hljs-comment">// 访问/testRest/123/root</span><br><span class="hljs-comment">// 输出123 root</span><br></code></pre></td></tr></table></figure>
+
+<p>在路径中设置占位符之后，我们需要获取对应的值。通过注解<code>@PathVariable</code>，我们可以将路径中参数与形参进行绑定，之后就可以在代码中使用。我们可以在注解中指定要匹配路径中的哪一部分，如果没有指定，则默认按照形参名来匹配。</p>
+<blockquote>
+<p>注意这里我们获取的不是实际意义上的参数，只是解析了路径中的内容作为我们的参数，实际意义上的参数还是指的整个链接中<code>?</code>后面的内容，这也是我们后面要介绍的内容。</p>
+</blockquote>
+<h1 id="请求参数获取"><a href="#请求参数获取" class="headerlink" title="请求参数获取"></a>请求参数获取</h1><h2 id="参数获取"><a href="#参数获取" class="headerlink" title="参数获取"></a>参数获取</h2><p>下面我们介绍在SpringMVC中如何获取请求参数。主要指的是利用<code>&amp;</code>拼接的参数，即get请求携带参数的样式。如果是post请求，请求体中的参数如果满足形式与get请求参数相同，也能够被解析。</p>
+<h3 id="通过ServletAPI获取"><a href="#通过ServletAPI获取" class="headerlink" title="通过ServletAPI获取"></a>通过ServletAPI获取</h3><p>在JavaWeb中我们可以通过ServletAPI来获取请求参数，这里自然也可以。要使用相关对象，我们可以在控制器方法中增加对应类型的形参，如下所示。此时，<code>HttpServletRequest</code>类型的参数就表示封装了当前请求请求报文的对象，然后我们就可以通过对应方法获取到对应参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testParam1&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testParam1</span><span class="hljs-params">(HttpServletRequest request)</span> &#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;id&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">username</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;username&quot;</span>);<br>    System.out.println(id);<br>    System.out.println(username);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="通过形参获取"><a href="#通过形参获取" class="headerlink" title="通过形参获取"></a>通过形参获取</h3><p>SpringMVC既然是对Servlet进行封装，那么自然是提供了更加方便的方式来获取请求参数。我们可以在控制器方法的形参位置，设置和请求参数同名的形参。这样当浏览器发送请求，匹配到对应方法的时候，在DispathcerServlet中就会将请求参数赋值给相应的形参：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testParam2&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testParam2</span><span class="hljs-params">(Integer id, <span class="hljs-meta">@RequestParam(&quot;username&quot;)</span> String name)</span> &#123;<br>    System.out.println(id);<br>    System.out.println(name);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>默认情况下，我们可以通过设置同名形参来获取对应请求参数，而通过<code>@RequestParam</code>注解，我们可以指定更多的映射方式。</p>
+<p><code>@RequestParam</code>注解可以为请求参数和控制器方法的形参创建映射，其中一共有三个属性：</p>
+<ul>
+<li><code>value</code>：指定为该形参赋值的请求参数名称</li>
+<li><code>required</code>：设置是否必须传输此请求参数，默认值为true</li>
+<li><code>defaultValue</code>：设置该参数的默认值，如果没有传递或者传递为<code>&quot;&quot;</code>时，则使用该默认参数值</li>
+</ul>
+<p>注意这里，只有当没有设置defaultValue并且required指定为true的时候，不携带对应参数才会报错400。</p>
+<blockquote>
+<p>如果请求参数含有多个同名的参数，我们可以在形参中设置字符串数组或者字符串类型的形参来接收这些参数：</p>
+<ul>
+<li>如果使用了字符串数组类型的形参，那么数组中包含了每一个数据</li>
+<li>如果使用了字符串类型的形参，那么该字符串的值为每个数据之间使用逗号拼接的结果</li>
+</ul>
+</blockquote>
+<p>除了获取请求参数，我们也可以通过类似的方法来获取请求头信息或者是Cookie数据。相关功能对应不同的注解，相关注解如下：</p>
+<ul>
+<li><code>@RequestHeader</code>：为请求头信息和控制器方法形参创建映射关系</li>
+<li><code>@CookieValue</code>：为Cookei数据和控制器方法形参创建映射</li>
+</ul>
+<p>注解的使用方式与<code>@RequestParam</code>基本相同，这里就不再多进行描述。</p>
+<h3 id="通过实体类获取"><a href="#通过实体类获取" class="headerlink" title="通过实体类获取"></a>通过实体类获取</h3><p>在请求参数过多的时候，如果全部写在形参中会非常繁琐。我们可以在控制器方法的形参位置设置一个实体类类型的形参，这样如果请求参数和实体类的属性名能够匹配的话，DispatcherServlet就会调用属性的set方法为其赋值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testParam3&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testParam3</span><span class="hljs-params">(User user)</span> &#123;<br>    System.out.println(user);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="乱码问题解决"><a href="#乱码问题解决" class="headerlink" title="乱码问题解决"></a>乱码问题解决</h2><p>如果我们的是通过链接中参数进行传递，则不会出现中文乱码问题。但是如果我们的参数是通过post请求的请求体进行传递的，则会出现乱码问题。</p>
+<p>乱码问题的解决也非常简单，只需要在<code>web.xml</code>中配置SpringMVC提供的编码过滤器<code>CharacterEncodingFilter</code>即可：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--配置SpringMVC的编码过滤器--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">filter</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>CharacterEncodingFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-class</span>&gt;</span>org.springframework.web.filter.CharacterEncodingFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-class</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">init-param</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-name</span>&gt;</span>encoding<span class="hljs-tag">&lt;/<span class="hljs-name">param-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-value</span>&gt;</span>UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">param-value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">init-param</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">init-param</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-name</span>&gt;</span>forceEncoding<span class="hljs-tag">&lt;/<span class="hljs-name">param-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">param-value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">init-param</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">filter</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">filter-mapping</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>CharacterEncodingFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/*<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">filter-mapping</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，SpringMVC处理编码的过滤器一定要配置在其他过滤器的前面，否则是没有效果的。</p>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/SpringMVC/" class="category-chain-item">SpringMVC</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/SSM/">#SSM</a>
+      
+        <a href="/tags/SpringMVC/">#SpringMVC</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SpringMVC笔记(2)-@RequestMapping与请求参数获取</div>
+      <div>http://example.com/2022/10/17/SpringMVC笔记-2-RequestMapping与请求参数获取/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月17日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/17/SpringMVC%E7%AC%94%E8%AE%B0-3-%E5%9F%9F%E5%AF%B9%E8%B1%A1%E6%95%B0%E6%8D%AE%E5%85%B1%E4%BA%AB%E4%B8%8E%E8%A7%86%E5%9B%BE/" title="SpringMVC笔记(3)-域对象数据共享与视图">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SpringMVC笔记(3)-域对象数据共享与视图</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/16/SpringMVC%E7%AC%94%E8%AE%B0-1-SpringMVC%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/" title="SpringMVC笔记(1)-SpringMVC简介与快速开始">
+                        <span class="hidden-mobile">SpringMVC笔记(1)-SpringMVC简介与快速开始</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

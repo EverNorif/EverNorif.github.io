@@ -1,0 +1,792 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍SpringMVC中的拦截器，异常解析器与配置类。拦截器用来在控制器方法的前后执行相关代码，异常解析器用来处理控制器方法出现的异常，而配置类可以代替xml配置文件，帮助我们完成相关的配置。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC笔记(6)-拦截器,异常解析器与配置类">
+<meta property="og:url" content="http://example.com/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍SpringMVC中的拦截器，异常解析器与配置类。拦截器用来在控制器方法的前后执行相关代码，异常解析器用来处理控制器方法出现的异常，而配置类可以代替xml配置文件，帮助我们完成相关的配置。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/%E5%A4%9A%E4%B8%AA%E6%8B%A6%E6%88%AA%E5%99%A8%E9%A1%BA%E5%BA%8F1.png">
+<meta property="og:image" content="http://example.com/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/%E5%A4%9A%E4%B8%AA%E6%8B%A6%E6%88%AA%E5%99%A8%E9%A1%BA%E5%BA%8F2.png">
+<meta property="article:published_time" content="2022-10-20T13:27:54.000Z">
+<meta property="article:modified_time" content="2022-10-20T13:29:50.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="SSM">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/%E5%A4%9A%E4%B8%AA%E6%8B%A6%E6%88%AA%E5%99%A8%E9%A1%BA%E5%BA%8F1.png">
+  
+  
+  
+  <title>SpringMVC笔记(6)-拦截器,异常解析器与配置类 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SpringMVC笔记(6)-拦截器,异常解析器与配置类"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-20 21:27" pubdate>
+          2022年10月20日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          66 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SpringMVC笔记(6)-拦截器,异常解析器与配置类</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在SpringMVC中，拦截器主要用来拦截控制器方法的执行。它可以在控制器方法执行前后等位置执行相关的代码。</p>
+<blockquote>
+<p>在前面我们还提到过过滤器filter的概念。过滤器指的是在浏览器和DispatcherServlet之间的过滤操作，浏览器发送的请求需要先经过过滤器操作，然后再由DispatcherServlet进行处理。</p>
+</blockquote>
+<p>SpringMVC中拦截器通过实现接口<code>HandlerInterceptor</code>来实现，在其中一共有三个方法需要进行重写。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyInterceptor</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">HandlerInterceptor</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">preHandle</span><span class="hljs-params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;preHandle...&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">postHandle</span><span class="hljs-params">(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;postHandle...&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterCompletion</span><span class="hljs-params">(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;afterCompletion&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>实现了拦截器相关代码后，我们需要在SpringMVC中的配置文件中配置该拦截器，才能进行使用。具体如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--配置拦截器--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mvc:interceptors</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.syh.mvc.interceptor.MyInterceptor&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mvc:interceptors</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>拦截器的配置使用<code>&lt;mvc:interceptors&gt;</code>，在其中我们可以指定对应的bean，对应我们的拦截器类。当然除了使用<code>bean</code>标签指定对应类，也可以在外面定义一个Bean，然后在这里使用<code>&lt;ref&gt;</code>标签指定对应Bean。这种配置方式直接指定了对应的类。这种配置方式会对所有的请求进行拦截。</p>
+<p>在<code>&lt;mvc:interceptors&gt;</code>标签中，我们还可以使用<code>&lt;interceptor&gt;</code>标签，其中可以指定更加细节的配置，包括处理请求路径，需要排除的路径，使用的拦截器类等。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mvc:interceptors</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">mvc:interceptor</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">mvc:mapping</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/**&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">mvc:exclude-mapping</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/dontWantToSee&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.syh.mvc.interceptor.MyInterceptor&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">mvc:interceptor</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mvc:interceptors</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里的<code>/**</code>表示匹配所有请求，而<code>/*</code>则表示仅匹配单层目录。</p>
+</blockquote>
+<h2 id="HandlerInterceptor"><a href="#HandlerInterceptor" class="headerlink" title="HandlerInterceptor"></a>HandlerInterceptor</h2><p>我们的拦截器需要实现<code>HandlerInterceptor</code>接口，其中的接口方法有一共有三个：</p>
+<ul>
+<li><code>public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)</code>：在控制器方法执行之前执行preHandle，返回值为一个布尔类型的值，表示是否放行。如果返回true，则表示放行该请求，如果返回false，则表示拦截该请求。</li>
+<li><code>public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</code>：在控制器方法执行之后执行postHandle方法。</li>
+<li><code>public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</code>：在处理完视图和模型数据以及渲染视图完毕之后，执行afterCompletion方法。</li>
+</ul>
+<h2 id="拦截器的执行顺序"><a href="#拦截器的执行顺序" class="headerlink" title="拦截器的执行顺序"></a>拦截器的执行顺序</h2><p>单个拦截器的执行顺序为：preHandler() -&gt; postHandle() -&gt; 控制器方法 -&gt; afterCompletion()。而如果配置了多个拦截器，则拦截器的执行顺序与其在SpringMVC配置文件中的配置顺序有关。</p>
+<p>如果每个拦截器的preHandle()方法都返回true，那么每个拦截器的方法都会执行，preHandle()方法按照配置的顺序执行，而postHandle()和afterCompletion()方法会按照配置顺序的逆序执行。</p>
+<img src="/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/%E5%A4%9A%E4%B8%AA%E6%8B%A6%E6%88%AA%E5%99%A8%E9%A1%BA%E5%BA%8F1.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="多个拦截器顺序1">
+
+<p>如果其中有一个拦截器的preHandle()方法返回了false，则后续的所有拦截器方法都不会执行，控制器方法也不会执行。而对于前面的拦截器，它们的preHandle()方法仍然是顺序执行，postHandle()方法都不执行，但是afterCompletion()方法会逆序执行。</p>
+<img src="/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/%E5%A4%9A%E4%B8%AA%E6%8B%A6%E6%88%AA%E5%99%A8%E9%A1%BA%E5%BA%8F2.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="多个拦截器顺序2">
+
+<h1 id="异常处理器"><a href="#异常处理器" class="headerlink" title="异常处理器"></a>异常处理器</h1><p>SpringMVC中的异常处理器用于处理控制器方法执行过程中所出现的异常，对应的接口为<code>HandlerExceptionResolver</code>。通过异常处理器，我们可以在出现异常的时候跳转到相应页面，提高用户体验。</p>
+<p>对于该接口，在SpringMVC中提供了两个实现类，分别是<code>DefaultHandlerExceptionResolver</code>以及<code>SimpleMappingExceptionResolver</code>，其中默认的异常处理器即SpringMVC中默认使用的，而<code>SimpleMapplingExceptionResolver</code>则是自定义的异常处理器，我们可以利用注解配置来使用。在SpringMVC配置文件中配置如下内容：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--配置异常处理器--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;org.springframework.web.servlet.handler.SimpleMappingExceptionResolver&quot;</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--指定不同异常相应的跳转页面--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;exceptionMappings&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">props</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">prop</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&quot;java.lang.ArithmeticException&quot;</span>&gt;</span>error<span class="hljs-tag">&lt;/<span class="hljs-name">prop</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">props</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--将异常信息在请求域中共享，对应键值对的key名称为这里value的值--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;exceptionAttribute&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;ex&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span> <br></code></pre></td></tr></table></figure>
+
+<p>其中我们可以在exceptionMappings属性中指定不同异常对应的跳转页面，这里的error为视图的名称。我们也可以利用exceptionAttribute属性将异常信息在请求域中共享，并指定对应的key名称。</p>
+<p>我们也可以创建自己的类用作异常处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ControllerAdvice</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ErrorController</span> &#123;<br>    <span class="hljs-meta">@ExceptionHandler(ArithmeticException.class)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">handlerArithmeticException</span><span class="hljs-params">(Model model, Exception ex)</span> &#123;<br>        model.addAttribute(<span class="hljs-string">&quot;ex&quot;</span>, ex);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里我们利用<code>@ControllerAdvice</code>注解将当前类标识为异常处理的组件，其中的方法用于处理不同的异常，并用<code>@ExceptionHandler</code>标识该方法需要处理的异常。在形参中，我们可以利用Exception类型来承接当前处理中出现的异常对象。</p>
+<h1 id="SpringMVC中的配置类"><a href="#SpringMVC中的配置类" class="headerlink" title="SpringMVC中的配置类"></a>SpringMVC中的配置类</h1><p>在SpringMVC中，我们用到的配置文件有项目配置文件<code>web.xml</code>，SpringMVC的配置文件<code>springMVC.xml</code>，后续还可能会用到Spring的配置文件<code>spring.xml</code>。我们可以使用配置文件，也可以用配置类来代替这些配置文件。</p>
+<p>在Servlet 3.0环境中，容器会在类路径中查找实现了<code>javax.servlet.ServletContainerInitializer</code>接口的类，如果找到的话，就会利用这个类来配置Servlet容器。Spring中提供了这个接口的实现类，名称为<code>SpringServletContainerInitializer</code>。这个类会查找实现了<code>WebApplicationInitializer</code>的类，实际配置的任务交由它来完成。Spring 3.2中提供了该接口的一个基础实现，名称为<code>AbstractAnnotationConfigDispatcherServletInitializer</code>。因此，我们只需要实现自己的类来继承该类，容器会自动发现然后利用它来配置Servlet上下文。</p>
+<p>我们实现的类对应配置文件<code>web.xml</code>。在<code>web.xml</code>中，我们会配置Spring的相关信息，配置SpringMVC的相关信息，配置前端控制器DispatcherServlet的映射规则url-pattern以及过滤器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WebInit</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractAnnotationConfigDispatcherServletInitializer</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 指定Spring的配置类</span><br>    <span class="hljs-keyword">protected</span> Class&lt;?&gt;[] getRootConfigClasses() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Class</span>[]&#123;SpringConfig.class&#125;;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 指定SpringMVC的配置类</span><br>    <span class="hljs-keyword">protected</span> Class&lt;?&gt;[] getServletConfigClasses() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Class</span>[]&#123;SpringMVCConfig.class&#125;;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 指定DispatcherServlet的映射规则，即url-pattern</span><br>    <span class="hljs-keyword">protected</span> String[] getServletMappings() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]&#123;<span class="hljs-string">&quot;/&quot;</span>&#125;;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 添加过滤器</span><br>    <span class="hljs-keyword">protected</span> Filter[] getServletFilters() &#123;<br>        <span class="hljs-type">CharacterEncodingFilter</span> <span class="hljs-variable">encodingFilter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CharacterEncodingFilter</span>();<br>        encodingFilter.setEncoding(<span class="hljs-string">&quot;UTF-8&quot;</span>);<br>        encodingFilter.setForceEncoding(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">HiddenHttpMethodFilter</span> <span class="hljs-variable">hiddenHttpMethodFilter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HiddenHttpMethodFilter</span>();<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Filter</span>[]&#123;encodingFilter, hiddenHttpMethodFilter&#125;;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Spring的配置类SpringConfig对应Spring的配置文件。在SSM整合之后，Spring的配置信息书写在此类中。</p>
+<p>SpringMVC的配置类SpringMVCConfig对应SpringMVC的配置文件。在SpringVC的配置文件中，我们一般会完成扫描组件、视图解析器、默认Servlet配置、MVC注解驱动、视图控制器、文件上传解析器、拦截器、异常解析器等功能，这些功能都可以在接口<code>WebMvcConfigurer</code>中找到相应的方法，我们的配置类也需要实现该接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span> <span class="hljs-comment">// 标识为配置类</span><br><span class="hljs-meta">@ComponentScan(&quot;com.syh.mvc&quot;)</span> <span class="hljs-comment">// 组件扫描</span><br><span class="hljs-meta">@EnableWebMvc</span> <span class="hljs-comment">// 开启MVC注解驱动</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SpringMVCConfig</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">WebMvcConfigurer</span> &#123;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 使用默认的Servlet处理静态资源</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">configureDefaultServletHandling</span><span class="hljs-params">(DefaultServletHandlerConfigurer configurer)</span> &#123;<br>        configurer.enable();<br>    &#125;<br><br>    <span class="hljs-comment">// 配置文件上传解析器</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> CommonsMultipartResolver <span class="hljs-title function_">multipartResolver</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CommonsMultipartResolver</span>();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 配置视图控制器</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addViewControllers</span><span class="hljs-params">(ViewControllerRegistry registry)</span> &#123;<br>        registry.addViewController(<span class="hljs-string">&quot;/&quot;</span>).setViewName(<span class="hljs-string">&quot;index&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 配置异常映射</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">configureHandlerExceptionResolvers</span><span class="hljs-params">(List&lt;HandlerExceptionResolver&gt; resolvers)</span> &#123;<br>        <span class="hljs-type">SimpleMappingExceptionResolver</span> <span class="hljs-variable">exceptionResolver</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SimpleMappingExceptionResolver</span>();<br>        <span class="hljs-type">Properties</span> <span class="hljs-variable">properties</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>        <span class="hljs-comment">// 设置异常映射</span><br>        properties.setProperty(<span class="hljs-string">&quot;java.lang.ArithmeticException&quot;</span>, <span class="hljs-string">&quot;error&quot;</span>);<br>        exceptionResolver.setExceptionMappings(properties);<br>        <span class="hljs-comment">// 设置共享异常的Key</span><br>        exceptionResolver.setExceptionAttribute(<span class="hljs-string">&quot;ex&quot;</span>);<br>        resolvers.add(exceptionResolver);<br>    &#125;<br><br>    <span class="hljs-comment">// 生成视图解析器，这里需要注入模板引擎，所以还需要配置模板引擎</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> ViewResolver <span class="hljs-title function_">viewResolver</span><span class="hljs-params">(SpringTemplateEngine templateEngine)</span> &#123;<br>        <span class="hljs-type">ThymeleafViewResolver</span> <span class="hljs-variable">viewResolver</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThymeleafViewResolver</span>();<br>        viewResolver.setCharacterEncoding(<span class="hljs-string">&quot;UTF-8&quot;</span>);<br>        viewResolver.setTemplateEngine(templateEngine);<br><br>        <span class="hljs-keyword">return</span> viewResolver;<br>    &#125;<br><br>    <span class="hljs-comment">// 生成模板引擎，这里需要注入模板解析器，所有还需要配置模板解析器</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> SpringTemplateEngine <span class="hljs-title function_">templateEngine</span><span class="hljs-params">(ITemplateResolver templateResolver)</span> &#123;<br>        <span class="hljs-type">SpringTemplateEngine</span> <span class="hljs-variable">templateEngine</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpringTemplateEngine</span>();<br>        templateEngine.setTemplateResolver(templateResolver);<br><br>        <span class="hljs-keyword">return</span> templateEngine;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> ITemplateResolver <span class="hljs-title function_">templateResolver</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">WebApplicationContext</span> <span class="hljs-variable">webApplicationContext</span> <span class="hljs-operator">=</span> ContextLoader.getCurrentWebApplicationContext();<br>        <span class="hljs-type">ServletContextTemplateResolver</span> <span class="hljs-variable">templateResolver</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ServletContextTemplateResolver</span>(webApplicationContext.getServletContext());<br>        templateResolver.setPrefix(<span class="hljs-string">&quot;/WEB_INF/templates/&quot;</span>);<br>        templateResolver.setSuffix(<span class="hljs-string">&quot;.html&quot;</span>);<br>        templateResolver.setCharacterEncoding(<span class="hljs-string">&quot;UTF-8&quot;</span>);<br>        templateResolver.setTemplateMode(TemplateMode.HTML);<br><br>        <span class="hljs-keyword">return</span> templateResolver;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里我们使用到了<code>@Bean</code>注解。这个注解用来标识方法，则被标识的方法的返回值将被作为Bean管理，Bean的id默认为方法的方法名。</p>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/SpringMVC/" class="category-chain-item">SpringMVC</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/SSM/">#SSM</a>
+      
+        <a href="/tags/SpringMVC/">#SpringMVC</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SpringMVC笔记(6)-拦截器,异常解析器与配置类</div>
+      <div>http://example.com/2022/10/20/SpringMVC笔记-6-拦截器-异常解析器与配置类/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/20/Spring%E7%AC%94%E8%AE%B0-5-SSM%E9%A1%B9%E7%9B%AE%E6%95%B4%E5%90%88/" title="Spring笔记(5)-SSM项目整合">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Spring笔记(5)-SSM项目整合</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/19/SpringMVC%E7%AC%94%E8%AE%B0-5-SpringMVC%E4%B8%AD%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%92%8C%E4%B8%8B%E8%BD%BD/" title="SpringMVC笔记(5)-SpringMVC中文件上传和下载">
+                        <span class="hidden-mobile">SpringMVC笔记(5)-SpringMVC中文件上传和下载</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

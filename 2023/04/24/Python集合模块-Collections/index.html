@@ -1,0 +1,855 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Collections是Python内建的一个集合模块，提供了许多有用的集合类，具体来说，包括namedtuple、deque、ChainMap、Counter、OrderedDict、defaultdict、UserDict、UserList、UserString。这个模块实现了专门的容器数据类型，为Python中内置的数据结构例如dict、list、set和tuple提供了替代方案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python集合模块 Collections">
+<meta property="og:url" content="http://example.com/2023/04/24/Python%E9%9B%86%E5%90%88%E6%A8%A1%E5%9D%97-Collections/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Collections是Python内建的一个集合模块，提供了许多有用的集合类，具体来说，包括namedtuple、deque、ChainMap、Counter、OrderedDict、defaultdict、UserDict、UserList、UserString。这个模块实现了专门的容器数据类型，为Python中内置的数据结构例如dict、list、set和tuple提供了替代方案。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-04-24T11:53:20.000Z">
+<meta property="article:modified_time" content="2023-04-24T11:54:00.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Python集合模块 Collections - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Python集合模块 Collections"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-24 19:53" pubdate>
+          2023年4月24日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          51 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Python集合模块 Collections</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>在collections中，主要包括如下相关类和方法：</p>
+<table>
+<thead>
+<tr>
+<th>相关类&#x2F;方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>namedtuple()</td>
+<td>创建命名元组子类的工厂函数，生成可以使用名字来访问元素内容的tuple子类</td>
+</tr>
+<tr>
+<td>deque</td>
+<td>类似列表(list)的容器，实现了在两端快速添加(append)和弹出(pop)</td>
+</tr>
+<tr>
+<td>ChainMap</td>
+<td>类似字典(dict)的容器类，将多个映射集合到一个视图里面</td>
+</tr>
+<tr>
+<td>Counter</td>
+<td>字典的子类，提供了可哈希对象的计数功能</td>
+</tr>
+<tr>
+<td>OrderedDict</td>
+<td>字典的子类，保存了他们被添加的顺序，有序字典</td>
+</tr>
+<tr>
+<td>defaultdict</td>
+<td>字典的子类，提供了一个工厂函数，为字典查询提供一个默认值</td>
+</tr>
+<tr>
+<td>UserDict</td>
+<td>封装了字典对象，简化了字典子类化</td>
+</tr>
+<tr>
+<td>UserList</td>
+<td>封装了列表对象，简化了列表子类化</td>
+</tr>
+<tr>
+<td>UserString</td>
+<td>封装了字符串对象，简化了字符串子类化</td>
+</tr>
+</tbody></table>
+<p>我们可以引入该模块，然后打印出对应的信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> collections<br><span class="hljs-built_in">print</span>(collections.__all__)<br><br>[<span class="hljs-string">&#x27;ChainMap&#x27;</span>, <span class="hljs-string">&#x27;Counter&#x27;</span>, <span class="hljs-string">&#x27;OrderedDict&#x27;</span>, <span class="hljs-string">&#x27;UserDict&#x27;</span>, <span class="hljs-string">&#x27;UserList&#x27;</span>, <span class="hljs-string">&#x27;UserString&#x27;</span>, <span class="hljs-string">&#x27;defaultdict&#x27;</span>, <span class="hljs-string">&#x27;deque&#x27;</span>, <span class="hljs-string">&#x27;namedtuple&#x27;</span>]<br></code></pre></td></tr></table></figure>
+
+<h1 id="Named-Tuple"><a href="#Named-Tuple" class="headerlink" title="Named Tuple"></a>Named Tuple</h1><p>named tuple含义为命名元组，它可以帮助我们生成一个允许使用名字访问元素内容的Tuple子类，提高程序的可读性。</p>
+<p>例如，如果我们需要表示平面上的一个点，我们可以使用一个元组<code>(x, y)</code>来进行表示，但是这样的元组只能用下标来访问其中的内容。另一种解决方案是定义一个类Point，其中保存对应的坐标。而命名元组实际上就可以帮助我们更加简单地构造出这样一个类，利用该方法，我们可以指定类名以及元组的名次，之后就可以用更加具有可读性的代码来完成相关工作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> namedtuple<br><br>Point = namedtuple(<span class="hljs-string">&#x27;Point&#x27;</span>, [<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-string">&#x27;y&#x27;</span>])<br><br>point = Point(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br><span class="hljs-comment"># 使用字段名</span><br><span class="hljs-built_in">print</span>(point.x)  <span class="hljs-comment"># 1</span><br><span class="hljs-built_in">print</span>(point.y)  <span class="hljs-comment"># 2</span><br><span class="hljs-comment"># 使用index</span><br><span class="hljs-built_in">print</span>(point[<span class="hljs-number">0</span>])  <span class="hljs-comment"># 1</span><br><span class="hljs-built_in">print</span>(point[<span class="hljs-number">1</span>])  <span class="hljs-comment"># 2</span><br><span class="hljs-comment"># 实际上就是构造出的类 Point 就是内置 tuple 的一个子类</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">isinstance</span>(point, Point))  <span class="hljs-comment"># True</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">isinstance</span>(point, <span class="hljs-built_in">tuple</span>))  <span class="hljs-comment"># True</span><br></code></pre></td></tr></table></figure>
+
+<p><code>namedtuple</code>可以接收如下参数：</p>
+<ul>
+<li><code>typename</code>：指定所创建的tuple子类的类名</li>
+<li><code>field_names</code>：接收一个字符串序列，用于表示tuple中的字段名称</li>
+<li><code>rename</code>：如果该参数设置为True，那么无效的字段会被自动替换为位置名称</li>
+<li><code>verbose</code>：如果该参数设置为True，那么子类被创建之后，类定义就会被立即打印出来</li>
+<li><code>module</code>：用于指定类所在的module</li>
+</ul>
+<h1 id="Deque"><a href="#Deque" class="headerlink" title="Deque"></a>Deque</h1><p>python原生的list类型是线性存储数据的，按照索引访问元素很快，但是数据量很大的时候，插入和删除效率较低，而<code>deque</code>是一个双端队列，其中高效实现了插入和删除操作，适合用于队列和栈。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> deque<br><br>q = deque([<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;3&#x27;</span>])<br>q.append(<span class="hljs-number">2</span>)<br>q.appendleft(<span class="hljs-string">&#x27;c&#x27;</span>)<br><span class="hljs-built_in">print</span>(q)  <span class="hljs-comment"># deque([&#x27;c&#x27;, &#x27;a&#x27;, 1, &#x27;3&#x27;, 2])</span><br></code></pre></td></tr></table></figure>
+
+<p>deque和list具有几乎相同的使用方式，相关方法如下：</p>
+<ul>
+<li><code>append(x)</code>：向队尾添加元素</li>
+<li><code>appendleft(x)</code>：向队首添加元素</li>
+<li><code>clear()</code>：清空队列元素</li>
+<li><code>copy()</code>：获得一个浅拷贝</li>
+<li><code>count(x)</code>：计算队列中值为x的个数</li>
+<li><code>extend(x_deque)</code>：向队尾扩展队列</li>
+<li><code>extendleft(x_deque)</code>：向队首扩展队列</li>
+<li><code>index(x)</code>：获取x的下标index</li>
+<li><code>insert(index, x)</code>：在指定index处插入值x</li>
+<li><code>pop()</code>：弹出队尾元素</li>
+<li><code>popleft()</code>：弹出队首元素</li>
+<li><code>remove(value)</code>：删除第一个value值</li>
+<li><code>reverse()</code>：队列反转</li>
+<li><code>rotate(n=1)</code>：将队列向右循环移动n步</li>
+<li><code>maxlen</code>：deque的最大尺寸</li>
+</ul>
+<h1 id="Chain-Map"><a href="#Chain-Map" class="headerlink" title="Chain Map"></a>Chain Map</h1><p><code>ChainMap</code>可以把一组<code>dict</code>组合成一个逻辑上的dict。在使用的使用，仍然可以按照操作一个dict那样操作，但是内部的逻辑则会在这组dict上依次进行。实际上，ChainMap实际上就是一个映射链，在进行操作的时候，会依次在内部的链上进行。</p>
+<p>ChainMap的一个常见应用场景是程序参数的获取。在获取应用程序参数的时候，我们通常可以从三个地方获取，分别是命令行传入、环境变量传入以及默认参数，它们可以对应三个dict，利用ChainMap可以实现参数的优先级查找。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> ChainMap<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> argparse<br><br><span class="hljs-comment"># default args</span><br>defaults = &#123;<br>    <span class="hljs-string">&#x27;color&#x27;</span>: <span class="hljs-string">&#x27;red&#x27;</span>,<br>    <span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;guest&#x27;</span><br>&#125;<br><br><span class="hljs-comment"># cmd args</span><br>parser = argparse.ArgumentParser()<br>parser.add_argument(<span class="hljs-string">&#x27;-u&#x27;</span>, <span class="hljs-string">&#x27;--user&#x27;</span>)<br>parser.add_argument(<span class="hljs-string">&#x27;-c&#x27;</span>, <span class="hljs-string">&#x27;--color&#x27;</span>)<br>namespace = parser.parse_args()<br>command_line_args = &#123;k: v <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> <span class="hljs-built_in">vars</span>(namespace).items() <span class="hljs-keyword">if</span> v&#125;<br><br><span class="hljs-comment"># 组合成ChainMap, 优先级依次下降：cmd args &gt; env args &gt; default args</span><br>combined = ChainMap(command_line_args, os.environ, defaults)<br><br><span class="hljs-comment"># 打印参数:</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;color=%s&#x27;</span> % combined[<span class="hljs-string">&#x27;color&#x27;</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;user=%s&#x27;</span> % combined[<span class="hljs-string">&#x27;user&#x27;</span>])<br><br></code></pre></td></tr></table></figure>
+
+<p>之后我们可以使用不同方式传入相关参数：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 不主动传入任何参数，则使用默认参数</span><br>python3 collections-test.py <br>color=red<br>user=guest<br><br><span class="hljs-comment"># 传入命令行参数，则使用命令行参数</span><br>python3 collections-test.py -u bob<br>color=red<br>user=bob<br><br><span class="hljs-comment"># 同时传入命令行参数和环境变量，命令行参数优先级更高</span><br>user=admin color=green python3 collections-test.py -u bob<br>color=green<br>user=bob<br></code></pre></td></tr></table></figure>
+
+<h1 id="Counter"><a href="#Counter" class="headerlink" title="Counter"></a>Counter</h1><p><code>Counter</code>是一个计数器，可以帮助我们统计次数。它本身也是<code>dict</code>的一个子类，key为元素值，value则为对应元素值出现的次数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Counter<br><br><span class="hljs-comment"># 像操作dict一样使用计数器</span><br>count = Counter()<br><span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;green&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>]:<br>    count[word] += <span class="hljs-number">1</span><br><span class="hljs-built_in">print</span>(count)<br><span class="hljs-comment"># Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)</span><br><br><span class="hljs-comment"># 直接传入列表进行计算</span><br><span class="hljs-built_in">print</span>(Counter([<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;green&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>]))<br><span class="hljs-comment"># Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)</span><br><br><span class="hljs-comment"># 直接传入字符串进行计算</span><br><span class="hljs-built_in">print</span>(Counter(<span class="hljs-string">&quot;abcabcabcd&quot;</span>))<br><span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 3, &#x27;b&#x27;: 3, &#x27;c&#x27;: 3, &#x27;d&#x27;: 1&#125;)</span><br></code></pre></td></tr></table></figure>
+
+<p>Counter作为dict的子类，能够提供dict相关的方法，同时它本身还提供了一些特有的方法：</p>
+<ul>
+<li><code>elements()</code>：返回一个迭代器，其中每个元素将重复计数器所指定的次数，同时元素会按照首次出现的顺序返回</li>
+<li><code>most_common(n)</code>：返回一个列表，其中包含n个出现最多的元素以及对应的出现次数。计数值相等的元素按照首次出现的顺序进行排序。如果n为None，则返回所有元素</li>
+<li><code>substract(another_counter)</code>：从迭代对象或者映射对象减去元素，对应值对应相减</li>
+</ul>
+<p>此外，Counter还提供强大的数学操作功能，要点在于对应位置的值进行对应操作，如果得到的计数小于等于0则会被忽略</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Counter<br><br>c = Counter(a=<span class="hljs-number">3</span>, b=<span class="hljs-number">1</span>)<br>d = Counter(a=<span class="hljs-number">1</span>, b=<span class="hljs-number">2</span>)<br><span class="hljs-comment"># c[x] + d[x]</span><br><span class="hljs-built_in">print</span>(c + d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 4, &#x27;b&#x27;: 3&#125;)</span><br><br><span class="hljs-comment"># c[x] - d[x]</span><br><span class="hljs-built_in">print</span>(c - d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 2&#125;)</span><br><br><span class="hljs-comment"># intersection: min(c[x], d[x])</span><br><span class="hljs-built_in">print</span>(c &amp; d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 1, &#x27;b&#x27;: 1&#125;)</span><br><br><span class="hljs-comment"># union: max(c[x], d[x])</span><br><span class="hljs-built_in">print</span>(c | d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 3, &#x27;b&#x27;: 2&#125;)</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="Ordered-Dict"><a href="#Ordered-Dict" class="headerlink" title="Ordered Dict"></a>Ordered Dict</h1><p>在使用dict的时候，key是无序的，因此我们在对dict进行迭代的时候，是无法确定key的顺序的，而<code>OrderedDict</code>就为我们解决了这个问题。它可以按照插入的顺序对Key进行保存，这样在进行迭代的时候同样是可以保证顺序的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> OrderedDict<br><br>orderedDict = OrderedDict([(<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-number">1</span>), (<span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-number">2</span>), (<span class="hljs-string">&#x27;c&#x27;</span>, <span class="hljs-number">3</span>)])<br><span class="hljs-built_in">print</span>(orderedDict)  <span class="hljs-comment"># OrderedDict([(&#x27;a&#x27;, 1), (&#x27;b&#x27;, 2), (&#x27;c&#x27;, 3)])</span><br><span class="hljs-built_in">print</span>(orderedDict.keys())  <span class="hljs-comment"># odict_keys([&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;])</span><br></code></pre></td></tr></table></figure>
+
+<p>OrderedDict的使用方法几乎等同于内置的dict，不过它自身还是提供了一些其他的功能：</p>
+<ul>
+<li><code>popitem(last=True)</code>：移除字典中的一个键值对。如果last为真，则按照LIFO后进先出的顺序返回键值对，否则按照FIFO先进先出的顺序返回键值对</li>
+<li><code>move_to_end(key, last=True)</code>：将key对应的键值对移动到其中一端。如果last为True则移动到最后，否则移动到开头</li>
+<li><code>reversed(order_list)</code>：相对于通常的映射方法，有序字典还另外提供了逆序迭代的支持</li>
+</ul>
+<blockquote>
+<p>需要注意，Python3.8之后，内置的dict已经是有序的了。</p>
+</blockquote>
+<h1 id="Default-Dict"><a href="#Default-Dict" class="headerlink" title="Default Dict"></a>Default Dict</h1><p>使用Python内置的dict，如果我们访问一个不存在的key，则会抛出KeyError错误。而<code>defaultdict</code>可以帮助我们指定默认值，如果Key不存在，返回的是实现指定的默认值。而<code>default dict</code>的其他使用方式与内置的dict完全相同。</p>
+<p><code>defaultdict</code>对象包含一个名为<code>default_factory</code>的属性。在构造的时候，第一个参数用于为该属性提供初始构造方法，默认为 None。所有其他参数（包括关键字参数）都相当于传递给 dict 的构造函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> defaultdict<br><br>s = [(<span class="hljs-string">&#x27;yellow&#x27;</span>, <span class="hljs-number">1</span>), (<span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-number">2</span>), (<span class="hljs-string">&#x27;yellow&#x27;</span>, <span class="hljs-number">3</span>), (<span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-number">4</span>), (<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-number">1</span>)]<br>d = defaultdict(<span class="hljs-built_in">list</span>)<br><span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> s:<br>    d[k].append(v)<br><span class="hljs-built_in">print</span>(d)  <span class="hljs-comment"># defaultdict(&lt;class &#x27;list&#x27;&gt;, &#123;&#x27;yellow&#x27;: [1, 3], &#x27;blue&#x27;: [2, 4], &#x27;red&#x27;: [1]&#125;)</span><br></code></pre></td></tr></table></figure>
+
+<p>例如这里我们使用list作为default_factory。当第一次遇见某个key的时候，它还没有在字典里面，所以会自动创建，调用default_factory方法返回一个空的list，之后空的list进行append。再次遇到对应的key，就与正常dict操作相同了。</p>
+<h1 id="基类"><a href="#基类" class="headerlink" title="基类"></a>基类</h1><p>除了上面专门的数据类型之外，在Collections中还提供了三个基类，分别是UserDict、UserList和UserString，以方便用户创建自定义的字典、列表和字符串。如果我们想要自定义类似于dict、list和str的类，那么可以继承这些基类，之后进行个性化地定制即可。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.python.org/3/library/collections.html#module-collections">Collections-Python Doc</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/343747724">万字长文详解 Python库collections，让你击败99%的Pythoner</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017681679479008">collections python</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Python/" class="category-chain-item">Python</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Python/">#Python</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Python集合模块 Collections</div>
+      <div>http://example.com/2023/04/24/Python集合模块-Collections/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月24日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/29/%E5%9C%A8Java%E4%B8%AD%E8%BF%9B%E8%A1%8C%E9%87%8D%E8%AF%95-guava-retrying/" title="在Java中进行重试 guava-retrying">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">在Java中进行重试 guava-retrying</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/18/Flask-Socketio%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Flask-Socketio的使用">
+                        <span class="hidden-mobile">Flask-Socketio的使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

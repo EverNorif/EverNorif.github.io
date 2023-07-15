@@ -1,0 +1,969 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Hive中还支持多种运算符以及函数的使用。本笔记中记录了Hive的参数配置、Hive中内置运算符的使用、内置函数以及用户自定义函数的使用。之后还介绍了Hive中的exploded函数与侧视图、聚合函数、窗口函数以及抽样函数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive学习笔记-HiveSQL(3)-Hive参数配置 运算符以及函数使用">
+<meta property="og:url" content="http://example.com/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-3-Hive%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE-%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Hive中还支持多种运算符以及函数的使用。本笔记中记录了Hive的参数配置、Hive中内置运算符的使用、内置函数以及用户自定义函数的使用。之后还介绍了Hive中的exploded函数与侧视图、聚合函数、窗口函数以及抽样函数。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-3-Hive%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE-%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/%E4%BE%A7%E8%A7%86%E5%9B%BE%E6%95%88%E6%9E%9C.png">
+<meta property="article:published_time" content="2022-07-04T13:52:48.000Z">
+<meta property="article:modified_time" content="2022-07-11T02:36:24.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-3-Hive%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE-%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/%E4%BE%A7%E8%A7%86%E5%9B%BE%E6%95%88%E6%9E%9C.png">
+  
+  
+  
+  <title>Hive学习笔记-HiveSQL(3)-Hive参数配置 运算符以及函数使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Hive学习笔记-HiveSQL(3)-Hive参数配置 运算符以及函数使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-04 21:52" pubdate>
+          2022年7月4日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          134 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hive学习笔记-HiveSQL(3)-Hive参数配置 运算符以及函数使用</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="Hive-客户端与属性配置"><a href="#Hive-客户端与属性配置" class="headerlink" title="Hive 客户端与属性配置"></a>Hive 客户端与属性配置</h1><h2 id="CLIs客户端和命令"><a href="#CLIs客户端和命令" class="headerlink" title="CLIs客户端和命令"></a>CLIs客户端和命令</h2><p>Hive中的命令行客户端主要分为两种，第一代客户端hive和第二代客户端beeline。</p>
+<p>第一代客户端<code>$HIVE_HOME/bin/hive</code>，主要功能是交互式或批处理执行Hive查询，以及启动hive相关的服务，如Metastore服务和HiveServer2服务。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">hive # 无参数表示直接进入交互式客户端<br>-e &lt;quoted-query-string&gt; # 执行指定的sql语句，运行完后退出<br>-f &lt;filename&gt; # 执行指定的sql文件，运行完后退出<br>--H,--help # 查看帮助信息<br>-S,--silent # 静默模式<br>-v,-verbose # 详细模式，将执行sql回显<br>-service service_name # 启动hive的相关服务<br>-i # 进入交互模式之前运行初始化脚本<br></code></pre></td></tr></table></figure>
+
+<p>第二代客户端<code>$HIVE_HOEM/bin/beeline</code>，通过thrift连接到单独的HiveServer2服务上，再连接到Metastore服务。beeline支持的参数可以通过官方文档进行查询：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-Beeline%E2%80%93NewCommandLineShell">HiveServer2 Clients - Apache Hive - Apache Software Foundation</a></p>
+<h2 id="Configuration-Properties属性配置"><a href="#Configuration-Properties属性配置" class="headerlink" title="Configuration Properties属性配置"></a>Configuration Properties属性配置</h2><p>Hivev除了默认的属性配置之外，还支持用户使用时修改配置。修改配置的时候，我们应该关注有哪些属性支持修改，属性的功能和作用，支持何种方式进行修改，修改后的作用时间和作用范围。</p>
+<p>Hive的配置属性再HiveConf.java类中进行管理，详细的配置参数可以参考：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/Configuration+Properties">Configuration Properties - Apache Hive - Apache Software Foundation</a></p>
+<p>配置属性的方法一共有4种，分别如下：</p>
+<p><strong>方式1：hive-site.xml</strong></p>
+<p>在<code>$HIVE_HOME/conf</code>路径下可以添加hive-site.xml文件，可以定义配置属性。该配置文件会全局生效</p>
+<p><strong>方式2：–hiveconf命令行参数</strong></p>
+<p>hiveconf是一个命令行参数，在启动hive或者beeline命令行客户端的时候可以进行指定。该配置在整个会话session过程中有效，会话结束之后即失效</p>
+<p><strong>方式3：set命令</strong></p>
+<p>在会话中使用set命令进行配置，该配置对该会话中，set命令之后所有SQL语句生效</p>
+<p><strong>方式4：服务特定配置文件</strong></p>
+<p>服务特定配置文件主要包括<code>hivemetastore-site.xml</code>和<code>hiveserver2-site.xml</code>，分别表示对应服务特定的配置文件。</p>
+<ul>
+<li>Hive Metastore会加载可用的<code>hive-site.xml</code>以及<code>hivemetastore-site.xml</code>配置文件</li>
+<li>HiveServer2会加载可用的<code>hive-site.xml</code>以及<code>hiveserver2-site.xml</code></li>
+</ul>
+<p>如果HiveServer2以嵌入式模式使用元存储，则还将加载<code>hivemetastore-site.xml</code></p>
+<p>总结来说：</p>
+<ol>
+<li>配置优先级：set设置 &gt; hiveconf参数 &gt; hive-site.xml配置文件</li>
+<li>Hive也会读入Hadoop配置，Hive的配置会覆盖Hadoop的配置进行生效</li>
+</ol>
+<h1 id="Hive-内置运算符"><a href="#Hive-内置运算符" class="headerlink" title="Hive 内置运算符"></a>Hive 内置运算符</h1><p>整体上，Hive支持的运算符可以主要可以分为五个种类，关系运算、算术运算和逻辑运算，还有字符串运算符以及复杂类型操作符，官方参考文档地址为：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF">Language Manual UDF - Apache Hive - Apache Software Foundation</a></p>
+<p>可以通过以下命令查看运算符的使用方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs hive">--显示所有的函数和运算符<br>show functions;<br><br>--查看运算符或者函数的使用说明<br>describe function count;<br><br>--使用extended查看更加详细的使用说明<br>describe function extended count;<br></code></pre></td></tr></table></figure>
+
+<p>下面对常见的运算符进行列举，基本都可以见名知义，只有一些特殊地方会注释说明</p>
+<p>关系运算符：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs hive">= ==<br>&lt;&gt; !=<br>&lt; &lt;=<br>&gt; &gt;=<br>is null<br>is not null<br>like --like匹配: _表示任意单个字符, %表示任意数量字符<br>rlike --匹配正则表达式，是regexp_like的同义词<br>regexp --功能同rlike <br><br>select 1 from test where &#x27;haha&#x27; like &#x27;ha%&#x27;<br>select 1 from test where &#x27;haha&#x27; rlike &#x27;^h.*a$&#x27;<br>select 1 from test where &#x27;haha&#x27; regexp &#x27;^h.*a$&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>算术运算符：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">+ - * / % <br>div --取证<br>&amp; | ^ ~  --位运算符<br></code></pre></td></tr></table></figure>
+
+<p>逻辑运算符：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs hive">and or not !<br>in <br>not in<br>exists<br></code></pre></td></tr></table></figure>
+
+<p>字符串运算符：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">|| --字符串拼接<br></code></pre></td></tr></table></figure>
+
+<p>复杂类型运算符：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs hive">--复杂类型构造<br>map(key1, value1, ...)<br>struct(val1, val2, ...)<br>named_struct(name1, val1, ...)<br>array(val1, val2, ...)<br>create_union(tag, val1, val2, ...)<br><br>--应用举例<br>select `array`(1, 2, 3) <br>from test<br><br>--复杂类型取值<br>A[n] --array取值<br>M[key] --map取值<br>S.x --struct取值<br></code></pre></td></tr></table></figure>
+
+<h1 id="Hive-函数基础"><a href="#Hive-函数基础" class="headerlink" title="Hive 函数基础"></a>Hive 函数基础</h1><p>Hive中内置了很多函数，用于满足用户的不同需求。我们可以通过<code>show functions</code>来查看当前可用的所有函数，通过<code>describe function extended func_name</code>来查看函数的使用方式</p>
+<p>Hive中的函数分为两大类：内置函数（Built-in Functions）和用户定义函数UDF（User-Defined Functions）</p>
+<h2 id="Hive-内置函数"><a href="#Hive-内置函数" class="headerlink" title="Hive 内置函数"></a>Hive 内置函数</h2><p>内置函数根据应用整体可以分为：字符串函数、日期函数、数学函数、集合函数、条件函数、类型转换函数、数据脱敏函数、其他杂项函数。这里只分别介绍常用的函数</p>
+<p>字符串函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs hive">--字符串拼接<br>select concat(&quot;a&quot;,&quot;b&quot;);<br><br>--带分隔符字符串连接函数：concat_ws(separator, [string | array(string)]+)<br>select concat_ws(&#x27;.&#x27;, &#x27;www&#x27;, array(&#x27;a&#x27;, &#x27;cn&#x27;));<br><br>--字符串截取函数：substr(str, pos[, len]) 或者  substring(str, pos[, len])<br>select substr(&quot;hahaha&quot;,-2); --pos是从1开始的索引，可以为负数<br>select substr(&quot;hahaha&quot;,2,2);<br><br>--正则表达式替换函数：regexp_replace(str, regexp, rep)<br>select regexp_replace(&#x27;100-200&#x27;, &#x27;(\\d+)&#x27;, &#x27;num&#x27;);<br><br>--正则表达式解析函数：regexp_extract(str, regexp[, idx]) 提取正则匹配到的指定组内容<br>select regexp_extract(&#x27;100-200&#x27;, &#x27;(\\d+)-(\\d+)&#x27;, 2);<br><br>--URL解析函数：parse_url 注意要想一次解析出多个 可以使用parse_url_tuple这个UDTF函数<br>select parse_url(&#x27;http://www.hahaha.cn/path/p1.php?query=1&#x27;, &#x27;HOST&#x27;);<br><br>--分割字符串函数: split(str, regex)<br>select split(&#x27;apache hive&#x27;, &#x27;\\s+&#x27;);<br><br>--json解析函数：get_json_object(json_txt, path)<br>--path用于指定获取该json对象中的哪一部分，$表示json对象<br>select get_json_object(&#x27;[&#123;&quot;key1&quot;:&quot;value1&quot;,&quot;key2&quot;:&quot;value2&quot;&#125;,&#123;&quot;key1&quot;:&quot;value3&quot;,&quot;key2&quot;:&quot;value4&quot;&#125;]&#x27;, &#x27;$.[1].key1&#x27;);<br><br>--字符串长度函数：length(str | binary)<br>select length(&quot;hahaha&quot;);<br><br>--字符串反转函数：reverse<br>select reverse(&quot;hahaha&quot;);<br><br>--字符串转大写函数：upper,ucase<br>select upper(&quot;hahaha&quot;);<br>select ucase(&quot;hahaha&quot;);<br><br>--字符串转小写函数：lower,lcase<br>select lower(&quot;HAHAHA&quot;);<br>select lcase(&quot;HAHAHA&quot;);<br><br>--去空格函数：trim 去除左右两边的空格<br>select trim(&quot; hahaha &quot;);<br>--左边去空格函数：ltrim<br>select ltrim(&quot; hahaha &quot;);<br>--右边去空格函数：rtrim<br>select rtrim(&quot; hahaha &quot;);<br><br>--空格字符串函数：space(n) 返回指定个数空格<br>select space(4);<br><br>--重复字符串函数：repeat(str, n) 重复str字符串n次<br>select repeat(&quot;hahaha&quot;,2);<br><br>--首字符ascii函数：ascii<br>select ascii(&quot;hahaha&quot;);  --返回首字符h啊ascii码<br><br>--左补足函数：lpad<br>select lpad(&#x27;hi&#x27;, 5, &#x27;??&#x27;);  --???hi<br>select lpad(&#x27;hi&#x27;, 1, &#x27;??&#x27;);  --h<br><br>--右补足函数：rpad<br>select rpad(&#x27;hi&#x27;, 5, &#x27;??&#x27;);<br><br>--集合查找函数: find_in_set(str,str_array)<br>select find_in_set(&#x27;a&#x27;,&#x27;abc,b,ab,c,def&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p>日期函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs hive">--获取当前日期: current_date<br>select current_date();<br><br>--获取当前时间戳: current_timestamp<br>--同一查询中对current_timestamp的所有调用均返回相同的值。<br>select current_timestamp();<br><br>--获取当前UNIX时间戳函数: unix_timestamp<br>select unix_timestamp();<br><br>--日期转UNIX时间戳函数: unix_timestamp<br>select unix_timestamp(&quot;2011-12-07 13:01:03&quot;);<br><br>--指定格式日期转UNIX时间戳函数: unix_timestamp<br>select unix_timestamp(&#x27;20111207 13:01:03&#x27;,&#x27;yyyyMMdd HH:mm:ss&#x27;);<br><br>--UNIX时间戳转日期函数: from_unixtime<br>select from_unixtime(1618238391);<br>select from_unixtime(0, &#x27;yyyy-MM-dd HH:mm:ss&#x27;);<br><br>--日期比较函数: datediff  日期格式要求&#x27;yyyy-MM-dd HH:mm:ss&#x27; or &#x27;yyyy-MM-dd&#x27;<br>select datediff(&#x27;2012-12-08&#x27;,&#x27;2012-05-09&#x27;);<br><br>--日期增加函数: date_add<br>select date_add(&#x27;2012-02-28&#x27;,10);<br>--日期减少函数: date_sub<br>select date_sub(&#x27;2012-01-1&#x27;,10);<br><br>--提取日期函数: to_date<br>select to_date(&#x27;2009-07-30 04:17:52&#x27;);<br>--提取年份函数: year<br>select year(&#x27;2009-07-30 04:17:52&#x27;);<br>--提取月份函数: month<br>select month(&#x27;2009-07-30 04:17:52&#x27;);<br>--提起天数函数: day<br>select day(&#x27;2009-07-30 04:17:52&#x27;);<br>--提取小时函数: hour<br>select hour(&#x27;2009-07-30 04:17:52&#x27;);<br>--提取分钟函数: minute<br>select minute(&#x27;2009-07-30 04:17:52&#x27;);<br>--提取秒函数: second<br>select second(&#x27;2009-07-30 04:17:52&#x27;);<br>--提取周函数: weekofyear 返回指定日期所示年份第几周<br>select weekofyear(&#x27;2009-07-30 04:17:52&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p>数学函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs hive">--取整函数: round  返回double类型的整数值部分 （四舍五入）<br>select round(3.1415926);<br>--指定精度取整函数: round(double a, int d) 返回指定精度d的double类型<br>select round(3.1415926,4);<br><br>--向下取整函数: floor<br>select floor(3.1415926);<br><br>--向上取整函数: ceil<br>select ceil(3.1415926);<br><br>--取随机数函数: rand 每次执行都不一样 返回一个0到1范围内的随机数<br>select rand();<br>--指定种子取随机数函数: rand(int seed) 得到一个稳定的随机数序列<br>select rand(3);<br><br>--二进制函数:  bin(BIGINT a)<br>select bin(18);<br>--进制转换函数: conv(BIGINT num, int from_base, int to_base)<br>select conv(17,10,16);<br>--绝对值函数: abs<br>select abs(-3.9);<br></code></pre></td></tr></table></figure>
+
+<p>集合函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs hive">--集合元素size函数: size(Map&lt;K.V&gt;) size(Array&lt;T&gt;)<br>select size(`array`(11,22,33));<br>select size(`map`(&quot;id&quot;,10086,&quot;name&quot;,&quot;zhangsan&quot;,&quot;age&quot;,18));<br><br>--取map集合keys函数: map_keys(Map&lt;K.V&gt;)<br>select map_keys(`map`(&quot;id&quot;,10086,&quot;name&quot;,&quot;zhangsan&quot;,&quot;age&quot;,18));<br><br>--取map集合values函数: map_values(Map&lt;K.V&gt;)<br>select map_values(`map`(&quot;id&quot;,10086,&quot;name&quot;,&quot;zhangsan&quot;,&quot;age&quot;,18));<br><br>--判断数组是否包含指定元素: array_contains(Array&lt;T&gt;, value)<br>select array_contains(`array`(11,22,33),11);<br>select array_contains(`array`(11,22,33),66);<br><br>--数组排序函数:sort_array(Array&lt;T&gt;)<br>select sort_array(`array`(12,2,32));<br></code></pre></td></tr></table></figure>
+<p>条件函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs hive">--if条件判断: if(boolean testCondition, T valueTrue, T valueFalseOrNull)<br>--相当于三元运算符<br>select if(1=2,100,200);<br>select if(sex =&#x27;男&#x27;,&#x27;M&#x27;,&#x27;W&#x27;) from student limit 3;<br><br>--空判断函数: isnull( a )<br>select isnull(&quot;allen&quot;);<br>select isnull(null);<br>--非空判断函数: isnotnull ( a )<br>select isnotnull(&quot;allen&quot;);<br>select isnotnull(null);<br><br>--空值转换函数: nvl(T value, T default_value)<br>--如果value为空就将其转换成default_value<br>select nvl(&quot;allen&quot;,&quot;hahaha&quot;);<br>select nvl(null,&quot;hahaha&quot;);<br><br>--非空查找函数: COALESCE(T v1, T v2, ...)<br>--返回参数中的第一个非空值；如果所有值都为NULL，那么返回NULL<br>select COALESCE(null,11,22,33); --11<br>select COALESCE(null,null,null,33); --33<br>select COALESCE(null,null,null); --null<br><br>--条件转换函数: CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END<br>--case when then表达式<br>select case 100 when 50 then &#x27;tom&#x27; when 100 then &#x27;mary&#x27; else &#x27;tim&#x27; end;<br>select case sex when &#x27;男&#x27; then &#x27;male&#x27; else &#x27;female&#x27; end from student limit 3;<br><br>--nullif( a, b ):<br>-- 如果a = b，则返回NULL，否则返回第一个表达式的值<br>select nullif(11,11);<br>select nullif(11,12);<br><br>--assert_true(condition)<br>--如果&#x27;condition&#x27;不为真，则引发异常，否则返回null<br>SELECT assert_true(11 &gt;= 0);<br>SELECT assert_true(-1 &gt;= 0);<br></code></pre></td></tr></table></figure>
+
+<p>类型转换函数：主要用于显式的数据类型转换</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs hive">--任意数据类型之间转换:cast<br>select cast(12.14 as bigint);<br>select cast(12.14 as string);<br>select cast(&quot;hello&quot; as int);<br></code></pre></td></tr></table></figure>
+
+<p>数据脱敏函数：主要完成数据脱敏，屏蔽原始数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs hive">--mask<br>--将查询回的数据，默认大写字母转换为X，小写字母转换为x，数字转换为n。<br>select mask(&quot;abc123DEF&quot;);<br>select mask(&quot;abc123DEF&quot;,&#x27;-&#x27;,&#x27;.&#x27;,&#x27;^&#x27;); --自定义替换的字母<br><br>--mask_first_n(string str[, int n])<br>--对前n个进行脱敏替换<br>select mask_first_n(&quot;abc123DEF&quot;,4);<br>--mask_last_n(string str[, int n])<br>--对后n个进行脱敏替换<br>select mask_last_n(&quot;abc123DEF&quot;,4);<br><br>--mask_show_first_n(string str[, int n])<br>--除了前n个字符，其余进行掩码处理<br>select mask_show_first_n(&quot;abc123DEF&quot;,4);<br>--mask_show_last_n(string str[, int n])<br>select mask_show_last_n(&quot;abc123DEF&quot;,4);<br><br>--mask_hash(string|char|varchar str)<br>--返回字符串的hash编码。<br>select mask_hash(&quot;abc123DEF&quot;);<br></code></pre></td></tr></table></figure>
+<p>其他杂项函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs hive">--如果你要调用的java方法所在的jar包不是hive自带的 可以通过使用add jar命令进行添加<br>--hive调用java方法: java_method(class, method[, arg1[, arg2..]])<br>select java_method(&quot;java.lang.Math&quot;,&quot;max&quot;,11,22);<br>--反射函数: reflect(class, method[, arg1[, arg2..]])<br>select reflect(&quot;java.lang.Math&quot;,&quot;max&quot;,11,22);<br><br>--取哈希值函数:hash<br>select hash(&quot;allen&quot;);<br><br>--current_user()、logged_in_user()、current_database()、version()<br><br>--SHA-1加密: sha1(string/binary)<br>select sha1(&quot;allen&quot;);<br>--SHA-2家族算法加密：sha2(string/binary, int)  (SHA-224, SHA-256, SHA-384, SHA-512)<br>select sha2(&quot;allen&quot;,224);<br>select sha2(&quot;allen&quot;,512);<br>--crc32加密:<br>select crc32(&quot;allen&quot;);<br>--MD5加密: md5(string/binary)<br>select md5(&quot;allen&quot;);<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="Hive-自定义函数"><a href="#Hive-自定义函数" class="headerlink" title="Hive 自定义函数"></a>Hive 自定义函数</h2><p>用户定义函数则可以根据输入输出的行数来分为3类：UDF、UDAF、UDTF</p>
+<ul>
+<li>UDF（User-Defined Function）：普通函数，一进一出</li>
+<li>UDAF（User-Defined <strong>Aggregation</strong> Function）：聚合函数，多进一出</li>
+<li>UDTF（User-Defined <strong>Table-Generating</strong> Function）：表生成函数，一进多出</li>
+</ul>
+<blockquote>
+<p>UDF分类标准扩大化：</p>
+<p>UDF分类标准本来针对的是用户自己编写开发实现的函数，但是现在可以扩大到Hive的所有函数中，包括内置函数和用户自定义函数。因为内置函数也可以满足根据输入输出划分的要求</p>
+</blockquote>
+<p>自定义UDF函数实现步骤：</p>
+<ol>
+<li>自己写一个Java类，<strong>继承UDF，并重载evaluate方法</strong>，方法中实现函数的业务逻辑（注意重载）</li>
+<li>将程序打包成jar包，上传到服务器环境中（本地或者HDFS）</li>
+<li>在客户端命令行中添加jar包到Hive的classpath中：<code>add jar /.../xxx.jar</code></li>
+<li>注册称为临时函数，即给自定义函数命名：<code>create temporary function 函数名 as 类的全路径</code></li>
+<li>之后就可以在HQL中使用该函数了</li>
+</ol>
+<p>在maven工程中应该引入下面的依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.hive<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hive-exec<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.1.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.hadoop<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hadoop-common<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.1.3<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.apache.hadoop.hive.ql.exec.UDF;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyUDF</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">UDF</span> &#123;<br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">evaluate</span><span class="hljs-params">(...)</span>&#123;<br>        ...<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>自定义其他函数如UDTF，规则不尽相同。</p>
+</blockquote>
+<h1 id="Hive-函数高级用法"><a href="#Hive-函数高级用法" class="headerlink" title="Hive 函数高级用法"></a>Hive 函数高级用法</h1><h2 id="explode函数和侧视图"><a href="#explode函数和侧视图" class="headerlink" title="explode函数和侧视图"></a>explode函数和侧视图</h2><p>explode函数可以接受map、array类型的数据作为输入，然后把输入数据中的每个元素拆开成为一行数据。array类型则一行对应一列，map类型则一行对应两列（Key-Value）</p>
+<p>explode函数是一个UDTF函数，它的执行结果可以理解成为一张虚拟的表，数据来源于源表。我们可以在select中查询源表数据，也可以只查询explode生成的虚拟表数据，但是不能直接查询源表和虚拟表的数据。（不能不做任何处理就查询分别属于两张表的字段）</p>
+<p>explode函数将复杂类型展开之后，展开的每一行和源表的行会有一个对应关系，即源表中一行对应到展开表中的多行，根据这种关系我们可以使用join连接两张表，不过在Hive中给我们提供了侧视图lateral view语法来实现这种效果。explode函数一般会结合侧视图lateral view一起使用</p>
+<img src="/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-3-Hive%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE-%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/%E4%BE%A7%E8%A7%86%E5%9B%BE%E6%95%88%E6%9E%9C.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="侧视图效果">
+
+<p>语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">--单独使用explode函数<br>select explode(col_map) from test_table;<br><br>--UDTF+侧视图<br>select …… from tabelA 别名1 lateral view UDTF(xxx) 别名2 as col1,col2,col3……;<br></code></pre></td></tr></table></figure>
+
+<p>这里的UDTF可以使用explode函数，当然侧视图的效果可以配合其他的表生成函数一起使用，不仅仅局限于explode函数。</p>
+<ul>
+<li>别名1表示源表的别名</li>
+<li>别名2表示UDTF函数生成的表别名</li>
+<li><code>as col1 col2 col3...</code>表示给生成表中的列取名</li>
+<li>侧视图的底层相当于就是自带条件的inner join</li>
+</ul>
+<h2 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h2><p>聚合函数的功能是对一组值执行计算并返回单一的值，是典型的UDAF函数，多进一出。通常搭配group by语法一起使用，在分组之后进行聚合操作</p>
+<p>常见的聚合函数有：</p>
+<ul>
+<li><code>count</code>：统计检索到的总行数</li>
+<li><code>sum</code>：求和</li>
+<li><code>avg</code>：求平均</li>
+<li><code>min</code>：最小值</li>
+<li><code>max</code>：最大值</li>
+<li><code>collect_set(col)</code>：数据收集函数，去重</li>
+<li><code>collect_list(col)</code>：数据收集函数，不qu’chong</li>
+</ul>
+<p>同时Hive来提供增强聚合的方式，包括grouping sets、cube、rollup等函数。增强聚合多用于多维数据分析，它达到的效果是可以综合多个分组后的结果，然后利用字段grouping__id来表示该行是通过哪个分组group得到的。</p>
+<blockquote>
+<p>如果利用已有的方式来达到这样的操作，应该使用union连接多个经过group by的表，并且需要手动填充null列来保证列数的对应，而使用增强聚合就可以方便地达到这样的效果</p>
+<p>注意<code>grouping__id</code>是双下划线</p>
+</blockquote>
+<p><strong>grouping sets</strong>：</p>
+<p>可以将多个group by逻辑写在一个sql语句中，等价于将不同维度group by结果集进行union all，grouping__id表示结果数据哪一个分组集合</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>    month,<br>    day,<br>    count(distinct cookieid) as nums,<br>    grouping__id<br>from cookie_info<br>group by month,day<br>grouping sets (month,day) --这里是关键<br>order by grouping__id;<br><br>--等价于<br>--注意这里补充的null，以及grouping__id位置上的1和2<br>select month,null,count(distinct cookieid) as nums,1 as grouping__id from cookie_info group by month<br>union all<br>select null as month,day,count(distinct cookieid) as nums,2 as grouping__id from cookie_info group by day;<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>cube</strong>：</p>
+<p>cube表示根据group by维度的所有组合进行聚合</p>
+<blockquote>
+<p>例如group by有a b c三个维度，则cube取所有的子集，共8个，注意包括空集，即表示不进行group by</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>    month,<br>    day,<br>    count(distinct cookieid) as nums,<br>    grouping__id<br>from cookie_info<br>group by month,day<br>with cube --cube语法，上面group by有两个元素，则最终结果一共有4个grouping__id<br>order by grouping__id;<br><br>--等价于<br><br>select null,null,count(distinct cookieid) as nums,0 as grouping__id from cookie_info<br>union all<br>select month,null,count(distinct cookieid) as nums,1 as grouping__id from cookie_info group by month<br>union all<br>select null,day,count(distinct cookieid) as nums,2 as grouping__id from cookie_info group by day<br>union all<br>select month,day,count(distinct cookieid) as nums,3 as grouping__id from cookie_info group by month,day;<br></code></pre></td></tr></table></figure>
+
+<p><strong>rollup</strong>：</p>
+<p>rollup是cube的子集，以最左侧的维度为主。只有当左侧维度出现，右侧维度才可能出现。相当于是一个递进的关系</p>
+<blockquote>
+<p>例如group by有a b c三个维度，则rollup取的组合情况有()、(a)、(a, b)、(a, b, c)</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>    month,<br>    day,<br>    count(distinct cookieid) as nums,<br>    grouping__id<br>from cookie_info<br>group by month,day<br>with rollup --rollup语法，聚合维度应该为空、month、month+day三种<br>order by grouping__id;<br><br>--等价于<br><br>select null,null,count(distinct cookieid) as nums,0 as grouping__id from cookie_info<br>union all<br>select month,null,count(distinct cookieid) as nums,1 as grouping__id from cookie_info group by month<br>union all<br>select month,day,count(distinct cookieid) as nums,2 as grouping__id from cookie_info group by month,day;<br></code></pre></td></tr></table></figure>
+
+<h2 id="窗口函数"><a href="#窗口函数" class="headerlink" title="窗口函数"></a>窗口函数</h2><h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h3><p>Hive中的窗口函数也和MySQL中的类似，语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">Function(arg1, ...) over ([partition by &lt;...&gt;] [order by &lt;...&gt;][&lt;window_expression&gt;])<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>Function表示需要应用的函数，可以是聚合函数（例如sum、max、avg等），可以是排序函数（例如rank、row_number等），可以是分析函数（例如lead、lag、first_value等）</li>
+<li>partition by：分组依据。</li>
+<li>order by：分组内部的排序规则</li>
+<li>window_expression：用于指定窗口的范围</li>
+</ul>
+<blockquote>
+<p>over中的参数是可选的，但是出现与否的效果有所差异：</p>
+<ol>
+<li>没有partition by，则将整张表看作一个分组</li>
+<li>没有order by没有窗口范围，则计算分组中的所有行</li>
+<li>有order by没有窗口范围，则计算分组中从开始到当前行的范围</li>
+</ol>
+</blockquote>
+<h3 id="窗口表达式"><a href="#窗口表达式" class="headerlink" title="窗口表达式"></a>窗口表达式</h3><p>窗口表达式提供给我们一种控制行范围的能力，语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs hive">--关键字是rows between,可选项有<br>preceding: 往前<br>following: 往后<br>current row: 当前行<br>unbounded preceding: 表示从前面的起点<br>unbounded following: 表示到后面的终点<br></code></pre></td></tr></table></figure>
+
+<p>举例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs hive">--向前3行到当前行，共4行<br>rows between 3 preceding and current row<br><br>--向前3行到向后1行，共5行<br>rows between 3 preceding and 1 following<br><br>--当前行到最后一行<br>rows between current row and unbounded following<br><br>--第一行到最后一行，即分组内的所有行<br>rows between unbounded preceding  and unbounded following<br></code></pre></td></tr></table></figure>
+
+<h3 id="窗口排序函数"><a href="#窗口排序函数" class="headerlink" title="窗口排序函数"></a>窗口排序函数</h3><p>主要用于给每个分组内的数据打上排序的标号，主要用于TopN的业务分析，<strong>注意窗口排序函数不支持窗口表达式</strong></p>
+<ul>
+<li><code>row_number()</code>：递增，不考虑重复，序号连续</li>
+<li><code>rank()</code>：考虑重复，但是会挤占后续位置，序号可能不连续</li>
+<li><code>dense_rank()</code>：考虑重复，但是不挤占后续位置，序号连续</li>
+</ul>
+<p>窗口排序函数中还有一个<code>ntile()</code>，用于将每个分组内的数据分到指定的若干个桶内，即分为若干个部分，并且为每个桶分配一个桶编号。划分的依据主要是按照顺序平均分配，如果不能平均分配，则优先分配到较小编号的桶中，并且各个桶之间的行数相差最多为1。（对应需求可能是将数据排序后分成几个部分，业务人员只关心其中的一部分）</p>
+<h3 id="窗口分析函数"><a href="#窗口分析函数" class="headerlink" title="窗口分析函数"></a>窗口分析函数</h3><ul>
+<li><code>lag(col, n, default)</code>：返回当前行往上的第n行的对应值，相当于一个数据偏移的操作<ul>
+<li>第一个参数为列名</li>
+<li>第二个参数为n，表示偏移多少行</li>
+<li>第三个参数为默认值，表示如果往上第n行为null的时候，取默认值default。如果不指定，则为null</li>
+</ul>
+</li>
+<li><code>lead(col, n, default)</code>：返回当前行往下的第n行的对应值</li>
+<li><code>first_value()</code>：取分组内排序后的第一个值</li>
+<li><code>last_value()</code>：取分组内排序后的最后一个值</li>
+</ul>
+<p>其中<code>first_value()</code>和<code>last_value()</code>取的是分组范围内的第一个和最后一个，因此窗口范围很重要，要终点关注窗口范围。</p>
+<h2 id="抽样函数"><a href="#抽样函数" class="headerlink" title="抽样函数"></a>抽样函数</h2><p>抽样是一种用于识别和分析数据中子集的技术，用以发现整个数据集中的模式和趋势。在HQL中，可以通过三种方式来进行数据采样：随机采样，存储桶表采样和块采样</p>
+<p>Random随机采样：</p>
+<ul>
+<li>使用rand()函数确保随机获得数据，使用limit限制抽取的数据个数</li>
+<li>优点是随机，缺点是速度慢<ul>
+<li>推荐使用distribute+sort，底层执行效率更高</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs hive">--需求：随机抽取2个学生的情况进行查看<br>select * from student<br>distribute by rand() sort by rand() limit 2;<br><br>--使用order by+rand也可以实现同样的效果 但是效率不高<br>select * from student<br>    order by rand() limit 2;<br></code></pre></td></tr></table></figure>
+
+<p>Block基于块随机抽样：</p>
+<ul>
+<li>块采样允许随机获取n行数据、百分比数据或者指定大小的数据</li>
+<li>采样粒度是HDFS文件块大小</li>
+<li>优点是速度快，缺点是不随机</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs hive">select * from student tablesample(1 rows);<br><br>--根据数据大小百分比抽样<br>select * from student tablesample(50 percent);<br><br>--根据数据大小抽样<br>--支持数据单位 b/b, k/k, m/m, g/g<br>select * from student tablesample(1k);<br></code></pre></td></tr></table></figure>
+
+<p>Bucket table基于分桶表抽样：</p>
+<ul>
+<li>一种特殊的采样方法，针对分桶表进行优化</li>
+<li>既随机，速度也较快</li>
+</ul>
+<p>语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">tablesample (bucket x out of y [on colname])<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li>y必须是table总bucket数的倍数或者因子。hive根据y的大小，决定抽样的比例<ul>
+<li>例如，table总共分了4份（4个bucket），当y&#x3D;2时，抽取(4&#x2F;2&#x3D;)2个bucket的数据，当y&#x3D;8时，抽取(4&#x2F;8&#x3D;)1&#x2F;2个bucket的数据。</li>
+</ul>
+</li>
+<li>x表示从哪个bucket开始抽取<ul>
+<li>例如，table总bucket数为4，<code>tablesample(bucket 4 out of 4)</code>表示总共抽取（4&#x2F;4&#x3D;）1个bucket的数据，抽取第4个bucket的数据</li>
+<li>注意：x的值必须小于等于y的值，否则会报错<code>failed:numerator should not be bigger than denominator in sample clause for table xxx</code></li>
+</ul>
+</li>
+<li>on colname表示基于什么抽<ul>
+<li>on rand()表示随机抽</li>
+<li>on 分桶字段 表示基于分桶字段抽样 效率更高 推荐</li>
+</ul>
+</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hive/" class="category-chain-item">Hive</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Hive/">#Hive</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Hive学习笔记-HiveSQL(3)-Hive参数配置 运算符以及函数使用</div>
+      <div>http://example.com/2022/07/04/Hive学习笔记-HiveSQL-3-Hive参数配置-运算符以及函数使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月4日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-4-Hive%E5%87%BD%E6%95%B0%E9%87%8D%E8%A6%81%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/" title="Hive学习笔记-HiveSQL(4)-Hive函数重要应用案例">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hive学习笔记-HiveSQL(4)-Hive函数重要应用案例</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-2-%E6%95%B0%E6%8D%AE%E6%93%8D%E6%8E%A7%E8%AF%AD%E8%A8%80DML%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80DQL/" title="Hive学习笔记-HiveSQL(2)-数据操控语言DML与数据查询语言DQL">
+                        <span class="hidden-mobile">Hive学习笔记-HiveSQL(2)-数据操控语言DML与数据查询语言DQL</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,844 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了设计模式中的简单设计与交给子类部分。该部分主要包含四种设计模式，分别是支持遍历元素的Iterator模式、用于连接现有代码与目标功能，便于复用的Adapter模式、将具体处理交给子类的Template Method模式，以及将实例生成交给子类的Factory Method模式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式(1)-简单设计与交给子类">
+<meta property="og:url" content="http://example.com/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了设计模式中的简单设计与交给子类部分。该部分主要包含四种设计模式，分别是支持遍历元素的Iterator模式、用于连接现有代码与目标功能，便于复用的Adapter模式、将具体处理交给子类的Template Method模式，以及将实例生成交给子类的Factory Method模式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Iterator.png">
+<meta property="og:image" content="http://example.com/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Adaptor.png">
+<meta property="article:published_time" content="2023-03-16T13:14:17.000Z">
+<meta property="article:modified_time" content="2023-03-16T13:16:20.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Iterator.png">
+  
+  
+  
+  <title>设计模式(1)-简单设计与交给子类 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="设计模式(1)-简单设计与交给子类"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-03-16 21:14" pubdate>
+          2023年3月16日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          82 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">设计模式(1)-简单设计与交给子类</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="Iterator"><a href="#Iterator" class="headerlink" title="Iterator"></a>Iterator</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Iterator意为迭代器，Iterator模式通常用于在数据集合中按照顺序遍历集合。在许多程序语言中都有迭代器的相关实现，当然我们也可以自己利用Iterator模式来构造自己的迭代器。</p>
+<p>在Iterator模式中一般有如下角色：</p>
+<ul>
+<li><code>Iterator</code>：该角色代表迭代器，它负责定义相关API，按照顺序遍历元素<ul>
+<li>通常具有<code>hasNext</code>、<code>next</code>方法</li>
+</ul>
+</li>
+<li><code>ConcreteIterator</code>：该角色代表具体的迭代器，它负责实现Iterator角色所定义的API。该角色中包含了遍历集合所必需的信息</li>
+<li><code>Aggregate</code>：该角色代表集合，它其中定义创建Iterator角色的API，该API能够创建出对应的迭代器Iterator</li>
+<li><code>ConcreteAggregate</code>：该角色代表具体的集合，用于实现Aggregate角色所定义的API，具体实现如何进行迭代</li>
+</ul>
+<p>角色之间的关系如下：</p>
+ <img src="/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Iterator.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Iterator">
+
+<h2 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h2><p>这里我们模拟一个书架类，通过Iterator模式来对书架上的书进行遍历。首先我们可以创建Book类，用于模拟书。Book类仅有一个String类型的name属性，以及相应的get、set、构造方法和toString方法，这里就不进行描述了。</p>
+<p>之后定义<code>Iterator</code>接口，这个接口通常情况下具有<code>hasNext</code>和<code>next</code>方法，用于判断是否有下一个元素以及获取下一个元素。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Iterator</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">hasNext</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Object <span class="hljs-title function_">next</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>Aggregate</code>接口中定义了<code>iterator</code>方法，主要用于返回相应的迭代器对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Aggregate</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Iterator <span class="hljs-title function_">iterator</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后我们可以定义<code>BookShelf</code>书架类，这个类应该实现<code>Aggregate</code>接口。首先按照类本身的逻辑，<code>BookShelf</code>中需要定义一个数组来保存<code>Book</code>对象，之后还需要提供相关的添加书籍的方法。同时由于实现了<code>Aggregate</code>，需要返回一个迭代器。这里的迭代器对象则是另外定义的一个<code>BookShelfIterator</code>，它实现了<code>Iterator</code>接口。在<code>BookShelfItreator</code>类中，需要实现相关的迭代方法的真实逻辑，包括<code>hasNext</code>以及<code>next</code>。注意这里<code>BookShelfIterator</code>的构造需要传入<code>BookShelf</code>对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BookShelf</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Aggregate</span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> ArrayList&lt;Book&gt; books;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BookShelf</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-built_in">this</span>.books = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addBook</span><span class="hljs-params">(Book book)</span>&#123;<br>        <span class="hljs-built_in">this</span>.books.add(book);<br>    &#125;<br>    <span class="hljs-keyword">public</span> ArrayList&lt;Book&gt; <span class="hljs-title function_">getBooks</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> books;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> BookShelfIterator <span class="hljs-title function_">iterator</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BookShelfIterator</span>(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BookShelfIterator</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Iterator</span>&#123;<br>    <span class="hljs-keyword">private</span> BookShelf bookShelf;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> index;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BookShelfIterator</span><span class="hljs-params">(BookShelf bookShelf)</span>&#123;<br>        <span class="hljs-built_in">this</span>.index = <span class="hljs-number">0</span>;<br>        <span class="hljs-built_in">this</span>.bookShelf = bookShelf;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">hasNext</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> index &lt; bookShelf.getBooks().size();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">next</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.bookShelf.getBooks().get(index++);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>至此，我们就可以测试相关的迭代方式是否可用，测试代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testIterator</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">BookShelf</span> <span class="hljs-variable">bookShelf</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BookShelf</span>();<br>    bookShelf.addBook(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-string">&quot;book1&quot;</span>));<br>    bookShelf.addBook(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-string">&quot;book2&quot;</span>));<br>    bookShelf.addBook(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-string">&quot;book3&quot;</span>));<br>    bookShelf.addBook(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-string">&quot;book4&quot;</span>));<br><br>    <span class="hljs-type">BookShelfIterator</span> <span class="hljs-variable">iterator</span> <span class="hljs-operator">=</span> bookShelf.iterator();<br>    <span class="hljs-keyword">while</span> (iterator.hasNext())&#123;<br>        System.out.println(iterator.next());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>通过上面的例子可以看到，利用Iterator模式我们完成了一个数组或者集合的遍历。与通过下标index和for循环直接遍历相比，这种方式似乎更加繁琐，但在Iterator模式中，我们的遍历只使用到了Iterator接口中的方法，而不会依赖实际BookShelf的实现。也就是说，在BookShelf中，无论是使用数组，或者其他集合例如LinkedList来管理Book对象，只要BookShelf中的iterator方法能够正确地返回Iterator的实例，上面的while循环就是可以正常工作的，这段测试代码是不用变动的。而测试代码实际上就相当于其他对于BookShelf的调用者，这种仅依赖Iterator的特性使得调用者变得非常方便，因为他无需关心BookShelf的具体实现，只需要拿到一个正确的Iterator实例即可。</p>
+<p>这里也体现了设计模式的一个非常重要的思想，就是优先使用抽象类和接口来进行编程，这样能够弱化类之间的耦合，进而使得类能够更加容易地作为组件被再次利用。</p>
+<h1 id="Adapter"><a href="#Adapter" class="headerlink" title="Adapter"></a>Adapter</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>Adapter意为适配器，它位于实际情况和需求之间，填补两者之间的差异。在程序开发的过程中，经常会存在现有的程序无法直接使用，需要进行适当的变换之后才能够使用的情况。这种用于填补“现有的程序”与“所需的程序”之间差异的设计模式就是Adapter模式。</p>
+<p>Adapter模式也被称为Wrapper模式，即包装器。通过对现有的程序进行包装，使得其能够达到我们需要的效果。Adapter模式主要分为使用继承实现的Adapter以及使用委托实现的Adapter。</p>
+<p>在Adapter模式中，主要有以下角色：</p>
+<ul>
+<li><code>Target</code>：该角色中定义了我们最终需要得到的方法，它需要能够处理我们现有的需求</li>
+<li><code>Client</code>：请求者角色。通常是Main函数，它调用Target角色来使用相关特性。这相当于是客户，是服务的调用者</li>
+<li><code>Adaptee</code>：被适配角色。表示现有的程序，这个程序在我们现有的需求中虽然不能直接使用，但是能够被复用</li>
+<li><code>Adapter</code>：适配角色。Adapter模式的核心角色，连接了Target以及Adaptee，使得Target对于需求的实现能够借助现有的Adaptee</li>
+</ul>
+<p>角色之间的关系如下：</p>
+<img src="/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Adaptor.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Adaptor">
+
+<h2 id="示例程序-1"><a href="#示例程序-1" class="headerlink" title="示例程序"></a>示例程序</h2><p>假设我们需要完成一个Print接口，这个接口中有如下的方法，其中printWeak输出两端加上括号的结果；printStrong输出两端加上星号的结果。这就是我们的需求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Print</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">printWeak</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">printStrong</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>而目前我们已经有一个完成了类似功能的Banner类，它的实现如下，它的相关方法能够一定程度上达到我们需要的效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Banner</span> &#123;<br>    <span class="hljs-keyword">private</span> String string;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Banner</span><span class="hljs-params">(String string)</span> &#123;<br>        <span class="hljs-built_in">this</span>.string = string;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">showWithParen</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;(&quot;</span> + string + <span class="hljs-string">&quot;)&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">showWithAster</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;*&quot;</span> + string + <span class="hljs-string">&quot;*&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>为了实现这个需求，我们需要使用一个中间适配器Adapter，用于连接需求接口print以及已有代码Banner。我们可以定义一个类PrintBanner，它在继承Banner的同时还实现了Print接口，其中print接口的方法实现则直接使用Banner中的实现，进行一层包装：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PrintBanner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Banner</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Print</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">PrintBanner</span><span class="hljs-params">(String string)</span> &#123;<br>        <span class="hljs-built_in">super</span>(string);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printWeak</span><span class="hljs-params">()</span> &#123;<br>        showWithParen();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printStrong</span><span class="hljs-params">()</span> &#123;<br>        showWithAster();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后，我们就可以利用如下代码进行测试。在测试代码中，作为使用者，我们只需要使用我们新定义的Print接口和实现类PrintBanner，而不需要关注Banner这个已有的旧代码，就能够达到需要的效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test1</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">Print</span> <span class="hljs-variable">print</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PrintBanner</span>(<span class="hljs-string">&quot;Hello&quot;</span>);<br>    print.printStrong();<br>    print.printWeak();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面这种实现方式就是基于继承实现的Adapter模式。而下面开始介绍基于委托的Adapter模式实现。假设我们现在的需求并不是Print接口，而是一个Printer类，这是一个抽象类，其中也需要具有上面Print接口中的两种方法，抽象类代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Printer</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printWeak</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printStrong</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此时我们同样可以使用一个类来进行适配。我们实现一个PrinterBanner类，它直接继承抽象类Printer，不过在其中存储一个Banner类型的成员变量，而抽象父类的方法实现则调用这个成员变量来实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PrinterBanner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Printer</span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Banner banner;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">PrinterBanner</span><span class="hljs-params">(String string)</span>&#123;<br>        <span class="hljs-built_in">this</span>.banner = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Banner</span>(string);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printWeak</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>.banner.showWithParen();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printStrong</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>.banner.showWithAster();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>同样可以使用类似的测试代码进行测试，也是能够达到相同的效果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test2</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">Printer</span> <span class="hljs-variable">printer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PrinterBanner</span>(<span class="hljs-string">&quot;hello&quot;</span>);<br>    printer.printStrong();<br>    printer.printWeak();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="说明-1"><a href="#说明-1" class="headerlink" title="说明"></a>说明</h2><p>Adapter模式是一个较为简单的设计模式，在日常程序开发的过程中非常常见，常见到很多时候我们往往都忽略了这是一个设计模式。Adapter模式能够帮助我们实现代码的复用，在开发时更加方便。简单来说，就是将我们需要使用的现有类进行包装，无论是以继承的方式还是成员变量的方式，需要达到的目的就是将现有的功能能够帮助到我们目前需求的实现。同时，现有的代码通常是经过了检测和测试的，这也就意味着我们新需求的代码如果出现Bug的时候，进行排查时就可以直接跳过这部分已经接受过检测的代码，减少考虑的范围。</p>
+<p>实际上，Adapter模式更多会作为一种好的编程习惯。如果我们有一个好的编程习惯，对于它的使用往往在不经意间就能够完成。</p>
+<h1 id="Template-Method"><a href="#Template-Method" class="headerlink" title="Template Method"></a>Template Method</h1><h2 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h2><p>Template Mothod，即模板方法。这种模式提供模版功能，组成模板的方法被定义在父类中，父类提供一个模板方法，在模板方法中按照一定的逻辑进行处理，但是这里使用的是抽象方法，只通过父类的代码是无法知道这些方法最终会进行何种处理，唯一能够知道父类是如何调用这些方法的。抽象方法由子类进行实现，不同的实现也就导致实际处理的不同，不过具体的流程还是按照父类中的定义进行的。</p>
+<p>在Template Method模式中有如下角色：</p>
+<ul>
+<li><code>AbstractClass</code>：抽象类，负责实现模板方法，同时负责声明在模板方法中所使用到的抽象方法。这些抽象方法由子类负责实现</li>
+<li><code>ConcreteClass</code>：具体类，负责具体实现在AbstractClass中定义的抽象方法。而方法的具体实现会在模板方法中被调用</li>
+</ul>
+<p>简单来说，Template Method模式就是在父类中定义处理流程的框架，在子类中实现具体的处理逻辑。</p>
+<h2 id="示例程序-2"><a href="#示例程序-2" class="headerlink" title="示例程序"></a>示例程序</h2><p>首先准备一个抽象父类<code>AbstractDisplay</code>，其中的核心方法是<code>display</code>。在display中，它首先调用了<code>open</code>方法，然后重复执行五次<code>print</code>方法，最后执行了<code>close</code>方法，不过这些被调用的方法都是抽象方法，等待子类实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AbstractDisplay</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">print</span><span class="hljs-params">()</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">display</span><span class="hljs-params">()</span> &#123;<br>        open();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++) &#123;<br>            print();<br>        &#125;<br>        close();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里我们实现两个子类来观察不同的运行结果，第一个子类<code>CharDisplay</code>对相关抽象方法有如下的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CharDisplay</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractDisplay</span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123;<br>        System.out.print(<span class="hljs-string">&quot;&lt;&lt;&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">print</span><span class="hljs-params">()</span> &#123;<br>        System.out.print(<span class="hljs-string">&quot;H&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span> &#123;<br>        System.out.print(<span class="hljs-string">&quot;&gt;&gt;&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>第二个子类<code>StringDisplay</code>对相关抽象方法则实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">StringDisplay</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractDisplay</span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;+--------+&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">print</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;+Template+&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;+--------+&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>两个子类对抽象方法的实现各不相同，但是最终在<code>display</code>中的执行流程还是一样的，都是按照父类已经定义好的流程进行实现的。可以利用相关测试方法来查看不同的效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testCharDisplay</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">AbstractDisplay</span> <span class="hljs-variable">display</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CharDisplay</span>();<br>    display.display();<br>&#125;<br><br><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testStringDisplay</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">AbstractDisplay</span> <span class="hljs-variable">display</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringDisplay</span>();<br>    display.display();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="说明-2"><a href="#说明-2" class="headerlink" title="说明"></a>说明</h2><p>在Template Method模式中，父类的模版方法内部定义了算法或者流程，这样就无需在每个子类内部重复编写算法。这种方式集中在父类内部管理核心流程，保证了关键代码的稳定，而具体的实现由不同的子类来完成，又可以适应多种不同的情况。在该类模式中，父类和子类之间是相互联系的，我们只有参考理解父类中模版方法的流程，才能够很好地在子类中实现相关的抽象方法。</p>
+<h1 id="Factory-Method"><a href="#Factory-Method" class="headerlink" title="Factory Method"></a>Factory Method</h1><h2 id="简介-3"><a href="#简介-3" class="headerlink" title="简介"></a>简介</h2><p>在Template Method模式中，我们在父类中规定处理的流程，而让子类来实现具体的处理。将这种思想应用于实例生成，则是Factory Method模式。在Factory Method模式中，父类将决定实例生成的流程和方式，但是具体的处理则交给子类来完成，如此，就可以将生成实例的框架和实际负责实例生成的类进行解耦。</p>
+<p>在Factory Method中有如下角色：</p>
+<ul>
+<li><code>Product</code>：产品类，该角色属于框架这一方，属于抽象类。该角色定义了在Factory Method模式中生成的实例所需要有的接口</li>
+<li><code>Creator</code>：创建者，同样属于框架这一方，属于抽象类，负责生成Product角色，生成过程可以安排，但是具体的处理由子类决定</li>
+<li><code>ConcreteProduct</code>：继承Product，属于具体的产品</li>
+<li><code>ConcreteCreator</code>：继承Creator，属于具体的创建者</li>
+</ul>
+<h2 id="示例程序-3"><a href="#示例程序-3" class="headerlink" title="示例程序"></a>示例程序</h2><p>考虑这样的场景，我们使用Factory Method模式来完成ID卡的生成。ID卡属于产品Product，我们需要有一个工厂Factory来生成产品。首先定义Product类和Factory类，它们属于框架提供的架构，也就是父类。在Product类中声明产品有一个使用方法，而在Factory中定义了产品的生产流程，关键步骤使用抽象方法，需要由子类进行实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Product</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">use</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Product <span class="hljs-title function_">create</span><span class="hljs-params">(String owner)</span>&#123;<br>        <span class="hljs-type">Product</span> <span class="hljs-variable">product</span> <span class="hljs-operator">=</span> createProduct(owner);<br>        registerProduct(product);<br>        <span class="hljs-keyword">return</span> product;<br>    &#125;<br><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">abstract</span> Product <span class="hljs-title function_">createProduct</span><span class="hljs-params">(String owner)</span>;<br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">registerProduct</span><span class="hljs-params">(Product product)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来，我们就需要分别它们对应的子类，IDCard以及IDCardFactory。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IDCard</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Product</span> &#123;<br>    <span class="hljs-keyword">private</span> String owner;<br><br>    IDCard(String owner) &#123;<br>        System.out.println(<span class="hljs-string">&quot;generate the ID card of &quot;</span> + owner);<br>        <span class="hljs-built_in">this</span>.owner = owner;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">use</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;using the ID card of &quot;</span> + owner);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getOwner</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> owner;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>IDCard需要继承Product，并且实现对应的方法。注意这里的构造方法是默认的default作用范围，它的作用范围是本包内，外部是无法调用这个构造方法的。这也就能够一定程度上限制其他外部类的行为，它无法直接new得到对象，而只能通过工厂来创建对象。</p>
+<p>IDCardFactory则需要继承Factory，同样实现对应的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IDCardFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> List&lt;String&gt; owners = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> Product <span class="hljs-title function_">createProduct</span><span class="hljs-params">(String owner)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IDCard</span>(owner);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">registerProduct</span><span class="hljs-params">(Product product)</span> &#123;<br>        owners.add(((IDCard) product).getOwner());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来就可以书写测试程序了。对于这些功能的使用者也就是我们的测试程序来说，它需要获得一个IDCard的实例，只需要通过工厂IDCardFactory进行创建即可，至于其内部的具体逻辑则不需要关心。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Factory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IDCardFactory</span>();<br>    <span class="hljs-type">Product</span> <span class="hljs-variable">card1</span> <span class="hljs-operator">=</span> factory.create(<span class="hljs-string">&quot;A&quot;</span>);<br>    <span class="hljs-type">Product</span> <span class="hljs-variable">card2</span> <span class="hljs-operator">=</span> factory.create(<span class="hljs-string">&quot;B&quot;</span>);<br>    <span class="hljs-type">Product</span> <span class="hljs-variable">card3</span> <span class="hljs-operator">=</span> factory.create(<span class="hljs-string">&quot;C&quot;</span>);<br>    card1.use();<br>    card2.use();<br>    card3.use();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="说明-3"><a href="#说明-3" class="headerlink" title="说明"></a>说明</h2><p>Factory Method可以帮助我们对外提供一个简单的获取实例的方式。在一些情况下，某个实例的准备可能需要复杂的过程，但是对于外界来说，可能只需要知道如何能够生成就行。Factory Method就能够提供一个分离的方式获取实例。不过在编写具体类的时候，需要结合抽象父类进行理解，否则会对各个抽象方法实际需要完成的工作不够清楚，导致子类中的实现无法达到效果。</p>
+<p>对于Factory中的需要子类实现的方法，我们一般有三种方式来定义。第一种就是直接声明为抽象方法，子类必须实现，否则在编译时会报错。第二种就是在父类中给一个最简单最基础的实现。第三种是默认实现抛出异常，如果在子类中没有实现，则是在执行的以后才会报错。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Technique/" class="category-chain-item">Technique</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">#设计模式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>设计模式(1)-简单设计与交给子类</div>
+      <div>http://example.com/2023/03/16/设计模式-1-简单设计与交给子类/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年3月16日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/19/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-2-%E5%AE%9E%E4%BE%8B%E7%94%9F%E6%88%90/" title="设计模式(2)-实例生成">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">设计模式(2)-实例生成</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/11/Parquet-%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9C%A8Java%E4%B8%AD%E7%9A%84%E6%93%8D%E4%BD%9C/" title="Parquet-格式介绍与在Java中的操作">
+                        <span class="hidden-mobile">Parquet-格式介绍与在Java中的操作</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,866 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Scala是一种多范式的编程语言，其中很重要的一点就是函数式编程。本文介绍了Scala中的函数式编程的相关知识以及使用要点。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scala学习笔记-核心特性(1)-函数式编程">
+<meta property="og:url" content="http://example.com/2022/04/30/Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E6%A0%B8%E5%BF%83%E7%89%B9%E6%80%A7-1-%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Scala是一种多范式的编程语言，其中很重要的一点就是函数式编程。本文介绍了Scala中的函数式编程的相关知识以及使用要点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-30T12:00:22.000Z">
+<meta property="article:modified_time" content="2023-04-29T06:44:30.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="Scala">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Scala学习笔记-核心特性(1)-函数式编程 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Scala学习笔记-核心特性(1)-函数式编程"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-04-30 20:00" pubdate>
+          2022年4月30日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          52 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Scala学习笔记-核心特性(1)-函数式编程</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="函数式编程简介"><a href="#函数式编程简介" class="headerlink" title="函数式编程简介"></a>函数式编程简介</h2><p>不同范式的对比：</p>
+<ul>
+<li>面向过程：按照步骤按照顺序解决问题</li>
+<li>面向对象：分解对象、行为、属性，然后通过对象关系以及行为调用来解决问题。耦合低，复用性高，可维护性强</li>
+<li>函数式编程：面向对象和面向过程都是命令式编程，但是函数式编程并不关心具体的运行过程，更加关心数据之间的映射关系。纯粹的函数式编程语言中没有变量的概念，所有的量都是常量。整个执行过程就是在不停的进行表达式的求值，每一段程序都有返回值。（易于编程人员理解，相对地编译器处理起来比较复杂）</li>
+</ul>
+<blockquote>
+<p>函数式编程的编程效率更高，并且由于函数式编程的不可变性，对于函数来说，输入固定则输出固定，与环境上下文等无关。利于并行处理，所以特别适用于大数据处理领域。</p>
+<p>Scala将函数式编程和面向对象编程融合在一起。</p>
+</blockquote>
+<h2 id="函数基本语法"><a href="#函数基本语法" class="headerlink" title="函数基本语法"></a>函数基本语法</h2><h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h3><p>在Scala中，函数定义如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">func</span></span>(arg1: <span class="hljs-type">Type1</span>, arg2:<span class="hljs-type">Type2</span>, ...): <span class="hljs-type">ReturnType</span> = &#123;<br>    ...<br>&#125;<br><span class="hljs-comment">// 举例</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sum</span></span>(x: <span class="hljs-type">Int</span>, y: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    x + y<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中包括函数名称、函数参数和对应的类型、函数返回类型以及函数体。</p>
+<blockquote>
+<p>函数和方法的区别：</p>
+<ul>
+<li>完成某一功能的程序语句的集合称为函数</li>
+<li>类中的函数称为方法</li>
+<li>函数并没有重载和重写的概念，但是方法有</li>
+</ul>
+</blockquote>
+<p>注意事项：</p>
+<ol>
+<li>Scala语言可以在任何的语法结构中声明任何的语法</li>
+<li>Scala中函数可以嵌套定义，在Java中方法中不能再写方法</li>
+<li>函数式编程语言中，函数是一等公民，可以像对象一样赋值，作为参数返回值等，可以在任何代码块中定义函数</li>
+</ol>
+<h3 id="函数参数"><a href="#函数参数" class="headerlink" title="函数参数"></a>函数参数</h3><p>函数参数的情形：有参、无参、有返回值、无返回值（Unit）</p>
+<p><strong>可变参数</strong>的写法：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test</span></span>(strs: <span class="hljs-type">String</span>*): <span class="hljs-type">Unit</span> = &#123;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>如果参数列表存在多个参数，则将可变参数放置在最后</li>
+</ul>
+<blockquote>
+<p>在Java中，如果一个方法的参数是可变参数，那么传入一个数组对象也是能够接收的，不过在Scala中，是不能将数组对象传入可变参数，需要而是需要增加<code>:_*</code>进行解析，例如我们希望能够使用可变参数：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    test(args:_*)<br>&#125;<br></code></pre></td></tr></table></figure>
+</blockquote>
+<p><strong>默认参数</strong>和<strong>具名参数</strong></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test</span></span>(a :<span class="hljs-type">Int</span> ,b :<span class="hljs-type">Int</span> = <span class="hljs-number">1</span>): <span class="hljs-type">Int</span> = &#123;<br>    a + b<br>&#125;<br><span class="hljs-comment">// 调用</span><br>test(a = <span class="hljs-number">1</span>, b = <span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>一般情况下，将有默认值的参数放置在参数列表的后面（不满足顺序也不会报错）</li>
+<li><strong>在Scala中有默认参数以及具名参数，但是在Java中没有类似的用法</strong></li>
+</ul>
+<h3 id="函数至简原则"><a href="#函数至简原则" class="headerlink" title="函数至简原则"></a>函数至简原则</h3><ol>
+<li>return可以省略、Scala会使用函数体的最后一行代码作为返回值</li>
+<li>如果函数体只有一行代码，可以省略花括号</li>
+<li>如果返回值类型能够推断出来，则可以省略</li>
+<li>如果有return，则不能省略返回值类型，必须指定</li>
+<li>如果函数中明确声明了返回Unit，那么即使函数体中使用了return关键字也不起作用</li>
+<li>Scala如果期望是无返回值类型，可以省略等号（废弃）</li>
+<li>无参函数声明可以不加括号，调用也可以不加（废弃）</li>
+<li>不关心函数名称的时候，函数名称和def也可以省略</li>
+</ol>
+<h2 id="高阶函数"><a href="#高阶函数" class="headerlink" title="高阶函数"></a>高阶函数</h2><p>在Scala中，函数是一等公民，我们可以<strong>定义函数</strong>、<strong>调用函数</strong>、将<strong>函数作为值传递</strong>、将<strong>函数作为参数</strong>进行传递、将<strong>函数作为返回值</strong></p>
+<ul>
+<li>注意这里函数作为参数，接收的类型该如何书写</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 定义函数</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test1</span></span>(): <span class="hljs-type">Unit</span> = &#123;<br>    println(<span class="hljs-string">&quot;调用函数test1&quot;</span>)<br>&#125;<br><span class="hljs-comment">// 调用函数</span><br>test1()<br><br><span class="hljs-comment">// 调用函数得到返回值并打印</span><br><span class="hljs-keyword">val</span> f: <span class="hljs-type">Unit</span> = test1()<br>println(f)<br><span class="hljs-comment">// 将函数整体作为值进行传递（得到一个Lambda函数对象）</span><br><span class="hljs-comment">// 需要加上下划线_,相当于把函数test1当成一个整体传入</span><br><span class="hljs-keyword">val</span> f1 = test1 _<br>println(f1)<br><span class="hljs-comment">// 如果明确变量类型，那么不使用下划线也可以</span><br><span class="hljs-keyword">val</span> f2: () =&gt; <span class="hljs-type">Unit</span> = test1<br>println(f2)<br><br><span class="hljs-comment">// 函数作为参数传递</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">func1</span></span>(f: (<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    f(<span class="hljs-number">2</span>, <span class="hljs-number">4</span>)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add</span></span>(a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    a + b<br>&#125;<br><span class="hljs-comment">// func1需要传入一个函数作为参数，add是我们传进去的作为参数的函数</span><br><span class="hljs-comment">// 可以传入add _表示函数对象，但是由于类型确定，可以推断出这不是函数调用，因此可以不用冗余的_</span><br>println(func1(add _))<br>println(func1(add))<br><br><span class="hljs-comment">// 函数作为函数返回值返回</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">func2</span></span>() = &#123;<br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">func3</span></span>(): <span class="hljs-type">Unit</span> = &#123;<br>        println(<span class="hljs-string">&quot;调用func3&quot;</span>)<br>    &#125;<br><br>    func3 _<br>&#125;<br><span class="hljs-comment">// 调用func2()得到返回值还是一个函数</span><br><span class="hljs-keyword">val</span> f3 = func2()<br><span class="hljs-comment">// f3是一个函数，还能够进行调用</span><br>println(f3)<br>f3()<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p>没有名称的函数就是匿名函数，也称为Lambda表达式，格式如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">(参数列表) =&gt; &#123;函数体&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>匿名函数定义的时候不能有函数的返回值类型</li>
+<li>参数列表中的类型可以省略，会根据进行自动的类型推导</li>
+<li>类型省略之后发现只有一个参数，则圆括号可以省略</li>
+<li>匿名函数如果只有一行，则大括号也可以省略</li>
+<li>如果参数在函数体中只出现一次，则参数省略，且后面的参数可以使用<code>_</code>进行代替</li>
+<li><code>_</code>下划线必须按照顺序进行接收，使用下划线的时候必须省略参数列表和箭头</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myOP</span></span>(op: (<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    println(op(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>))<br>    op(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br>&#125;<br><br>println(<span class="hljs-string">&quot;The Return Of myOp Is &quot;</span> + myOP((x, y) =&gt; &#123;<br>    x + y<br>&#125;))<br>println(<span class="hljs-string">&quot;The Return Of myOp Is &quot;</span> + myOP(&#123;<br>    _ + _<br>&#125;))<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="闭包和函数柯里化"><a href="#闭包和函数柯里化" class="headerlink" title="闭包和函数柯里化"></a>闭包和函数柯里化</h2><p>闭包：如果一个函数，访问到了它的外部的局部变量的值，那么这个函数和它所处的环境包括那个变量称为闭包。</p>
+<p>观察如下示例：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// f1的返回值是一个函数</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f1</span></span>() = &#123;<br>	<span class="hljs-keyword">var</span> a: <span class="hljs-type">Int</span> = <span class="hljs-number">10</span><br><br>	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f2</span></span>(b: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>	a + b<br>	&#125;<br><br>	f2 _<br>&#125;<br><br><span class="hljs-keyword">val</span> f = f1()<br>println(f(<span class="hljs-number">5</span>))<br></code></pre></td></tr></table></figure>
+
+<p>函数<code>f1</code>的返回值是一个函数，通过f接收这个返回值后可以进行函数调用，因此最后得到的结果是<code>5+10=15</code>。但是按照常规分析，这里是存在问题的。上面存在函数的嵌套定义，但是并不存在函数的嵌套调用。我们在调用<code>f1()</code>的时候，并没有执行<code>f2</code>，只是得到了<code>f2</code>作为一个函数的返回值，因此此时<code>f1</code>的栈帧应该已经弹出了，后面再调用<code>f2</code>的时候理应无法访问到<code>f1</code>的局部变量，但是这里确确实实访问到了，这就是闭包的效果。</p>
+<p>在Scala中，一切皆对象，因此一个函数实际上也是对象。我们调用一个函数，实际上在JVM的堆内存上有一个函数对象，里面存放了局部变量。后续调用<code>f2</code>的时候，虽然栈帧弹出了，但是堆上的对象还是存在的，因此能够访问到。这里堆上的函数对象，清除的工作依赖于GC机制。</p>
+<p>与闭包概念一起出现的还有函数柯里化的概念。</p>
+<p>函数柯里化（Currying）：指的是将一个参数列表的多个参数，变成多个参数列表的过程。也就是将普通的多参数函数变成高阶函数的过程。例如，上面的函数<code>f1</code>也可以进行柯里化，写成下面的样子，之后就可以连续调用。这样的写法更符合阅读习惯。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f1</span></span>()(b: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    <span class="hljs-keyword">var</span> a: <span class="hljs-type">Int</span> = <span class="hljs-number">10</span><br>    a + b<br>&#125;<br><br><span class="hljs-keyword">val</span> f = f1()(<span class="hljs-number">5</span>)<br>println(f)<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="函数递归"><a href="#函数递归" class="headerlink" title="函数递归"></a>函数递归</h2><p>递归：函数调用自身</p>
+<ul>
+<li>函数调用自身</li>
+<li>必须要有跳出的逻辑</li>
+<li>scala中的递归必须声明函数返回值类型</li>
+</ul>
+<p>在递归过程中，往往会导致栈中空间被大量占用。但是在一种情况下，Scala中可以对栈的占用进行优化，即尾递归的情形。</p>
+<p>在传统的递归中，典型的模型是首先执行递归调用，然后获取递归调用的返回值并计算结果。这种方式下，在每次递归调用返回之前，我们并不能得到计算结果。如果一个函数所有的递归形式的调用都出现在函数的末尾，则这种情况称为尾递归。尾递归函数的特点是在回归过程中不用做任何操作，这个特性可以使得在递归过程中没有保存栈帧的必要，可以通过覆盖当前的栈帧而不是在其之上重新添加，因此所使用的栈空间就大大缩减，这使得实际的运行效率更高。</p>
+<p>对尾递归的优化依赖于语言，递归可以写成尾递归的形式，在Scala中会对尾递归进行优化，Java中并没有这样的机制。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 正常递归计算阶乘</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">factorial</span></span>(n: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span><br>    <span class="hljs-keyword">if</span> (n == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> factorial(n - <span class="hljs-number">1</span>) * n<br>&#125;<br><br><span class="hljs-comment">// 改进成尾递归的形式</span><br><span class="hljs-meta">@tailrec</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tailFact</span></span>(n: <span class="hljs-type">Int</span>, res: <span class="hljs-type">Int</span> = <span class="hljs-number">1</span>): <span class="hljs-type">Int</span> = &#123;<br>    <span class="hljs-keyword">if</span> (n &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> res<br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> tailFact(n - <span class="hljs-number">1</span>, res * n)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中的注解<code>tailrec</code>会检查下面的递归函数是否满足尾递归的形式，如果不满足则会报错。在IDEA中也会智能检查尾递归和普通递归，函数旁边会显示不同的标志。</p>
+<h2 id="控制抽象"><a href="#控制抽象" class="headerlink" title="控制抽象"></a>控制抽象</h2><p>在Scala中存在值调用和名调用两种方式</p>
+<ul>
+<li>值调用：按值传递参数，计算值之后再进行传递</li>
+<li>名调用：按名称传递参数，直接使用实参替换函数中使用形参的地方，相当于直接在预处理的时候替换，可以传递代码块</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 值传递</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f0</span></span>(a: <span class="hljs-type">Int</span>) = &#123;<br>    println(<span class="hljs-string">&quot;f0被调用&quot;</span>)<br>    println(<span class="hljs-string">&quot;a = &quot;</span> + a)<br>&#125;<br><br>f0(<span class="hljs-number">10</span>)<br><br><span class="hljs-comment">// 名传递</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f1</span></span>(a: =&gt; <span class="hljs-type">Int</span>) = &#123;<br>    println(<span class="hljs-string">&quot;f1被调用&quot;</span>)<br>    println(<span class="hljs-string">&quot;a=&quot;</span> + a)<br>    println(<span class="hljs-string">&quot;a=&quot;</span> + a)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f2</span></span>(): <span class="hljs-type">Int</span> = &#123;<br>    println(<span class="hljs-string">&quot;f2被调用&quot;</span>)<br>    <span class="hljs-number">2</span><br>&#125;<br><br>f1(<span class="hljs-number">10</span>)<br>f1(f2())<br>f1(&#123;<br>    println(<span class="hljs-string">&quot;代码块调用&quot;</span>)<br>    <span class="hljs-number">5</span><br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>对应的输出结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">f0被调用<br>a = 10<br>f1被调用<br>a=10<br>a=10<br>f1被调用<br>f2被调用<br>a=2<br>f2被调用<br>a=2<br>f1被调用<br>代码块调用<br>a=5<br>代码块调用<br>a=5<br></code></pre></td></tr></table></figure>
+
+<p>注意这里名调用中参数类型的指定，需要使用<code>=&gt;</code>，并且需要<strong>指定代码块或者参数的返回值</strong></p>
+<p>我们可以利用名传递来实现一个while关键字的功能，见后面的应用举例</p>
+<h2 id="惰性加载"><a href="#惰性加载" class="headerlink" title="惰性加载"></a>惰性加载</h2><p>当函数返回值被声明为lazy的时候，函数的执行将被推迟，直到我们首次使用这个值，该函数才会被执行。这种函数被称为惰性函数。（注意，lazy不能修饰var类型的变量，只能修饰函数的返回值）</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sum</span></span>(n1: <span class="hljs-type">Int</span>, n2: <span class="hljs-type">Int</span>) = &#123;<br>    println(<span class="hljs-string">&quot;sum被执行&quot;</span>)<br>    n1 + n2<br>&#125;<br><br><span class="hljs-keyword">lazy</span> <span class="hljs-keyword">val</span> res = sum(<span class="hljs-number">10</span>, <span class="hljs-number">30</span>)<br>println(<span class="hljs-string">&quot;--------&quot;</span>)<br>println(<span class="hljs-string">&quot;res = &quot;</span> + res)<br></code></pre></td></tr></table></figure>
+
+<p>运行结果如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala">--------<br>sum被执行<br>res = <span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="函数应用举例"><a href="#函数应用举例" class="headerlink" title="函数应用举例"></a>函数应用举例</h2><h3 id="模拟Map映射、Filter过滤和Reduce聚合"><a href="#模拟Map映射、Filter过滤和Reduce聚合" class="headerlink" title="模拟Map映射、Filter过滤和Reduce聚合"></a>模拟Map映射、Filter过滤和Reduce聚合</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// map，将列表中的每个值映射为另外一个值</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(array: <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>], op: <span class="hljs-type">Int</span> =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>] = &#123;<br>    <span class="hljs-keyword">for</span> (element &lt;- array) <span class="hljs-keyword">yield</span> op(element)<br>&#125;<br><br><span class="hljs-comment">// filter， 查看每个值是否能够加入列表</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">filter</span></span>(array: <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>], op: <span class="hljs-type">Int</span> =&gt; <span class="hljs-type">Boolean</span>): <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>] = &#123;<br>    <span class="hljs-keyword">for</span> (element &lt;- array <span class="hljs-keyword">if</span> op(element)) <span class="hljs-keyword">yield</span> element<br>&#125;<br><br><span class="hljs-comment">// reduce，将列表中的所有值进行两两规约</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(array: <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>], op: (<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    <span class="hljs-keyword">var</span> res: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> (element &lt;- array) res = op(res, element)<br>    res<br>&#125;<br><br><span class="hljs-comment">// 调用上面的函数，将列表中所有的值执行+1操作，去除其中的偶数，最后将它们全部相加</span><br><span class="hljs-keyword">val</span> array = <span class="hljs-type">Array</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)<br>println(map(array, (x: <span class="hljs-type">Int</span>) =&gt; &#123;<br>    x + <span class="hljs-number">1</span><br>&#125;).mkString(<span class="hljs-string">&quot;Array(&quot;</span>, <span class="hljs-string">&quot;, &quot;</span>, <span class="hljs-string">&quot;)&quot;</span>))<br>println(filter(array, (x: <span class="hljs-type">Int</span>) =&gt; &#123;<br>    x % <span class="hljs-number">2</span> == <span class="hljs-number">1</span><br>&#125;).mkString(<span class="hljs-string">&quot;Array(&quot;</span>, <span class="hljs-string">&quot;, &quot;</span>, <span class="hljs-string">&quot;)&quot;</span>))<br>println(reduce(array, &#123;<br>    _ + _<br>&#125;))<br></code></pre></td></tr></table></figure>
+
+<h3 id="利用同一个函数实现在整数上的四则运算"><a href="#利用同一个函数实现在整数上的四则运算" class="headerlink" title="利用同一个函数实现在整数上的四则运算"></a>利用同一个函数实现在整数上的四则运算</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">intCalculate</span></span>(a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>, op: (<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    println(op(a, b))<br>    op(a, b)<br>&#125;<br><span class="hljs-comment">//实现加减乘除</span><br>intCalculate(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, (a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>) =&gt; &#123;<br>    a + b<br>&#125;)<br>intCalculate(<span class="hljs-number">3</span>, <span class="hljs-number">1</span>, (a, b) =&gt; &#123;<br>    a - b<br>&#125;)<br>intCalculate(<span class="hljs-number">4</span>, <span class="hljs-number">2</span>, &#123;<br>    _ * _<br>&#125;)<br>intCalculate(<span class="hljs-number">6</span>, <span class="hljs-number">3</span>, &#123;<br>    _ / _<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<h3 id="利用名传递实现while关键字的功能"><a href="#利用名传递实现while关键字的功能" class="headerlink" title="利用名传递实现while关键字的功能"></a>利用名传递实现while关键字的功能</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 内置的while</span><br><span class="hljs-keyword">var</span> n = <span class="hljs-number">10</span><br><span class="hljs-keyword">while</span> (n &gt;= <span class="hljs-number">1</span>) &#123;<br>    print(n + <span class="hljs-string">&quot; &quot;</span>)<br>    n -= <span class="hljs-number">1</span><br>&#125;<br><br><span class="hljs-comment">// 自己实现while</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myWhile</span></span>(condition: =&gt; <span class="hljs-type">Boolean</span>)(op: =&gt; <span class="hljs-type">Unit</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">if</span> (condition) &#123;<br>        op<br>        myWhile(condition)(op)<br>    &#125;<br>&#125;<br><br>n = <span class="hljs-number">10</span><br>myWhile(n &gt;= <span class="hljs-number">1</span>) &#123;<br>    print(n + <span class="hljs-string">&quot; &quot;</span>)<br>    n -= <span class="hljs-number">1</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" class="category-chain-item">大数据</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Scala/" class="category-chain-item">Scala</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+      
+        <a href="/tags/Scala/">#Scala</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Scala学习笔记-核心特性(1)-函数式编程</div>
+      <div>http://example.com/2022/04/30/Scala学习笔记-核心特性-1-函数式编程/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年4月30日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/01/Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E6%A0%B8%E5%BF%83%E7%89%B9%E6%80%A7-2-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" title="Scala学习笔记-核心特性(2)-面向对象">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Scala学习笔记-核心特性(2)-面向对象</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04/29/Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Scala%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" title="Scala学习笔记-入门(2)-Scala基础语法">
+                        <span class="hidden-mobile">Scala学习笔记-入门(2)-Scala基础语法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

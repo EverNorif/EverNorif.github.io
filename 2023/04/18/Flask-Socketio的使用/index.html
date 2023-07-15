@@ -1,0 +1,814 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在Web开发的场景中，一种常见的需求是让后端实时推送信息到前端，然后前端进行展示。服务器推送可以通过WebSocket来实现。本文主要学习了在Flask中如何使用相关技术来完成服务端信息推送，通过一个简单的前后端小案例来介绍相关功能的使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask-Socketio的使用">
+<meta property="og:url" content="http://example.com/2023/04/18/Flask-Socketio%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="在Web开发的场景中，一种常见的需求是让后端实时推送信息到前端，然后前端进行展示。服务器推送可以通过WebSocket来实现。本文主要学习了在Flask中如何使用相关技术来完成服务端信息推送，通过一个简单的前后端小案例来介绍相关功能的使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/04/18/Flask-Socketio%E7%9A%84%E4%BD%BF%E7%94%A8/socketio-frontend.png">
+<meta property="article:published_time" content="2023-04-18T11:55:10.000Z">
+<meta property="article:modified_time" content="2023-04-19T13:14:50.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Flask">
+<meta property="article:tag" content="SocketIO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/04/18/Flask-Socketio%E7%9A%84%E4%BD%BF%E7%94%A8/socketio-frontend.png">
+  
+  
+  
+  <title>Flask-Socketio的使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                番剧
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    追番
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    追剧
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Flask-Socketio的使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-18 19:55" pubdate>
+          2023年4月18日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Flask-Socketio的使用</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h1><p>WebSocket是一种网络协议，可以用来实现在客户端和服务器之间的双向实时通信，前端可以向后端发送请求，同时后端也可以向前端进行实时数据推送。传统的HTTP协议是无状态的，每次请求都需要重新建立连接，而利用WebSocket可以在建立连接之后保持连接状态，双方可以随时发送信息。</p>
+<p>在一个实时的Web应用程序中，我们可以使用Vue作为前端框架，使用Flask作为后端框架。前后端都有相关的工具来支持WebSocket，使得开发WebSocket应用更加容易。</p>
+<h1 id="案例介绍"><a href="#案例介绍" class="headerlink" title="案例介绍"></a>案例介绍</h1><h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p>在介绍案例之前，我们可以简单了解一下WebSocket的工作原理。WebSocket可以实现服务器和客户端之间的双向通信，我们可以想象是在双方之间建立了一个通道，前后端都可以进行信息发送和信息接收。具体来说，我们会在后面见到<code>emit</code>和<code>on</code>的操作，分别代表发送信息以及接收信息。</p>
+<p>如果客户端想要使用websocket接受服务器推送的话，Socketio是一个不错的选择。Socket.io将Websocket、轮询机制以及其它的实时通信方式（ajax等）封装成了通用的接口，并且在服务端也实现了这些实时机制的相应代码。所以，使用Socket.io便不需要担心浏览器兼容问题。</p>
+<p>在socketio中还有两个重要的概念，分别为<code>namespace</code>和<code>event</code>，前后端如果要进行双向通信，这些信息应该同属于一个namespace。而event则是在信息发送和接收的时候使用到，我们可以触发一个event，也可以监听一个event，这样就形成了一个通道，使得数据能够正确传递。在后面我们也可以在代码中看到对应的概念。</p>
+<h2 id="Flask-SocketIO"><a href="#Flask-SocketIO" class="headerlink" title="Flask SocketIO"></a>Flask SocketIO</h2><p>Flask SocketIO是在Flask框架中对WebSocket的支持，通过它我们能够在Flask中很方便地完成WebSocket应用的编写。可以通过pip来进行依赖的安装：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install flask-socketio<br></code></pre></td></tr></table></figure>
+
+<p>之后，我们可以通过如下的代码来获取对应的SocketIO对象。这里为了解决跨域问题，我们使用了CORS以及<code>cors_allowed_origins=&#39;*&#39;</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><span class="hljs-keyword">from</span> flask_cors <span class="hljs-keyword">import</span> CORS<br><span class="hljs-keyword">from</span> flask_socketio <span class="hljs-keyword">import</span> SocketIO<br><br>app = Flask(__name__)<br>CORS(app, cors_allowed_origins=<span class="hljs-string">&#x27;*&#x27;</span>)<br>socketIO = SocketIO(app, cors_allowed_origins=<span class="hljs-string">&#x27;*&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>下一步，我们可以完成一个通信方法。可以看到，在代码中我们指定了<code>namespace</code>为<code>/api</code>，同时还调用了SocketIO对象的<code>on</code>和<code>emit</code>方法。首先，后端会监听<code>/api</code>下的<code>my event</code>事件，如果监听到了，就会触发该函数。在函数中，我们可以接收推送的信息data，然后后端调用<code>emit</code>方法，触发<code>my response</code>事件，同时传递数据。这里传递的数据就是在得到的data基础上进行了一层包装。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@socketIO.on(<span class="hljs-params"><span class="hljs-string">&quot;my event&quot;</span>, namespace=<span class="hljs-string">&quot;/api&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">testSocketIO</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-built_in">print</span>(data)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test socket io...&quot;</span>)<br>    socketIO.emit(<span class="hljs-string">&quot;my response&quot;</span>, &#123;<span class="hljs-string">&#x27;dataInBackend&#x27;</span>: data&#125;, namespace=<span class="hljs-string">&quot;/api&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>SocketIO应用的启动和传统的Flask有所区别，需要使用<code>SocketIO</code>对象来run。如果使用的是dev模式，则需要额外增加属性<code>allow_unsafe_werkzeug=True</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    socketIO.run(app, allow_unsafe_werkzeug=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+
+<h2 id="Vue-前端展现"><a href="#Vue-前端展现" class="headerlink" title="Vue 前端展现"></a>Vue 前端展现</h2><p>在前端我们同样需要SocketIO的支持。这里我们使用Vue框架作为前端的实现。在Vue中有两种方式来使用SocketIO，一种是直接使用官方包<code>SocketIO</code>，第二种是使用<code>VueSocketio</code>。第二种方式是对SocketIO的一层封装，更适合在Vue项目中使用，不过在案例实现的过程中，第二种方法会有版本不匹配的问题出现，因此这里还是选择使用第一种方式。</p>
+<p>首先需要通过npm安装相关依赖：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">npm install socket.io-client<br></code></pre></td></tr></table></figure>
+
+<p>之后，我们可以在需要使用WebSocket的组件中进行使用。下面来介绍一个简单案例。首先展现组件的完整代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>  &lt;h1&gt;SocketIO Shower&lt;/h1&gt;<br>  &lt;div&gt;&#123;&#123; this.data &#125;&#125;&lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>import io from &#x27;socket.io-client&#x27;;<br><br>export default &#123;<br>  name: &quot;SocketIOShower&quot;,<br>  data() &#123;<br>    return &#123;<br>      data: &#123;&#125;<br>    &#125;<br>  &#125;,<br>  mounted() &#123;<br>    const socket = io(&#x27;http://127.0.0.1:5000/api&#x27;);<br>    socket.emit(&#x27;my event&#x27;, &#123;&#x27;data&#x27;: &quot;data from fronend&quot;&#125;);<br>    socket.on(&#x27;my response&#x27;, (data) =&gt; &#123;<br>      this.data = data<br>    &#125;)<br>  &#125;<br>&#125;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+
+<p>在测试组件中，我们的data中返回一个data字段，用于承接后端推送的信息，并将其渲染在页面中。在组件mounted的声明周期，我们通过<code>io</code>获取一个<code>SocketIO</code>对象，然后通过该对象分别调用了emit以及on方法。注意这里在对象初始化的时候，我们已经在url中指定了<code>namespace</code>，实际上namespace就相当于path的拼接。</p>
+<p>对应到前面Flask的案例代码，首先前端通过<code>emit</code>触发<code>my event</code>事件传递数据<code>&#123;&#39;data&#39;: &quot;data from fronend&quot;&#125;</code>，后端flask监听了对应namespace下的该事件，于是会在控制台中进行打印，同时调用<code>emit</code>方法触发<code>my response</code>事件，向前端传送信息。前端使用了<code>on</code>方法来监听<code>my response</code>事件，因此能够得到后端传送来的数据，同时更新<code>this.data</code>，进行页面渲染。</p>
+<p>最终我们可以在前端页面上看见如下效果：</p>
+<img src="/2023/04/18/Flask-Socketio%E7%9A%84%E4%BD%BF%E7%94%A8/socketio-frontend.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="socketio-frontend">
+
+<h2 id="动态推送"><a href="#动态推送" class="headerlink" title="动态推送"></a>动态推送</h2><p>上面的案例中，后端只是向前端完成了一次简单的数据推送，更常见的场景是后端持续向前端进行数据推送，我们可以简单修改上面的示例代码来模拟对应场景：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@socketIO.on(<span class="hljs-params"><span class="hljs-string">&quot;my event&quot;</span>, namespace=<span class="hljs-string">&quot;/api&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">testSocketIO</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-built_in">print</span>(data)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test socket io...&quot;</span>)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">100</span>):<br>        time.sleep(<span class="hljs-number">1</span>)<br>        socketIO.emit(<span class="hljs-string">&quot;my response&quot;</span>, &#123;<span class="hljs-string">&#x27;dataInBackend&#x27;</span>: data, <span class="hljs-string">&#x27;nowIndex&#x27;</span>: i&#125;, namespace=<span class="hljs-string">&quot;/api&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>之后在前端页面上，我们就可以看到动态变化的信息了。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>在使用过程中，可能出现如下异常情况。在Flask后端中出现下面的提示信息，同时前端控制台上会一直提示400以及跨域错误。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">The client is using an unsupported version of the Socket.IO or Engine.IO protocols<br></code></pre></td></tr></table></figure>
+
+<p>这是因为相关依赖的版本不能匹配。在使用过程中，前后端使用的SocketIO以及相关依赖的版本需要能够匹配上，否则会无法工作。匹配的版本可以在<a target="_blank" rel="noopener" href="https://flask-socketio.readthedocs.io/en/latest/intro.html#version-compatibility">Introduction — Flask-SocketIO documentation</a>中进行查看，目前的对应关系如下所示。</p>
+<table>
+<thead>
+<tr>
+<th align="left">JavaScript Socket.IO version</th>
+<th align="left">Socket.IO protocol revision</th>
+<th align="left">Engine.IO protocol revision</th>
+<th align="left">Flask-SocketIO version</th>
+<th align="left">python-socketio version</th>
+<th align="left">python-engineio version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0.9.x</td>
+<td align="left">1, 2</td>
+<td align="left">1, 2</td>
+<td align="left">Not supported</td>
+<td align="left">Not supported</td>
+<td align="left">Not supported</td>
+</tr>
+<tr>
+<td align="left">1.x and 2.x</td>
+<td align="left">3, 4</td>
+<td align="left">3</td>
+<td align="left">4.x</td>
+<td align="left">4.x</td>
+<td align="left">3.x</td>
+</tr>
+<tr>
+<td align="left">3.x and 4.x</td>
+<td align="left">5</td>
+<td align="left">4</td>
+<td align="left">5.x</td>
+<td align="left">5.x</td>
+<td align="left">4.x</td>
+</tr>
+</tbody></table>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904201781248007">vue flask nginx socketio实现服务器推送（demo实现一个聊天室） - 掘金 (juejin.cn)</a></li>
+<li><a target="_blank" rel="noopener" href="https://flask-socketio.readthedocs.io/en/latest/index.html">Flask-SocketIO — Flask-SocketIO documentation</a></li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Flask/" class="category-chain-item">Flask</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Flask/">#Flask</a>
+      
+        <a href="/tags/SocketIO/">#SocketIO</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Flask-Socketio的使用</div>
+      <div>http://example.com/2023/04/18/Flask-Socketio的使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月18日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/24/Python%E9%9B%86%E5%90%88%E6%A8%A1%E5%9D%97-Collections/" title="Python集合模块 Collections">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python集合模块 Collections</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/17/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-6-%E9%81%BF%E5%85%8D%E6%B5%AA%E8%B4%B9%E4%B8%8E%E7%B1%BB%E8%A1%A8%E7%8E%B0/" title="设计模式(6)-避免浪费与类表现">
+                        <span class="hidden-mobile">设计模式(6)-避免浪费与类表现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
