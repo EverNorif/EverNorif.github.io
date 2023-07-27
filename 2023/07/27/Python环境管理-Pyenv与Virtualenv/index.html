@@ -16,22 +16,22 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本篇主要介绍了Docker网络，Docker compose，同时简单介绍了其他相关工具，包括Docker轻量级可视化工具Portanier以及Docker容器监控方案。">
+    <meta name="description" content="在使用Python进行开发的过程中，环境管理一定是其中非常重要的一部分。环境管理主要包括Python的版本管理以及项目的虚拟环境管理，一个很受欢迎的解决方案是使用Pyenv+Virtualenv。其中使用Pyenv来管理Python的多版本，利用Virtualenv来管理虚拟环境。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker学习笔记(3)-Docker网络,Docker compose与其他相关工具">
-<meta property="og:url" content="http://example.com/2023/07/13/Docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3-Docker%E7%BD%91%E7%BB%9C-Docker-compose%E4%B8%8E%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:title" content="Python环境管理-Pyenv与Virtualenv">
+<meta property="og:url" content="http://example.com/2023/07/27/Python%E7%8E%AF%E5%A2%83%E7%AE%A1%E7%90%86-Pyenv%E4%B8%8EVirtualenv/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="本篇主要介绍了Docker网络，Docker compose，同时简单介绍了其他相关工具，包括Docker轻量级可视化工具Portanier以及Docker容器监控方案。">
+<meta property="og:description" content="在使用Python进行开发的过程中，环境管理一定是其中非常重要的一部分。环境管理主要包括Python的版本管理以及项目的虚拟环境管理，一个很受欢迎的解决方案是使用Pyenv+Virtualenv。其中使用Pyenv来管理Python的多版本，利用Virtualenv来管理虚拟环境。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-07-13T11:55:26.000Z">
-<meta property="article:modified_time" content="2023-07-13T11:58:06.000Z">
+<meta property="article:published_time" content="2023-07-27T12:43:43.000Z">
+<meta property="article:modified_time" content="2023-07-27T12:52:25.555Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Python">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Docker学习笔记(3)-Docker网络,Docker compose与其他相关工具 - EverNorif</title>
+  <title>Python环境管理-Pyenv与Virtualenv - EverNorif</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -238,7 +238,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Docker学习笔记(3)-Docker网络,Docker compose与其他相关工具"></span>
+            <span id="subtitle" data-typed-text="Python环境管理-Pyenv与Virtualenv"></span>
           
         </div>
 
@@ -249,8 +249,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-07-13 19:55" pubdate>
-          2023年7月13日 晚上
+        <time datetime="2023-07-27 20:43" pubdate>
+          2023年7月27日 晚上
         </time>
       </span>
     
@@ -262,7 +262,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.3k 字
+          3.1k 字
         
       </span>
     
@@ -274,7 +274,7 @@
         
         
           <!-- compatible with older versions-->
-          19 分钟
+          26 分钟
         
       </span>
     
@@ -316,31 +316,79 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Docker学习笔记(3)-Docker网络,Docker compose与其他相关工具</h1>
+            <h1 style="display: none">Python环境管理-Pyenv与Virtualenv</h1>
             
             <div class="markdown-body">
               
-              <h1 id="Docker网络"><a href="#Docker网络" class="headerlink" title="Docker网络"></a>Docker网络</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Docker网络主要包括容器如何进行网络通信和传输，容器之间的互联等相关问题。在后面的语境中，Docker网络根据上下文通常表达一个实体概念，类似于网段，处于同一个Docker网络中的容器相当于处于同一个网段。</p>
-<p>可以通过下面的相关命令来对Docker网络进行操作：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看网络(初始情况下会包含三个网络：bridge，host，none)</span><br>docker network <span class="hljs-built_in">ls</span><br><br><span class="hljs-comment"># 查看网络详细数据</span><br>docker network inspect network_name<br><br><span class="hljs-comment"># 创建网络</span><br>docker network create [options] network_name<br><br><span class="hljs-comment"># 删除网络</span><br>docker network <span class="hljs-built_in">rm</span> network_name<br></code></pre></td></tr></table></figure>
+              <h1 id="Pyenv"><a href="#Pyenv" class="headerlink" title="Pyenv"></a>Pyenv</h1><p><a target="_blank" rel="noopener" href="https://github.com/pyenv/pyenv">pyenv</a>可以帮助我们轻松地管理多个Python版本并且在其中进行切换。在官方文档中有详细的介绍，这里主要记录了在使用MacOS，同时使用zsh的情况下，pyenv的安装过程，已经相关的使用方式。</p>
+<p>首先需要安装pyenv，在MacOS上直接使用<a target="_blank" rel="noopener" href="https://brew.sh/">HomeBrew</a>进行安装即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">brew update<br>brew install pyenv<br></code></pre></td></tr></table></figure>
 
-<h2 id="网络模式"><a href="#网络模式" class="headerlink" title="网络模式"></a>网络模式</h2><p>在使用<code>docker run</code>命令运行容器的时候，可以通过<code>--network</code>来指定需要使用的网络模式，默认情况下该参数值为bridge。Docker 网络模式总体分为下面四种：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">bridge模式：使用--network bridge指定，默认使用docker()<br><br>host模式：使用 --network host指定<br><br>none模式：使用 --network none指定<br><br>container模式：使用 --network container:Name或者容器ID指定<br></code></pre></td></tr></table></figure>
+<p>之后需要修改配置文件，由于使用的是<code>zsh</code>，因此需要执行下面的命令将相关配置添加到<code>.zshrc    </code>，当然也可以添加到<code>.zprofile    </code>配置文件中。修改完毕之后重启Shell，pyenv就安装完毕了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export PYENV_ROOT=&quot;$HOME/.pyenv&quot;&#x27;</span> &gt;&gt; ~/.zshrc<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;command -v pyenv &gt;/dev/null || export PATH=&quot;$PYENV_ROOT/bin:$PATH&quot;&#x27;</span> &gt;&gt; ~/.zshrc<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;eval &quot;$(pyenv init -)&quot;&#x27;</span> &gt;&gt; ~/.zshrc<br></code></pre></td></tr></table></figure>
 
-<h3 id="bridge模式"><a href="#bridge模式" class="headerlink" title="bridge模式"></a>bridge模式</h3><p>Docker 服务默认会创建一个 docker0 网桥（其上有一个 docker0 内部接口），该桥接网络的名称为docker0，它在内核层连通了其他的物理或虚拟网卡，这就将所有容器和本地主机都放到同一个物理网络。Docker 默认指定了 docker0 接口的IP地址和子网掩码，让主机和容器之间可以通过网桥相互通信。 在这种情况下主机是默认网关，容器通过主机进行外网的访问。</p>
-<h3 id="host模式"><a href="#host模式" class="headerlink" title="host模式"></a>host模式</h3><p>host模式下，容器直接使用宿主机的IP地址与外界进行通信，不再需要额外进行NAT转换。容器将 不会获得 一个独立的Network Namespace， 而是和宿主机共用一个Network Namespace。 容器将不会虚拟出自己的网卡而是使用宿主机的IP和端口。在这种情况下，指定端口映射将会失效。</p>
-<h3 id="none模式"><a href="#none模式" class="headerlink" title="none模式"></a>none模式</h3><p>none模式表示禁用网络功能，只有lo标识（localhost）</p>
-<h3 id="contianer模式"><a href="#contianer模式" class="headerlink" title="contianer模式"></a>contianer模式</h3><p>在container模式下，新建的容器和已经存在的一个容器共享网络IP配置。新建的容器不会创建自己的网卡，配置自己的IP，而是和指定的另一个容器进行共享。当然在除了网络的其他方面，例如文件系统，进程列表等，两个容器还是相互隔离的。</p>
-<h2 id="自定义网络"><a href="#自定义网络" class="headerlink" title="自定义网络"></a>自定义网络</h2><p>我们可以使用<code>docker network create</code> 来创建自定义网络，然后利用命令<code>    docker run --network network_name</code>在运行容器的使用指定使用自定义网络。自定义网络属于上面的bridge模式，但是自定义网络本身就维护好了主机名和ip的对应关系（ip和域名都能通），相当于在自定义网络中提供了DNS服务。</p>
-<h1 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h1><p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file/compose-file-v3/">Docker-Compose</a>是官方的容器开源项目，负责实现对Docker容器集群的快速编排。容器编排是指对运行容器化工作负载和服务所需的大部分运维工作进行自动化。 这包括软件团队管理容器生命周期所需完成的大量工作，包括置备、部署、扩展（扩展和缩减）、网络连接、负载均衡等。</p>
-<p>Docker Compose允许用户通过一个单独的<code>docker-compose.yml</code>模板文件来将一组相关的容器关联为一个项目，之后可以很容易地使用一条指令来完成项目的构建。在过程中会涉及到两个概念，分别是服务（service）以及项目（project），其中service指的是一个个应用容器实例，而工程指的是由一组关联的应用容器组成的一个完整的业务单元。</p>
-<p>在使用Docker Compose的过程中，首先需要编写Dockerfile定义好各个service并构建出对应的镜像文件，之后使用<code>docker-compose.yml</code>来定义完整的业务单元，安排好整体应用中的各个容器服务，最后执行<code>docker-compose up</code>命令来启动并运行整个应用程序。</p>
-<h1 id="其他相关工具"><a href="#其他相关工具" class="headerlink" title="其他相关工具"></a>其他相关工具</h1><p>该部分简单介绍了其他Docker相关工具，包括Docker轻量级可视化工具Portainer以及Docker容器监控方案。</p>
-<p><a target="_blank" rel="noopener" href="https://www.portainer.io/">Portainer</a> 是一款轻量级的应用，它提供了图形化界面，用于方便地管理Docker环境，包括单机环境和集群环境。</p>
-<p>Docker容器监控，一个常见的方案是CAdvisor监控收集+InfluxDB存储数据+Grafana展示图表。</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/google/cadvisor">CAdvisor</a>是一个容器资源监控工具，可监控的Metric包括容器的内存、CPU、网络IO、磁盘IO等，同时提供了一个Web页面用于查看容器的实时运行状态。CAdvisor默认存储2分钟的数据，并且仅针对单台物理机。但是CAdvisor提供了很多数据集成接口，支持与InfluxDB、Redis、Kafka、Elasticsearch等集成，通过增加相关配置将监控数据发送到这些数据库中。</p>
-<p><a target="_blank" rel="noopener" href="https://www.influxdata.com/">InfluxDB</a>是使用Go语言编写的一个开源分布式的时序、事件和指标数据库。该数据库基于时间序列，支持与时间有关的相关函数。</p>
-<p><a target="_blank" rel="noopener" href="https://grafana.com/">Grafana</a>是一个开源的数据监控分析可视化平台，支持多种数据源配置，包括InfluxDB、MySQL、Elasticserach、OpenTSDB、Graphite等，同时提供丰富的插件以及模板功能，支持图表权限控制，alert报警等。</p>
+<p>pyenv提供简单而强大的功能，其中最常用的就是不同版本的Python安装，切换以及卸载。</p>
+<p>首先是安装不同版本的Python，通过命令<code>pyenv install -l</code>可以查看所有可供下载的Python版本，之后通过<code>install</code>命令即可安装指定的版本：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pyenv install &lt;version&gt;<br></code></pre></td></tr></table></figure>
+
+<p>通过命令<code>pyenv versions</code>我们可以看到目前pyenv管理的版本以及当前正在使用的版本。实际上，通过pyenv下载的Python，都被存放在<code> ~/.pyenv/versions/</code> 目录下。</p>
+<p>之后是Python版本的切换。pyenv提供了三个命令来完成版本的切换，对应三种不同的生效层级。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 仅指定当前shell会话的Python版本</span><br>pyenv shell &lt;version&gt;<br><br><span class="hljs-comment"># 指定当前目录使用的Python版本，当处于当前目录或者子目录的时候自动选择</span><br>pyenv <span class="hljs-built_in">local</span> &lt;version&gt;<br><br><span class="hljs-comment"># 指定全局的Python版本</span><br>pyenv global &lt;version&gt;<br></code></pre></td></tr></table></figure>
+
+<p>pyenv卸载对应版本的Python也非常简单，只需要通过<code>uninstall</code>命令即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pyenv uninstall &lt;version&gt;<br></code></pre></td></tr></table></figure>
+
+<h1 id="Virtualenv"><a href="#Virtualenv" class="headerlink" title="Virtualenv"></a>Virtualenv</h1><p><a target="_blank" rel="noopener" href="https://virtualenv.pypa.io/en/latest/index.html">virtualenv</a>是一个Python工具，能够帮助我们创建隔离的Python虚拟环境。</p>
+<p>virtualenv推荐使用<a target="_blank" rel="noopener" href="https://pypi.org/project/pipx/">pipx</a>进行安装，pipx可以帮助用户在一个隔离的环境中安装和运行Python应用。pipx同样可以通过HomeBrew来进行安装。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">brew install pipx<br>pipx ensurepath<br></code></pre></td></tr></table></figure>
+
+<p>安装好了之后，就可以利用pipx来安装virtualenv。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">pipx install virtualenv<br>virtualenv --<span class="hljs-built_in">help</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果由于特殊原因连接不上Python官方源，可以使用<code>--index-url</code>来临时指定一个其他的下载源。</p>
+</blockquote>
+<p>使用虚拟环境，我们只需要关注虚拟环境的创建，管理，卸载以及依赖下载即可。</p>
+<p>首先是环境创建，使用下面的命令即可创建一个虚拟环境。执行该命令之后，virtualenv会在当前目录下生成一个文件夹，表示生成的虚拟环境。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">virtualenv env_name<br><span class="hljs-comment"># 虚拟环境的常用name为venv，即virtualenv venv</span><br></code></pre></td></tr></table></figure>
+
+<p>在创建虚拟环境的时候，可以指定Python版本，使用<code>--python=pythonx.x</code>。但是virtualenv不会下载对应的Python版本，只会进行本地的Python发现，需要使用的Python版本需要在本地存在。此时使用pyenv进行多版本的Python管理就正中下怀。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">virtualenv venv --python=python3.6<br><span class="hljs-comment"># RuntimeError: failed to find interpreter for Builtin discover of python_spec=&#x27;python3.6&#x27;</span><br><br>virtualenv venv --python=python3.7<br><span class="hljs-comment"># created virtual environment CPython3.7.15.final.0-64 in 3765ms</span><br></code></pre></td></tr></table></figure>
+
+<p>环境创建之后需要激活，在Linux\MacOS上激活命令如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 激活虚拟环境</span><br><span class="hljs-built_in">source</span> env_name/bin/activate<br></code></pre></td></tr></table></figure>
+
+<p>激活环境之后，依赖的下载正常使用pip即可。此时下载的依赖都会被存放在生成的虚拟环境中，即对应的文件夹下。</p>
+<p>退出虚拟环境的命令如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 退出虚拟环境</span><br>deactivate<br></code></pre></td></tr></table></figure>
+
+<p>要想删除这个虚拟环境，只需要删除对应的文件夹即可。</p>
+<blockquote>
+<p>virtualenv结合Pycharm使用非常容易。事实上我们可以直接在Pycharm项目解释器设置中利用virtualenv创建虚拟环境，只需要指定对应的Python解释器即可。当然需要Python解释器在本地存在。</p>
+<p>之后Pycharm会自动在当前项目目录下创建一个venv文件夹，即该项目对应的虚拟环境</p>
+</blockquote>
+<h1 id="Pyenv-Virtualenv"><a href="#Pyenv-Virtualenv" class="headerlink" title="Pyenv-Virtualenv"></a>Pyenv-Virtualenv</h1><p>pyenv和virtualenv实际上是配合工作的，在上面的过程中我们已经可以发现这一点了。我们可以利用pyenv来管理Python的多版本，然后利用virtualenv来创建虚拟环境，在创建虚拟环境的之后指定需要使用的Python版本。</p>
+<p>实际上，pyenv与virtualenv还有另一种配合使用的方式，即使用pyenv相关插件pyenv-virtualenv。</p>
+<p>首先进行插件的安装：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">brew install pyenv-virtualenv<br></code></pre></td></tr></table></figure>
+
+<p>之后可以使用如下命令来创建虚拟环境：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># eg：pyenv virtualenv 3.7.15 venv_3_7_15</span><br>pyenv virtualenv &lt;python-version&gt; &lt;env-name&gt;<br></code></pre></td></tr></table></figure>
+
+<p>需要注意的是，这里使用的Python版本同样需要提前使用pyenv进行下载。执行命令之后，我们就可以通过<code>pyenv virtualenvs</code>来查看所有的虚拟环境。 </p>
+<p>环境的激活和退出命令也是类似：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 激活虚拟环境</span><br>pyenv activate &lt;env-name&gt;<br><br><span class="hljs-comment"># 退出虚拟环境</span><br>pyenv deactivate<br></code></pre></td></tr></table></figure>
+
+<p>创建出的虚拟环境实际对应了两个文件夹，位置为<code>~/.pyenv/versions/&lt;env-name&gt;</code>，以及<code>~/.pyenv/versions/&lt;python-version&gt;/envs/&lt;env-name&gt;</code>。</p>
+<p>实际上可以理解为，pyenv-virtualenv插件帮助我们管理了virtualenv创建出的虚拟环境，将其统一管理在同一个目录下。而如果我们使用原生的virtualenv进行创建，随着使用的增多，虚拟环境会散落在各个角落。当然两种方式各有利弊，按需选择即可。</p>
+<blockquote>
+<p>推荐结合Pycharm进行虚拟环境的创建，每个Project对应一个虚拟环境venv。同时利用pyenv来管理多版本Python。</p>
+</blockquote>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://realpython.com/intro-to-pyenv/">Intro To Pyenv|RealPython</a></li>
+<li><a target="_blank" rel="noopener" href="https://realpython.com/python-virtual-environments-a-primer/">Python Virtual Environments A Primer|RealPython</a></li>
+<li><a target="_blank" rel="noopener" href="https://fathomtech.io/blog/python-environments-with-pyenv-and-vitualenv/">Python Environments With Pyenv And Virtualenv</a></li>
+</ol>
 
               
             </div>
@@ -358,12 +406,12 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="category-chain-item">云原生</a>
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E8%99%9A%E6%8B%9F%E5%8C%96/" class="category-chain-item">虚拟化</a>
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Python/" class="category-chain-item">Python</a>
   
   
 
@@ -380,7 +428,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Docker/">#Docker</a>
+        <a href="/tags/Python/">#Python</a>
       
     </div>
   
@@ -392,8 +440,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Docker学习笔记(3)-Docker网络,Docker compose与其他相关工具</div>
-      <div>http://example.com/2023/07/13/Docker学习笔记-3-Docker网络-Docker-compose与其他相关工具/</div>
+      <div>Python环境管理-Pyenv与Virtualenv</div>
+      <div>http://example.com/2023/07/27/Python环境管理-Pyenv与Virtualenv/</div>
     </div>
     <div class="license-meta">
       
@@ -405,7 +453,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年7月13日</div>
+          <div>2023年7月27日</div>
         </div>
       
       
@@ -435,18 +483,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/07/27/Python%E7%8E%AF%E5%A2%83%E7%AE%A1%E7%90%86-Pyenv%E4%B8%8EVirtualenv/" title="Python环境管理-Pyenv与Virtualenv">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python环境管理-Pyenv与Virtualenv</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/07/12/Docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2-%E9%95%9C%E5%83%8F-%E5%AE%B9%E5%99%A8%E6%95%B0%E6%8D%AE%E5%8D%B7%E4%B8%8EDockerFile/" title="Docker学习笔记(2)-镜像,容器数据卷与DockerFile">
-                        <span class="hidden-mobile">Docker学习笔记(2)-镜像,容器数据卷与DockerFile</span>
+                      <a href="/2023/07/13/Docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3-Docker%E7%BD%91%E7%BB%9C-Docker-compose%E4%B8%8E%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7/" title="Docker学习笔记(3)-Docker网络,Docker compose与其他相关工具">
+                        <span class="hidden-mobile">Docker学习笔记(3)-Docker网络,Docker compose与其他相关工具</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
