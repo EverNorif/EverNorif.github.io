@@ -1,0 +1,1217 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Kubernetes是目前容器编排市场上绝对的巨头，占据了大量的市场份额。本篇简单介绍了Kubernetes的背景，组件以及相关概念。在Kubernetes的使用过程中，最重要的就是学习所有Resources的操作与使用，即资源管理。Resource主要包括了namespace、pod、pod controller、service、lable等。Resources的操作方式分为三种，三种方式均围绕">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes学习笔记(1)-简介与基本使用">
+<meta property="og:url" content="http://example.com/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Kubernetes是目前容器编排市场上绝对的巨头，占据了大量的市场份额。本篇简单介绍了Kubernetes的背景，组件以及相关概念。在Kubernetes的使用过程中，最重要的就是学习所有Resources的操作与使用，即资源管理。Resource主要包括了namespace、pod、pod controller、service、lable等。Resources的操作方式分为三种，三种方式均围绕">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-29T02:55:48.000Z">
+<meta property="article:modified_time" content="2023-07-29T03:03:06.981Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Kubernetes学习笔记(1)-简介与基本使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Kubernetes学习笔记(1)-简介与基本使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-29 10:55" pubdate>
+          2023年7月29日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          94 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Kubernetes学习笔记(1)-简介与基本使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Kubernetes简介"><a href="#Kubernetes简介" class="headerlink" title="Kubernetes简介"></a>Kubernetes简介</h1><h2 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h2><p>应用程序的部署方式主要经历了三个时代。传统部署将应用程序部署在物理机上，这种方式实现简单，但是很难合理地分配计算资源，容易导致资源浪费以及程序之间相互影响。而后发展到虚拟化部署，即可以在一台物理机上运行多个虚拟机，每个虚拟机都是一个独立的环境，每个程序部署在一台虚拟机上，这种方式程序之间不会相互影响，但是增加了操作系统的虚拟，同样会浪费部分资源。部署方式继续发展，到容器化部署。容器化与虚拟化部署类似，但是容器之间共享操作系统，降低了资源的浪费。</p>
+<p>在容器化部署的相关过程中，一个非常重要的课题就是容器编排。容器管理的相关问题统称为容器编排问题。例如当某个容 器故障停机之后，如何让另外一个容器立刻启动去替补停机的容器；或者如何根据并发访问量的多少来动态地调整容器的数量。</p>
+<p>以下许多软件来解决容器编排问题，而我们主要学习的是其中最受欢迎，使用最为广泛的Kubernetes。</p>
+<ul>
+<li><code>Swarm</code>：Docker自己的容器编排工具</li>
+<li><code>Mesos</code>：Apache的一个资源统一管控的工具，需要和Marathon结合使用</li>
+<li><code>Kubernetes</code>：Google开源的的容器编排工具</li>
+</ul>
+<p>kubernetes的本质是一组服务器集群，它可以在集群的每个节点上运行特定的程序，来对节点中的容器进行管理。目的是实现资源管理的自动化，主要提供了如下的主要功能：</p>
+<ul>
+<li><strong>自我修复</strong>：一旦某一个容器崩溃，能够在1秒左右迅速启动新的容器</li>
+<li><strong>弹性伸缩</strong>：可以根据需要，自动对集群中正在运行的容器数量进行调整</li>
+<li><strong>服务发现</strong>：服务可以通过自动发现的形式找到它所依赖的服务</li>
+<li><strong>负载均衡</strong>：如果一个服务启动了多个容器，能够自动实现请求的负载均衡</li>
+<li><strong>版本回退</strong>：如果发现新发布的程序版本有问题，可以立即回退到原来的版本</li>
+<li><strong>存储编排</strong>：可以根据容器自身的需求自动创建存储卷</li>
+</ul>
+<blockquote>
+<p>Kubernetes的环境搭建，可以参考官方文档<a target="_blank" rel="noopener" href="https://kubernetes.io/docs/setup/">Getting Started|Kubernetes</a>。</p>
+<p>另外，如果在Mac或者Windows上安装过Docker Desktop，可以在设置中开启Kubernetes的支持，就可以在本地进行Kubernetes的使用，可以参考相关博客<a target="_blank" rel="noopener" href="https://blog.csdn.net/liumiaocn/article/details/110037640">Kubernetes基础: 在MacOS上安装Kubernetes</a>。</p>
+</blockquote>
+<h2 id="组件与相关概念"><a href="#组件与相关概念" class="headerlink" title="组件与相关概念"></a>组件与相关概念</h2><p>Kubernetes属于主从架构，集群中的角色分为<strong>控制节点Master</strong>以及<strong>工作节点Node</strong>，在不同的节点上会安装不同的组件。</p>
+<p>Master节点是整个集群的控制平面，负责集群的管理与决策，其中包含如下组件：</p>
+<ul>
+<li><code>ApiServer</code>：资源操作的唯一入口，用于接收用户输入的命令，提供认证、授权、API注册和发现等机制</li>
+<li><code>Scheduler</code>：负责集群资源调度，按照预定的调度策略将Pod调度到相应的Node节点上</li>
+<li><code>ControllerManager</code>：负责维护集群的状态，例如程序部署安排、故障检测、自动扩展、滚动更新等</li>
+<li><code>Etcd</code>：负责存储集群中各种资源对象的信息</li>
+</ul>
+<p>Node节点是集群的数据平面，负责为容器提供运行环境，用于实际运行容器，其中包含如下组件：</p>
+<ul>
+<li><code>Kubelet</code>：负责维护容器的生命周期，通过控制Docker，来创建、更新销毁容器。</li>
+<li><code>KubeProxy</code>：负责提供集群内部的服务发现和负载均衡</li>
+<li><code>Docker</code>：负责节点上容器的各种操作</li>
+</ul>
+<p>![Kubernetes 组件](&#x2F;Users&#x2F;evernorif&#x2F;Desktop&#x2F;EverNorif&#x2F;source&#x2F;_posts&#x2F;Kubernetes学习笔记-1-简介与基本使用&#x2F;Kubernetes 组件.png)</p>
+<p>现在假设我们需要在Kubernetes上部署一个nginx服务，那么需要经过如下的步骤：</p>
+<ol>
+<li>首先启动Kubernetes环境，Master和Node将自身的信息注册到etcd数据库中</li>
+<li>nginx服务到安装请求通过kubectl发送到Master节点上的ApiServer组件</li>
+<li>ApiServer组件调用Scheduler组件来决定把这个服务安装到哪个Node节点上。这个过程需要从etcd中读取各个Node节点的信息，然后按照调度算法进行选择，并将选择结果告知ApiServer</li>
+<li>ApiServer调用ControllerManager来调度Node节点安装nginx服务</li>
+<li>Kubelet接收到指令之后，通知Docker，由Docker来启动一个nginx的Pod。这里的Pod是Kubernetes中的最小操作单元，Container容器必须运行在某个Pod当中</li>
+<li>至此，一个nginx服务就运行成功了，如果外界需要访问该服务，则需要通过KubeProxy来令Pod产生可访问的代理，之后外界用户就可以访问集群中的nginx服务</li>
+</ol>
+<p>下面统一介绍Kubernetes中的相关概念：</p>
+<ul>
+<li><code>Master</code>：集群控制节点，每个集群至少需要一个Master节点来负责集群的管理和控制</li>
+<li><code>Node</code>：工作负载节点，由Master分配容器到这些Node工作节点上，然后Node节点中的Docker负责容器的运行</li>
+<li><code>Pod</code>：Kubernetes中的最小控制单元，容器都是运行在Pod中的。一个Pod中可以有一个或者多个容器</li>
+<li><code>Controller</code>：控制器，可以通过控制器来实现对Pod的管理，例如启动Pod、停止Pod、伸缩Pod的数量等</li>
+<li><code>Service</code>：Pod对外服务的统一入口，其中可以维护同一类的多个Pod</li>
+<li><code>Label</code>：标签，用于对资源进行分类，同一类资源会拥有相同的标签</li>
+<li><code>Namespace</code>：命名空间，用于隔离Pod的运行环境</li>
+</ul>
+<h1 id="资源管理"><a href="#资源管理" class="headerlink" title="资源管理"></a>资源管理</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在Kubernetes中，所有内容都被抽象为资源，用户需要通过操作资源来管理Kubernetes。</p>
+<p>Kubernetes的本质上就是一个集群系统，用户可以在集群中部署各种服务。所谓的部署服务，其实就是在Kubernetes集群中运行一个个的容器，并将指定的程序跑在容器中。Kubernetes的最小管理单元是Pod而不是容器，所以只能将容器放在<code>Pod</code>中，而Kubernetes一般也不会直接管理Pod，而是通过<code>Pod控制器</code>来管理Pod的。Pod可以提供服务之后，就要考虑如何访问Pod中服务，Kubernetes提供了<code>Service</code>资源实现这个功能。当然，如果Pod中程序的数据需要持久化，Kubernetes还提供了各种<code>存储</code>系统。</p>
+<p>学习Kubernetes的核心，就是学习如何对集群上的Pod、Pod控制器、Service、存储等各种资源进行操作。</p>
+<h2 id="kubectl"><a href="#kubectl" class="headerlink" title="kubectl"></a>kubectl</h2><p>Kubernetes提供了一个命令行工具kubectl，该命令行工具能够对集群本身进行管理，并且能够在集群上进行容器化应用的安装部署。kubectl命令的语法如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl [<span class="hljs-built_in">command</span>] [<span class="hljs-built_in">type</span>] [name] [params]<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>command</code>：指定需要对资源执行的操作，例如create、get、delete</li>
+<li><code>type</code>：指定资源的类型，例如deployment、pod、service</li>
+<li><code>name</code>：指定资源的名称，注意是大小写敏感的</li>
+<li><code>params</code>：指定额外的可选参数</li>
+</ul>
+<p>下面是一些命令的举例：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看所有pod</span><br>kubectl get pod <br><br><span class="hljs-comment"># 查看某个pod</span><br>kubectl get pod pod_name<br><br><span class="hljs-comment"># 查看某个pod,以yaml格式展示结果</span><br>kubectl get pod pod_name -o yaml<br>kubectl get pod pod_name -o wide<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：在Node节点上运行kubectl</p>
+<p>kubectl的运行是需要进行配置的，它的配置文件是$HOME&#x2F;.kube，如果想要在node节点运行kubectl，需要将master上的.kube文件复制到node节点上，可以通过在master节点上执行scp命令来完成文件的复制。</p>
+</blockquote>
+<h3 id="资源类型"><a href="#资源类型" class="headerlink" title="资源类型"></a>资源类型</h3><p>在Kubernetes中所有的内容都被抽象为resource，可以通过下面的命令查看：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl api-resources<br></code></pre></td></tr></table></figure>
+
+<p>其中常用的resource类型有：</p>
+<blockquote>
+<p>不必过于在意resource名称的单复数，kubectl都能够支持</p>
+</blockquote>
+<ul>
+<li>集群资源：属于集群组成的一部份</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>resource名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>nodes</td>
+<td>no</td>
+</tr>
+</tbody></table>
+<ul>
+<li>namespace：命名空间，用于隔离Pod</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>resource名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>namespace</td>
+<td>ns</td>
+</tr>
+</tbody></table>
+<ul>
+<li>pod：用于装载容器</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>resource名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pods</td>
+<td>pd</td>
+</tr>
+</tbody></table>
+<ul>
+<li>pod controller：用于控制Pod资源</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>resource名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>replicationcontrollers</td>
+<td>rc</td>
+</tr>
+<tr>
+<td>replicasets</td>
+<td>rs</td>
+</tr>
+<tr>
+<td>deployments</td>
+<td>deploy</td>
+</tr>
+<tr>
+<td>daemonsets</td>
+<td>ds</td>
+</tr>
+<tr>
+<td>jobs</td>
+<td></td>
+</tr>
+<tr>
+<td>cronjobs</td>
+<td>cj</td>
+</tr>
+<tr>
+<td>horizontalpodautoscalers</td>
+<td>hpa</td>
+</tr>
+<tr>
+<td>statefulsets</td>
+<td>sts</td>
+</tr>
+</tbody></table>
+<ul>
+<li>服务发现：Pod的统一对外服务接口</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>resource名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>services</td>
+<td>svc</td>
+</tr>
+<tr>
+<td>ingress</td>
+<td>ing</td>
+</tr>
+</tbody></table>
+<ul>
+<li>存储资源：支持存储相关功能</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>resource名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>volumeattachements</td>
+<td></td>
+</tr>
+<tr>
+<td>persistentvolumes</td>
+<td>pv</td>
+</tr>
+<tr>
+<td>persistentvolumeclaims</td>
+<td>pvc</td>
+</tr>
+</tbody></table>
+<ul>
+<li>配置资源：支持配置相关功能</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>resource名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>configmaps</td>
+<td>cm</td>
+</tr>
+<tr>
+<td>secrets</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="操作类型"><a href="#操作类型" class="headerlink" title="操作类型"></a>操作类型</h3><p>Kubernetes允许对resource进行多种操作，可以通过<code>--help</code>来查看详细的操作命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl --<span class="hljs-built_in">help</span><br></code></pre></td></tr></table></figure>
+
+<p>其中常用的操作类型有：</p>
+<ul>
+<li>基本命令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>create</td>
+<td>创建资源</td>
+</tr>
+<tr>
+<td>edit</td>
+<td>编辑资源</td>
+</tr>
+<tr>
+<td>get</td>
+<td>查看资源</td>
+</tr>
+<tr>
+<td>patch</td>
+<td>更新资源</td>
+</tr>
+<tr>
+<td>delete</td>
+<td>删除资源</td>
+</tr>
+<tr>
+<td>explain</td>
+<td>展示资源详情</td>
+</tr>
+</tbody></table>
+<ul>
+<li>运行与调试：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>run</td>
+<td>在集群中运行指定的镜像</td>
+</tr>
+<tr>
+<td>expose</td>
+<td>暴露资源为Service</td>
+</tr>
+<tr>
+<td>describe</td>
+<td>显示资源内部信息</td>
+</tr>
+<tr>
+<td>logs</td>
+<td>输出容器在Pod中的日志</td>
+</tr>
+<tr>
+<td>attach</td>
+<td>进入运行中的容器</td>
+</tr>
+<tr>
+<td>exec</td>
+<td>执行容器中的某个命令</td>
+</tr>
+<tr>
+<td>cp</td>
+<td>在Pod内外复制文件</td>
+</tr>
+<tr>
+<td>rollout</td>
+<td>管理资源的发布</td>
+</tr>
+<tr>
+<td>scale</td>
+<td>对Pod的规模进行调整（扩缩容）</td>
+</tr>
+<tr>
+<td>autoscale</td>
+<td>自动调整Pod的数量</td>
+</tr>
+</tbody></table>
+<ul>
+<li>高级命令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>apply</td>
+<td>通过文件对资源进行配置</td>
+</tr>
+<tr>
+<td>label</td>
+<td>更新资源上的标签</td>
+</tr>
+</tbody></table>
+<ul>
+<li>其他命令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cluster-info</td>
+<td>显示集群信息</td>
+</tr>
+<tr>
+<td>version</td>
+<td>显示版本信息，包括Server以及Client</td>
+</tr>
+</tbody></table>
+<h2 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h2><p>Kubernetes共有三种资源管理方式，分别是命令式对象管理、命令式对象配置以及声明式对象配置。</p>
+<ul>
+<li>命令式对象管理：指的是直接使用命令去操作Kubernetes资源</li>
+<li>命令式对象配置：通过命令和配置文件去操作Kubernetes资源，命令包括create&#x2F;patch</li>
+<li>声明式对象配置：通过apply命令和配置文件操作Kubernetes资源，其中apply用于创建和更新资源，无法删除资源</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">操作对象</th>
+<th align="left">适用环境</th>
+<th align="left">优点</th>
+<th align="left">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">命令式对象管理</td>
+<td align="left">对象</td>
+<td align="left">测试</td>
+<td align="left">简单</td>
+<td align="left">只能操作活动对象，无法审计、跟踪</td>
+</tr>
+<tr>
+<td align="left">命令式对象配置</td>
+<td align="left">文件</td>
+<td align="left">开发</td>
+<td align="left">可以审计、跟踪</td>
+<td align="left">项目大时，配置文件多，操作麻烦</td>
+</tr>
+<tr>
+<td align="left">声明式对象配置</td>
+<td align="left">目录</td>
+<td align="left">开发</td>
+<td align="left">支持目录操作</td>
+<td align="left">意外情况下难以调试</td>
+</tr>
+</tbody></table>
+<h3 id="命令式对象管理"><a href="#命令式对象管理" class="headerlink" title="命令式对象管理"></a>命令式对象管理</h3><p>命令式对象管理指的是直接使用命令去操作Kubernetes资源，如下所示：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 创建一个namesapce</span><br>kubectl create namespace dev<br><br><span class="hljs-comment"># 查看namespace</span><br>kubectl get ns  <br><br><span class="hljs-comment"># 在dev namepsace下创建并运行一个nginx的pod</span><br>kubectl run pod --image=nginx:latest -n dev<br><br><span class="hljs-comment"># 查看pod</span><br>kubectl get pod -n dev<br><span class="hljs-comment"># 结果如下</span><br>NAME   READY   STATUS    RESTARTS   AGE<br>pod    1/1     Running   0          46s<br><br><span class="hljs-comment"># 删除指定pod</span><br>kubectl delete pod pod -n dev<br></code></pre></td></tr></table></figure>
+
+<h3 id="命令式对象配置"><a href="#命令式对象配置" class="headerlink" title="命令式对象配置"></a>命令式对象配置</h3><p>命令式对象配置就是使用命令配合配置文件一起来操作Kubernetes Resource。 这种方式可以简单的认为是命令  +  yaml配置文件（里面是命令需要的各种参数）</p>
+<p>例如我们可以创建一个配置文件<code>nginx-pod.yaml</code>，这个配置文件基本描述了Pod运行的环境以及相关的属性，内容如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">dev</span><br><br><span class="hljs-meta">---</span><br><span class="hljs-meta"></span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginxpod</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-containers</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br></code></pre></td></tr></table></figure>
+
+<p>该配置文件完成了两个资源的定义。首先定义了一个namespace，名称为<code>dev</code>。然后定义了一个pod，该pod的名称为<code>nginxpod</code>，运行在<code>dev</code> namespace中，同时在详细信息<code>spec</code>中指定了容器的名称以及对应的镜像。</p>
+<p>之后执行create命令进行资源创建，提示创建了namespace dev 以及pod nginxpod，可以通过相关get命令查看到创建出的资源。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl create -f nginx-pod.yaml<br><span class="hljs-comment"># namespace/dev created</span><br><span class="hljs-comment"># pod/nginxpod created</span><br></code></pre></td></tr></table></figure>
+
+<p>同时也可以使用删除命令，同时删除这两个资源：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl delete -f nginx-pod.yaml <br><span class="hljs-comment"># namespace &quot;dev&quot; deleted</span><br><span class="hljs-comment"># pod &quot;nginxpod&quot; deleted</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="声明式对象配置"><a href="#声明式对象配置" class="headerlink" title="声明式对象配置"></a>声明式对象配置</h3><p>声明式对象配置跟命令式对象配置很相似，但是它只有一个命令apply。</p>
+<p>同样使用上面的实例配置文件，首先第一次执行apply命令，发现创建了资源。之后我们可以继续执行，发现资源没有变动。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl apply -f nginx-pod.yaml     <br><span class="hljs-comment"># namespace/dev created</span><br><span class="hljs-comment"># pod/nginxpod created</span><br><br>kubectl apply -f nginx-pod.yaml<br><span class="hljs-comment"># namespace/dev unchanged</span><br><span class="hljs-comment"># pod/nginxpod unchanged</span><br></code></pre></td></tr></table></figure>
+
+<p>实际上，声明式对象配置使用yaml配置文件来描述资源的最终状态，然后使用apply命令来将资源调整为描述的状态，如果没有该资源就进行创建，如果有修改就进行调整，没有变化就什么也不做。</p>
+<p>使用apply操作资源，如果资源不存在，就创建，相当于 kubectl create；如果资源已存在，就更新，相当于 kubectl patch。</p>
+<blockquote>
+<p>推荐使用方式：</p>
+<ul>
+<li>创建&#x2F;更新资源 使用声明式对象配置 kubectl apply -f xxx.yaml</li>
+<li>删除资源 使用命令式对象配置 kubectl delete -f xxx.yaml</li>
+<li>查询资源 使用命令式对象管理 kubectl get(describe) 资源名称</li>
+</ul>
+</blockquote>
+<h1 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started"></a>Getting Started</h1><p>接下来我们通过在Kubernetes集群中部署一个可供外界访问的nginx服务来初步学习Kubernetes的使用以及相关概念。</p>
+<h2 id="Namespace"><a href="#Namespace" class="headerlink" title="Namespace"></a>Namespace</h2><p>namespace是Kubernetes系统中非常重要的resource，它的主要作用是实现多套环境的资源隔离或者多租户的资源隔离。</p>
+<p>在默认情况下，Kubernetes集群中的所有Pod都是可以相互访问的，但是在实际中，我们可能不想让两个Pod之间进行相互访问，那么此时就可以将两个Pod划分到不同的namespace下。</p>
+<p>Kubernetes通过namespace机制来划分逻辑上的组，方便对不同组的资源进行隔离和管理。同时通过Kubernetes的授权机制，可以将不同的namespace交给不同的租户来管理，实现多租户的资源隔离。此外，结合Kuberentes的资源配额机制，限定不同租户能够占用的资源，例如CPU使用量、内存使用量等，来实现租户可用资源的管理。</p>
+<p>Kubernetes集群在启动之后，会默认创建如下的namespace：</p>
+<ul>
+<li><code>default</code>：所有未指定namespace的对象都会被分配在default命名空间</li>
+<li><code>kube-node-lease</code>：用于维护集群节点之间的心跳信息</li>
+<li><code>kube-public</code>：此命名空间下的resource可以被所有人访问，包括未认证用户</li>
+<li><code>kube-system</code>：所有由Kubernetes系统创建的resource都处于这个命名空间</li>
+</ul>
+<p>在Getting Started中，我们创建一个名为dev的namespace，可以使用之前提到的三种资源管理方式中的任意一种来进行。通过<code>kubectl get ns dev -o yaml</code> 命令可以以yaml形式查看namespace的详细信息。</p>
+<ul>
+<li>如果需要使用yaml配置文件来创建，可以参考：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">dev</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h2><p>Pod是Kubernetes集群进行管理的最小单元，程序要运行必须部署在容器中，而容器必须存在于Pod中。Pod可以认为是容器的封装，一个Pod中可以存在一个或者多个容器。Kubernetes在集群启动之后，集群中的各个组件也都是以Pod方式运行的，例如可以通过<code>kubectl get pod -n kube-system</code>查看集群系统相关Pod。</p>
+<p>我们可以通过<code>kubectl run</code>命令来指定在集群中运行Pod，例如：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl run nginx --image=nginx:latest --port=80 --namespace dev <br><span class="hljs-comment"># 命令格式： kubectl run (pod名称) [参数] </span><br><span class="hljs-comment"># --image  指定Pod的镜像</span><br><span class="hljs-comment"># --port   指定端口</span><br><span class="hljs-comment"># --namespace  指定namespace</span><br></code></pre></td></tr></table></figure>
+
+<p>同样也可以使用delete删除对应的pod。<code>kubectl delete pod nginx -n dev</code>。</p>
+<blockquote>
+<p>注意：在较老版本的kubectl中，run命令会生成deplyment来控制Pod，而在最新的kubectl中，run命令则是直接创建Pod。</p>
+</blockquote>
+<ul>
+<li>参考yaml配置文件：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">pod</span><br>    <span class="hljs-attr">ports:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-port</span><br>      <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h2><p>在Kubernetes中，Pod是最小的控制单元，但是Kubernetes很少直接控制Pod，一般都是通过Pod控制器来完成的。Pod控制器用于Pod的管理，确保Pod资源符合预期的状态，当Pod的资源出现故障时，会尝试进行重启或重建Pod。</p>
+<p>Kubernetes中Pod控制器的种类有很多，在Getting Started中我们先介绍其中的Deployment。</p>
+<p>可以通过下面的命令创建一个Deployment：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl create deployment nginx --image=nginx:latest --port=80 --replicas=3 -n dev<br><br><span class="hljs-comment"># 命令格式: kubectl create deployment 名称  [参数] </span><br><span class="hljs-comment"># --image  指定pod的镜像</span><br><span class="hljs-comment"># --port   指定端口</span><br><span class="hljs-comment"># --replicas  指定创建pod数量</span><br><span class="hljs-comment"># --namespace  指定namespace</span><br></code></pre></td></tr></table></figure>
+
+<p>之后可以通过<code>kubectl get deploy -n dev</code>查看到相关Deployment的信息。创建Deployment的同时也会创建对应的Pod，也可以通过<code>kubectl get pod -n dev</code>来查看相关Pod信息。</p>
+<p>此时如果我们手动使用delete命令删除Pod，该Pod会被删除，但是由于Deployment的存在，它会新建一个Pod来顶替被删除的Pod。</p>
+<p>当前Pod是由Pod控制器创建的，控制器会监控Pod状况，一旦发现Pod死亡，会立即重建。如果要完全删除Pod的话，则需要先删除Pod控制器。</p>
+<ul>
+<li>参考yaml配置文件：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">matchLabels:</span><br>      <span class="hljs-attr">run:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">template:</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">containers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>        <span class="hljs-attr">ports:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>          <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h2><p>Deployment可以通过创建一组Pod来提供具有高可用性的服务，其中每个Pod都会分配一个单独的Pod IP。但是还是存在两个问题：</p>
+<ul>
+<li>Pod IP 会随着Pod的重建产生变化</li>
+<li>Pod IP 仅仅是集群内可见的虚拟IP，外部无法访问</li>
+</ul>
+<p>为了能够从外部访问服务以及固定IP，Kubernetes提供了Service。Service可以看作是一组同类Pod提供的对外访问接口，借助Service，应用可以很方便地实现服务发现以及负载均衡。</p>
+<p>Service分为两类，分别对应两种type，<code>ClusterIP</code>以及<code>NodePort</code>。其中ClusterIP表示集群内部可访问的Service，主要解决了IP变化的问题，而NodePort表示集群内外都可以访问的Service。</p>
+<p>我们可以通过如下命令创建一个<code>ClusterIP</code>类型的Service。expose命令可以将resource暴露为新的Kubernetes Service（暴露resource，不是创建新resource，除了新得到的Service）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl expose deploy nginx --name=svc-nginx1 --<span class="hljs-built_in">type</span>=ClusterIP --port=80 --target-port=80 -n dev<br></code></pre></td></tr></table></figure>
+
+<p>这里我们将名为nginx的deployment暴露为了一个ClusterIP类型的Service，可以通过<code>kubectl get svc</code>命令查看，可以发现其中有一个<code>CLUSTER-IP</code>字段，这就是Service的IP。在Service的生命周期中，这个地址是不会变动的，可以通过访问这个IP来访问当前Service对应的Pod。</p>
+<p>同样我们也可以将nginx deployment暴露为一个<code>NodePort</code>类型的Service，只需要指定type为NodePort即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl expose deploy nginx --name=svc-nginx2 --<span class="hljs-built_in">type</span>=NodePort --port=80 --target-port=80 -n dev<br></code></pre></td></tr></table></figure>
+
+<p>创建完成之后，同样可以查看svc详情，使用命令<code>kubectl get svc svc-nginx2 -n dev -o wide</code>。发现其中的端口映射如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">NAME         TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE   SELECTOR<br>svc-nginx2   NodePort   10.97.137.15   &lt;none&gt;        80:31727/TCP   56m   app=nginx<br></code></pre></td></tr></table></figure>
+
+<p>这表示将宿主机的31727端口和Deployment对应的80端口进行映射，此时可以使用浏览器访问<code>http://localhost:31727</code>，可以看见nginx的欢迎页面。这里的浏览器就是从集群之外进行访问的。</p>
+<ul>
+<li>参考配置yaml文件：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">svc-nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">clusterIP:</span> <span class="hljs-number">10.105</span><span class="hljs-number">.165</span><span class="hljs-number">.43</span> <span class="hljs-comment">#固定svc的内网ip</span><br>  <span class="hljs-attr">ports:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">80</span><br>    <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br>    <span class="hljs-attr">targetPort:</span> <span class="hljs-number">80</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">ClusterIP</span> <span class="hljs-comment"># or NodePort</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="Label"><a href="#Label" class="headerlink" title="Label"></a>Label</h2><p>Label是Kubernetes系统中的一个重要概念。它的作用就是在资源上添加标识，用来对它们进行区分和选择。</p>
+<ul>
+<li>一个Label会以key&#x2F;value键值对的形式附加到各种对象上，如Node、Pod、Service等等</li>
+<li>一个资源对象可以定义任意数量的Label ，同一个Label也可以被添加到任意数量的资源对象上去</li>
+<li>Label通常在资源对象定义时确定，当然也可以在对象创建后动态添加或者删除</li>
+</ul>
+<p>可以通过Label实现资源的多维度分组，以便灵活、方便地进行资源分配、调度、配置、部署等管理工作。</p>
+<blockquote>
+<p>一些常用的Label 示例如下：</p>
+<ul>
+<li>版本标签：”version”:”release”, “version”:”stable”……</li>
+<li>环境标签：”environment”:”dev”，”environment”:”test”，”environment”:”pro”</li>
+<li>架构标签：”tier”:”frontend”，”tier”:”backend”</li>
+</ul>
+</blockquote>
+<p>可以通过label命令来为Resource进行标签相关操作：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 给Pod打Label</span><br>kubectl label pod nginx-cd55c47f5-jh9sf version=1.0 -n dev<br><br><span class="hljs-comment"># 更新Pod的Label [--overwrite]</span><br>kubectl label pod nginx-cd55c47f5-jh9sf version=2.0 -n dev -- overwrite<br><br><span class="hljs-comment"># 查看Label [--show-labels]</span><br>kubectl get pod nginx-cd55c47f5-jh9sf -n dev --show-labels<br><br><span class="hljs-comment"># 删除Label [-]</span><br>kubectl label pod nginx-cd55c47f5-jh9sf version- -n dev<br></code></pre></td></tr></table></figure>
+
+<p>基于标签，我们可以进行标签的选择。Kubernetes提供了Label Selector来完成这一操作。Label用于给某个资源对象定义标识，而Label Selector用于查询和筛选拥有某些标签的资源对象。</p>
+<p>在Kubernetes中有两类Label Selector，分别是基于等式的Label Selector，使用关键字为<code>=, !=</code>；以及基于集合的Label Selector，使用关键字为<code>in, not in</code>。同时Label的选择条件也可以多次使用，使用逗号<code>,</code>将多个Label Selector进行分隔即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 筛选Label [-l / --selector]</span><br>kubectl get pod -n dev -l version=2.0 --show-labels<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>参考配置yaml文件：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">version:</span> <span class="hljs-string">&quot;3.0&quot;</span> <br>    <span class="hljs-attr">env:</span> <span class="hljs-string">&quot;test&quot;</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">pod</span><br>    <span class="hljs-attr">ports:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-port</span><br>      <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<p>经过Getting Started的全流程，我们可以得到下面一张概述图，描述Resource的组织方式。</p>
+<p>![Getting Started](&#x2F;Users&#x2F;evernorif&#x2F;Desktop&#x2F;EverNorif&#x2F;source&#x2F;_posts&#x2F;Kubernetes学习笔记-1-简介与基本使用&#x2F;Getting Started.png)</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="category-chain-item">云原生</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E8%99%9A%E6%8B%9F%E5%8C%96/" class="category-chain-item">虚拟化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Kubernetes/">#Kubernetes</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Kubernetes学习笔记(1)-简介与基本使用</div>
+      <div>http://example.com/2023/07/29/Kubernetes学习笔记-1-简介与基本使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/28/Python%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E4%B9%8BMock%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Python单元测试之Mock的使用">
+                        <span class="hidden-mobile">Python单元测试之Mock的使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
