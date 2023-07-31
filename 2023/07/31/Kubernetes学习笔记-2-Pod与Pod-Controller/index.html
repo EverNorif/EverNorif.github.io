@@ -1,0 +1,938 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在Kubernetes中，Pod是管理的最小资源单位，可以利用yaml配置文件来完成相关配置，包括基础，生命周期以及调度等方面。而Pod Controller用来管理Pod，它可以根据配置文件来对Pod进行管理，确保Pod的状态符合配置文件的描述。Pod Controller也分为很多种类，用来适应不同使用情况。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes学习笔记(2)-Pod与Pod Controller">
+<meta property="og:url" content="http://example.com/2023/07/31/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2-Pod%E4%B8%8EPod-Controller/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="在Kubernetes中，Pod是管理的最小资源单位，可以利用yaml配置文件来完成相关配置，包括基础，生命周期以及调度等方面。而Pod Controller用来管理Pod，它可以根据配置文件来对Pod进行管理，确保Pod的状态符合配置文件的描述。Pod Controller也分为很多种类，用来适应不同使用情况。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-31T14:48:56.000Z">
+<meta property="article:modified_time" content="2023-07-31T14:53:15.669Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Kubernetes学习笔记(2)-Pod与Pod Controller - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Kubernetes学习笔记(2)-Pod与Pod Controller"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-31 22:48" pubdate>
+          2023年7月31日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          114 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Kubernetes学习笔记(2)-Pod与Pod Controller</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h1><h2 id="结构与定义"><a href="#结构与定义" class="headerlink" title="结构与定义"></a>结构与定义</h2><p>在Kubernetes中，每个Pod都可以包含一个或者多个容器，这些容器可以分为两类：</p>
+<ul>
+<li><p>用户程序所在的容器，数量可多可少</p>
+</li>
+<li><p>Pause容器，这是每个Pod都会有的一个<strong>根容器</strong>，它的作用有两个，一方面可以以它为依据，评估整个Pod的健康状态；另一方面可以在根容器上设置Ip地址，其它容器都此Ip（Pod IP），以实现Pod<strong>内部</strong>的网络通信</p>
+</li>
+</ul>
+<p>在Kuberents中，每个Resource最终都可以对应一个yaml配置文件，不同的Resource对应的配置文件可选项不同。利用<code>kubectl explain</code>可以查看对应Resource的可配置项以及相关含义：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># kubectl explain 资源类型         查看某种资源可以配置的一级属性</span><br><span class="hljs-comment"># kubectl explain 资源类型.属性     查看属性的子属性</span><br>kubectl explain pod<br>kubectl explain pod.metadata<br></code></pre></td></tr></table></figure>
+
+<p>每种Resource的可配置项众多，这里不全部列出，需要时可以使用<code>explain</code>命令进行查看。</p>
+<p>在Kubernetes中基本所有资源的一级属性都是一样的，主要包含5部分：</p>
+<ul>
+<li><code>apiVersion &lt;string&gt;</code>： 版本信息，由Kubernetes内部定义，版本号必须可以用 <code>kubectl api-versions</code> 查询到</li>
+<li><code>kind &lt;string&gt; </code>：Resource类型信息，由Kubernetes内部定义，Resource必须可以用 <code>kubectl api-resources</code> 查询到</li>
+<li><code>metadata &lt;Object&gt;</code> ：元数据信息，主要是资源标识和说明，常用的有name、namespace、labels等</li>
+<li><code>spec &lt;Object&gt;</code>：描述信息，这是配置中最重要的一部分，其中是对各种Resource配置的详细描述</li>
+<li><code>status &lt;Object&gt;</code>：状态信息，里面的内容不需要定义，由Kubernetes自动生成</li>
+</ul>
+<p>在上面的属性中，spec详细信息是配置重点，具有如下的常见子属性:</p>
+<ul>
+<li><code>containers &lt;[]Object&gt;</code> ：容器列表，用于定义容器的详细信息</li>
+<li><code>nodeName &lt;String&gt;</code> ：根据nodeName的值将pod调度到指定的Node节点上</li>
+<li><code>nodeSelector &lt;map[]&gt;</code> ：根据NodeSelector中定义的信息选择将该Pod调度到包含这些label的Node 上</li>
+<li><code>hostNetwork &lt;boolean&gt;</code> ：是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</li>
+<li><code>volumes &lt;[]Object&gt;</code> ：存储卷，用于定义Pod上面挂载的存储信息</li>
+<li><code>restartPolicy &lt;string&gt;</code> ：重启策略，表示Pod在遇到故障的时候的处理策略</li>
+</ul>
+<h2 id="Pod-配置"><a href="#Pod-配置" class="headerlink" title="Pod 配置"></a>Pod 配置</h2><h3 id="Pod-基础配置"><a href="#Pod-基础配置" class="headerlink" title="Pod 基础配置"></a>Pod 基础配置</h3><p>Pod中可以运行多个Container，Container的配置即为Pod的基础配置。通过<code>kubectl explain pod.spec.containers</code>查看相关信息，其中可配置项如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">KIND:</span>     <span class="hljs-string">Pod</span><br><span class="hljs-attr">VERSION:</span>  <span class="hljs-string">v1</span><br><span class="hljs-attr">RESOURCE:</span> <span class="hljs-string">containers</span> <span class="hljs-string">&lt;[]Object&gt;</span>   <span class="hljs-comment"># 数组，代表可以有多个容器</span><br><span class="hljs-attr">FIELDS:</span><br>   <span class="hljs-string">name</span>  <span class="hljs-string">&lt;string&gt;</span>     <span class="hljs-comment"># 容器名称</span><br>   <span class="hljs-string">image</span> <span class="hljs-string">&lt;string&gt;</span>     <span class="hljs-comment"># 容器需要的镜像地址 [image_name:version]</span><br>   <span class="hljs-string">imagePullPolicy</span>  <span class="hljs-string">&lt;string&gt;</span> <span class="hljs-comment"># 镜像拉取策略 </span><br>   <span class="hljs-string">command</span>  <span class="hljs-string">&lt;[]string&gt;</span> <span class="hljs-comment"># 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br>   <span class="hljs-string">args</span>     <span class="hljs-string">&lt;[]string&gt;</span> <span class="hljs-comment"># 容器的启动命令需要的参数列表</span><br>   <span class="hljs-string">env</span>      <span class="hljs-string">&lt;[]Object&gt;</span> <span class="hljs-comment"># 容器环境变量的配置</span><br>   <span class="hljs-string">ports</span>    <span class="hljs-string">&lt;[]Object&gt;</span>     <span class="hljs-comment"># 容器需要暴露的端口号列表</span><br>   <span class="hljs-string">resources</span> <span class="hljs-string">&lt;Object&gt;</span>      <span class="hljs-comment"># 资源限制和资源请求的设置</span><br></code></pre></td></tr></table></figure>
+
+<p><code>name</code>表示运行的container名称，可自定义；<code>image</code>表示container的镜像地址，通常由镜像名称和版本构成。</p>
+<p><code>imagePullPolicy</code>用于设置镜像拉取策略，Kubernetes支持配置三种拉取策略：</p>
+<ul>
+<li>Always：总是从远程仓库拉取镜像（一直远程下载）</li>
+<li>IfNotPresent：本地有则使用本地镜像，本地没有则从远程仓库拉取镜像（本地有就本地 本地没远程下载）</li>
+<li>Never：只使用本地镜像，从不去远程仓库拉取，本地没有就报错 （一直使用本地）</li>
+</ul>
+<p>镜像拉取策略的默认值与镜像tag有一定关系，如果镜像tag为具体版本号，那么默认策略是IfNotPresent，如果镜像tag是latest，那么默认策略是Always。</p>
+<p><code>command</code>表示容器启动命令，<code>args</code>表示启动命令所需的参数。这两个参数主要对应的是DockerFile中的<code>ENTRYPOINT</code>，并且此处的配置要优先于DockerFile中的配置，具体有如下的规则：</p>
+<ul>
+<li>如果command和args均没有配置，那么用Dockerfile的配置；</li>
+<li>如果command配置来，但args没有配置，那么Dockerfile默认的配置会被忽略，执行输入的command</li>
+<li>如果command没配置，但args配置了，那么Dockerfile中配置的ENTRYPOINT的命令会被执行，并且使用当前args的参数</li>
+<li>如果command和args都写配置了，那么Dockerfile的配置被忽略，执行command并追加上args参数</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># command example</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">busybox</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">busybox:1.30</span><br>    <span class="hljs-attr">command:</span> [<span class="hljs-string">&quot;/bin/sh&quot;</span>,<span class="hljs-string">&quot;-c&quot;</span>,<span class="hljs-string">&quot;touch /tmp/hello.txt;while true;do /bin/echo $(date +%T) &gt;&gt; /tmp/hello.txt; sleep 3; done;&quot;</span>]<br></code></pre></td></tr></table></figure>
+
+<p><code>env</code>用于在Pod的Container中设置环境变量。不过这种方式不是很推荐，推荐使用后续的ConfigMap来完成相关操作。</p>
+<p><code>ports</code>用于指定容器需要暴露的端口设置，支持如下选项：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">KIND:</span>     <span class="hljs-string">Pod</span><br><span class="hljs-attr">VERSION:</span>  <span class="hljs-string">v1</span><br><span class="hljs-attr">RESOURCE:</span> <span class="hljs-string">ports</span> <span class="hljs-string">&lt;[]Object&gt;</span><br><span class="hljs-attr">FIELDS:</span><br>   <span class="hljs-string">name</span>         <span class="hljs-string">&lt;string&gt;</span>  <span class="hljs-comment"># 端口名称，如果指定，必须保证name在pod中是唯一的		</span><br>   <span class="hljs-string">containerPort&lt;integer&gt;</span> <span class="hljs-comment"># 容器要监听的端口(0&lt;x&lt;65536)</span><br>   <span class="hljs-string">hostPort</span>     <span class="hljs-string">&lt;integer&gt;</span> <span class="hljs-comment"># 容器要在主机上公开的端口，注意要避免端口冲突(一般省略) </span><br>   <span class="hljs-string">hostIP</span>       <span class="hljs-string">&lt;string&gt;</span>  <span class="hljs-comment"># 要将外部端口绑定到的主机IP(一般省略)</span><br>   <span class="hljs-string">protocol</span>     <span class="hljs-string">&lt;string&gt;</span>  <span class="hljs-comment"># 端口协议。必须是UDP、TCP或SCTP。默认为“TCP”。</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># ports example</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.17.1</span><br>    <span class="hljs-attr">ports:</span> <span class="hljs-comment"># 设置容器暴露的端口列表</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-port</span><br>      <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br></code></pre></td></tr></table></figure>
+
+<p><code>resources</code>用于指定容器的资源限制和配额，其中包含两个子选项，分别是<code>limits</code>和<code>requests</code>。limits用于限制运行时容器的最大占用资源，当容器占用资源超过limits时会被终止，并进行重启；requests 用于设置容器需要的最小资源，如果环境资源不够，容器将无法启动。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># resources example</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.17.1</span><br>    <span class="hljs-attr">resources:</span> <span class="hljs-comment"># 资源配额</span><br>      <span class="hljs-attr">limits:</span>  <span class="hljs-comment"># 限制资源（上限）</span><br>        <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;2&quot;</span> <span class="hljs-comment"># CPU限制，单位是core数</span><br>        <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;10Gi&quot;</span> <span class="hljs-comment"># 内存限制</span><br>      <span class="hljs-attr">requests:</span> <span class="hljs-comment"># 请求资源（下限）</span><br>        <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;1&quot;</span>  <span class="hljs-comment"># CPU限制，单位是core数</span><br>        <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;10Mi&quot;</span>  <span class="hljs-comment"># 内存限制</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Pod-生命周期"><a href="#Pod-生命周期" class="headerlink" title="Pod 生命周期"></a>Pod 生命周期</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>Pod的生命周期包括Pod对象从创建到终止的全部流程，确切地说分为下面的阶段：</p>
+<ol>
+<li><p>pod创建过程</p>
+</li>
+<li><p>初始化容器（init container）创建运行过程（这里的初始化容器是个名词）</p>
+</li>
+<li><p>运行主容器（main container）</p>
+<ul>
+<li><p>容器启动后钩子（post start）、容器终止前钩子（pre stop）</p>
+</li>
+<li><p>容器的存活性探测（liveness probe）、就绪性探测（readiness probe）</p>
+</li>
+</ul>
+</li>
+<li><p>pod终止过程</p>
+</li>
+</ol>
+<p>在整个生命周期中，Pod会出现5种状态，分别如下：</p>
+<ul>
+<li><code>挂起(Pending)</code>：ApiServer已经创建了pod资源对象，但它尚未被调度完成或者仍处于下载镜像的过程中</li>
+<li><code>运行中(Running)</code>：pod已经被调度至某节点，并且所有容器都已经被kubelet创建完成</li>
+<li><code>成功(Succeeded)</code>：pod中的所有容器都已经成功终止并且不会被重启</li>
+<li><code>失败(Failed)</code>：所有容器都已经终止，但至少有一个容器终止失败，即容器返回了非0值的退出状态</li>
+<li><code>未知(Unknown)</code>：ApiServer无法正常获取到pod对象的状态信息，通常由网络通信失败所导致</li>
+</ul>
+<h4 id="创建和终止"><a href="#创建和终止" class="headerlink" title="创建和终止"></a>创建和终止</h4><p>Pod的创建过程：</p>
+<ol>
+<li><p>用户通过kubectl或其他api客户端提交需要创建的pod信息给ApiServer</p>
+</li>
+<li><p>ApiServer开始生成pod对象的信息，并将信息存入etcd，然后返回确认信息至客户端</p>
+</li>
+<li><p>ApiServer开始反映etcd中的pod对象的变化，其它组件使用watch机制来跟踪检查ApiServer上的变动</p>
+</li>
+<li><p>Scheduler发现有新的pod对象要创建，开始为Pod分配主机并将结果信息更新至ApiServer</p>
+</li>
+<li><p>Node节点上的kubelet发现有pod调度过来，尝试调用docker启动容器，并将结果回送至ApiServer</p>
+</li>
+<li><p>ApiServer将接收到的pod状态信息存入etcd中</p>
+</li>
+</ol>
+<p>Pod的终止过程：</p>
+<ol>
+<li>用户向ApiServer发送删除pod对象的命令</li>
+<li>ApiServer中的pod对象信息会随着时间的推移而更新，在宽限期内（默认30s），pod被视为dead</li>
+<li>将pod标记为terminating状态</li>
+<li>kubelet在监控到pod对象转为terminating状态的同时启动pod关闭过程</li>
+<li>Endpoint控制器监控到pod对象的关闭行为时，将其从所有匹配到此Endpoint的service资源的端点列表中移除</li>
+<li>如果当前pod对象定义了preStop钩子处理器，则在其标记为terminating后即会以同步的方式启动执行</li>
+<li>pod对象中的容器进程收到停止信号</li>
+<li>宽限期结束后，若pod中还存在仍在运行的进程，那么pod对象会收到立即终止的信号</li>
+<li>kubelet请求ApiServer将此pod资源的宽限期设置为0从而完成删除操作，此时pod对于用户已不可见</li>
+</ol>
+<h4 id="初始化容器"><a href="#初始化容器" class="headerlink" title="初始化容器"></a>初始化容器</h4><p>初始化容器是在pod的主容器启动之前要运行的容器，主要是做一些主容器的前置工作，它具有两大特征：</p>
+<ol>
+<li>初始化容器必须运行完成直至结束，若某初始化容器运行失败，那么Kubernetes需要重启它直到成功完成</li>
+<li>初始化容器必须按照定义的顺序执行，当且仅当前一个成功之后，后面的一个才能运行</li>
+</ol>
+<p>初始化容器有很多的应用场景，下面列出的是最常见的几个：</p>
+<ul>
+<li>提供主容器镜像中不具备的工具程序或自定义代码</li>
+<li>初始化容器要先于应用容器串行启动并运行完成，因此可用于延后应用容器的启动直至其依赖的条件得到满足</li>
+</ul>
+<p>初始化容器的配置可以在<code>spec.initContainers</code>中完成，它具有的配置项与<code>spec.Containers</code>基本相同。</p>
+<h4 id="钩子函数"><a href="#钩子函数" class="headerlink" title="钩子函数"></a>钩子函数</h4><p>钩子（hook）函数向用户提供生命周期对应时间点的控制方法。用户可以通过hook函数完成在生命周期的不同时间点执行不同的方法。</p>
+<p>Kubernetes在主容器的启动之后和停止之前提供了两个钩子函数：</p>
+<ul>
+<li><code>post start</code>：容器创建之后执行，如果失败了会重启容器</li>
+<li><code>pre stop</code> ：容器终止之前执行，执行完成之后容器将成功终止，在其完成之前会阻塞删除容器的操作</li>
+</ul>
+<p>钩子处理器支持使用下面三种方式定义动作，配置在<code>spec.containers.lifecycle</code>选项当中。下面演示的是post start阶段的配置，pre stop阶段有类似的配置选项。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># exec: 在容器内部执行一次命令</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">containers:</span><br>		<span class="hljs-attr">lifecycle:</span><br>			<span class="hljs-attr">postStart:</span><br>        <span class="hljs-attr">exec:</span><br>          <span class="hljs-attr">command:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">cat</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">/tmp/healthy</span><br>		<br><span class="hljs-comment"># tcpSocket: 在容器内部尝试访问指定一个用户容器的端口</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">containers:</span><br>		<span class="hljs-attr">lifecycle:</span><br>			<span class="hljs-attr">postStart:</span><br>				<span class="hljs-attr">tcpSocket:</span><br>					<span class="hljs-attr">port:</span> <span class="hljs-number">8080</span><br><br><span class="hljs-comment"># httpGet: 在容器内部向某url发起http请求</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">containers:</span><br>		<span class="hljs-attr">lifecycle:</span><br>			<span class="hljs-attr">postStart:</span><br>				<span class="hljs-attr">httpGet:</span><br>					<span class="hljs-attr">path:</span> <span class="hljs-string">/xxx</span><br>					<span class="hljs-attr">port:</span> <span class="hljs-number">80</span><br>					<span class="hljs-attr">host:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.5</span><span class="hljs-number">.3</span> <span class="hljs-comment"># 主机地址</span><br>					<span class="hljs-attr">scheme:</span> <span class="hljs-string">HTTP</span> <span class="hljs-comment"># 支持的协议 HTTP/HTTPS</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="容器探测"><a href="#容器探测" class="headerlink" title="容器探测"></a>容器探测</h4><p>容器探测用于检测容器中的应用实例是否正常工作，是保障业务可用性的一种传统机制。如果经过探测，实例的状态不符合预期，那么Kubernetes就会把该问题实例” 摘除 “，不承担业务流量。Kubernetes提供了两种探针来实现容器探测，分别是：</p>
+<ul>
+<li><code>liveness probe</code>：存活性探针，用于检测应用实例当前是否处于正常运行状态，如果不是，k8s会重启容器</li>
+<li><code>readiness probe</code>：就绪性探针，用于检测应用实例当前是否可以接收请求，如果不能，k8s不会转发流量，但是并不会处理(重启或杀死)这个容器</li>
+</ul>
+<p>这两种探针均支持三种方式，配置在<code>spec.containers.livenessProbe</code>或者<code>readinessProbe</code>中。三种方式与钩子函数中的三种方式基本相同：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># exec: 如果命令执行的退出码为0则认为正常，否则不正常</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">containers:</span><br>		<span class="hljs-attr">livenessProbe:</span><br>			<span class="hljs-attr">exec:</span><br>				<span class="hljs-attr">command:</span><br>				<span class="hljs-bullet">-</span> <span class="hljs-string">cat</span><br>				<span class="hljs-bullet">-</span> <span class="hljs-string">/tmp/healthy</span><br>		<br><span class="hljs-comment"># tcpSocket: 访问一个用户容器的端口，如果能够建立socket连接则认为正常，否则不正常</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">containers:</span><br>		<span class="hljs-attr">livenessProbe:</span><br>			<span class="hljs-attr">tcpSocket:</span><br>				<span class="hljs-attr">port:</span> <span class="hljs-number">8080</span><br><br><span class="hljs-comment"># httpGet: 如果返回的状态码在200和399之间则认为正常，否则不正常</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">containers:</span><br>		<span class="hljs-attr">livenessProbe:</span><br>			<span class="hljs-attr">httpGet:</span><br>				<span class="hljs-attr">path:</span> <span class="hljs-string">/xxx</span><br>				<span class="hljs-attr">port:</span> <span class="hljs-number">80</span><br>				<span class="hljs-attr">host:</span> <span class="hljs-string">xxx.xxx.xxx.xxx</span><br>				<span class="hljs-attr">scheme:</span> <span class="hljs-string">HTTP</span> <span class="hljs-comment"># HTTP/HTTPS</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="重启策略"><a href="#重启策略" class="headerlink" title="重启策略"></a>重启策略</h4><p>对于出现问题的Pod，Kubernetes会对其进行重启，而重启是遵循一定的重启策略的。Pod的重启策略可以在<code>spec.restartPolicy</code>中进行配置，共有三种可选项，如下所示：</p>
+<ul>
+<li><code>Always</code> ：容器失效时，自动重启该容器，这也是默认值</li>
+<li><code>OnFailure</code> ： 容器终止运行且退出码不为0时重启</li>
+<li><code>Never</code> ： 不论状态为何，都不重启该容器</li>
+</ul>
+<p>重启策略适用于pod对象中的所有容器，首次需要重启的容器，将在其需要时立即进行重启，随后再次需要重启的操作将由kubelet延迟一段时间后进行，且反复的重启操作的延迟时长以此为10s、20s、40s、80s、160s和300s，300s是最大延迟时长。</p>
+<h3 id="Pod-调度"><a href="#Pod-调度" class="headerlink" title="Pod 调度"></a>Pod 调度</h3><p>在默认情况下，一个Pod在哪个Node节点上运行，是由Scheduler组件采用相应的算法计算出来的，这个过程是不受人工控制的。但是在实际使用中，我们可能想控制某些Pod到达某些节点上，Kubernetes也提供相应的方式来完成这种需求。Kubernetes提供了四种调度方式：</p>
+<ul>
+<li>自动调度：运行在哪个节点上完全由Scheduler经过一系列的算法计算得出</li>
+<li>定向调度：NodeName、NodeSelector</li>
+<li>亲和性调度：NodeAffinity、PodAffinity、PodAntiAffinity</li>
+<li>污点（容忍）调度：Taints、Toleration</li>
+</ul>
+<h4 id="定向调度"><a href="#定向调度" class="headerlink" title="定向调度"></a>定向调度</h4><p>定向调度的含义是Pod声明自己期望被调度到Node。我们可以在Pod上声明需要被调度到的目标Node，或者目标Node列表（以NodeSelector的形式提供）。由于定向调度是强制性的，因此如果期望的目标Node不存在的话，Pod会运行失败。这种方式实际上是直接跳过了Scheduler的调度逻辑，直接向目标Node上进行调度。</p>
+<p>期望Node可以通过NodeName或者NodeSelector来提供，配置项的位置为<code>spec.nodeName</code>或者<code>spec.nodeSelector</code>。其中NodeSelector是基于label-selector机制进行匹配的，通常会选择出一组具有对应Label的Node作为目标Node。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># nodeName</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">nodeName:</span> <span class="hljs-string">node1</span><br><br><span class="hljs-comment"># nodeSelector</span><br><span class="hljs-attr">spec:</span><br>	<span class="hljs-attr">nodeSelector:</span><br>		<span class="hljs-attr">nodeenv:</span> <span class="hljs-string">preprod</span>  <span class="hljs-comment"># 指定调度到具有nodeenv=preprod标签的节点上</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="亲和性调度"><a href="#亲和性调度" class="headerlink" title="亲和性调度"></a>亲和性调度</h4><p>亲和性调度描述的是一种调度的倾向。与定向调度的强制性不同，亲和性调度会优先满足倾向条件，但是如果实在没有办法满足的话，Pod还是能够运行，这样使得调度更加灵活。</p>
+<p>亲和性实际上描述的是是否将两个Pod部署得更加靠近，如果两个Pod之间交互频繁，那么就可以认为它们之间具有亲和性，因此就可以尽可能得将其部署在同一个Node上，减少网络传输带来的性能损耗。不过在进行应用的多副本部署的时候，反而要注意不应该将Pod都部署在同一个Node上，这样不利于提高服务的高可用性。</p>
+<p>亲和性调度主要分为以下三种类型：</p>
+<ul>
+<li><code>nodeAffinity</code>：描述Node倾向于接受哪些Pod</li>
+<li><code>podAffinity</code>：描述Pod倾向于和哪些已经被调度的Pod部署在一起</li>
+<li><code>podAntiAffinity</code>：描述Pod倾向于不和哪些已经被调度的Pod部署在一起</li>
+</ul>
+<h4 id="污点和容忍"><a href="#污点和容忍" class="headerlink" title="污点和容忍"></a>污点和容忍</h4><p>前面的调度方式都是站在Pod的角度上，通过在Pod上添加属性，来确定Pod是否要调度到指定的Node上，其实我们也可以站在Node的角度上，通过在Node上添加污点(Traints)属性，来决定是否允许Pod调度过来。</p>
+<p>在Node上如果添加了污点Traints，就表示这个Node会拒绝这类Node调度过来，甚至可以将已经存在的Pod进行驱逐。实际上，如果我们使用的是kubeadm来搭建的集群，默认就会给master节点添加一个污点标记,所以pod就不会调度到master节点上。</p>
+<p>污点的格式为：<code>key=value:effect</code>, key和value是污点的标签，effect描述污点的作用，支持如下三个选项：</p>
+<ul>
+<li>PreferNoSchedule：kubernetes将尽量避免把Pod调度到具有该污点的Node上，除非没有其他节点可调度</li>
+<li>NoSchedule：kubernetes将不会把Pod调度到具有该污点的Node上，但不会影响当前Node上已存在的Pod</li>
+<li>NoExecute：kubernetes将不会把Pod调度到具有该污点的Node上，同时也会将Node上已存在的Pod驱离</li>
+</ul>
+<p>可以使用kubectl命令行来设置和去除污点：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 设置污点</span><br>kubectl taint nodes node1 key=value:effect<br><br><span class="hljs-comment"># 去除污点[减号]</span><br>kubectl taint nodes node1 key:effect-<br><br><span class="hljs-comment"># 去除所有污点[减号]</span><br>kubectl taint nodes node1 key-<br></code></pre></td></tr></table></figure>
+
+<p>容忍(Toleration)与污点的作用正好是相反的，污点的作用是让Node拒绝某些Pod；而容忍的作用是强制让这类Pod调度到Node上。容忍是针对与污点来说的，污点表示Node的拒绝策略，而容忍污点表示Pod忽略这种拒绝策略。容忍的相关配置在<code>spec.tolerations</code>中：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">KIND:</span>     <span class="hljs-string">Pod</span><br><span class="hljs-attr">VERSION:</span>  <span class="hljs-string">v1</span><br><span class="hljs-attr">RESOURCE:</span> <span class="hljs-string">tolerations</span> <span class="hljs-string">&lt;[]Object&gt;</span><br><span class="hljs-attr">FIELDS:</span><br>   <span class="hljs-string">key</span>       <span class="hljs-comment"># 对应着要容忍的污点的键，空意味着匹配所有的键</span><br>   <span class="hljs-string">value</span>     <span class="hljs-comment"># 对应着要容忍的污点的值</span><br>   <span class="hljs-string">operator</span>  <span class="hljs-comment"># key-value的运算符，支持Equal和Exists（默认）</span><br>   <span class="hljs-string">effect</span>    <span class="hljs-comment"># 对应污点的effect，空意味着匹配所有影响</span><br>   <span class="hljs-string">tolerationSeconds</span>   <span class="hljs-comment"># 容忍时间, 当effect为NoExecute时生效，表示pod在Node上的停留时间</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="Pod-Controller"><a href="#Pod-Controller" class="headerlink" title="Pod Controller"></a>Pod Controller</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Pod是Kubernetes的最小管理单元，在kubernetes中，按照pod的创建方式可以将其分为两类：</p>
+<ul>
+<li>自主式pod：Kubernetes直接创建出来的Pod，这种pod删除后就没有了，也不会重建</li>
+<li>控制器创建的pod：kubernetes通过控制器创建的pod，这种pod删除了之后还会自动重建</li>
+</ul>
+<p>Pod控制器是管理pod的中间层，使用Pod控制器之后，只需要告诉Pod控制器我们最终的期望状态就行，它会创建出满足条件的Pod并确保每一个Pod资源处于用户期望的目标状态。如果Pod资源在运行中出现故障，它会基于指定策略重新编排Pod。</p>
+<p>在Kubernetes中，有很多类型的pod控制器，每种都有自己的适合的场景，常见的有下面这些：</p>
+<ul>
+<li><code>ReplicaSet</code>：保证副本数量一直维持在期望值，并支持pod数量扩缩容，镜像版本升级</li>
+<li><code>Deployment</code>：通过控制ReplicaSet来控制Pod，并支持滚动升级、回退版本</li>
+<li><code>Horizontal Pod Autoscaler</code>：可以根据集群负载自动水平调整Pod的数量，实现削峰填谷</li>
+<li><code>DaemonSet</code>：在集群中的指定Node上运行且仅运行一个副本，一般用于守护进程类的任务</li>
+<li><code>Job</code>：创建出来的pod只要完成任务就立即退出，不需要重启或重建，用于执行一次性任务</li>
+<li><code>Cronjob</code>：它创建的Pod负责周期性任务控制，不需要持续后台运行</li>
+</ul>
+<h2 id="ReplicaSet-RS"><a href="#ReplicaSet-RS" class="headerlink" title="ReplicaSet(RS)"></a>ReplicaSet(RS)</h2><p>ReplicaSet的主要作用是保证一定数量的pod正常运行，它会持续监听这些Pod的运行状态，一旦Pod发生故障，就会重启或重建。同时它还支持对pod数量的扩缩容和镜像版本的升降级。</p>
+<p>ReplicaSet的资源清单描述如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span> <span class="hljs-comment"># 版本号</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ReplicaSet</span> <span class="hljs-comment"># 类型       </span><br><span class="hljs-attr">metadata:</span> <span class="hljs-comment"># 元数据</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-comment"># rs名称 </span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-comment"># 所属命名空间 </span><br>  <span class="hljs-attr">labels:</span> <span class="hljs-comment"># 标签</span><br>    <span class="hljs-attr">controller:</span> <span class="hljs-string">rs</span><br><span class="hljs-attr">spec:</span> <span class="hljs-comment"># 详情描述</span><br>  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span> <span class="hljs-comment"># 副本数量，即需要创建出Pod的数量，默认为1</span><br>  <span class="hljs-attr">selector:</span> <span class="hljs-comment"># 选择器，通过它指定该控制器管理哪些pod</span><br>    <span class="hljs-attr">matchLabels:</span>      <span class="hljs-comment"># Labels匹配规则</span><br>      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx-pod</span><br>    <span class="hljs-attr">matchExpressions:</span> <span class="hljs-comment"># Expressions匹配规则</span><br>      <span class="hljs-bullet">-</span> &#123;<span class="hljs-attr">key:</span> <span class="hljs-string">app</span>, <span class="hljs-attr">operator:</span> <span class="hljs-string">In</span>, <span class="hljs-attr">values:</span> [<span class="hljs-string">nginx-pod</span>]&#125;<br>  <span class="hljs-attr">template:</span> <span class="hljs-comment"># 模板，当副本数量不足时，会根据下面的模板创建pod副本，其中的字段与Pod相关字段基本相同</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx-pod</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">containers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.17.1</span><br>        <span class="hljs-attr">ports:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br></code></pre></td></tr></table></figure>
+
+<p>如果需要临时执行<strong>扩缩容</strong>的话，直接修改对应的yaml配置文件即可，Pod Controller会监测配置文件并确保系统的最终状态符合文件的描述。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 可以通过edit命令修改对应配置文件，该命令会唤起编辑器</span><br>kubectl edit rs &lt;rs-name&gt; -n &lt;namespace&gt;<br></code></pre></td></tr></table></figure>
+
+<p>当然也可以直接使用scale命令进行扩缩容，直接在<code>--replicas=n</code>后面指定目标数量即可：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># scale扩缩容</span><br>kubectl scale rs &lt;rs-name&gt; --replicas=xx<br></code></pre></td></tr></table></figure>
+
+<p>如果需要<strong>升级镜像</strong>的话，也可以通过编辑配置文件的命令来完成，或者通过<code>set image</code>命令来完成：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># set image更新镜像</span><br><span class="hljs-comment"># kubectl set image rs rs名称 容器=镜像版本 -n namespace</span><br>kubectl <span class="hljs-built_in">set</span> image rs &lt;rs-name&gt; &lt;container-name&gt;=&lt;image_name&gt;:&lt;version&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Deployment-Deploy"><a href="#Deployment-Deploy" class="headerlink" title="Deployment(Deploy)"></a>Deployment(Deploy)</h2><p>为了更好的解决服务编排的问题，Kubernetes在V1.2版本开始，引入了<code>Deployment</code> Pod 控制器。这种控制器并不直接管理pod，而是通过管理ReplicaSet来简介管理Pod，因此Deployment比ReplicaSet功能更加强大。</p>
+<p>除了支持ReplicaSet的所有功能之外，Deployment还支持发布的停止和继续，支持版本的滚动升级和回滚等。</p>
+<p>Deployment的资源清单描述如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span> <span class="hljs-comment"># 版本号</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span> <span class="hljs-comment"># 类型       </span><br><span class="hljs-attr">metadata:</span> <span class="hljs-comment"># 元数据</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-comment"># rs名称 </span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-comment"># 所属命名空间 </span><br>  <span class="hljs-attr">labels:</span> <span class="hljs-comment">#标签</span><br>    <span class="hljs-attr">controller:</span> <span class="hljs-string">deploy</span><br><span class="hljs-attr">spec:</span> <span class="hljs-comment"># 详情描述</span><br>  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span> <span class="hljs-comment"># 副本数量</span><br>  <span class="hljs-attr">revisionHistoryLimit:</span> <span class="hljs-number">3</span> <span class="hljs-comment"># 保留历史版本</span><br>  <span class="hljs-attr">paused:</span> <span class="hljs-literal">false</span> <span class="hljs-comment"># 暂停部署，默认是false，决定创建了Deployment之后是暂停，还是直接创建Pod</span><br>  <span class="hljs-attr">progressDeadlineSeconds:</span> <span class="hljs-number">600</span> <span class="hljs-comment"># 部署超时时间（s），默认是600</span><br>  <span class="hljs-attr">strategy:</span> <span class="hljs-comment"># 镜像更新策略</span><br>    <span class="hljs-attr">type:</span> <span class="hljs-string">RollingUpdate</span> <span class="hljs-comment"># 滚动更新策略</span><br>    <span class="hljs-attr">rollingUpdate:</span> <span class="hljs-comment"># 滚动更新</span><br>      <span class="hljs-attr">maxSurge:</span> <span class="hljs-number">30</span><span class="hljs-string">%</span> <span class="hljs-comment"># 最大额外可以存在的副本数，可以为百分比，也可以为整数</span><br>      <span class="hljs-attr">maxUnavailable:</span> <span class="hljs-number">30</span><span class="hljs-string">%</span> <span class="hljs-comment"># 最大不可用状态的 Pod 的最大值，可以为百分比，也可以为整数</span><br>  <span class="hljs-attr">selector:</span> <span class="hljs-comment"># 选择器，通过它指定该控制器管理哪些pod</span><br>    <span class="hljs-attr">matchLabels:</span>      <span class="hljs-comment"># Labels匹配规则</span><br>      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx-pod</span><br>    <span class="hljs-attr">matchExpressions:</span> <span class="hljs-comment"># Expressions匹配规则</span><br>      <span class="hljs-bullet">-</span> &#123;<span class="hljs-attr">key:</span> <span class="hljs-string">app</span>, <span class="hljs-attr">operator:</span> <span class="hljs-string">In</span>, <span class="hljs-attr">values:</span> [<span class="hljs-string">nginx-pod</span>]&#125;<br>  <span class="hljs-attr">template:</span> <span class="hljs-comment"># 模板，当副本数量不足时，会根据下面的模板创建pod副本</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx-pod</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">containers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.17.1</span><br>        <span class="hljs-attr">ports:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br></code></pre></td></tr></table></figure>
+
+<p>Deployment的<strong>扩缩容</strong>操作与ReplicaSet相同，可以通过修改配置文件或者scale命令来完成。</p>
+<p>在<strong>镜像更新</strong>方面，Deployment支持两种更新策略:<code>Recreate</code>和<code>RollingUpadte</code>,可以通过<code>strategy</code>指定策略类型,支持两个属性:默认滚动更新。</p>
+<ul>
+<li><code>Recreate</code>：在创建出新的Pod之前会先杀掉所有已存在的Pod</li>
+<li><code>RollingUpdate</code>：杀死一部分，再启动一部分，在更新过程中，存在两个版本Pod</li>
+</ul>
+<p>Deployment还支持版本升级过程中的暂停、继续功能以及版本回退等诸多功能。实际上，Deplyment会保存历史过程中的ReplicaSet，如果需要进行回退，可以直接重新调用原来的ReplicaSet。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl rollout： 版本升级相关功能，支持下面的选项：<br><br>- status	显示当前升级状态<br>- <span class="hljs-built_in">history</span>   显示 升级历史记录<br>- pause    暂停版本升级过程<br>- resume   继续已经暂停的版本升级过程<br>- restart    重启版本升级过程<br>- undo 回滚到上一级版本（可以使用--to-revision回滚到指定版本）<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>补充：金丝雀发布</p>
+<p>金丝雀发布指的是在发布过程中先让一部分Pod进行更新，此时在整个提供服务的Pod中，仅存在一部分新版本的应用，主体部分还是旧的版本。然后，再筛选一小部分的用户请求路由到新版本的Pod应用，继续观察能否稳定地按期望的方式运行。确定没问题之后再继续完成余下的Pod资源滚动更新，否则立即回滚更新操作。</p>
+</blockquote>
+<h2 id="Horizontal-Pod-Autoscaler-HPA"><a href="#Horizontal-Pod-Autoscaler-HPA" class="headerlink" title="Horizontal Pod Autoscaler(HPA)"></a>Horizontal Pod Autoscaler(HPA)</h2><p>Horizontal Pod Autoscaler(HPA)能够完成Pod数量的动态调整，即自动化扩缩容。</p>
+<p>HPA可以获取每个Pod利用率，然后和HPA中定义的指标进行对比，同时计算出需要伸缩的具体值，最后实现Pod的数量的调整。其实HPA与之前的Deployment一样，也属于一种Kubernetes资源对象，它通过追踪分析RC控制的所有目标Pod的负载变化情况，来确定是否需要针对性地调整目标Pod的副本数。</p>
+<h2 id="DaemonSet-DS"><a href="#DaemonSet-DS" class="headerlink" title="DaemonSet(DS)"></a>DaemonSet(DS)</h2><p>DaemonSet类型的控制器可以保证在集群中的每一台（或指定）节点上都运行一个副本。一般适用于日志收集、节点监控等场景。如果一个Pod提供的功能是节点级别的（每个节点都需要且只需要一个），那么这类Pod就适合使用DaemonSet类型的控制器创建。</p>
+<p>每当向集群中添加一个Node的时候，指定的Pod副本也会添加到该节点上；当节点从集群中移除时，Pod也会被垃圾回收。</p>
+<h2 id="Job"><a href="#Job" class="headerlink" title="Job"></a>Job</h2><p>Job，主要用于负责批量处理短暂的，一次性的(每个任务仅运行一次就结束)任务。当Job创建的pod执行成功结束时，Job将记录成功结束的pod数量；当成功结束的pod达到指定的数量时，Job将完成执行</p>
+<p>Job的资源描述如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">batch/v1</span> <span class="hljs-comment"># 版本号</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Job</span> <span class="hljs-comment"># 类型       </span><br><span class="hljs-attr">metadata:</span> <span class="hljs-comment"># 元数据</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-comment"># rs名称 </span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-comment"># 所属命名空间 </span><br>  <span class="hljs-attr">labels:</span> <span class="hljs-comment">#标签</span><br>    <span class="hljs-attr">controller:</span> <span class="hljs-string">job</span><br><span class="hljs-attr">spec:</span> <span class="hljs-comment"># 详情描述</span><br>  <span class="hljs-attr">completions:</span> <span class="hljs-number">1</span> <span class="hljs-comment"># 指定job需要成功运行Pods的次数。默认值: 1</span><br>  <span class="hljs-attr">parallelism:</span> <span class="hljs-number">1</span> <span class="hljs-comment"># 指定job在任一时刻应该并发运行Pods的数量。默认值: 1</span><br>  <span class="hljs-attr">activeDeadlineSeconds:</span> <span class="hljs-number">30</span> <span class="hljs-comment"># 指定job可运行的时间期限，超过时间还未结束，系统将会尝试进行终止。</span><br>  <span class="hljs-attr">backoffLimit:</span> <span class="hljs-number">6</span> <span class="hljs-comment"># 指定job失败后进行重试的次数。默认是6</span><br>  <span class="hljs-attr">manualSelector:</span> <span class="hljs-literal">true</span> <span class="hljs-comment"># 是否可以使用selector选择器选择pod，默认是false</span><br>  <span class="hljs-attr">selector:</span> <span class="hljs-comment"># 选择器，通过它指定该控制器管理哪些pod</span><br>    <span class="hljs-comment"># ...</span><br>  <span class="hljs-attr">template:</span> <span class="hljs-comment"># 模板，当副本数量不足时，会根据下面的模板创建pod副本</span><br>   	<span class="hljs-comment"># ...</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">restartPolicy:</span> <span class="hljs-string">Never</span> <span class="hljs-comment"># 重启策略只能设置为Never或者OnFailure</span><br>      <span class="hljs-attr">containers:</span><br>      	<span class="hljs-comment"># ...</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="CronJob-CJ"><a href="#CronJob-CJ" class="headerlink" title="CronJob(CJ)"></a>CronJob(CJ)</h2><p>CronJob控制器以 Job控制器资源为其管控对象，并借助它管理pod资源对象。Job控制器定义的作业任务在其控制器资源创建之后便会立即执行，但CronJob可以用作定时任务，控制其运行时间点和重复运行的方式。调度方式使用Linux中的cron格式描述，可以参考<a target="_blank" rel="noopener" href="https://phoenixnap.com/kb/set-up-cron-job-linux">How to Set Up a Cron Job in Linux? {Schedule Tasks} | PhoenixNAP KB</a></p>
+<p>CronJob的资源描述如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">batch/v1beta1</span> <span class="hljs-comment"># 版本号</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">CronJob</span> <span class="hljs-comment"># 类型       </span><br><span class="hljs-attr">metadata:</span> <span class="hljs-comment"># 元数据</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-comment"># rs名称 </span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-comment"># 所属命名空间 </span><br>  <span class="hljs-attr">labels:</span> <span class="hljs-comment">#标签</span><br>    <span class="hljs-attr">controller:</span> <span class="hljs-string">cronjob</span><br><span class="hljs-attr">spec:</span> <span class="hljs-comment"># 详情描述</span><br>  <span class="hljs-attr">schedule:</span> <span class="hljs-comment"># cron格式的作业调度运行时间点,用于控制任务在什么时间执行</span><br>  <span class="hljs-attr">concurrencyPolicy:</span> <span class="hljs-comment"># 并发执行策略，用于定义前一次作业运行尚未完成时是否以及如何运行后一次的作业</span><br>  <span class="hljs-attr">failedJobHistoryLimit:</span> <span class="hljs-comment"># 为失败的任务执行保留的历史记录数，默认为1</span><br>  <span class="hljs-attr">successfulJobHistoryLimit:</span> <span class="hljs-comment"># 为成功的任务执行保留的历史记录数，默认为3</span><br>  <span class="hljs-attr">startingDeadlineSeconds:</span> <span class="hljs-comment"># 启动作业错误的超时时长</span><br>  <span class="hljs-attr">jobTemplate:</span> <span class="hljs-comment"># job控制器模板，用于为cronjob控制器生成job对象;下面其实就是job的定义</span><br>   <span class="hljs-comment"># ...</span><br></code></pre></td></tr></table></figure>
+
+<p>其中并发执行策略有三种选项：</p>
+<ul>
+<li><code>Allow</code>：允许Jobs并发运行(默认)</li>
+<li><code>Forbid</code>：禁止并发运行，如果上一次运行尚未完成，则跳过下一次运行</li>
+<li><code>Replace</code>：替换，取消当前正在运行的作业并用新作业替换它</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="category-chain-item">云原生</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E8%99%9A%E6%8B%9F%E5%8C%96/" class="category-chain-item">虚拟化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Kubernetes/">#Kubernetes</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Kubernetes学习笔记(2)-Pod与Pod Controller</div>
+      <div>http://example.com/2023/07/31/Kubernetes学习笔记-2-Pod与Pod-Controller/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月31日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="Kubernetes学习笔记(1)-简介与基本使用">
+                        <span class="hidden-mobile">Kubernetes学习笔记(1)-简介与基本使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
