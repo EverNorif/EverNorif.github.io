@@ -1,0 +1,799 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Kubernetes的基本工作单元是Pod，但是Pod的ip并不是固定的，通过Service我们可以对Pod进行聚合，提供统一的入口地址，以此提供更加方便的用户体验。另一方面，在Kubernetes中同样存在数据持久化的问题，可以通过Volume来解决，其中常用的Volume包括EmptyDir、HostPath、NFS、ConfigMap等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes学习笔记(3)-Service与数据存储">
+<meta property="og:url" content="http://example.com/2023/08/01/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3-Service%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Kubernetes的基本工作单元是Pod，但是Pod的ip并不是固定的，通过Service我们可以对Pod进行聚合，提供统一的入口地址，以此提供更加方便的用户体验。另一方面，在Kubernetes中同样存在数据持久化的问题，可以通过Volume来解决，其中常用的Volume包括EmptyDir、HostPath、NFS、ConfigMap等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-01T12:56:03.000Z">
+<meta property="article:modified_time" content="2023-08-01T13:05:14.197Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Kubernetes学习笔记(3)-Service与数据存储 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Kubernetes学习笔记(3)-Service与数据存储"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-01 20:56" pubdate>
+          2023年8月1日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          55 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Kubernetes学习笔记(3)-Service与数据存储</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在Kubernetes中，Pod是应用程序的载体，我们可以通过Pod的ip来访问应用程序。但是Pod的ip地址不是固定的，这也就意味着不方便直接采用Pod的Ip对服务进行访问。</p>
+<p>为了解决这个问题，Kubernetes提供了Service这种类型的Resource。Service会对提供同一个服务的多个Pod进行聚合，并且提供一个统一的入口地址。通过访问Service的入口地址就能访问到后面的Pod服务。</p>
+<p>事实上，Service在很多情况下只是一个概念，真正起作用的其实是kube-proxy服务进程。每个Node节点上都运行着一个kube-proxy服务进程。当创建Service的时候，Kubernetes通过Api-Server向etcd写入创建的Service的信息，而kube-proxy会基于监听的机制来发现这种Service的变动，之后它会将最新的Service信息转换成对应的访问规则。</p>
+<p>下面是Service的资源清单描述：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>  <span class="hljs-comment"># 资源类型</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>  <span class="hljs-comment"># 资源版本</span><br><span class="hljs-attr">metadata:</span> <span class="hljs-comment"># 元数据</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">service</span> <span class="hljs-comment"># 资源名称</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span> <span class="hljs-comment"># 命名空间</span><br><span class="hljs-attr">spec:</span> <span class="hljs-comment"># 描述</span><br>  <span class="hljs-attr">selector:</span> <span class="hljs-comment"># 标签选择器，用于确定当前service代理哪些pod</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-comment"># Service类型，指定service的访问方式</span><br>  <span class="hljs-attr">clusterIP:</span>  <span class="hljs-comment"># 虚拟服务的ip地址</span><br>  <span class="hljs-attr">sessionAffinity:</span> <span class="hljs-comment"># session亲和性，支持ClientIP、None两个选项</span><br>  <span class="hljs-attr">ports:</span> <span class="hljs-comment"># 端口信息</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span> <br>      <span class="hljs-attr">port:</span> <span class="hljs-number">3017</span>  <span class="hljs-comment"># service端口</span><br>      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">5003</span> <span class="hljs-comment"># pod端口</span><br>      <span class="hljs-attr">nodePort:</span> <span class="hljs-number">31122</span> <span class="hljs-comment"># 主机端口</span><br></code></pre></td></tr></table></figure>
+
+<p>其中type表示Service的类型，可选值有：</p>
+<ul>
+<li><code>ClusterIP</code>：默认类型。这种Service只能在集群内部，通过Kubernetes系统自动分配的虚拟IP访问</li>
+<li><code>NodePort</code>：将Service通过指定的Node上的端口暴露给外部，通过此方法，就可以在集群外部访问服务</li>
+<li><code>LoadBalancer</code>：使用外接负载均衡器完成到服务的负载分发，注意此模式需要外部云环境支持</li>
+<li><code>ExternalName</code>： 把集群外部的服务引入集群内部，直接使用</li>
+</ul>
+<h2 id="ClusterIP"><a href="#ClusterIP" class="headerlink" title="ClusterIP"></a>ClusterIP</h2><p>一个ClusterIP类型的Service，对应配置文件示例如下，其中直接指定type为ClusterIP，并通过Label Selector来决定代理Pod的范围。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">service-clusterip</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx-pod</span><br>  <span class="hljs-attr">clusterIP:</span> <span class="hljs-string">xxx.xxx.xxx.xxx</span> <span class="hljs-comment"># service的ip地址，如果不写，默认会生成一个</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">ClusterIP</span><br>  <span class="hljs-attr">ports:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>  <span class="hljs-comment"># Service端口       </span><br>    <span class="hljs-attr">targetPort:</span> <span class="hljs-number">80</span> <span class="hljs-comment"># pod端口</span><br></code></pre></td></tr></table></figure>
+
+<p>Service配置文件中的Selector描述可以对应到一系列Pod，在Kubernetes中用Endpoint来描述这种对应关系。Endpoint是Kubernetes中的一个资源对象，存储在etcd中，用来记录一个Service对应的所有Pod的访问地址。这也就是说，Service和Pod之间的联系是通过Endpoints来实现的，一个Service由一组Pod组成，这些Pod通过Endpoints暴露出来。</p>
+<p>默认情况下，对于Service的访问会转发到后面真实的Pod上，转发策略默认使用kube-proxy的策略，例如随机，轮询等。不过Kubernetes中也提供了基于客户端地址的会话保持模式，可以通过设置<code>spec.sessionAffinity:ClientIP</code>来开启。在这种模式下，来自同一个客户端发起的所有请求都会转发到固定的一个Pod上。</p>
+<p>当然在某些场景中，开发人员可能不想使用Service提供的负载均衡功能，而希望自己来控制负载均衡策略。针对这种情况，Kubernetes提供了HeadLiness Service，这类Service不会分配Cluster IP，如果想要访问Service，只能通过Service的域名进行查询。要创建一个HeadLiness Service，只需要在配置文件中指定<code>spec.type</code>为ClusterIP，同时指定<code>spec.clusterIP</code>为None即可。</p>
+<h2 id="NodePort"><a href="#NodePort" class="headerlink" title="NodePort"></a>NodePort</h2><p>ClusterIP类型的Service只能在集群内部访问，如果希望将Service暴露给集群外部使用，则需要NodePort类型的Service。NodePort的工作原理实际上就是将service的端口映射到Node的一个端口上，然后就可以通过<code>NodeIp:NodePort</code>来访问Service了。</p>
+<p>一个NodePort的配置文件示例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">service-nodeport</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx-pod</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">NodePort</span> <span class="hljs-comment"># service类型</span><br>  <span class="hljs-attr">ports:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">80</span><br>    <span class="hljs-attr">nodePort:</span> <span class="hljs-number">30002</span> <span class="hljs-comment"># 指定绑定的node的端口(默认的取值范围是：30000-32767), 如果不指定，会默认分配</span><br>    <span class="hljs-attr">targetPort:</span> <span class="hljs-number">80</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="LoadBalancer"><a href="#LoadBalancer" class="headerlink" title="LoadBalancer"></a>LoadBalancer</h2><p>LoadBalancer和NodePort很相似，目的都是向外部暴露一个端口，区别在于LoadBalancer会在集群的外部再来做一个负载均衡设备，而这个设备需要外部环境支持。外部服务发送到这个设备上的请求，会被设备负载之后转发到集群中。</p>
+<h2 id="ExternalName"><a href="#ExternalName" class="headerlink" title="ExternalName"></a>ExternalName</h2><p>ExternalName类型的Service用于引入集群外部的服务，它通过<code>externalName</code>属性指定外部一个服务的地址，然后在集群内部访问此service就可以访问到外部的服务了。</p>
+<h1 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h1><h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><p>在Kubernetes中，容器的生命周期可能很短，会被频繁地创建和销毁。容器在被销毁时，保存在其中的数据也会被清除。Kubernetes引入Volume的概念来持久化保存容器中的数据。</p>
+<p><code>Volume</code>是Pod中能够被多个容器访问的共享目录，它被定义在Pod上（在Pod的配置文件中声明），然后被一个Pod里的多个容器挂载到具体的文件目录下。Kubernetes通过Volume实现同一个Pod中不同容器之间的数据共享以及数据的持久化存储。Volume的生命容器不与Pod中单个容器的生命周期相关，当容器终止或者重启时，Volume中的数据也不会丢失。</p>
+<p>kubernetes的Volume支持多种类型，比较常见的有下面几个：</p>
+<ul>
+<li>简单存储：EmptyDir、HostPath、NFS</li>
+<li>高级存储：PV、PVC</li>
+<li>配置存储：ConfigMap、Secret</li>
+</ul>
+<h2 id="基本存储"><a href="#基本存储" class="headerlink" title="基本存储"></a>基本存储</h2><h3 id="EmptyDir"><a href="#EmptyDir" class="headerlink" title="EmptyDir"></a>EmptyDir</h3><p>EmptyDir是最基础的Volume类型，一个EmptyDir就是Host上的一个空目录。EmptyDir是在Pod被分配到Node时创建的，它的初始内容为空，并且无须指定宿主机上对应的目录文件，因为Kubernetes会自动分配一个目录，当Pod销毁时， EmptyDir中的数据也会被永久删除。 EmptyDir用途如下：</p>
+<ul>
+<li>临时空间，例如用于某些应用程序运行时所需的临时目录，且无须永久保留</li>
+<li>一个容器需要从另一个容器中获取数据的目录（多容器共享目录）</li>
+</ul>
+<p>例如下面的配置文件，在<code>Pod.spec.volumes</code>中声明了Volume，然后在Container的详细配置中进行对应挂载。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">volume-emptydir</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.17.1</span><br>    <span class="hljs-attr">ports:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>    <span class="hljs-attr">volumeMounts:</span>  <span class="hljs-comment"># 将logs-volume挂在到nginx容器中，对应的目录为 /var/log/nginx</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">logs-volume</span><br>      <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/log/nginx</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">busybox</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">busybox:1.30</span><br>    <span class="hljs-attr">command:</span> [<span class="hljs-string">&quot;/bin/sh&quot;</span>,<span class="hljs-string">&quot;-c&quot;</span>,<span class="hljs-string">&quot;tail -f /logs/access.log&quot;</span>] <span class="hljs-comment"># 初始命令，动态读取指定文件中内容</span><br>    <span class="hljs-attr">volumeMounts:</span>  <span class="hljs-comment"># 将logs-volume 挂在到busybox容器中，对应的目录为 /logs</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">logs-volume</span><br>      <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/logs</span><br>  <span class="hljs-attr">volumes:</span> <span class="hljs-comment"># 声明volume， name为logs-volume，类型为emptyDir</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">logs-volume</span><br>    <span class="hljs-attr">emptyDir:</span> &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="HostPath"><a href="#HostPath" class="headerlink" title="HostPath"></a>HostPath</h3><p>EmptyDir中数据不会被持久化，它会随着Pod的结束而销毁，如果想简单的将数据持久化到主机中，可以选择HostPath。HostPath就是将Node主机中一个实际目录挂载到Pod中，以供容器使用，这样设计可以保证即使Pod销毁，数据依旧可以存在于Node主机上。</p>
+<p>HostPath的使用方式与EmptyDir基本相同，只需要在声明的时候指定相关配置即可，后续Container可以用来挂载。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># HostPath Example</span><br><span class="hljs-comment"># ...</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">volumes:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">logs-volume</span><br>    <span class="hljs-attr">hostPath:</span> <br>      <span class="hljs-attr">path:</span> <span class="hljs-string">/root/logs</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">DirectoryOrCreate</span>  <span class="hljs-comment"># 目录存在就使用，不存在就先创建后使用</span><br></code></pre></td></tr></table></figure>
+
+<p>其中type的可选值如下：</p>
+<ul>
+<li><code>DirectoryOrCreate</code>：目录存在就使用，不存在就先创建后使用</li>
+<li><code>Directory</code>：目录必须存在</li>
+<li><code>FileOrCreate</code>：文件存在就使用，不存在就先创建后使用</li>
+<li><code>File</code>：文件必须存在 </li>
+<li><code>Socket</code>：unix套接字必须存在</li>
+<li><code>CharDevice</code>：字符设备必须存在</li>
+<li><code>BlockDevice</code>：块设备必须存在</li>
+</ul>
+<h3 id="NFS"><a href="#NFS" class="headerlink" title="NFS"></a>NFS</h3><p>HostPath可以解决数据持久化的问题，但是一旦Node节点故障了，或者Pod转移到了别的节点，就又会出现问题。此时需要准备单独的网络存储系统，比较常用的有NFS、CIFS。在Volume中也可以直接配置NFS相关的存储系统。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># NFS Example</span><br><span class="hljs-comment"># ...</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">volumes:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">logs-volume</span><br>    <span class="hljs-attr">nfs:</span><br>      <span class="hljs-attr">server:</span> <span class="hljs-string">xxx.xxx.xxx.xxx</span> <span class="hljs-comment"># nfs服务器地址</span><br>      <span class="hljs-attr">path:</span> <span class="hljs-string">/root/data/nfs</span> <span class="hljs-comment"># 共享文件路径</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="高级存储"><a href="#高级存储" class="headerlink" title="高级存储"></a>高级存储</h2><p>Kubernetes支持的存储系统有很多，每种存储系统可能有互不相同的配置，学习成本较高。而为了能够屏蔽底层存储实现的细节，方便用户使用， Kubernetes引入PV和PVC两种资源对象。</p>
+<p><code>PV(Persistent Volume)</code>指持久化卷，是对底层的共享存储的一种抽象。一般情况下PV由Kubernetes管理员进行创建和配置，它与底层具体的共享存储技术有关，并通过插件完成与共享存储的对接。</p>
+<p><code>PVC(Persistent Volume Claim)</code>指持久卷声明，是用户对于存储需求的一种声明。换句话说，PVC其实就是用户向Kubernetes系统发出的一种资源需求申请。</p>
+<p>PV和PVC是一一对应的，整个使用过程通常会经过下面一些阶段：</p>
+<ul>
+<li><p>资源供应：首先由管理员手动创建底层存储和PV</p>
+</li>
+<li><p>资源绑定：用户创建PVC，Kubernetes负责根据PVC的声明去寻找PV，并进行绑定。</p>
+<ul>
+<li>一旦找到，就将该PV与用户定义的PVC进行绑定，用户的应用就可以使用这个PVC了PV一旦绑定到某个PVC上，就会被这个PVC独占，不能再与其他PVC进行绑定了</li>
+<li>如果找不到，PVC则会无限期处于Pending状态，直到等到系统管理员创建了一个符合其要求的PV</li>
+</ul>
+</li>
+<li><p>资源使用：用户可在Pod中像Volume一样使用PVC，将PVC挂载到容器内的某个路径进行使用。</p>
+</li>
+<li><p>资源释放：用户删除PVC来释放PV。当存储资源使用完毕后，用户可以删除PVC，与该PVC绑定的PV将会被标记为“已释放”，但还不能立刻与其他PVC进行绑定。通过之前PVC写入的数据可能还被留在存储设备上，只有在清除之后该PV才能再次使用。</p>
+</li>
+<li><p>资源回收：Kubernetes根据PV设置的回收策略进行资源的回收。对于PV，管理员可以设定回收策略，用于设置与之绑定的PVC释放资源之后如何处理遗留数据的问题。只有PV的存储空间完成回收，才能供新的PVC绑定和使用。</p>
+</li>
+</ul>
+<h2 id="配置存储"><a href="#配置存储" class="headerlink" title="配置存储"></a>配置存储</h2><h3 id="ConfigMap"><a href="#ConfigMap" class="headerlink" title="ConfigMap"></a>ConfigMap</h3><p>ConfigMap是一种比较特殊的存储卷，它的主要作用是存储配置信息。</p>
+<p>ConfigMap也属于一种Resource，例如可以通过如下配置文件创建一个ConfigMap：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ConfigMap</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">configmap</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">data:</span><br>  <span class="hljs-attr">info:</span> <span class="hljs-string">|</span><br><span class="hljs-string">    username:admin</span><br><span class="hljs-string">    password:123456</span><br><span class="hljs-string"></span>  <span class="hljs-attr">myConfig:</span> <span class="hljs-string">test</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>  注意这里的<code>｜</code>竖线。在yaml中竖线表示保留文本块中的换行符，因此这里的含义是向<code>data.info</code>传递了<code>username:admin\npassword:123456</code>。</p>
+</blockquote>
+<p>创建之后可以通过describe命令查看详情：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl describe cm configmap -n dev<br></code></pre></td></tr></table></figure>
+
+<p>创建好了之后，就可以像正常使用Volume的步骤一样，使用ConfigMap。例如现在我们创建一个Pod，在其中挂载ConfigMap，对应的配置文件如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">pod-configmap</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>    <span class="hljs-attr">volumeMounts:</span> <span class="hljs-comment"># 将configmap挂载到目录</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config</span><br>      <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/configmap/config</span><br>  <span class="hljs-attr">volumes:</span> <span class="hljs-comment"># 引用configmap</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config</span><br>    <span class="hljs-attr">configMap:</span><br>      <span class="hljs-attr">name:</span> <span class="hljs-string">configmap</span><br></code></pre></td></tr></table></figure>
+
+<p>通过进入这个Pod，我们可以发现，ConfigMap对应目录到目录<code>/configmap/config</code>，并且在该目录下有两个文件<code>info, myConfig</code>，并且这两个文件的内容对应就是yaml配置文件中的值。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl <span class="hljs-built_in">exec</span> -it pod-configmap -n dev -- /bin/sh<br><br><span class="hljs-comment"># 以下为进入Pod后的命令执行情况</span><br><br><span class="hljs-comment"># ls    </span><br>bin	   dev			 etc   lib32   media  proc  sbin  tmp<br>boot	   docker-entrypoint.d	 home  lib64   mnt    root  srv   usr<br>configmap  docker-entrypoint.sh  lib   libx32  opt    run   sys   var<br><span class="hljs-comment"># cd configmap/config</span><br><span class="hljs-comment"># ls</span><br>info  myConfig<br><span class="hljs-comment"># cat info</span><br>username:admin<br>password:123456<br><span class="hljs-comment"># cat myConfig  </span><br><span class="hljs-built_in">test</span> <br></code></pre></td></tr></table></figure>
+
+<p>实际上ConfigMap的核心就在于配置文件中的<code>data</code>字段。在data字段中允许我们以键值对的形式传入内容，并且每个键值对最终会对应到目录下的一个文件，其中Key是文件名称，Value是文件中的内容。并且如果我们更新ConfigMap的内容，Pod中的值也会动态更新。</p>
+<h3 id="Secret"><a href="#Secret" class="headerlink" title="Secret"></a>Secret</h3><p>Secret与ConfigMap非常类似，它可以完成自动解码，主要用于存储敏感信息，例如密码、秘钥、证书等等。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="category-chain-item">云原生</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E8%99%9A%E6%8B%9F%E5%8C%96/" class="category-chain-item">虚拟化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Kubernetes/">#Kubernetes</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Kubernetes学习笔记(3)-Service与数据存储</div>
+      <div>http://example.com/2023/08/01/Kubernetes学习笔记-3-Service与数据存储/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/01/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4-%E5%AE%89%E5%85%A8%E8%AE%A4%E8%AF%81%E4%B8%8EDashBoard%E4%BD%BF%E7%94%A8/" title="Kubernetes学习笔记(4)-安全认证与DashBoard使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Kubernetes学习笔记(4)-安全认证与DashBoard使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/31/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2-Pod%E4%B8%8EPod-Controller/" title="Kubernetes学习笔记(2)-Pod与Pod Controller">
+                        <span class="hidden-mobile">Kubernetes学习笔记(2)-Pod与Pod Controller</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

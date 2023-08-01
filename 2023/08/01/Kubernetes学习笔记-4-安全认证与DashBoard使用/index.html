@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Kubernetes作为分布式集群，拥有一套自己的安全性保障机制，本篇主要介绍了Kubernetes中的安全认证机制，同时简单介绍了Kubernetes DashBoard的使用方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes学习笔记(4)-安全认证与DashBoard使用">
+<meta property="og:url" content="http://example.com/2023/08/01/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4-%E5%AE%89%E5%85%A8%E8%AE%A4%E8%AF%81%E4%B8%8EDashBoard%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Kubernetes作为分布式集群，拥有一套自己的安全性保障机制，本篇主要介绍了Kubernetes中的安全认证机制，同时简单介绍了Kubernetes DashBoard的使用方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-01T13:05:39.000Z">
+<meta property="article:modified_time" content="2023-08-01T13:39:01.490Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Kubernetes学习笔记(4)-安全认证与DashBoard使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Kubernetes学习笔记(4)-安全认证与DashBoard使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-01 21:05" pubdate>
+          2023年8月1日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Kubernetes学习笔记(4)-安全认证与DashBoard使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="安全认证"><a href="#安全认证" class="headerlink" title="安全认证"></a>安全认证</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。Kubernetes通过对各种使用它服务的客户端进行认证和鉴权，以此来保证集群的安全性。</p>
+<p>在Kubernetes集群中，客户端通常分为两类：</p>
+<ul>
+<li><code>User Account</code>：一般是独立于Kubernetes之外的其他服务管理的用户账号。</li>
+<li><code>Service Account</code>：Kubernetes管理的账号，用于为Pod中的服务进程在访问Kubernetes时提供身份标识。</li>
+</ul>
+<p>在Kubernetes中，ApiServer是访问及管理资源对象的唯一入口。任何一个请求访问ApiServer，都要经过下面三个流程：</p>
+<ul>
+<li>Authentication（认证）：身份鉴别，只有正确的账号才能够通过认证</li>
+<li>Authorization（鉴权）： 判断用户是否有权限对访问的资源执行特定的动作</li>
+<li>Admission Control（准入控制）：用于补充授权机制以实现更加精细的访问控制功能</li>
+</ul>
+<h2 id="认证管理"><a href="#认证管理" class="headerlink" title="认证管理"></a>认证管理</h2><p>Kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了三种客户端身份认证方式：</p>
+<ul>
+<li>HTTP Base认证：通过用户名+密码的方式认证</li>
+<li>HTTP Token认证：通过一个Token来识别合法用户</li>
+<li>HTTPS证书认证：基于CA根证书签名的双向数字证书认证方式</li>
+</ul>
+<p>Kubernetes允许同时配置多种认证方式，只要其中任意一个方式认证通过即可。</p>
+<h2 id="鉴权管理"><a href="#鉴权管理" class="headerlink" title="鉴权管理"></a>鉴权管理</h2><p>认证管理用于明确用户的身份，接下来的鉴权管理则用于判断某个用户是否有某种权限。</p>
+<p>每个发送到ApiServer的请求都带上了用户和资源的信息：比如发送请求的用户、请求的路径、请求的动作等，授权就是根据这些信息和授权策略进行比较，如果符合策略，则认为授权通过，否则会返回错误。</p>
+<p>Api Server目前支持以下几种授权策略：</p>
+<ul>
+<li><code>AlwaysDeny</code>：表示拒绝所有请求，一般用于测试</li>
+<li><code>AlwaysAllow</code>：允许接收所有请求，相当于集群不需要授权流程（Kubernetes默认的策略）</li>
+<li><code>ABAC</code>：基于属性的访问控制，表示使用用户配置的授权规则对用户请求进行匹配和控制</li>
+<li><code>Webhook</code>：通过调用外部REST服务对用户进行授权</li>
+<li><code>Node</code>：是一种专用模式，用于对kubelet发出的请求进行访问控制</li>
+<li><code>RBAC</code>：基于Role的访问控制（kubeadm安装方式下的默认选项）</li>
+</ul>
+<p>在RBAC(Role-Based Access Control)中会涉及如下概念：</p>
+<ul>
+<li>用户：包括User、Groups、ServiceAccount</li>
+<li>Role：代表着一组定义在资源上的可操作动作的集合，简单来说就是某种权限</li>
+<li>绑定Binding：将定义好的Role跟用户绑定在一起，即授予用户某种权限</li>
+</ul>
+<p>在Kubernete中存在与RBAC相关的顶级Resource对象，都可以通过yaml配置文件进行资源的创建和修改：</p>
+<ul>
+<li>Role、ClusterRole：用于指定一组权限</li>
+<li>RoleBinding、ClusterRoleBinding：用于将角色（权限）赋予给对象</li>
+</ul>
+<p>资源的定义提高了可复用性，例如一些同类用户具有相同的权限，此时在进行权限赋予的时候就可以直接复用同一个Role Resource。</p>
+<h2 id="准入控制"><a href="#准入控制" class="headerlink" title="准入控制"></a>准入控制</h2><p>来自客户端的请求在通过了前面的认证和授权之后，还需要经过准入控制处理，ApiServer才会进行处理。准入控制是一个可配置的控制器列表，可以通过在ApiServer上通过命令行设置选择执行哪些准入控制器。</p>
+<p>只有当所有的准入控制器都检查通过之后，ApiServer才会执行该请求，否则返回拒绝。当前可配置的Admission Control准入控制如下：</p>
+<ul>
+<li><code>AlwaysAdmit</code>：允许所有请求</li>
+<li><code>AlwaysDeny</code>：禁止所有请求，一般用于测试</li>
+<li><code>AlwaysPullImages</code>：在启动容器之前总去下载镜像</li>
+<li><code>DenyExecOnPrivileged</code>：它会拦截所有想在Privileged Container上执行命令的请求</li>
+<li><code>ImagePolicyWebhook</code>：该插件将允许后端的一个Webhook程序来完成Admission Controller的功能</li>
+<li><code>Service Account</code>：使用ServiceAccount实现了自动化</li>
+<li><code>SecurityContextDeny</code>：这个插件将使用SecurityContext的Pod中的定义全部失效</li>
+<li><code>ResourceQuota</code>：用于资源配额管理目的，观察所有请求，确保在namespace上的配额不会超标</li>
+<li><code>LimitRanger</code>：用于资源限制管理，作用于namespace上，确保对Pod进行资源限制</li>
+<li><code>InitialResources</code>：为未设置资源请求与限制的Pod，根据其镜像的历史资源的使用情况进行设置</li>
+<li><code>NamespaceLifecycle</code>：如果尝试在一个不存在的namespace中创建资源对象，则该创建请求将被拒绝。当删除一个namespace时，系统将会删除该namespace中所有对象</li>
+<li><code>DefaultStorageClass</code>：为了实现共享存储的动态供应，为未指定StorageClass或PV的PVC尝试匹配默认的StorageClass，尽可能减少用户在申请PVC时所需了解的后端存储细节</li>
+<li><code>DefaultTolerationSeconds</code>：这个插件为那些没有设置forgiveness tolerations并具有notready:NoExecute和unreachable:NoExecute两种taints的Pod设置默认的“容忍”时间，为5min</li>
+<li><code>PodSecurityPolicy</code>：这个插件用于在创建或修改Pod时决定是否根据Pod的security context和可用的PodSecurityPolicy对Pod的安全策略进行控制</li>
+</ul>
+<h1 id="DashBoard"><a href="#DashBoard" class="headerlink" title="DashBoard"></a>DashBoard</h1><p>命令行工具kubectl提供了几乎所有操作Kubernetes集群的功能，但是操作门槛还是有些高。因此，为了提供更丰富的用户体验，Kubernetes还开发了一个基于Web的DashBoard，用户可以使用Dashboard来部署容器化的应用，监控应用的状态，执行故障排查以及管理Kubernetes中各种资源等。官方DashBoard的项目地址为<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard">kubernetes&#x2F;dashboard: General-purpose web UI for Kubernetes clusters</a>。下面简单介绍这个DashBoard的使用方式。</p>
+<p>首先需要从官网下载配置文件<code>recommended.yaml</code>，这里面描述了DashBoard运行所需的资源。实际上DashBoard整体也是一个运行在Kubernetes集群中的服务，需要各种Resource的支持。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml<br></code></pre></td></tr></table></figure>
+
+<p>得到配置文件之后，我们需要进行一些修改。主要修改的是其中名为kubernetes-dashboard的Service，修改内容为增加下面具有注释的两行。因为默认情况下该Service的type为ClusterIP，无法在集群外访问，因此这里需要将其改为NodePort，同时完成端口映射。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kubernetes-dashboard</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kubernetes-dashboard</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">NodePort</span>  <span class="hljs-comment"># change to NodePort</span><br>  <span class="hljs-attr">ports:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">443</span><br>      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8443</span><br>      <span class="hljs-attr">nodePort:</span> <span class="hljs-number">30009</span>  <span class="hljs-comment"># expose nodePort</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span><br></code></pre></td></tr></table></figure>
+
+<p>之后，可以运行apply命令生成相关资源。可以发现所有资源都位于<code>kubernetes-dashboard</code>名称空间下。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl apply -f recommended.yaml<br></code></pre></td></tr></table></figure>
+
+<p>此时我们已经可以访问<code>https://localhost:30009/</code>来进入DashBoard，不过此时它会提示我们输入Token。因此我们还需要创建相关User，获取Token。下面的步骤均参考官方文档：<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">dashboard&#x2F;docs&#x2F;user&#x2F;access-control&#x2F;creating-sample-user.md at master · kubernetes&#x2F;dashboard</a>。</p>
+<p>首先我们需要创建一个用户<code>admin-user</code>，并为其赋予相关的权限。这两个动作对应Kubernetes中的两个Resource，因此准备如下配置文件，这里命名为<code>admin-user.yaml</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">admin-user</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kubernetes-dashboard</span><br><br><span class="hljs-meta">---</span><br><span class="hljs-meta"></span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRoleBinding</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">admin-user</span><br><span class="hljs-attr">roleRef:</span><br>  <span class="hljs-attr">apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span><br>  <span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">cluster-admin</span><br><span class="hljs-attr">subjects:</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">admin-user</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kubernetes-dashboard</span><br></code></pre></td></tr></table></figure>
+
+<p>之后利用apply命令创建资源，这样就可以创建出admin-user用户并且为其授予权限。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl apply -f admin-user.yaml<br></code></pre></td></tr></table></figure>
+
+<p>然后利用下面的命令生成Token：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl create token admin-user -n kubernetes-dashboard<br></code></pre></td></tr></table></figure>
+
+<p>该命令会在控制台上输出一长串字符串，即Token。访问<code>https://localhost:30009/</code>，在登录页面上输入获取的Token，即可登录成功。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="category-chain-item">云原生</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E8%99%9A%E6%8B%9F%E5%8C%96/" class="category-chain-item">虚拟化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Kubernetes/">#Kubernetes</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Kubernetes学习笔记(4)-安全认证与DashBoard使用</div>
+      <div>http://example.com/2023/08/01/Kubernetes学习笔记-4-安全认证与DashBoard使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/01/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3-Service%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/" title="Kubernetes学习笔记(3)-Service与数据存储">
+                        <span class="hidden-mobile">Kubernetes学习笔记(3)-Service与数据存储</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
