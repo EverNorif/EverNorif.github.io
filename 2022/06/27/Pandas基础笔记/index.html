@@ -16,15 +16,15 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Pandas的学习笔记，包括一些基本操作等。">
+    <meta name="description" content="Pandas的学习笔记，包括一些基础操作，例如数据读取、数据保存、数据查询与修改、数据清洗、数据统计等。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Pandas基础笔记">
 <meta property="og:url" content="http://example.com/2022/06/27/Pandas%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="Pandas的学习笔记，包括一些基本操作等。">
+<meta property="og:description" content="Pandas的学习笔记，包括一些基础操作，例如数据读取、数据保存、数据查询与修改、数据清洗、数据统计等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-27T07:13:44.000Z">
-<meta property="article:modified_time" content="2022-10-25T13:46:50.000Z">
+<meta property="article:modified_time" content="2023-08-02T12:10:48.740Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Pandas">
 <meta property="article:tag" content="Python">
@@ -266,7 +266,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          8.8k 字
+          8.1k 字
         
       </span>
     
@@ -278,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          74 分钟
+          68 分钟
         
       </span>
     
@@ -325,398 +325,17 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Pandas基础笔记"><a href="#Pandas基础笔记" class="headerlink" title="Pandas基础笔记"></a>Pandas基础笔记</h1><p>自动参考：<a target="_blank" rel="noopener" href="https://pandas.pydata.org/docs/">pandas documentation — pandas 1.3.3 documentation (pydata.org)</a></p>
-<p>再次参考：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1UJ411A7Fs">Pandas数据分析从入门到实战_哔哩哔哩_bilibili</a></p>
-<h2 id="小入门"><a href="#小入门" class="headerlink" title="小入门"></a>小入门</h2><ul>
-<li><p>数据结构：series，DataFrame</p>
-</li>
-<li><p><code>.info()</code>：信息查看</p>
-</li>
-<li><p><code>.shape</code>：行列数目</p>
-</li>
-<li><p><code>.dtype</code>：查看数据类型</p>
-</li>
-<li><p><code>.index</code>：显示索引名（行）</p>
-</li>
-<li><p><code>.columns</code>：显示列名</p>
-</li>
-<li><p><code>.describe()</code>：查看统计摘要</p>
-</li>
-<li><p>选择</p>
-<ul>
-<li>普通选择：<ul>
-<li><code>df[&#39;列名&#39;]</code>：取列</li>
-<li><code>df[xx:xx]</code>：取行</li>
-</ul>
-</li>
-<li><code>.loc[行信息,[列信息]]</code></li>
-<li><code>.iloc[]</code>：只接受整数</li>
-<li>布尔索引：<ul>
-<li><code>df[判断条件]</code>：返回DataFrame</li>
-<li>多条件筛选：用<code>(条件1)&amp;(条件2)</code></li>
-<li><code>isin()</code>：传一个列表</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><code>astype()</code>：强转类型</p>
-</li>
-<li><p><code>.sum()</code>：求和。指定列应该在调用<code>.sum()</code>之前</p>
-</li>
-<li><p>判断空值</p>
-<ul>
-<li>1)判断数值是否为空用 pd.isna,pd.isnull,np.isnan<br>2)判断字符串是否为空用 pd.isna,pd.isnull；<br>3)判断时间是否为空用 pd.isna,pd.isnull,np.isnat</li>
-</ul>
-</li>
-<li><p>去重：</p>
-<ul>
-<li><code>.drop_duplicates([&#39;根据某一列&#39;])</code></li>
-</ul>
-</li>
-</ul>
-<h2 id="Action！"><a href="#Action！" class="headerlink" title="Action！"></a>Action！</h2><p>pandas：用于数据分析、数据处理、数据可视化</p>
-<ul>
-<li>高性能</li>
-<li>容易使用的数据结构</li>
-<li>容易使用的数据分析工具</li>
-</ul>
+                <h1 id="Pandas基础笔记"><a href="#Pandas基础笔记" class="headerlink" title="Pandas基础笔记"></a>Pandas基础笔记</h1><p>Pandas是数据分析中最受欢迎的Python Package之一，它的官方文档为<a target="_blank" rel="noopener" href="https://pandas.pydata.org/docs/">Pandas Documentation</a>。Pandas主要用于表格数据（行列格式）的数据操作，同时它提供从多种数据源读取数据的能力，以及丰富的数据操作功能，包括数据聚合、数据分析和数据清洗等。Pandas也可以与其他数据科学相关的Package进行良好的配合，包括numpy、scikit-learn、matplotlib、seaborn、plotly等。</p>
+<p>可以通过pip或者conda来进行pandas的安装，使用install命令即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install pandas<br>conda install pandas<br></code></pre></td></tr></table></figure>
+
+<p>我们在代码中通常以pd的形式引入Pandas package，后面也都遵循这种约定。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br></code></pre></td></tr></table></figure>
 
-
-
-<h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><p>读取的是表格数据：</p>
-<table>
-<thead>
-<tr>
-<th>数据类型</th>
-<th>说明</th>
-<th>读取方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>csv、tsv、txt</td>
-<td>用逗号或tab分隔的纯文本文件</td>
-<td>pd.read_csv</td>
-</tr>
-<tr>
-<td>excel</td>
-<td>xis或者xlsx文件</td>
-<td>pd.read_excel</td>
-</tr>
-<tr>
-<td>mysql</td>
-<td>关系型数据库表</td>
-<td>pd.read_sql</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>读取csv，使用默认的标题行、逗号分隔符</p>
-<ul>
-<li>engine参数</li>
-</ul>
-</li>
-<li><p>读取txt，自己指定分隔符、列名</p>
- <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">df = pd.read_csv(<br>    path, <br>    sep=<span class="hljs-string">&#x27;\t&#x27;</span>,<br>    header=<span class="hljs-literal">None</span>, <span class="hljs-comment"># 说明没有标题行 </span><br>    names=[<span class="hljs-string">&#x27;aaa&#x27;</span>,<span class="hljs-string">&#x27;bbb&#x27;</span>,<span class="hljs-string">&#x27;ccc&#x27;</span>] <span class="hljs-comment"># 自定义列名</span><br>)<br></code></pre></td></tr></table></figure>
-</li>
-<li><p>读取excel</p>
-<ul>
-<li>skiprows：跳过几行</li>
-</ul>
-</li>
-<li><p>读取mysql数据表</p>
-<ul>
-<li>首先需要连接，之后才能读取</li>
-</ul>
- <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pymysql<br>conn = pymysql.connect(<br>    host=<span class="hljs-string">&#x27;xxx.x.x.x&#x27;</span>,<br>    user=<span class="hljs-string">&#x27;xxx&#x27;</span>,<br>    passward=<span class="hljs-string">&#x27;xxx&#x27;</span>,<br>    database=<span class="hljs-string">&#x27;xxx&#x27;</span>,<br>    charset=<span class="hljs-string">&#x27;xxx&#x27;</span>) <span class="hljs-comment"># 数据库配置</span><br><br>mysql_page = pd.read_sql(<br>    <span class="hljs-string">&quot;select * from xxx表名&quot;</span>, <span class="hljs-comment"># 这是SQL语句</span><br>    con = conn<br>)<br></code></pre></td></tr></table></figure></li>
-</ul>
-<p>一些常见操作：</p>
-<ul>
-<li><code>.head()</code>:查看前几行数据</li>
-<li><code>.shape</code>：返回数据的形状（行，列）</li>
-<li><code>columns</code>：返回列名列表</li>
-<li><code>index</code>：返回索引列（每一行的索引）</li>
-<li><code>dtypes</code>：查看每一列的数据类型</li>
-</ul>
-<h2 id="数据结构-DataFrame和-Series"><a href="#数据结构-DataFrame和-Series" class="headerlink" title="数据结构 DataFrame和 Series"></a>数据结构 DataFrame和 Series</h2><ul>
-<li><p>DataFrame：二维表格，有行有列</p>
-<ul>
-<li>列：columns</li>
-<li>行：index</li>
-</ul>
-</li>
-<li><p>Series：一维数据，代表一行或者一列</p>
-<ul>
-<li>如果查询得到了一维，会进行自动降维</li>
-</ul>
-</li>
-<li><p><code>.Series()</code>：产生Series对象</p>
-<ul>
-<li>可以传入列表</li>
-<li>可以传入字典（字典的key变成index）</li>
-<li>默认使用0开始的index索引<ul>
-<li>可以使用<code>index=[...]</code>参数来指定</li>
-</ul>
-</li>
-<li>根据标签查询Series（类似python中的字典）<ul>
-<li><code>s[&#39;index&#39;]</code>：返回原生数据类型</li>
-<li><code>s[&#39;index1&#39;,&#39;index2&#39;,...]</code>：返回Series</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><code>.DataFrame()</code>：产生DataFrame对象</p>
-<ul>
-<li>可以传入字典，字典的每一个值是一个列表。</li>
-</ul>
- <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df =pd.DataFrame(data=data,index=[...])<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li><p>字典的每一个key变成了columns（每一列），每一个值变成对应的值序列</p>
-</li>
-<li><p>默认index为从0开始的默认索引</p>
-</li>
-<li><p>查询DataFrame</p>
-<ul>
-<li>查询列（columns）<ul>
-<li><code>df[&#39;columns&#39;]</code>：返回Series（一维），index是列名</li>
-<li><code>df[[&#39;columns1&#39;,&#39;columns2&#39;,...]</code>：返回DataFrame（二维）<ul>
-<li>需要查询多列，列表名自成一个列表</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>查询行（index）<ul>
-<li><code>df.loc[&#39;index&#39;]</code>：返回一行，index是行名</li>
-<li><code>df.loc[[&#39;index1&#39;,&#39;index2&#39;...]]</code>：返回DataFrame</li>
-<li>使用切片<code>df.loc[index1:index3]</code>：包含末尾元素</li>
-<li><code>df.iloc[]</code>：传入的数字位置（第几个）其余用法与<code>.loc</code>相同</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="查询数据的5种方法"><a href="#查询数据的5种方法" class="headerlink" title="查询数据的5种方法"></a>查询数据的5种方法</h2><ul>
-<li>Pandas查询数据的几种方法<ul>
-<li><code>df.loc</code>：根据行，列的标签值进行查询</li>
-<li><code>df.iloc</code>：根据行，列的数字位置进行查询</li>
-<li><code>df.where</code></li>
-<li><code>df.query</code></li>
-</ul>
-</li>
-</ul>
-<p><code>.loc</code>既能查询，又能写入</p>
-<ul>
-<li><p>Pandas使用<code>df.loc</code>查询数据的方法</p>
-<ul>
-<li>使用单个label值查询数据</li>
-<li>使用值列表批量查询</li>
-<li>使用数值区间进行范围查询</li>
-<li>使用条件表达式查询</li>
-<li>调用函数查询</li>
-</ul>
-</li>
-<li><p><code>df.loc[,]</code></p>
-<ul>
-<li>逗号前面指定行，后面指定列</li>
-<li>行列的指定可以是<ul>
-<li>单个label</li>
-<li>列表</li>
-<li>切片</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>条件查询：</p>
-<ul>
-<li><code>df[条件表达式]</code></li>
-<li>原理是条件表达式返回的是一个Series，其中的每一个值都是bool。最终返回结果是返回每一个对应Series中为True的值</li>
-<li>复杂查询：组合条件使用<code>&amp;</code>合并，并且每个条件判断都需要括号</li>
-<li>也可以在loc，iloc中混合使用</li>
-</ul>
-</li>
-<li><p>调用函数查询</p>
-<ul>
-<li><code>df.loc[,]</code></li>
-<li>逗号前面可以使用一个函数，函数的返回值是布尔型</li>
-<li>函数的参数是一个Series，即df会将每一个Series传入，如果符合则筛选出来</li>
-</ul>
-</li>
-</ul>
-<h2 id="新增或修改数据列"><a href="#新增或修改数据列" class="headerlink" title="新增或修改数据列"></a>新增或修改数据列</h2><p>pandas新增数据列：</p>
-<ul>
-<li><p>直接赋值</p>
-</li>
-<li><p>df.apply方法</p>
-</li>
-<li><p>df.assign方法</p>
-</li>
-<li><p>按条件选择分组分别赋值</p>
-</li>
-<li><p>直接赋值</p>
-<ul>
-<li>使用<code>.loc</code>定位到需要修改的位置</li>
-</ul>
-</li>
-<li><p><code>.loc[]</code>新增列：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.loc[:,<span class="hljs-string">&#x27;新增列名&#x27;</span>] = xxx <span class="hljs-comment"># 一个Series</span><br></code></pre></td></tr></table></figure>
-
-
-</li>
-<li><p><code>df.apply</code>：沿着DataFrame的某一个轴执行函数，相当于每次传入了一个Series</p>
-<ul>
-<li>axis&#x3D;0：沿着index，Series的index是DataFrame的index</li>
-<li>axis&#x3D;1：沿着columns，Series的index是DataFrame的columns</li>
-</ul>
-</li>
-<li><p><code>df.assign</code></p>
-<ul>
-<li>assign可以一次新增多列，apply一次新增一列</li>
-<li>只能添加列，即（axis&#x3D;1），不能沿index操作</li>
-<li>返回一个新对象，包含新增列和原来的列</li>
-</ul>
-</li>
-<li><p>按照条件选择分组分别赋值</p>
-<ul>
-<li>先创建空列，然后再用条件表达式分别选中不同的行，最后分别赋值</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">df[<span class="hljs-string">&#x27;aa&#x27;</span>] = <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-comment"># 不创建空列也可以</span><br>df.loc[df[<span class="hljs-string">&#x27;vv&#x27;</span>]&gt;<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;新增&#x27;</span>] = xxx<br>df.loc[df[<span class="hljs-string">&#x27;vv&#x27;</span>]&lt;=<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;新增&#x27;</span>] = yyy<br></code></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="数据统计函数"><a href="#数据统计函数" class="headerlink" title="数据统计函数"></a>数据统计函数</h2><ul>
-<li><p>汇总类统计</p>
-</li>
-<li><p>唯一去重和按值计算</p>
-</li>
-<li><p>相关系数和协方差</p>
-</li>
-<li><p><code>df.describe()</code>：提取所有数字列的统计结果</p>
-</li>
-<li><p>查看单个Series的数据</p>
-<ul>
-<li><code>.mean()</code></li>
-<li><code>.max()</code></li>
-<li><code>.min()</code></li>
-<li><code>.sum()</code></li>
-</ul>
-</li>
-<li><p><code>.unique()</code>：可以查看一列中有哪些值</p>
-</li>
-<li><p><code>.value_counts()</code>：可以查看有哪些值并且进行计数</p>
-</li>
-<li><p><code>df.cov()</code>：协方差矩阵</p>
-</li>
-<li><p><code>df.corr()</code>：相关系数矩阵</p>
-</li>
-<li><p>单独查看两列的相关系数</p>
-<ul>
-<li><code>df[&#39;xxx&#39;].corr(df[&#39;yyy&#39;])</code></li>
-<li>传入另一个Series</li>
-</ul>
-</li>
-</ul>
-<h2 id="缺失值处理"><a href="#缺失值处理" class="headerlink" title="缺失值处理"></a>缺失值处理</h2><p>Pandas对缺失值的处理：</p>
-<ul>
-<li>isnull和notnull：检测是否是控制，可以用于DataFrame和Series</li>
-<li>dropna：丢弃，删除缺失值<ul>
-<li>axis：删除行还是列<ul>
-<li>等于0或者‘index’是按行删除，默认为0</li>
-<li>等于1或者‘columns’是按列删除</li>
-</ul>
-</li>
-<li>how：可选any或all<ul>
-<li>any：出现空值即删除</li>
-<li>all：所有空值才删除</li>
-</ul>
-</li>
-<li>inplace：布尔值，是否修改当前df<ul>
-<li>True：修改当前df</li>
-<li>False：返回新的df</li>
-</ul>
-</li>
-<li>subset：表示判断的子集columns</li>
-</ul>
-</li>
-<li>fillna：填充空值<ul>
-<li>value：用于填充的值，可以是单个值，或者字典（key是列名，value是值）<ul>
-<li>填充字典的情况：表示检测key那一列，如果是空，就替换为value</li>
-<li>表示可以检测整个表，对不同的列进行不同的填充策略</li>
-</ul>
-</li>
-<li>method：ffill，bfill<ul>
-<li>ffill：使用前一个不为空的值进行填充</li>
-<li>bfill：使用后一个不为空的值进行填充</li>
-</ul>
-</li>
-<li>axis：按行填充还是列填充（同上👆）</li>
-<li>inplace：（同上👆）</li>
-</ul>
-</li>
-</ul>
-<h2 id="SettingWithCopyWarining报警"><a href="#SettingWithCopyWarining报警" class="headerlink" title="SettingWithCopyWarining报警"></a>SettingWithCopyWarining报警</h2><p><code>df[xxx][yyy]</code>链式操作：</p>
-<p>相当于<code>df.get(xxx).set(yyy)</code>,get得到的DataFrame可能是副本copy也可能是子视图view。</p>
-<ul>
-<li>pandas的DataFrame的修改写操作，只允许在原始的DataFrame上进行，一步到位</li>
-<li>解决方案1：将get+set的两步操作改成set的一步操作<ul>
-<li>使用<code>.loc[]</code>进行定位</li>
-</ul>
-</li>
-<li>解决方案2：先get之后进行copy，然后再修改</li>
-</ul>
-<h2 id="数据排序"><a href="#数据排序" class="headerlink" title="数据排序"></a>数据排序</h2><ul>
-<li>Series的排序：<code>Series.sort_values(ascending=True, inplace=False)</code><ul>
-<li>ascending：默认为True升序排序，为False降序排序</li>
-<li>inplace：是否修改原始Series</li>
-</ul>
-</li>
-<li>DataFrame的排序：<code>DataFrame.sort_values(by,ascending=True,inplace=False)</code><ul>
-<li>by：字符串或者List&lt;字符串&gt;，传入的是需要排序的列（columns）单列排序或者多列排序<ul>
-<li>字符串：进行单列排序</li>
-<li>字符串list：进行多列排序</li>
-</ul>
-</li>
-<li>ascending：bool或者List，升序还是降序，如果是List则对应by的多列</li>
-<li>inplace：是否修改原始DataFrame</li>
-</ul>
-</li>
-</ul>
-<h2 id="字符串处理"><a href="#字符串处理" class="headerlink" title="字符串处理"></a>字符串处理</h2><p>Pandas的字符串处理：</p>
-<ul>
-<li>使用方法：先获取Series的str属性，然后在属性上调用函数</li>
-<li>只能在字符串列上使用，不能在数字列上使用</li>
-<li>DataFrame上没有str属性和处理方法</li>
-<li>Series.str不是python的原生字符串，而是自己的一套方法，不过大部分和原生str很相似</li>
-</ul>
-<p>参考文档：<a target="_blank" rel="noopener" href="https://pandas.pydata.org/docs/reference/series.html#string-handling">Series — pandas 1.3.3 documentation (pydata.org)</a></p>
-<p>举例几个操作：<br>下面的操作首先需要Series.str来调用。每次操作都返回一个Series</p>
-<ul>
-<li><code>.replace(&#39;x&#39;,&#39;y&#39;)</code>：x替换为y</li>
-<li><code>.startwith(&#39;xxx&#39;)</code>：是否以xxx开头，返回一个bool的Series</li>
-<li><code>.contains(&#39;xxx&#39;)</code>：是否包含xxx，返回一个bool的Series</li>
-</ul>
-<p>如果需要链式调用，还是需要再次获取Series的str属性</p>
-<p>正则表达式的使用：Series.str默认开启了正确表达式</p>
-<h2 id="axis参数"><a href="#axis参数" class="headerlink" title="axis参数"></a>axis参数</h2><ul>
-<li>axis&#x3D;0或者‘index’：<ul>
-<li>如果是单行操作，指的就是某一行</li>
-<li>如果是聚合操作，指的就是跨行cross rows<ul>
-<li>得到Series与列数相同</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>axis&#x3D;1或者‘columns’：<ul>
-<li>如果是单列操作，指的就是某一列</li>
-<li>如果是聚合操作，指的就是跨列cross columns<ul>
-<li>得到Series与行数相同</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>按照哪一个axis，就是这个axis要动起来（类似for遍历），其他的axis保持不动。</p>
-<p>往哪个方向走。</p>
-<h2 id="index索引"><a href="#index索引" class="headerlink" title="index索引"></a>index索引</h2><p>index的用途总结：</p>
+<h2 id="数据读取"><a href="#数据读取" class="headerlink" title="数据读取"></a>数据读取</h2><p>Pandas主要面对的是有行列的表结构，并且使用DataFrame Class来进行表征，表的每一列又对应一个Class，为Series。因此学习Pandas的核心就在于学习DataFrame以及Series的操作。（主要是DataFrame）</p>
+<p>DataFrame包含行和列，每一列有自己的列名，每一行也会有一个index，这个index可以由系统自动生成，此时index为从0自增的自然数，也可以由用户指定某一列为index。</p>
+<blockquote>
+<p>Pandas中的index：在Pandas中，index主要可以提供如下功能</p>
 <ul>
 <li>更方便的数据查询</li>
 <li>使用index可以获得性能提升<ul>
@@ -736,235 +355,175 @@
 </ul>
 </li>
 </ul>
-<h2 id="数据Merge"><a href="#数据Merge" class="headerlink" title="数据Merge"></a>数据Merge</h2><p>Pandas的Merge，相当于Sql的Join，将不同的表按key关联到一个表</p>
-<p>merge的语法：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">pd.merge(left,right,on=<span class="hljs-literal">None</span>,left_on=<span class="hljs-literal">None</span>,right_on=<span class="hljs-literal">None</span>,left_index=<span class="hljs-literal">False</span>,right_index=<span class="hljs-literal">False</span>,suffixes=(<span class="hljs-string">&#x27;_x&#x27;</span>,<span class="hljs-string">&#x27;_y&#x27;</span>),copy=<span class="hljs-literal">True</span>,indicator=<span class="hljs-literal">False</span>,validate=<span class="hljs-literal">None</span>)<br></code></pre></td></tr></table></figure>
+</blockquote>
+<p>Pandas支持从多种格式的数据进行读取，并生成表结构，常用的数据来源有csv、txt、excel、json、mysql数据库等，它们分别可以用不同的api来进行读取：</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>说明</th>
+<th>读取方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>csv、tsv、txt</td>
+<td>用逗号或tab分隔的纯文本文件</td>
+<td>pd.read_csv</td>
+</tr>
+<tr>
+<td>excel</td>
+<td>xls或者xlsx文件(支持sheet的选择)</td>
+<td>pd.read_excel</td>
+</tr>
+<tr>
+<td>json</td>
+<td>json文件，每一列数据按照index：value分开存储</td>
+<td>pd.read_json</td>
+</tr>
+<tr>
+<td>mysql</td>
+<td>关系型数据库表</td>
+<td>pd.read_sql</td>
+</tr>
+</tbody></table>
+<p>其中最为常用的是<code>pd.read_csv</code>，它支持下面一些常用的参数：</p>
+<ul>
+<li><p><code>filepath_or_buffer</code>：支持csv、tsv、txt等文件路径，这个文件路径也可以是一个URL链接，链接对应内容为以指定字符分隔的文本</p>
+</li>
+<li><p><code>header</code>：指定以哪一行作为header，为None表示没有header。默认使用第1行</p>
+</li>
+<li><p><code>index_col</code>：指定以哪一列作为index列，默认为自增index。可以传入数字（从0开始），也可以传入列名</p>
+</li>
+<li><p><code> sep=&#39;\t&#39;,</code>：指定分隔符</p>
+</li>
+<li><p><code>names</code>：接受一个字符串数组，用于自定义列名</p>
+</li>
+<li><p><code>usecols</code>：接受一个字符串数组，表示仅读取指定列到内存当中</p>
+</li>
+</ul>
+<p>如果要读取数据库中的表，那么需要先建立连接，在read方法中提供连接参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pymysql<br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><br>conn = pymysql.connect(<br>   host=<span class="hljs-string">&#x27;xxx.x.x.x&#x27;</span>,<br>   user=<span class="hljs-string">&#x27;xxx&#x27;</span>,<br>   passward=<span class="hljs-string">&#x27;xxx&#x27;</span>,<br>   database=<span class="hljs-string">&#x27;xxx&#x27;</span>,<br>   charset=<span class="hljs-string">&#x27;xxx&#x27;</span>) <span class="hljs-comment"># 数据库配置</span><br><br>mysql_page = pd.read_sql(<br>   <span class="hljs-string">&quot;select * from xxx表名&quot;</span>, <span class="hljs-comment"># 这是SQL语句</span><br>   con = conn<br>)<br></code></pre></td></tr></table></figure>
+
+<p>除了从文件中读取数据，我们还可以从列表或者字典中创建Series或者DataFrame。</p>
+<p>对于Series来说，我们可以从列表或者字典中创建Series对象。如果传入的是列表，那么index就是默认的自增index；如果传入的是字典dict，那么其中的key就变为index。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 从list中创建, 通过name指定列名</span><br>li = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>]<br>series = pd.Series(li, name=<span class="hljs-string">&#x27;col&#x27;</span>)<br><br><span class="hljs-comment"># 从dict中创建</span><br><span class="hljs-built_in">dict</span> = &#123;<span class="hljs-string">&#x27;index0&#x27;</span>:<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;index1&#x27;</span>:<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;index2&#x27;</span>:<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;index3&#x27;</span>:<span class="hljs-number">4</span>&#125;<br>series = pd.Series(<span class="hljs-built_in">dict</span>, name=<span class="hljs-string">&#x27;col&#x27;</span>)<br><br><span class="hljs-comment"># 查询Series</span><br>series[<span class="hljs-number">0</span>]  <span class="hljs-comment"># 返回原生数据类型</span><br>series[[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>]]  <span class="hljs-comment"># 返回Series</span><br></code></pre></td></tr></table></figure>
+
+<p>对于DataFrame来说，我们可以从字典中创建Series对象，其中每一个Key对象是一个列表，此时字典的每个Key表示一列，列表中的每个value就是对应一行的值。</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 从dict中创建，通过index=[...]指定index</span><br><span class="hljs-built_in">dict</span> = &#123;<br>    <span class="hljs-string">&#x27;col1&#x27;</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>],<br>    <span class="hljs-string">&#x27;col2&#x27;</span>: [<span class="hljs-number">5</span>, <span class="hljs-number">4</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>]<br>&#125;<br>df = pd.DataFrame(<span class="hljs-built_in">dict</span>, index=[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>])  <br></code></pre></td></tr></table></figure>
+
+<h2 id="数据保存"><a href="#数据保存" class="headerlink" title="数据保存"></a>数据保存</h2><p>Pandas同样允许将DataFrame对象输出成各种格式的文件，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># output to csv</span><br>df.to_csv(<span class="hljs-string">&quot;test_out.csv&quot;</span>, index=<span class="hljs-literal">False</span>)<br><br><span class="hljs-comment"># output to json</span><br>df.to_json(<span class="hljs-string">&quot;test_out.json&quot;</span>)<br><br><span class="hljs-comment"># output to text, 需要手动指定分隔符</span><br>df.to_csv(<span class="hljs-string">&#x27;test_out.txt&#x27;</span>, header=df.columns, index=<span class="hljs-literal">False</span>, sep=<span class="hljs-string">&#x27; &#x27;</span>)<br><br><span class="hljs-comment"># output to excel</span><br>df.to_excel(<span class="hljs-string">&quot;test_out.xlsx&quot;</span>, index=<span class="hljs-literal">False</span>)<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="基础数据操作"><a href="#基础数据操作" class="headerlink" title="基础数据操作"></a>基础数据操作</h2><h3 id="信息查询"><a href="#信息查询" class="headerlink" title="信息查询"></a>信息查询</h3><p>在通过read方法得到了DataFrame对象之后，可以通过一些简单的方法来初步查看该数据的信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">df.head()  <span class="hljs-comment"># 查看前5行</span><br><br>df.tail(n=<span class="hljs-number">10</span>)  <span class="hljs-comment"># 查看后10行</span><br><br>df.shape  <span class="hljs-comment"># 查看行列数目，几行几列，先行后列。注意index列不计算在shape中</span><br><br>df.index  <span class="hljs-comment"># 显示index名</span><br><br>df.columns  <span class="hljs-comment"># 显示列名</span><br><br>df.info()  <span class="hljs-comment"># 显示概述，包括每列的名词、非空值、类型以及占用空间等</span><br><br>df.describe()  <span class="hljs-comment"># 显示所有数字列的统计摘要，包括平均值、最大最小值、标准差、分位数等</span><br>df.describe().T  <span class="hljs-comment"># df.describe()得到的结果也是一个DataFrame，可以使用T来查看转置效果</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="行列查询"><a href="#行列查询" class="headerlink" title="行列查询"></a>行列查询</h3><p>在DataFarme中，对行列查询是基本操作。</p>
+<p>下面是查询行的操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 查询行需要通过index来完成</span><br>df.loc[index] <span class="hljs-comment"># 返回一行，index是对应索引值</span><br><br>df.loc[[index1,index2, ...]] <span class="hljs-comment"># 返回多行</span><br><br>df.loc[index1:index3] <span class="hljs-comment"># 使用切片，此方式包含末尾元素</span><br><br>df.iloc[] <span class="hljs-comment"># 传入的是数字位置（第几个）其余用法与.loc相同</span><br></code></pre></td></tr></table></figure>
+
+<p>下面是查询列的操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 查询列需要通过列名来完成</span><br>df[column]  <span class="hljs-comment"># 返回一列，column是对应列名</span><br>df.column  <span class="hljs-comment"># 直接用.来调用</span><br><br>df[[column1, column2, ...]]  <span class="hljs-comment"># 返回多列，中间列表是多列对应的名称</span><br></code></pre></td></tr></table></figure>
+
+<p>下面是行列同时查询的操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># .loc可以同时指定行和列，通过逗号隔开，前面是行范围，后面是列范围</span><br><span class="hljs-comment"># 行列范围的指定和上面单独指定行列是相同的，包括单个label值，列表，切片等</span><br>df.loc[index, column]<br>df.loc[index, [column1, column2, ...]]<br>df.loc[[index1, index2, ...], column]<br>df.loc[[index1, index2, ...], [column1, column2, ...]]<br></code></pre></td></tr></table></figure>
+
+<p>并且在查询的时候，我们可以结合判断条件来尽心过滤和筛选。实际上条件表达式会返回一个由布尔值组成的Serise，长度正好是整个DataFrame的长度。在返回结果的时候，类似于传递了一个Mark，只有当Series对应位置上是True的时候，该行才会返回。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 条件表达式的使用:df[条件表达式]</span><br><span class="hljs-comment"># 单条件查询</span><br>df[df[<span class="hljs-string">&#x27;age&#x27;</span>] &gt;= <span class="hljs-number">18</span>]<br><br><span class="hljs-comment"># 多条件查询，每个条件都使用()&amp;()进行连接</span><br>df[(df[<span class="hljs-string">&#x27;age&#x27;</span>] &gt;= <span class="hljs-number">18</span>) &amp; (df[<span class="hljs-string">&#x27;unit&#x27;</span>] == <span class="hljs-string">&#x27;catchu&#x27;</span>)]<br><br><span class="hljs-comment"># 由于条件表达式是对行的选取规则，因此也可以用在.loc中</span><br>df.loc[df[<span class="hljs-string">&#x27;age&#x27;</span>]==<span class="hljs-number">18</span>]<br><br><span class="hljs-comment"># 字符串列的使用方式</span><br>df[df[<span class="hljs-string">&#x27;name&#x27;</span>].<span class="hljs-built_in">str</span>.startswith(<span class="hljs-string">&#x27;k&#x27;</span>)]<br></code></pre></td></tr></table></figure>
+
+<p>这里需要注意的是，如果某一列Series中存放的是字符串类型的数据，我们是无法直接调用字符串某个确切的字符串对应的方法的，而是需要先获取Series的str属性，然后在属性上调用函数。<code>Series.str</code>不是python的原生字符串，而是自己的一套方法，不过大部分和原生str很相似，可以参考<a target="_blank" rel="noopener" href="https://pandas.pydata.org/docs/reference/series.html#string-handling">Series String hadnling｜pandas</a>。</p>
+<h3 id="新增或修改数据列"><a href="#新增或修改数据列" class="headerlink" title="新增或修改数据列"></a>新增或修改数据列</h3><p>在Pandas中可以使用直接修改，<code>df.apply</code>等方式来新增或修改数据。</p>
+<p>直接修改指的是利用<code>.loc</code>方法进行定位，然后直接指定对应的value：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python">df.loc[index, column] = xxx <span class="hljs-comment"># 修改某行某列的值 xxx = one value</span><br><br>df.loc[:, column] = xxx <span class="hljs-comment"># 修改某列的值 xxx = one series</span><br><br>df.loc[index, :] = xxx <span class="hljs-comment"># 修改某行的值 xxx = one series</span><br><br><span class="hljs-comment"># 同样可以用来新增数据</span><br>df.loc[:, new_column] = xxx  <span class="hljs-comment"># 新增一列 xxx = one series</span><br></code></pre></td></tr></table></figure>
+
+<p><code>df.apply</code>方法的返回值是一个Series，它的含义是沿着DataFrame的某一个轴执行函数，相当于每次传入了一个Series，然后得到一个value。最终所有的value组成一个Serise。</p>
+<ul>
+<li>axis&#x3D;0：沿着横轴方向，每次传入一列给函数，最终得到的Series是横向的</li>
+<li>axis&#x3D;1：沿着竖轴方向，每次转入一行给函数，最终得到的Series是竖向的</li>
+</ul>
+<blockquote>
+<p>可以理解为axis表示最终得到的结果与哪个轴相同，axis&#x3D;0表示最终得到的Series与x轴相同，即得到的Series是横向的</p>
+</blockquote>
+<p>利用apply方法可以新增一列或者一行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 新增一行</span><br>df.loc[<span class="hljs-number">0</span>, :] = df.apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">len</span>(x), axis=<span class="hljs-number">0</span>)<br><br><span class="hljs-comment"># 新增一列</span><br>df.loc[:, <span class="hljs-string">&#x27;age+1&#x27;</span>] = df.apply(<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-string">&#x27;age&#x27;</span>] + <span class="hljs-number">1</span>, axis=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="列名-x2F-index处理"><a href="#列名-x2F-index处理" class="headerlink" title="列名&#x2F;index处理"></a>列名&#x2F;index处理</h3><p>列名处理指的是我们可以修改DataFrame的列名，一共有两种方式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 直接通过修改属性来修改列名，此方式需要给出所有的列名</span><br>df.column = [xxx,xxx,xxx,...]  <br><br><span class="hljs-comment"># 通过提供dict来修改列名，指定旧列名以及目标新列名</span><br>df.rename(columns = &#123;old_col: new_col&#125;, inplace=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+
+<p>index处理指的是我们可以修改DataFrame的Index：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 重新设定index</span><br>df.set_index(<span class="hljs-string">&#x27;指定列&#x27;</span>,inplace=<span class="hljs-literal">False</span>, drop=<span class="hljs-literal">False</span>)  <br><br><span class="hljs-comment"># - inplace：表示是否要替换原有索引（对应单索引和复合索引）</span><br><span class="hljs-comment"># - drop：表示是否要丢弃这一列索引数据，如果为False表示将索引仍然保留作为表格内容</span><br><br><span class="hljs-comment"># 还原索引，重新变为默认的整型索引</span><br>df.reset_index()<br></code></pre></td></tr></table></figure>
+
+<h3 id="缺失值处理"><a href="#缺失值处理" class="headerlink" title="缺失值处理"></a>缺失值处理</h3><p>在处理缺失值之前，首先需要检测缺失值。Pandas提供了<code>isnull()</code>和<code>notnull()</code>等方法来判断空值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 以下方法均返回一个DataFrame，其中每个单元格的Value是一个布尔值，代表当前单元格是否为空。注意isnull和isna，notnull和notna完全相同。</span><br>df.isnull() <br>df.isna()<br>df.notnull()<br>df.notna()<br></code></pre></td></tr></table></figure>
+
+<p>一种处理缺失值的方式是直接丢弃缺失值，Pandas中提供<code>dropna</code>方法来删除缺失值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.dropna(axis=<span class="hljs-number">0</span>|<span class="hljs-number">1</span>, how=<span class="hljs-built_in">any</span>|<span class="hljs-built_in">all</span>, inplace=<span class="hljs-literal">True</span>|<span class="hljs-literal">False</span>, subset=[xxx])<br></code></pre></td></tr></table></figure>
 
 <ul>
-<li>left,right:要merge的dataframe或者有name的Series</li>
-<li>how:join类型，有‘left’，‘right’，‘outer’，‘inner’<ul>
-<li>inner：保留重合数据</li>
-<li>outer：数据全部保留</li>
-<li>left：完全保留左边数据</li>
-<li>right：完全保留右边数据</li>
+<li><code>axis</code>：删除行还是列，可选值为0或1<ul>
+<li>等于0或者index表示按行删除，默认为0</li>
+<li>等于1或者columns表示按列删除</li>
 </ul>
 </li>
-<li>on:join的key，left和right都需要有这个key</li>
-<li>left_on:left的df或series的key</li>
-<li>right_on:right的df或series的key</li>
-<li>left_index,right_index:使用index而不是普通的column做join</li>
-<li>suffixes:两个元素的后缀，如果列有重名，自动添加后缀</li>
+<li><code>how</code>：可选值为any或all<ul>
+<li>any：出现空值就删除</li>
+<li>all：所有都是空值才删除</li>
 </ul>
-<p>对齐关系：</p>
+</li>
+<li><code>inplace</code>：布尔值，是否修改当前df<ul>
+<li>True：修改当前df</li>
+<li>False：返回新的df</li>
+</ul>
+</li>
+<li><code>subset</code>：表示接受空值判断的子集columns</li>
+</ul>
+<p>另外一种处理缺失值的方式是进行填充，Pandas中提供<code>fillna</code>方法来填充缺失值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.fillna(value=xxx, method=xxx, axis=<span class="hljs-number">0</span>|<span class="hljs-number">1</span>, inplace=<span class="hljs-literal">True</span>|<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
+
 <ul>
-<li>一对一：关联的key是唯一的</li>
-<li>一对多：左边key唯一，右边key不唯一</li>
-<li>多对多：左右两边都不唯一<ul>
-<li>后面两种类型数据会被复制</li>
-<li>进行笛卡尔积</li>
+<li><code>value</code>：用于填充的值，可以是单个值，或者字典（key是列名，value是值），如果是填充字典的情况，则表示检测key那一列，如果是空，就替换为value。这样使得我们能够对不同列采取不同的填充措施。</li>
+<li><code>method</code>：填充方法，可选值为backfill、ffill、bfill<ul>
+<li>ffill：使用前一个不为空的值进行填充</li>
+<li>backfill&#x2F;bfill：使用后一个不为空的值进行填充</li>
 </ul>
 </li>
+<li><code>axis</code>：按行填充还是列填充，同dropna</li>
+<li><code>inplace</code>：是否修改当前df，同dropna</li>
 </ul>
-<h2 id="数据Concat合并"><a href="#数据Concat合并" class="headerlink" title="数据Concat合并"></a>数据Concat合并</h2><ul>
-<li><p>使用场景：</p>
+<h3 id="重复值处理"><a href="#重复值处理" class="headerlink" title="重复值处理"></a>重复值处理</h3><p>Pandas中提供drop_duplicates方法来进行去重，此方法可以接收列名，表示按照哪一列或者哪几列进行去重。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">df.drop_duplicates()  <span class="hljs-comment"># 按照所有列去重</span><br>df.drop_duplicates(<span class="hljs-string">&#x27;name&#x27;</span>)  <span class="hljs-comment"># 按照name列去重</span><br>df.drop_duplicates([<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>])  <span class="hljs-comment"># 按照name和age列去重</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="数据排序"><a href="#数据排序" class="headerlink" title="数据排序"></a>数据排序</h3><p>Pandas同样支持数据的排序。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 对于Series来说，排序方法为</span><br>Series.sort_values(ascending=<span class="hljs-literal">True</span>, inplace=<span class="hljs-literal">False</span>)<br><span class="hljs-comment"># - ascending：默认为True升序排序，为False降序排序</span><br><span class="hljs-comment"># - inplace：是否修改原始Series</span><br><br><span class="hljs-comment"># 对于DataFrame来说，排序方法为</span><br>DataFrame.sort_values(by,ascending=<span class="hljs-literal">True</span>,inplace=<span class="hljs-literal">False</span>)<br><span class="hljs-comment"># - by：排序的基准，可以提供单个列名或者列名数组</span><br><span class="hljs-comment"># - ascending：bool或者List，升序还是降序，如果是List则对应by的多列</span><br><span class="hljs-comment"># - inplace：是否修改原始DataFrame</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="数据统计"><a href="#数据统计" class="headerlink" title="数据统计"></a>数据统计</h3><p>常见的数据统计方法有：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">.mean()  <span class="hljs-comment"># 平均值</span><br>.<span class="hljs-built_in">max</span>()  <span class="hljs-comment"># 最大值</span><br>.<span class="hljs-built_in">min</span>()  <span class="hljs-comment"># 最小值</span><br>.<span class="hljs-built_in">sum</span>()  <span class="hljs-comment"># 求和</span><br>.unique() <span class="hljs-comment"># 可以查看一列中有哪些值</span><br>.nunique() <span class="hljs-comment"># 返回某一列的不重复值的个数</span><br>.value_counts()  <span class="hljs-comment"># 可以查看有哪些值并进行计数</span><br>df.cov()  <span class="hljs-comment"># 协方差矩阵</span><br>df.corr()  <span class="hljs-comment"># 相关系数矩阵</span><br>df[<span class="hljs-string">&#x27;xxx&#x27;</span>].corr(df[<span class="hljs-string">&#x27;yyy&#x27;</span>])  <span class="hljs-comment"># 单独查看两列的相关系数</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="高级数据操作"><a href="#高级数据操作" class="headerlink" title="高级数据操作"></a>高级数据操作</h2><h3 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h3><p>Pandas中的Merge，相当于Sql中的join，方法签名如下：</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs py">pd.merge(left,right,on=<span class="hljs-literal">None</span>,left_on=<span class="hljs-literal">None</span>,right_on=<span class="hljs-literal">None</span>,left_index=<span class="hljs-literal">False</span>,right_index=<span class="hljs-literal">False</span>,suffixes=(<span class="hljs-string">&#x27;_x&#x27;</span>,<span class="hljs-string">&#x27;_y&#x27;</span>),copy=<span class="hljs-literal">True</span>,indicator=<span class="hljs-literal">False</span>,validate=<span class="hljs-literal">None</span>)<br></code></pre></td></tr></table></figure>
+
 <ul>
-<li>批量合并相同格式的Excel，给DataFrame添加行、添加列</li>
-<li>上下拼接或者左右拼接</li>
+<li><code>left,right</code>：需要进行join的左表和右表</li>
+<li><code>how</code>：join类型，有left、right、outer、inner，与sql中的连接定义一致</li>
+<li><code>on</code>：进行join的key，left和right都需要有这个key</li>
+<li><code>left_on</code>：left的df或series的key</li>
+<li><code>right_on</code>：right的df或series的key</li>
+<li><code>left_index,right_index</code>：使用index而不是普通的column做join</li>
+<li><code>suffixes</code>：两个元素的后缀，如果列有重名，自动添加后缀</li>
 </ul>
-</li>
-<li><p>简单说明concat语法</p>
-<ul>
-<li>使用某种合并方式（inner&#x2F;outer）</li>
-<li>沿着某个轴向（axis&#x3D;0&#x2F;1）</li>
-<li>把多个pandas对象（DataFrame&#x2F;Series）合并成一个</li>
-</ul>
-</li>
-<li><p>concat语法</p>
+<h3 id="Concat"><a href="#Concat" class="headerlink" title="Concat"></a>Concat</h3><p>Pandas中的concat用于合并相同格式的数据，可以完成上下拼接或者左右拼接，给DataFrame添加行或者列。合并时按照索引或者列名进行对齐，方法签名如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">pd.concat(objs,axis=<span class="hljs-number">0</span>,join=<span class="hljs-string">&#x27;outer&#x27;</span>,ignore_index=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
 
 <ul>
-<li>objs：列表，里面可以是DataFrame，Series以及混合</li>
-<li>axis：默认0代表按行合并，1表示按列合并</li>
-<li>join：合并的时候索引的对齐方式，默认为outer ，也可以是inner</li>
-<li>ignore_index：是否忽略掉原来的数据索引</li>
+<li><code>objs</code>：接收一个列表，其中的元素可以是DataFrame，Series或两者混合</li>
+<li><code>axis</code>：默认0代表按行合并，1表示按列合并</li>
+<li><code>join</code>：合并的时候索引的对齐方式，默认为outer ，也可以是inner</li>
+<li><code>ignore_index</code>：是否忽略掉原来的数据索引</li>
 </ul>
-</li>
-<li><p>append：concat一个特殊场景</p>
-<ul>
-<li>append只有按行合并，没有按列合并（相当于在表格下面增加内容）</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">pd.append(other,ignore_index=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
+<h3 id="GroupBy"><a href="#GroupBy" class="headerlink" title="GroupBy"></a>GroupBy</h3><p>Pandas中的<code>groupby</code>方法可以做到先对数据进行分组，然后在每个分组上应用聚合函数或者转换函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">groupby(<span class="hljs-string">&#x27;columns&#x27;</span>)  <span class="hljs-comment"># 原来的columns变成索引，以此看其他列</span><br><br>groupby([<span class="hljs-string">&#x27;columns1&#x27;</span>,<span class="hljs-string">&#x27;colunms2&#x27;</span>,...])  <span class="hljs-comment"># 形成多级索引（分层索引）</span><br><span class="hljs-comment"># as_index=False：指定不要形成多级索引</span><br><br><span class="hljs-comment"># 如果需要同时查看多种数据统计，可以使用.agg方法</span><br><span class="hljs-comment"># import numpy as np</span><br>df.groupby(<span class="hljs-string">&#x27;unit&#x27;</span>).agg([np.<span class="hljs-built_in">sum</span>, np.count_nonzero])<br><span class="hljs-comment"># 也可以传dict作为参数，指定对特定列执行特定的操作</span><br>df.groupby(<span class="hljs-string">&#x27;unit&#x27;</span>).agg(&#123;<span class="hljs-string">&#x27;age&#x27;</span>:np.mean,<span class="hljs-string">&#x27;name&#x27;</span>:np.count_nonzero&#125;)<br></code></pre></td></tr></table></figure>
 
-<ul>
-<li>other：单个DataFrame，Series，dict或者list</li>
-<li>ignore_index：是否忽略掉原来的数据索引</li>
-</ul>
-</li>
-</ul>
-<h2 id="批量拆分与合并Excel文件"><a href="#批量拆分与合并Excel文件" class="headerlink" title="批量拆分与合并Excel文件"></a>批量拆分与合并Excel文件</h2><p>无。:feet:</p>
-<h2 id="实现分组数据统计"><a href="#实现分组数据统计" class="headerlink" title="实现分组数据统计"></a>实现分组数据统计</h2><p>groupby：先对数据进行分组，然后在每个分组上应用聚合函数、转换函数</p>
-<ul>
-<li><p><code>groupby(&#39;columns&#39;)</code>：原来的columns变成索引，以此看其他列</p>
-</li>
-<li><p><code>groupby([&#39;columns1&#39;,&#39;colunms2&#39;,...])</code>：形成多级索引（分层索引）</p>
-<ul>
-<li>as_index&#x3D;False：指定不要形成多级索引</li>
-</ul>
-</li>
-<li><p>同时查看多种数据统计：</p>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.groupby(<span class="hljs-string">&#x27;A&#x27;</span>).agg([np.<span class="hljs-built_in">sum</span>, np.mean, np.std])<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li><p><code>.agg</code>函数</p>
-<ul>
-<li><p>列变成多级索引</p>
-</li>
-<li><p>也可以传字典作为参数</p>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.groupby(<span class="hljs-string">&#x27;A&#x27;</span>).agg(&#123;<span class="hljs-string">&#x27;C&#x27;</span>:np.<span class="hljs-built_in">sum</span>, <span class="hljs-string">&#x27;D&#x27;</span>:np.mean&#125;)<br></code></pre></td></tr></table></figure>
-
-</li>
-<li><p>groupby得到数据结构可以迭代</p>
-</li>
-<li><p>按照name来区别不同的group</p>
-</li>
-</ul>
-<h2 id="分层索引MultiIndex"><a href="#分层索引MultiIndex" class="headerlink" title="分层索引MultiIndex"></a>分层索引MultiIndex</h2><p>MultiIndex：</p>
-<ul>
-<li><p>分层索引：在一个轴向上拥有多个索引层级，可以表达更高维度数据的形式</p>
-</li>
-<li><p>可以更方便的进行数据筛选，如果有序则性能更好</p>
-</li>
-<li><p>groupby等操作的结果，如果是多key，结果是分层索引</p>
-</li>
-<li><p>一般不需要自己创建分层索引（MultiIndex有构造函数但是一般不用）</p>
-</li>
-<li><p>分层索引的筛选利用元组的形式。</p>
-<ul>
-<li>也可以只用一个，但是有索引的先后顺序</li>
-</ul>
-</li>
-<li><p><code>unstack()</code>：将多层索引变成列</p>
-</li>
-<li><p>在选择数据的时候：</p>
-<ul>
-<li>元组(key1,key2)代表筛选多层索引，key1是一级索引，key2是二级索引</li>
-<li>列表[key1,key2]代表同一层的多个key，key1和key2是并列的同级索引</li>
-</ul>
-</li>
-<li><p><code>slice(None)</code>：代表筛选这一索引的所有内容</p>
-</li>
-<li><p><code>reset_index()</code>：将多级索引变成普通的列</p>
-</li>
-</ul>
-<h2 id="map，apply，applymap数据转换函数"><a href="#map，apply，applymap数据转换函数" class="headerlink" title="map，apply，applymap数据转换函数"></a>map，apply，applymap数据转换函数</h2><p>大致讲解：</p>
-<ul>
-<li><p>map：只用于Series，实现每个值到值的映射</p>
-</li>
-<li><p>apply：用于Series实现每个值的处理，用于DataFrame实现某个轴的Series的处理</p>
-</li>
-<li><p>applymap：只能用于DataFrame，用于处理DataFrame的每个元素</p>
-</li>
-<li><p><code>Series.map()</code></p>
-<ul>
-<li>可以传递字典或者函数</li>
-<li>字典中即映射关系</li>
-<li>函数：将值传入作为参数，转化成返回值</li>
-</ul>
-</li>
-<li><p><code>apply</code>：前面说过，对每个元素（元素或者Series）进行函数操作</p>
-</li>
-<li><p><code>applymap</code>：传入函数，对于函数，函数的参数是DataFrame每一个元素</p>
-</li>
-</ul>
-<h2 id="实现groupby每个分组的apply"><a href="#实现groupby每个分组的apply" class="headerlink" title="实现groupby每个分组的apply"></a>实现groupby每个分组的apply</h2><p>知识：pandas的groupby遵从split，apply，combine模式</p>
-<ul>
-<li>首先根据groupby的条件将大表切分成多个小表</li>
-<li>对每一个小表进行函数的应用得到新小表</li>
-<li>然后将多个小表拼接</li>
-</ul>
-<h2 id="使用stack和pivot实现数据透视"><a href="#使用stack和pivot实现数据透视" class="headerlink" title="使用stack和pivot实现数据透视"></a>使用stack和pivot实现数据透视</h2><p>将列式数据变成二维交叉形式，便于分析，叫做重塑或透视。</p>
-<p><code>unstack()</code>和<code>stack()</code>互逆</p>
-<ul>
-<li>unstack：把index变成columns</li>
-</ul>
-<p><code>pivot()</code>：相当于对df使用set_index创建分层索引，然后调用unstack</p>
-<ul>
-<li><p>简化的方法实现了unstack</p>
-</li>
-<li><p>stack:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.stack(level=-<span class="hljs-number">1</span>, dropna=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li>将column变成index，类似将横放的书变成竖放</li>
-<li>level：-1表示多层索引的最内层，也可以通过0，1，2等指定多层索引的对应层</li>
-</ul>
-</li>
-<li><p>unstack：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.unstack(level=-<span class="hljs-number">1</span>, fill_value=<span class="hljs-literal">None</span>)<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li>与stack互逆，将index变成column</li>
-</ul>
-</li>
-<li><p>pivot：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">df.pivot(index=<span class="hljs-literal">None</span>, columns=<span class="hljs-literal">None</span>, values=<span class="hljs-literal">None</span>)<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li>指定index，columns，values实现二维透视</li>
-</ul>
-</li>
-</ul>
-<h2 id="附录："><a href="#附录：" class="headerlink" title="附录："></a>附录：</h2><h3 id="1）一些常见操作"><a href="#1）一些常见操作" class="headerlink" title="1）一些常见操作"></a>1）一些常见操作</h3><ul>
-<li><code>.head()</code>:查看前几行数据</li>
-<li><code>.shape</code>：返回数据的形状（行，列）</li>
-<li><code>columns</code>：返回列名列表</li>
-<li><code>index</code>：返回索引列（每一行的索引）</li>
-<li><code>dtypes</code>：查看每一列的数据类型</li>
-<li><code>.set_index(&#39;指定列&#39;,inplace=True)</code>：重新设定index<ul>
-<li>inplace表示是否要替换（对应单索引和复合索引）</li>
-<li>drop：是否要丢弃默认这一列索引<ul>
-<li>False表示将索引仍然保留作为表格内容</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><code>.reset_index()</code>：还原索引，重新变为默认的整型索引</li>
-<li><code>.astype()</code>：数据类型转换</li>
-<li><code>.value_counts()</code>：对每个值进行计数（会返回各种值分别有多少个）</li>
-<li><code>.to_excel()</code>：将DataFrame保存为excel表格<ul>
-<li>index&#x3D;False</li>
-</ul>
-</li>
-<li><code>.count()</code>：沿行或者沿列计算非空数值</li>
-<li><code>.drop_duplicates([&#39;指定列&#39;])</code>：根据某一列去重</li>
-<li><code>.nunique()</code>：返回某一列的不重复值的个数</li>
-<li><code>.unique()</code>：返回某一列的不重复值</li>
-<li><code>.pct_change()</code>：计算每一个数相对于前一个数的增长比率（环比增长）</li>
-<li><code>pd.cut()</code>:进行数据分箱<ul>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/105f0d63175a">pd.cut()相关 - 简书 (jianshu.com)</a></li>
-<li>label可以指定分完之后的label值，相当于进行了映射</li>
-</ul>
-</li>
-<li><code>.diff()</code>：表示进行差分，上下列之间的差</li>
-<li><code>groupby().agg()</code>：agg后面如果接列表表示在每一列使用不同的聚合函数</li>
-</ul>
-<h3 id="2）有关于Pycharm无法自动补全第三方库的解决方案"><a href="#2）有关于Pycharm无法自动补全第三方库的解决方案" class="headerlink" title="2）有关于Pycharm无法自动补全第三方库的解决方案"></a>2）有关于Pycharm无法自动补全第三方库的解决方案</h3><p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_24871519/article/details/85145850?utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-13.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-13.no_search_link">pycharm 第三方库函数无代码提示解决方案_打灰机也有春天-CSDN博客_pycharm导入第三方库怎么没有函数提醒</a></p>
-<p>python弱类型，它无法提前预知是哪一种数据类型，因而无法提供出很好的代码提示。</p>
-<p>解决方案：核心是要告诉编辑器，这个变量的数据类型</p>
-<p>（下面举例都是调用了pandas中的DataFrame）</p>
-<ol>
-<li><p>使用isinstance指定：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">df = pd.DataFrame()<br><span class="hljs-keyword">assert</span> <span class="hljs-built_in">isinstance</span>(df, pd.DataFrame)<br>df.  <span class="hljs-comment"># 可以出现智能提示</span><br></code></pre></td></tr></table></figure>
-</li>
-<li><p>使用类型注解（注释使用方法get+1 :dog:）</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">df = pd.DataFrame()  <span class="hljs-comment"># type: pd.DataFrame</span><br>df.  <span class="hljs-comment"># 可以出现智能提示</span><br></code></pre></td></tr></table></figure>
-</li>
-<li><p>指定类型</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">df = pd.DataFrame()<br><span class="hljs-string">&quot;&quot;&quot;:type: pd.DataFrame&quot;&quot;&quot;</span><br>df.  <span class="hljs-comment"># 可以出现智能提示</span><br></code></pre></td></tr></table></figure></li>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://www.datacamp.com/tutorial/pandas">pandas tutorial|datacamp</a></li>
 </ol>
 
                 
