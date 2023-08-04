@@ -24,10 +24,10 @@
 <meta property="og:description" content="Pandas的学习笔记，包括一些基础操作，例如数据读取、数据保存、数据查询与修改、数据清洗、数据统计等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-27T07:13:44.000Z">
-<meta property="article:modified_time" content="2023-08-02T12:10:48.740Z">
+<meta property="article:modified_time" content="2023-08-04T13:13:26.087Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="Pandas">
 <meta property="article:tag" content="Python">
+<meta property="article:tag" content="Pandas">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -266,7 +266,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          8.1k 字
+          8.2k 字
         
       </span>
     
@@ -441,7 +441,8 @@
 <li>axis&#x3D;1：沿着竖轴方向，每次转入一行给函数，最终得到的Series是竖向的</li>
 </ul>
 <blockquote>
-<p>可以理解为axis表示最终得到的结果与哪个轴相同，axis&#x3D;0表示最终得到的Series与x轴相同，即得到的Series是横向的</p>
+<p>可以理解为axis表示最终得到的结果与哪个轴相同，axis&#x3D;0表示最终得到的Series与x轴相同，即得到的Series是横向的。</p>
+<p>这样理解的话，axis&#x3D;0表示水平轴，axis&#x3D;1表示垂直轴，与numpy中有所区别，建议实际使用过程中直接尝试不同的axis查看对应的效果，毕竟只有两个选项。</p>
 </blockquote>
 <p>利用apply方法可以新增一列或者一行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 新增一行</span><br>df.loc[<span class="hljs-number">0</span>, :] = df.apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">len</span>(x), axis=<span class="hljs-number">0</span>)<br><br><span class="hljs-comment"># 新增一列</span><br>df.loc[:, <span class="hljs-string">&#x27;age+1&#x27;</span>] = df.apply(<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-string">&#x27;age&#x27;</span>] + <span class="hljs-number">1</span>, axis=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
@@ -565,9 +566,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Pandas/">#Pandas</a>
-      
         <a href="/tags/Python/">#Python</a>
+      
+        <a href="/tags/Pandas/">#Pandas</a>
       
     </div>
   
