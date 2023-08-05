@@ -4,6 +4,35 @@
   
   
   <entry>
+    <title>Conda相关操作记录</title>
+    <link href="/2023/08/05/Conda%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95/"/>
+    <url>/2023/08/05/Conda%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Conda虚拟环境"><a href="#Conda虚拟环境" class="headerlink" title="Conda虚拟环境"></a>Conda虚拟环境</h1><ol><li>Conda虚拟环境的基本管理</li></ol><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># conda 虚拟环境列表</span><br>conda <span class="hljs-built_in">env</span> list<br><br><span class="hljs-comment"># 创建虚拟环境</span><br>conda create -n &lt;env_name&gt; python=x.x<br><br><span class="hljs-comment"># 激活虚拟环境</span><br>conda activate &lt;env_name&gt;<br><br><span class="hljs-comment"># 退出虚拟环境</span><br>deactivate<br><br><span class="hljs-comment"># 删除虚拟环境</span><br>conda remove -n &lt;env_name&gt; --all<br></code></pre></td></tr></table></figure><p>各个虚拟环境之间是隔离的，体现在文件夹中，每个环境都被存放在<code>$ANACONDA_PATH/envs/&lt;env_name&gt;</code>目录下。</p><ol start="2"><li>关闭Conda base环境自动激活</li></ol><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 设置auto_activate_base参数为false</span><br>conda config --<span class="hljs-built_in">set</span> auto_activate_base <span class="hljs-literal">false</span><br><br><span class="hljs-comment"># 需要激活base环境时</span><br>conda activate base<br><br><span class="hljs-comment"># 如果想要恢复自动激活base环境</span><br>conda config --<span class="hljs-built_in">set</span> auto_activate_base <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure><h1 id="jupyter配置"><a href="#jupyter配置" class="headerlink" title="jupyter配置"></a>jupyter配置</h1><ol><li>jupyter支持Conda虚拟环境</li></ol><p>默认情况下打开jupyter notebook是无法检测到Conda中的虚拟环境，需要进行如下配置。</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 首先在base环境下安装nb_conda_kernels </span><br>conda install nb_conda_kernels <br><br><br><span class="hljs-comment"># 之后其他虚拟环境需要安装ipykernel才能显示在juypter的检测环境中</span><br>conda install ipykernel<br></code></pre></td></tr></table></figure><ol start="2"><li>jupyter支持代码提示和补全</li></ol><p>默认情况下，通过浏览器打开jupyter notebook是没有代码提示与自动补全功能的，可以参考xxx，通过安装相关插件来增加对应功能。</p><p>当然也可以通过在Pycharm中使用jupyter来解决。利用Pycharm打开<code>.ipynb</code>文件，其中会自带代码提示和补全的支持。</p><h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol><li><a href="https://blog.51cto.com/u_15127622/4594568">anaconda 取消每次默认启动base环境_mob604756fa6ad7的技术博客</a></li><li><a href="https://blog.csdn.net/u014264373/article/details/119390267">如何在 Jupyter Notebook 中切换&#x2F;使用 conda 虚拟环境？_jupyter notebook conda env_Tina姐的博客-CSDN博客</a></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>后端</category>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+      <tag>Conda</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Numpy基础笔记</title>
     <link href="/2023/08/04/Numpy%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/"/>
     <url>/2023/08/04/Numpy%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/</url>
@@ -22,9 +51,9 @@
     
     <tags>
       
-      <tag>Numpy</tag>
-      
       <tag>Python</tag>
+      
+      <tag>Numpy</tag>
       
     </tags>
     
@@ -78,9 +107,9 @@
     
     <tags>
       
-      <tag>UnitTest</tag>
-      
       <tag>Python</tag>
+      
+      <tag>UnitTest</tag>
       
     </tags>
     
@@ -215,9 +244,9 @@
     
     <tags>
       
-      <tag>UnitTest</tag>
-      
       <tag>Python</tag>
+      
+      <tag>UnitTest</tag>
       
       <tag>Mock</tag>
       
@@ -1438,9 +1467,9 @@
     
     <tags>
       
-      <tag>笔记</tag>
-      
       <tag>Python</tag>
+      
+      <tag>笔记</tag>
       
     </tags>
     
@@ -1467,9 +1496,9 @@
     
     <tags>
       
-      <tag>笔记</tag>
-      
       <tag>Python</tag>
+      
+      <tag>笔记</tag>
       
     </tags>
     
