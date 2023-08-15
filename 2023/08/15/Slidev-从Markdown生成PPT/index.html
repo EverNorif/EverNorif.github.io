@@ -1,0 +1,770 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Slidev是一个为开发者打造的演示文稿工具，它允许我们将markdown转化为PPT。虽然PowerPoint等软件已经提供了所见即所得的能力，不过slidev专注于另外的方向，让开发者利用自己熟悉的技术，同时结合社区中的各种主题，方便快捷地完成PPT。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Slidev:从Markdown生成PPT">
+<meta property="og:url" content="http://example.com/2023/08/15/Slidev-%E4%BB%8EMarkdown%E7%94%9F%E6%88%90PPT/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Slidev是一个为开发者打造的演示文稿工具，它允许我们将markdown转化为PPT。虽然PowerPoint等软件已经提供了所见即所得的能力，不过slidev专注于另外的方向，让开发者利用自己熟悉的技术，同时结合社区中的各种主题，方便快捷地完成PPT。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-15T12:31:35.000Z">
+<meta property="article:modified_time" content="2023-08-15T12:39:55.306Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="slidev">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Slidev:从Markdown生成PPT - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Slidev:从Markdown生成PPT"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-15 20:31" pubdate>
+          2023年8月15日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          33 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Slidev:从Markdown生成PPT</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p><a target="_blank" rel="noopener" href="https://sli.dev/">slidev</a>是一款为开发者提供的PPT工具，它允许我们通过编写Markdown来快速生成PPT。结合一定的CSS语法以及社区主题，slidev也能够完成非常精美的PPT。更重要的是程序员对Markdown更为熟悉，同时使得后续的复用变得非常简单。</p>
+<blockquote>
+<p>还有类似的工具例如<a target="_blank" rel="noopener" href="https://revealjs.com/markdown/">Reveal.JS</a>，利用<a target="_blank" rel="noopener" href="https://github.com/MSzturc/obsidian-advanced-slides">Advanced Slide</a>插件结合Obsidian也是一种常见的解决方案。</p>
+</blockquote>
+<p>slidev提供多种安装方式，这里推荐全局安装，之后在任意目录下都可以直接使用<code>slidev</code>命令。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">npm i -g @slidev/cli<br></code></pre></td></tr></table></figure>
+
+<p>安装完成之后，我们可以快速编写一个<code>slidev-slide.md</code>，然后通过<code>slidev</code>命令就可以进行PPT的生成。该命令基于对应的md文件在本地启动一个server，默认通过访问<code>http://localhost:3030</code>可以在浏览器中进行PPT的访问。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">slidev slidev-slide.md<br></code></pre></td></tr></table></figure>
+
+<p>虽然slidev是基于Markdown的，但是它的语法规则与标准的Markdown渲染规则还是略有差异，因此在使用slidev的时候，在对应的Markdown编辑器中建议开启源码模式。</p>
+<h1 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h1><p>slidev的官方文档地址为：<a target="_blank" rel="noopener" href="https://cn.sli.dev/guide/">Getting Started|sli.dev</a>。该文档已经非常详细了，日常使用都可以参考该文档。这里仅记录本人在使用过程中的一些小tips，以供快速fix。</p>
+<h2 id="CSS修改"><a href="#CSS修改" class="headerlink" title="CSS修改"></a>CSS修改</h2><p>slidev对于markdown的转换有一套默认的风格，但是由于Markdown天然支持html，因此我们可以按照想要的方式对内容进行样式设计。可以参考<a target="_blank" rel="noopener" href="https://cn.sli.dev/custom/config-windicss.html">配置Windi CSS|slidev</a>。通过这种方式，我们可以很方便地进行样式改变。下面举一些例子。</p>
+<p>一个最简单的操作，我们可以为一段文本指定背景颜色，指定边框等。只需要利用<code>&lt;div&gt;</code>标签将对应文本块进行包裹，然后在<code>class</code>中指定对应的style，这里的风格指定可以参考Windi CSS提供的相关工具<a target="_blank" rel="noopener" href="https://windicss.org/utilities/">Utilites</a>。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;bg-gray-500/50 border-5&quot;</span>&gt;</span></span><br>some text...<br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>slidev中的代码块，在展示模式下，如果其中的内容过多，超出高度的时候，默认行为是隐藏。此时我们可以通过CSS修改来解决该问题，主要需要指定代码块元素的高度以及overflow的行为：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;h-40 overflow-scroll&quot;</span>&gt;</span></span><br><span class="hljs-code">```html</span><br><span class="hljs-code">too long code in here...</span><br><span class="hljs-code">```</span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>在Monaco编辑模式下，可以通过指定高度来解决隐藏问题：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-code">```html&#123;monaco&#125; &#123;height:100px&#125;</span><br><span class="hljs-code">too long code in here...</span><br><span class="hljs-code">```</span><br></code></pre></td></tr></table></figure>
+
+<p>还有一个较为常用的是网格grid布局，可以用于在一张PPT中排列多个需要展示的元素。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;grid grid-cols-4 gap-5 pt-4 -mb6&quot;</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<h2 id="export导出"><a href="#export导出" class="headerlink" title="export导出"></a>export导出</h2><p>slidev支持将网页版的PPT导出为pdf格式，此时需要使用<code>slidev export</code>命令。当然在使用之前需要先安装<code>playwright-chromium</code>。对于全局安装的用户来说，这里使用<code>-D</code>安装后可能还是无法使用export。此时可以尝试使用<code>-g</code>进行全局安装。</p>
+<p>export默认导出的逻辑是每一张PPT对应一页PDF，如果有动画效果的话，那么可以使用<code>--with-clicks</code>参数，此时多个步骤的PPT会转化为多页PDF，每一页对应一次点击。</p>
+<h2 id="icon图标"><a href="#icon图标" class="headerlink" title="icon图标"></a>icon图标</h2><p>slidev中直接支持开源图标集的访问，只需要指定<code>&lt;&#123;collection-name&#125;-&#123;icon-name&#125; /&gt;</code>即可。图标库可以参考<a target="_blank" rel="noopener" href="https://icones.js.org/">icones</a>和<a target="_blank" rel="noopener" href="https://icon-sets.iconify.design/">icon-sets.iconify</a>。</p>
+<blockquote>
+<p>不过其中部分icon会显示not found，这点目前还不清楚是什么原因导致的。</p>
+</blockquote>
+<h2 id="左右布局"><a href="#左右布局" class="headerlink" title="左右布局"></a>左右布局</h2><p>slidev提供了一个<code>two-cols</code> layout来完成左右布局：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs markdown">---<br><span class="hljs-section">layout: two-cols</span><br><span class="hljs-section">---</span><br><span class="hljs-section">## 左右布局</span><br><br><span class="hljs-section">### Left</span><br><br>This shows on the left<br><br>左边内容<br><br>::right::<br><br><span class="hljs-section">##  <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span></span></span><br><br><span class="hljs-section">###  Right</span><br><br>This shows on the right<br><br>右边内容<br></code></pre></td></tr></table></figure>
+
+<h1 id="Acadamic-Theme"><a href="#Acadamic-Theme" class="headerlink" title="Acadamic Theme"></a>Acadamic Theme</h1><p>slidev支持主题theme的快速替换，在社区中有许多高质量的主题可供我们使用。本节主要介绍一个简洁的学术主题acadamic，地址为<a target="_blank" rel="noopener" href="https://github.com/alexanderdavide/slidev-theme-academic/tree/master">slidev-theme-academic</a></p>
+<p>可以在顶层的<code>front-matter</code>中直接指定：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs markdown">---<br><span class="hljs-section">theme: academic</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
+
+<p>一个slidev theme的使用主要是看它提供的各种layout如何使用。acadamic theme提供了如下layout可供使用，下面逐一介绍。</p>
+<ol>
+<li>cover 封面页</li>
+<li>table-of-contents 目录页</li>
+<li>index 列表页</li>
+<li>figure 单图片页面</li>
+<li>figure-side 单侧图片页面</li>
+<li>center 文字居中页面</li>
+</ol>
+<h2 id="cover"><a href="#cover" class="headerlink" title="cover"></a>cover</h2><p>cover页面的<code>front-matter</code>中重要属性如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs markdown">---<br>layout: cover<br>class: text-white<br>coverAuthor: EverNorif # 作者名称<br>coverAuthorUrl: https://evernorif.github.io/about/ # 作者跳转链接<br>coverBackgroundUrl: background.jpg # 背景图片，存放在public目录下<br>coverBackgroundSource: unsplash # 右下角参考图片名称<br>coverBackgroundSourceUrl: xxx # 点击参考图片跳转链接<br><span class="hljs-section">title: hello world with academic in slidev  # 整个PPT的名称，会出现在标签栏中</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="table-of-contents"><a href="#table-of-contents" class="headerlink" title="table-of-contents"></a>table-of-contents</h2><ul>
+<li><p>目录页面，在formatter中指定layout为 <code>table-of-contents</code> </p>
+</li>
+<li><p>会自动检测所有标题，包含封面和结束页面；也会自动检测页面之间的层级关系</p>
+</li>
+</ul>
+<h2 id="index"><a href="#index" class="headerlink" title="index"></a>index</h2><p>列表页面index的<code>front-matter</code>如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs markdown">---<br>layout: index<br>indexEntries:<br><span class="hljs-bullet">-</span> &#123; title: &quot;GitHub&quot;, uri: &quot;https://github.com/&quot; &#125;<br><span class="hljs-bullet">-</span> &#123; title: &quot;Custom Uri&quot;, uri: 5 &#125;<br><span class="hljs-section">indexRedirectType: external</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
+
+<p>列表页面通过formatter中属性来指定<code>indexEntries</code>展示的列表，以及对应的链接。在该页面中可以进行其他内容的书写，最终的列表会添加到页面的最后方。</p>
+<p>默认情况下这里的<code>uri</code>只能提供数字，表示要跳转到第几张PPT。此时<code>title</code>将会失效，会被自动解析为对应页面的标题。此时点击跳转是在内部跳转，不会新开一个页面。</p>
+<p>如果指定了<code>indexRedirectType</code>为<code>external</code>，那么就可以提供外部链接，且此时<code>title</code>会与我们指定的保持一致。并且即使是写的内部链接跳转，名称也是以提供的为准。不过此时点击跳转会新开一个tab页面。</p>
+<h2 id="figure"><a href="#figure" class="headerlink" title="figure"></a>figure</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs markdown">---<br>layout: figure<br>figureCaption: Curated cover image for Slidev<br>figureFootnoteNumber: 1<br><span class="hljs-section">figureUrl: https://source.unsplash.com/collection/94734566/1920x1080</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
+
+<p>figure页面通常用来展示一张大图，通常也可以搭配脚注使用。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">Footnotes</span> <span class="hljs-attr">separator</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">Footnote</span> <span class="hljs-attr">:number</span>=<span class="hljs-string">1</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://unsplash.com/collections/94734566/slidev&quot;</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;noreferrer&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;_blank&quot;</span>&gt;</span>From Anthony Fu&#x27;s unsplash<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Footnote</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Footnotes</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="figure-side"><a href="#figure-side" class="headerlink" title="figure-side"></a>figure-side</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs markdown">---<br>layout: figure-side<br>figureCaption: use local image in pubilc folder<br>figureFootnoteNumber: 2<br><span class="hljs-section">figureUrl: background.jpg</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
+
+<p>figure-side页面用来在单侧展示一张图片。注意左边的内容会挤占图片的空间，图片会随着空间进行动态调整，可能出现图片被完全挤开的情况。因此需要注意代码块的宽度。当然同样可以搭配脚注使用。</p>
+<h2 id="center"><a href="#center" class="headerlink" title="center"></a>center</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs markdown">---<br>layout: center<br><span class="hljs-section">class: &quot;text-center&quot;</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
+
+<p>center页面用于将所有的内容都进行居中显示。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9D%82%E8%B0%88/" class="category-chain-item">杂谈</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9D%82%E8%B0%88/%E7%94%9F%E4%BA%A7%E5%8A%9B/" class="category-chain-item">生产力</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/slidev/">#slidev</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Slidev:从Markdown生成PPT</div>
+      <div>http://example.com/2023/08/15/Slidev-从Markdown生成PPT/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/05/Conda%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95/" title="Conda相关操作记录">
+                        <span class="hidden-mobile">Conda相关操作记录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
