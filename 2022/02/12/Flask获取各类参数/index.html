@@ -82,7 +82,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -265,7 +265,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          719 字
+          721 字
         
       </span>
     
@@ -277,7 +277,7 @@
         
         
           <!-- compatible with older versions-->
-          6 分钟
+          7 分钟
         
       </span>
     
@@ -324,20 +324,20 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Flask获取get参数">Flask获取get参数</h2>
+                <h2 id="flask获取get参数">Flask获取get参数</h2>
 <p>通过request.args.get()方式进行获取：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 以username举例</span><br>username = request.args.get(<span class="hljs-string">&#x27;username&#x27;</span>)<br></code></pre></td></tr></table></figure>
-<h2 id="Flask获取post参数">Flask获取post参数</h2>
+<h2 id="flask获取post参数">Flask获取post参数</h2>
 <p>post获取参数分为多种情况，下面列举我在实际过程中使用过的获取方式。</p>
-<h3 id="1-原始参数">1. 原始参数</h3>
+<h3 id="原始参数">1. 原始参数</h3>
 <p>原始参数指的是以json格式传送的参数，在axios中一般以如下方式传递：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-variable language_">this</span>.<span class="hljs-property">$axios</span>.<span class="hljs-title function_">post</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">$store</span>.<span class="hljs-property">state</span>.<span class="hljs-property">backend_url</span> + <span class="hljs-string">&#x27;post/changePwd&#x27;</span>, &#123;<br>    <span class="hljs-attr">username</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">username</span>,<br>    <span class="hljs-attr">password</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">password</span><br>&#125;)<br></code></pre></td></tr></table></figure>
 <p>此类参数的接收，使用json进行解析：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">data = request.get_data()<br>json_data = json.loads(data.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br>user_name = json_data.get(<span class="hljs-string">&#x27;username&#x27;</span>)<br>pwd = json_data.get(<span class="hljs-string">&#x27;password&#x27;</span>)<br></code></pre></td></tr></table></figure>
-<h3 id="2-使用表单传递的数据">2.使用表单传递的数据</h3>
+<h3 id="使用表单传递的数据">2.使用表单传递的数据</h3>
 <p>使用表单传递的数据，可能有文件，也可能有参数</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 文件传递</span><br>file_data = request.files.get(<span class="hljs-string">&#x27;file&#x27;</span>)<br><span class="hljs-comment"># 表单参数传递</span><br>path = request.form.get(<span class="hljs-string">&#x27;path&#x27;</span>)<br><br><span class="hljs-comment"># 文件获取之后可能的操作(文件下载)</span><br>file_data.save(path + file_data.filename)<br></code></pre></td></tr></table></figure>
-<p>还有其他的方法等遇到了再继续补充…</p>
+<p>还有其他的方法等遇到了再继续补充...</p>
 
                 
               </div>

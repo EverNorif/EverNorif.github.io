@@ -94,7 +94,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -289,7 +289,7 @@
         
         
           <!-- compatible with older versions-->
-          98 分钟
+          97 分钟
         
       </span>
     
@@ -336,9 +336,10 @@
             
               <div class="markdown-body">
                 
-                <h1>Spark核心组件</h1>
+                <h1 id="spark核心组件">Spark核心组件</h1>
 <p>Spark的核心组件包括Driver和Executor。</p>
-<p>Driver： Spark的驱动器节点，用于执行Spark任务中的main方法。在作业流程中，Driver主要负责：</p>
+<p>Driver：
+Spark的驱动器节点，用于执行Spark任务中的main方法。在作业流程中，Driver主要负责：</p>
 <ul>
 <li>将用户程序转化为作业Job</li>
 <li>在Executor之间进行任务调度（Task）</li>
@@ -351,29 +352,32 @@
 <li>通过自身的块管理器为用户程序中要求缓存的RDD提供内存管理。要求缓存的RDD直接缓存在Executor进程中，在任务运行时可以充分利用缓存</li>
 </ul>
 <p>Spark有多种部署模式，但是整体有一个通用的流程概述：</p>
-<ol>
+<ol type="1">
 <li>程序提交之后，启动Driver程序（Driver的位置可能因提交方式不同而不同）</li>
 <li>Driver向集群管理器注册应用程序</li>
 <li>集群管理器根据任务的配置文件分配Executor并启动，Executor向Driver注册</li>
 <li>Driver中代码执行到行动算子时开始反向推导，根据宽依赖对作业Job进行划分，划分成多个阶段Stage，每个阶段对应一个TaskSet，其中包含多个Task。之后使用可用的Executor执行Task的执行</li>
 <li>根据本地化原则，Task会被分发到指定的Executor去执行。在任务执行的过程中，Executor会不断与Driver进行通信，报告任务的运行情况</li>
 </ol>
-<h1>Spark部署模式</h1>
+<h1 id="spark部署模式">Spark部署模式</h1>
 <h2 id="部署模式概览">部署模式概览</h2>
 <p>Spark中支持多种部署模式，主要有以下几种：</p>
-<ol>
+<ol type="1">
 <li>本地模式：不使用集群，而是在本地通过启动多个线程的方式完成并行计算</li>
 <li>Standalone模式：使用Spark原生的集群管理器，可以单独部署到一个集群中而无需依赖其他的资源管理系统</li>
-<li>Yarn模式：使用Yarn资源管理框架进行资源的管理和调度。根据Driver在集群中位置的不同，又可以分为Yarn Cluster和Yarn Client模式</li>
-<li>Apache Mesos模式：Mesos是一个分布式资源管理框架，可以允许其他的框架部署在它之上。Spark在开发之初就考虑到支持Mesos，Spark运行在Mesos上会更加灵活。分为粗粒度模式和细粒度模式。</li>
+<li>Yarn模式：使用Yarn资源管理框架进行资源的管理和调度。根据Driver在集群中位置的不同，又可以分为Yarn
+Cluster和Yarn Client模式</li>
+<li>Apache
+Mesos模式：Mesos是一个分布式资源管理框架，可以允许其他的框架部署在它之上。Spark在开发之初就考虑到支持Mesos，Spark运行在Mesos上会更加灵活。分为粗粒度模式和细粒度模式。</li>
 <li>K8S：容器部署模式</li>
 </ol>
-<h2 id="Yarn部署模式">Yarn部署模式</h2>
-<p>根据Driver的位置不同，Yarn部署模式分为Yarn Cluster以及Yarn Client。在Yarn部署模式下，需要关注ResourceManager、NodeManager以及ApplicationMaster与Driver、Executor之间的关系。</p>
-<h3 id="Yarn-Cluster模式">Yarn Cluster模式</h3>
+<h2 id="yarn部署模式">Yarn部署模式</h2>
+<p>根据Driver的位置不同，Yarn部署模式分为Yarn Cluster以及Yarn
+Client。在Yarn部署模式下，需要关注ResourceManager、NodeManager以及ApplicationMaster与Driver、Executor之间的关系。</p>
+<h3 id="yarn-cluster模式">Yarn Cluster模式</h3>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/YarnCluster.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="YarnCluster">
 <p>运行流程如下：</p>
-<ol>
+<ol type="1">
 <li>利用<code>spark-submit</code>脚本进行程序的提交，启动<code>SparkSubmit</code>的JVM进程</li>
 <li><code>SparkSubmit</code>中的main方法调用<code>YarnClusterApplication</code>对象中的main方法</li>
 <li><code>YarnClusterApplication</code>创建Yarn客户端用来向连接Yarn，向Yarn发送执行指令<code>bin/java ApplicationMaster</code>，即要求运行<code>ApplicationMaster</code></li>
@@ -387,11 +391,12 @@
 <blockquote>
 <p>注意：这里的<code>SparkSubmit</code>、<code>ApplicationMaster</code>、<code>CoarseGrainedExecutorBackend</code>是独立的进程，Driver是独立的线程；<code>Executor</code>是运行在<code>CoarseGrainedExecutorBackend</code>中的对象。我们平常所说的Executor也可能指的是进程<code>CoarseGrainedExecutorBackend</code></p>
 </blockquote>
-<h3 id="Yarn-Client模式">Yarn Client模式</h3>
+<h3 id="yarn-client模式">Yarn Client模式</h3>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/YarnClient.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="YarnClient">
-<p>Yarn Client的运行流程与Yarn Cluster类似，只是Driver线程在本地启动，向<code>ResourceManager</code>申请运行<code>ExecutorLauncher</code>。当然<code>ExecutorLauncher</code>实际上还是调用了<code>ApplicationMaster</code>的main方法。</p>
+<p>Yarn Client的运行流程与Yarn
+Cluster类似，只是Driver线程在本地启动，向<code>ResourceManager</code>申请运行<code>ExecutorLauncher</code>。当然<code>ExecutorLauncher</code>实际上还是调用了<code>ApplicationMaster</code>的main方法。</p>
 <p>运行流程如下：</p>
-<ol>
+<ol type="1">
 <li>利用<code>spark-submit</code>脚本进行程序的提交，启动<code>SparkSubmit</code>的JVM进程</li>
 <li><code>SparkSubmit</code>中的main方法调用用户代码的main方法</li>
 <li>创建Driver<strong>线程</strong>，执行用户的作业，并创建<code>YarnClientScheduleBackend</code></li>
@@ -402,38 +407,38 @@
 <li>Driver线程继续执行完成作业的调度和任务的执行，包括任务的阶段划分等</li>
 <li>Driver进行任务的分配，并监控任务的运行</li>
 </ol>
-<h2 id="Standalone部署模式">Standalone部署模式</h2>
+<h2 id="standalone部署模式">Standalone部署模式</h2>
 <p>在Standalone部署模式下，集群中有两个重要组成部分，分别是</p>
 <ul>
 <li>Master：类似于Yarn中的ResourceManager，是一个进程，主要负责资源的调度和分配，并进行集群的监控等职责</li>
 <li>Worker：类似于Yarn中的NodeManager，是一个进程，一个Worker运行在集群中的一台服务器上，主要负责两个职责，一个是用自己的内存存储RDD的某些分区，另一个是启动其他进程和Executor线程，对RDD的分区进行并行计算</li>
 </ul>
 <p>Standalone部署模式下同样有Cluster和Client模式，总体也与Yarn部署模式的运行机制比较类似。</p>
-<h3 id="Standalone-Cluster模式">Standalone Cluster模式</h3>
+<h3 id="standalone-cluster模式">Standalone Cluster模式</h3>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/StandaloneCluster.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="StandaloneCluster">
 <p>流程如下：</p>
-<ol>
+<ol type="1">
 <li>任务提交，Master找到一个Worker来启动Driver（Driver由集群中的Worker运行）</li>
 <li>Dirver启动后向Master注册，并申请启动Executor</li>
 <li>Master寻找可用资源，启动Worker，并在这些Worker上分配Executor</li>
 <li>Executor启动后向Driver反向注册</li>
 <li>Driver执行到行动算子后，开始划分阶段Stage，每个Stage生成对应的TaskSet，将Task分发到各个Executor上执行</li>
 </ol>
-<h3 id="Standalone-Client模式">Standalone Client模式</h3>
+<h3 id="standalone-client模式">Standalone Client模式</h3>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/StandaloneClient.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="StandaloneClient">
 <p>Client与Cluster的主要区别在于Driver的启动位置，在Client模式中，Driver在任务提交的本地机器上运行</p>
 <p>流程如下：</p>
-<ol>
+<ol type="1">
 <li>任务提交，启动Driver（在提交任务的本地机器上）</li>
 <li>Driver启动后向Master注册，申请启动Executor</li>
 <li>Master寻找可用资源，启动Worker，并在这些Worker上分配Executor</li>
 <li>Executor启动后向Driver反向注册</li>
 <li>Driver执行到行动算子后，开始划分阶段Stage，每个Stage生成对应的TaskSet，将Task分发到各个Executor上执行</li>
 </ol>
-<h1>Spark应用执行</h1>
+<h1 id="spark应用执行">Spark应用执行</h1>
 <h2 id="概述">概述</h2>
 <p>我们首先需要明确几个概念，一个Spark应用程序包括Job、Stage以及Task三个概念：</p>
-<ol>
+<ol type="1">
 <li>Job以行动算子为界，每遇到一个行动算子，则会触发一个Job</li>
 <li>Stage是Job的划分，以RDD宽依赖为界，每遇到一个Shuffle就进行一次划分</li>
 <li>Task是Stage的划分，以分区数来衡量。Stage中最后一个RDD的分区数即为Task的数量</li>
@@ -449,10 +454,10 @@
 <p>Driver初始化SparkContext过程中，会分别初始化DAGScheduler，TaskScheduler、SchedulerBackend以及HeartbeatReceiver，并启动SchedulerBackend和HeartbeatReceiver。</p>
 <p>SchedulerBackend通过ApplicationMaster申请资源，并不断从TaskScheduler中拿到合适的Task分发到Executor上执行。</p>
 <p>HeartbeatReceiver负责接收Executor的心跳信息，监控Executor的存活状况，并通知到TaskScheduler</p>
-<h2 id="Stage调度">Stage调度</h2>
+<h2 id="stage调度">Stage调度</h2>
 <p>DAGScheduler负责Stage级别的调度，主要是将Job切分成若干个Stage，并将每个Stage打包成TaskSet交给TaskScheduler进行调度</p>
 <p>程序运行到行动算子，则会触发一个Job。Job交给DAGScheduler提交，它会根据RDD的血缘关系构成的DAG进行切分，将一个Job划分成若干个Stages。划分策略如下，基本上是一个深度优先搜索算法：</p>
-<ol>
+<ol type="1">
 <li>首先划分一个最终的Stage，称为ResultStage。它是由行动算子决定的。</li>
 <li>由最终的RDD不断向前回溯，判断父依赖是否是宽依赖，即Shuffle依赖。如果是则继续划分一个Stage，称为ShuffleMapStage。它是由对应的Shuffle转换算子决定的</li>
 </ol>
@@ -460,85 +465,119 @@
 <p>Stage的运行是有先后顺序的，只有当前面的Stage运行完成之后，才能提交运行下一个Stage。Stage提交的时候会将Task信息序列化并打包成TaskSet交给TaskScheduler，其中的Task数量与当前Stage中最后一个RDD的分区有关，一个分区对应一个Task。</p>
 <p>DAGScheduler会监控Stage的运行状态，如果Executor丢失，或者Task进行Fetch失败，则需要重新提交对应的Stage。其他情况，则会在TaskScheduler的调度过程中进行出错重试。（即前者情况下，Stage信息丢失，需要重新提交）</p>
 <p>相对来说，DAGScheduler做的事情较为简单，包括在Stage层面划分，提交Stage以及监控其相关状态信息</p>
-<h2 id="Task调度">Task调度</h2>
+<h2 id="task调度">Task调度</h2>
 <p>TaskScheduler负责Task级别的调度，将DAGScheduler得到的TaskSet按照指定的调度策略分发到Executor上执行。</p>
 <p>TaskScheduler将TaskSet封装为TaskSetManager加入调度队列中。一个TaskSetManager负责监控和管理同一个Stage中的Task，而TaskScheduler也是以TaskSetManager为单位进行任务的调度。</p>
 <p>前面提到在TaskScheduler初始化后会启动SchedulerBackend，它负责接收Executor的注册信息，并维护Executor的状态。SchedulerBackend会定时询问TaskScheduler是否需要执行任务。在接收到询问后，TaskScheduler按照指定的调度策略选择出TaskSetManager去执行。之后，TaskScheduler调用SchedulerBackend的方法，经过对应一系列处理之后得到可用资源，TaskSchduler基于这些资源来进行Task的运行。</p>
 <p>TaskScheduler默认支持两种调度策略，FIFO以及FAIR策略。默认为FIFO策略。</p>
 <p>在从调度队列中拿到TaskSetManager后，就需要按照一定的规则取出Task交给TaskScheduler，再由TaskScheduler交给SchedulerBackend，发到对应的Executor上执行。</p>
 <p>在任务调度的过程中，还会涉及到一个<strong>本地化调度</strong>的概念，即确定每个分区应该在哪个Executor上运行。本地化调度指的是Spark倾向于以最好的本地化级别来调度Task，但是可能不是每个Task都能做到最好的本地化级别。假如当前Task无法以最好的本地化级别运行，这可能是因为对应的Executor繁忙，Spark会先等待一段时间，如果还不行就降低本地化级别，重复操作。具体的本地化原则调度原理如下，可以通过调整<code>spark.locality</code>相关参数来调整：</p>
-<ol>
+<ol type="1">
 <li>默认等待时间为3秒</li>
 <li>若超时，则下降到下一个本地化级别重新分配</li>
 <li>数据发生传输的时候，Task首先从被本地的BlockManager获取数据，若本地没有数据，则调用getRemote方法从数据所在节点的BlockManager获取数据，返回至该节点</li>
 </ol>
 <p>本地化级别由高到低有下面的设置：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>级别</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>PROCESS_LOCAL</td>
 <td>进程本地化，Task和数据在同一个Executor中。性能最好</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NODE_LOCAL</td>
 <td>节点本地化，Task和数据在同一个节点中，但是Task和数据不在同一Executor中，数据需要在进程间进行传输</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>RACK_LOACL</td>
 <td>机架本地化，Task和数据在同一个机架的两个节点上，数据需要通过网络在节点之间传输</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NO_PREF</td>
 <td>对于Task来说，从哪里获取数据性能都相同，无偏好</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>ANY</td>
 <td>数据在任意地方，性能最差</td>
 </tr>
 </tbody>
 </table>
 <p>TaskScheduler还有失败重试和黑名单机制。简单来说，TaskScheduler会监控Task的执行状态，对于失败的Task，会记录它失败的次数，如果失败次数没有超过最大重试次数，就将其放回调度队列中，否则整个Application时报。在记录失败Task的时候，会记录它上次失败所在的Executor以及节点位置，下次再进行调度的时候，会使用黑名单机制，避免它被调度到上次失败的节点上，起到一定的容错作用。</p>
-<h1>Spark Shuffle</h1>
-<h2 id="概述-2">概述</h2>
-<p>Spark Shuffle发生在ShuffleMapStage中。该阶段的结束伴随着Shuffle文件的写磁盘。宽依赖上游RDD一个分区数据会进入下游RDD的多个分区，数据发生移动，称之为Shuffle。Shuffle一般分为两个阶段，一个是产生Shuffle数据的阶段，即上游RDD写数据到磁盘上；第二个是使用Shuffle数据的阶段，即后续的RDD不同分区获取对应的数据。Map阶段和Reduce阶段通过生产与消费Shuffle中间文件的方式，来完成集群范围内的数据交换。</p>
-<p><strong>Shuffle Write</strong>： Shuffle写入临时文件的过程叫做Shuffle Write，Spark目前支持三种Writer，分别为<code>SortShuffleWriter</code>、<code>BypassMergeSortShuffleWriter</code>和<code>UnsafeShuffleWriter</code></p>
-<p><strong>Shuffle Read</strong>： Shuffle拉取数据的过程叫做Shuffle Read。对于Map Task生成的中间文件，Reduce Task需要通过网络从不同节点拉取属于自己的数据内容。Shuffle Reader的实现被封装在<code>BlockStoreShuffleReader</code>中</p>
-<h2 id="Shuffle演变">Shuffle演变</h2>
-<p>Spark中的Shuffle是一个不断演变的过程。在Spark初始版本中，引入Hash Based Shuffle，之后基于Hash Shuffle引入文件合并机制，对Hash Based Shuffle进行改进。之后在Spark 1.1版本中引入Sort Based Shuffle，1.4引入Tungsten-Sort Based Shuffle。在Spark 2.0版本之后，仅支持Sort和Tungsten-Sort两种Shuffle方式，不再支持基于Hash的Shuffle方式</p>
-<h3 id="Hash-Based-Shuffle">Hash Based Shuffle</h3>
+<h1 id="spark-shuffle">Spark Shuffle</h1>
+<h2 id="概述-1">概述</h2>
+<p>Spark
+Shuffle发生在ShuffleMapStage中。该阶段的结束伴随着Shuffle文件的写磁盘。宽依赖上游RDD一个分区数据会进入下游RDD的多个分区，数据发生移动，称之为Shuffle。Shuffle一般分为两个阶段，一个是产生Shuffle数据的阶段，即上游RDD写数据到磁盘上；第二个是使用Shuffle数据的阶段，即后续的RDD不同分区获取对应的数据。Map阶段和Reduce阶段通过生产与消费Shuffle中间文件的方式，来完成集群范围内的数据交换。</p>
+<p><strong>Shuffle Write</strong>： Shuffle写入临时文件的过程叫做Shuffle
+Write，Spark目前支持三种Writer，分别为<code>SortShuffleWriter</code>、<code>BypassMergeSortShuffleWriter</code>和<code>UnsafeShuffleWriter</code></p>
+<p><strong>Shuffle Read</strong>： Shuffle拉取数据的过程叫做Shuffle
+Read。对于Map Task生成的中间文件，Reduce
+Task需要通过网络从不同节点拉取属于自己的数据内容。Shuffle
+Reader的实现被封装在<code>BlockStoreShuffleReader</code>中</p>
+<h2 id="shuffle演变">Shuffle演变</h2>
+<p>Spark中的Shuffle是一个不断演变的过程。在Spark初始版本中，引入Hash
+Based Shuffle，之后基于Hash Shuffle引入文件合并机制，对Hash Based
+Shuffle进行改进。之后在Spark 1.1版本中引入Sort Based
+Shuffle，1.4引入Tungsten-Sort Based Shuffle。在Spark
+2.0版本之后，仅支持Sort和Tungsten-Sort两种Shuffle方式，不再支持基于Hash的Shuffle方式</p>
+<h3 id="hash-based-shuffle">Hash Based Shuffle</h3>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/HashBasedShuffle.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="HashBasedShuffle">
-<p>在Hash Based Shuffle中，每个分区上，MapTask会根据Reducer的数量创建出对应数量的文件假定为<code>x</code>，假如一共有<code>y</code>个MapTask，则会创建出<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>×</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \times y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span></span>个中间文件。可以看出，在这种方式下，生成的小文件太多，对文件系统的压力很大，并且也不利于IO吞吐，会严重影响性能。</p>
-<p>针对小文件的问题，Spark基于Hash Shuffle引入了文件合并File Consolidation机制，得到优化后的Hash Shuffle。优化的Hash Based Shuffle主要思想就是通过共同输出文件以降低文件数，将在同一个CPU核心上运行的多个MapTask的输出合并到统一文件，这样一个Core输出的文件个数就是<code>x</code>个。在同一个Core上先后运行的两个MapTask的输出对应到同一个文件不同的segment，称为一个FileSegment。</p>
+<p>在Hash Based
+Shuffle中，每个分区上，MapTask会根据Reducer的数量创建出对应数量的文件假定为<code>x</code>，假如一共有<code>y</code>个MapTask，则会创建出<span
+class="math inline">\(x \times
+y\)</span>个中间文件。可以看出，在这种方式下，生成的小文件太多，对文件系统的压力很大，并且也不利于IO吞吐，会严重影响性能。</p>
+<p>针对小文件的问题，Spark基于Hash Shuffle引入了文件合并File
+Consolidation机制，得到优化后的Hash Shuffle。优化的Hash Based
+Shuffle主要思想就是通过共同输出文件以降低文件数，将在同一个CPU核心上运行的多个MapTask的输出合并到统一文件，这样一个Core输出的文件个数就是<code>x</code>个。在同一个Core上先后运行的两个MapTask的输出对应到同一个文件不同的segment，称为一个FileSegment。</p>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/%E6%94%B9%E8%BF%9B%E7%9A%84HashShuffle.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="改进的HashShuffle">
-<h3 id="Sort-Based-Shuffle">Sort Based Shuffle</h3>
-<p>虽然Hash Shuffle引入了文件合并机制，但是还是无法从根本上解决文件数过多的问题，于是引入Sort Based Shuffle。Sort Shuffle有三种运行机制，普通运行机制、bypass机制以及Tungsten 运行机制，分别对应三种不同的Shuffle。</p>
+<h3 id="sort-based-shuffle">Sort Based Shuffle</h3>
+<p>虽然Hash
+Shuffle引入了文件合并机制，但是还是无法从根本上解决文件数过多的问题，于是引入Sort
+Based Shuffle。Sort
+Shuffle有三种运行机制，普通运行机制、bypass机制以及Tungsten
+运行机制，分别对应三种不同的Shuffle。</p>
 <p>普通模式的工作原理类似于MapReduce中的Shuffle过程。在普通模式下，每个MapTask会先将数据写入内存结构中，当达到某个临界阈值之后，就会将内存中的数据溢写到磁盘上。在溢写之前会对数据进行排序，分批写入磁盘文件。在一个Task将数据写入内存的过程中，会出现多次的磁盘溢写操作，也就会产生多个临时文件，最终会将所有临时文件进行合并，得到一个最终的磁盘文件。最终得到的文件，按照parittionId从小到大排序。</p>
-<p>由于一个Task对应一个磁盘文件，为下游Stage不同Task（下游RDD不同分区）准备的数据都在这一个文件中，所以还会单独写一份索引文件，用来标识下游各个Task的数据在文件中的位置（start offset和end offset）</p>
+<p>由于一个Task对应一个磁盘文件，为下游Stage不同Task（下游RDD不同分区）准备的数据都在这一个文件中，所以还会单独写一份索引文件，用来标识下游各个Task的数据在文件中的位置（start
+offset和end offset）</p>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/SortBasedShuffle.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="SortBasedShuffle">
-<h3 id="bypass-Sort-Based-Shuffle">bypass Sort Based Shuffle</h3>
-<p>在Reducer端任务数比较少的情况下，Hash Based Shuffle的效率明显高于Sort Based Shuffle，因此基于Sort Shuffle，Spark还提供了一个回退方案，就是bypass运行机制。它的思想与Hash Based Shuffle类似，每个MapTask会为下游的每个ReduceTask生成一个对应的临时磁盘文件，唯一的区别是在最后会将这些文件进行合并，同时生成索引文件，标识对应的位置。</p>
-<p>相比于Hash Based Shuffle，bypass机制提供了更少的最终磁盘文件，Shuffle read的性能更好。</p>
-<p>相比于普通的Sort Based Shuffle，bypass机制为每个ReduceTask生成一个临时文件，只在最后进行一次合并，中间没有排序的操作，也就节省了这部分的性能开销。但是由于会为每个ReduceTask（分区）分配一个临时文件，如果ReduceTask过多的话，会对文件系统造成很大压力，因此bypass机制的触发条件如下：</p>
-<ol>
-<li>shuffle reduce task的数量小于等于<code>spark.shuffle.sort.bypassMergeThreshold</code>参数的值，默认为200</li>
+<h3 id="bypass-sort-based-shuffle">bypass Sort Based Shuffle</h3>
+<p>在Reducer端任务数比较少的情况下，Hash Based Shuffle的效率明显高于Sort
+Based Shuffle，因此基于Sort
+Shuffle，Spark还提供了一个回退方案，就是bypass运行机制。它的思想与Hash
+Based
+Shuffle类似，每个MapTask会为下游的每个ReduceTask生成一个对应的临时磁盘文件，唯一的区别是在最后会将这些文件进行合并，同时生成索引文件，标识对应的位置。</p>
+<p>相比于Hash Based Shuffle，bypass机制提供了更少的最终磁盘文件，Shuffle
+read的性能更好。</p>
+<p>相比于普通的Sort Based
+Shuffle，bypass机制为每个ReduceTask生成一个临时文件，只在最后进行一次合并，中间没有排序的操作，也就节省了这部分的性能开销。但是由于会为每个ReduceTask（分区）分配一个临时文件，如果ReduceTask过多的话，会对文件系统造成很大压力，因此bypass机制的触发条件如下：</p>
+<ol type="1">
+<li>shuffle reduce
+task的数量小于等于<code>spark.shuffle.sort.bypassMergeThreshold</code>参数的值，默认为200</li>
 <li>不能有map端的聚合（例如reduceByKey，因为它对于临时文件来说）</li>
 </ol>
 <img src="/2022/07/21/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-SparkCore-4-Spark%E6%A0%B8%E5%BF%83%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6/bypassSortShuffle.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="bypassSortShuffle">
-<h3 id="Tungsten-Sort-Based-Shuffle">Tungsten-Sort Based Shuffle</h3>
-<p>从Spark1.5开始，Spark启动钨丝计划，目的是优化内存和CPU的使用，从而进一步提高Spark的性能。由于需要基于JDK Unsafe API来使用堆外内存，因此Tungsten-Sort Based Shuffle又称为Unsafe Shuffle。</p>
-<p>该Shuffle的做法类似于Sort Based Shuffle，但是将数据记录使用二进制的方式进行存储，直接在序列化的二进制数据上Sort，而不是在Java对象上。这样一方面能够减少内存的使用和GC的开销；另一方面也可以避免Shuffle过程中频繁的序列化和反序列化。</p>
+<h3 id="tungsten-sort-based-shuffle">Tungsten-Sort Based Shuffle</h3>
+<p>从Spark1.5开始，Spark启动钨丝计划，目的是优化内存和CPU的使用，从而进一步提高Spark的性能。由于需要基于JDK
+Unsafe API来使用堆外内存，因此Tungsten-Sort Based Shuffle又称为Unsafe
+Shuffle。</p>
+<p>该Shuffle的做法类似于Sort Based
+Shuffle，但是将数据记录使用二进制的方式进行存储，直接在序列化的二进制数据上Sort，而不是在Java对象上。这样一方面能够减少内存的使用和GC的开销；另一方面也可以避免Shuffle过程中频繁的序列化和反序列化。</p>
 <p>不过使用Tungsten-Sort Based Shuffle有几个限制条件：</p>
-<ol>
+<ol type="1">
 <li>Shuffle map阶段不能有聚合操作</li>
-<li>分区数不能超过一定大小（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>24</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{24}-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">24</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span>，这是24bit的partitionID的最大表示范围）</li>
+<li>分区数不能超过一定大小（<span
+class="math inline">\(2^{24}-1\)</span>，这是24bit的partitionID的最大表示范围）</li>
 </ol>
-<p>而从Spark 1.6开始，把Sort Shuffle和Tungsten-Sort Based Shuffle全部统一到了Sort Shuffle中，如果检测到满足Tungsten-Sort Based Shuffle条件，会自动采用Tungsten-Sort Based Shuffle，否则采用Sort Shuffle。</p>
+<p>而从Spark 1.6开始，把Sort Shuffle和Tungsten-Sort Based
+Shuffle全部统一到了Sort Shuffle中，如果检测到满足Tungsten-Sort Based
+Shuffle条件，会自动采用Tungsten-Sort Based Shuffle，否则采用Sort
+Shuffle。</p>
 <blockquote>
 <p>Sort Based Shuffle的优缺点：</p>
 <p>优点：</p>
@@ -551,8 +590,8 @@
 <li>强制在Mapper端进行排序，即使数据本身可能并不需要排序，导致性能损耗</li>
 </ul>
 </blockquote>
-<h1>Spark 内存管理</h1>
-<h2 id="概述-3">概述</h2>
+<h1 id="spark-内存管理">Spark 内存管理</h1>
+<h2 id="概述-2">概述</h2>
 <p>作为一个JVM进程，Executor的内存管理建立在JVM的内存管理之上。Spark对堆内（On-Heap）空间进行更加详细的分配，同时，Spark引入了堆外（Off-Heap）内存，使Spark可以直接在系统内存中开辟空间，进一步优化了内存的使用。堆内内存受到JVM的统一管理，我们能够控制的程度有限；堆外内存直接向操作系统进行内存的申请和释放，我们能够控制的程度较高</p>
 <p>堆内内存大小的配置可以通过启动时配置<code>-executor-memory</code>，也可以在配置参数<code>spark.executor.memory</code>中指定。Executor中运行的Task共享堆内内存，其中又被划分成几个部分：</p>
 <ul>
@@ -561,7 +600,8 @@
 <li>其他内存：对象实例占用的空间等</li>
 </ul>
 <p>堆内内存的管理主要还是通过JVM来完成的，我们无法精确控制堆内内存的申请和释放，但是Spark通过对存储内存和执行内存各自独立的规划管理，决定是否要在存储内存中缓存新的RDD，以及是否为新的任务分配执行内存，一定程度上提高了内存的利用率。</p>
-<p>而为了进一步优化内存的使用，提高Shuffle时的效率，Spark引入了堆外内存，使得Spark可以直接在工作节点的系统内存中开辟空间，存储经过序列化的二进制数据。堆外内存直接受到操作系统管理，减少了不必要的内存开销以及频繁的GC扫描与回收，提升了性能。堆外内存可以被精确的申请和释放。（利用JDK Unsafe API）</p>
+<p>而为了进一步优化内存的使用，提高Shuffle时的效率，Spark引入了堆外内存，使得Spark可以直接在工作节点的系统内存中开辟空间，存储经过序列化的二进制数据。堆外内存直接受到操作系统管理，减少了不必要的内存开销以及频繁的GC扫描与回收，提升了性能。堆外内存可以被精确的申请和释放。（利用JDK
+Unsafe API）</p>
 <p>在默认情况下，堆外内存并不启用，可以通过配置<code>spark.memory.offHeap.enabled</code>参数启用，并由参数<code>spark.memory.offHeap.size</code>设定堆外空间的大小。</p>
 <h2 id="内存空间分配">内存空间分配</h2>
 <h3 id="静态内存管理">静态内存管理</h3>
@@ -591,25 +631,29 @@
 <ul>
 <li>存储内存：默认占统一内存的0.5，数值对应<code>spark.stroage.storageFraction</code></li>
 <li>执行内存：默认占统一内存的0.5</li>
-</ul>
-</li>
+</ul></li>
 <li>其他内存：默认占可用内存的40%</li>
-</ul>
-</li>
+</ul></li>
 <li>预留内存（Reserved Memory）：默认为300M</li>
 </ul>
 <p>该机制中最重要的优化在于动态占用机制：</p>
-<ol>
+<ol type="1">
 <li>设置了基本的存储内存和执行内存区域，由<code>spark.storage.storageFraction</code>参数确定</li>
 <li>双方的空间都不足时，则存储到磁盘；若己方空间不足而对方空间剩余时，则可以借用对方的空间</li>
 <li>执行内存的空间被占用后，可以要求对方归还借用的空间</li>
 <li>存储内存的空间被占用后，无法让对方归还借用的空间（主要是考虑到Shuffle过程中的较多因素，实现起来比较复杂）</li>
 </ol>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/importbigdata/articles/15635281.html">【Spark重点难点】你以为的Shuffle和真正的Shuffle - 王知无 - 博客园 (cnblogs.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wendelee/article/details/109818711">彻底搞懂spark的shuffle过程（shuffle write）_大跃ET的博客-CSDN博客</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/532455741/answer/2516828969">Spark的shuffle过程为什么要排序？ - 知乎 (zhihu.com)</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/importbigdata/articles/15635281.html">【Spark重点难点】你以为的Shuffle和真正的Shuffle
+- 王知无 - 博客园 (cnblogs.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/wendelee/article/details/109818711">彻底搞懂spark的shuffle过程（shuffle
+write）_大跃ET的博客-CSDN博客</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.zhihu.com/question/532455741/answer/2516828969">Spark的shuffle过程为什么要排序？
+- 知乎 (zhihu.com)</a></li>
 </ol>
 
                 

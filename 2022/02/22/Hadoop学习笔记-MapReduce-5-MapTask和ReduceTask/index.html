@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,45 +326,36 @@
             
               <div class="markdown-body">
                 
-                <h2 id="MapTask">MapTask</h2>
-<ol>
-<li>
-<p><strong>Read阶段</strong>：MapTask通过InputFormat获得RecordReader，从输入中解析出一个个键值对</p>
-</li>
-<li>
-<p><strong>Map阶段</strong>：将得到的键值对交给用户编写的map函数进行处理，并产生一系列新的键值对</p>
-</li>
-<li>
-<p><strong>Collect阶段</strong>：将生成的键值对进行分区（调用Partitioner），并写入一个环形缓冲区内</p>
-</li>
-<li>
-<p><strong>Spill阶段</strong>：溢写阶段。溢写阶段会生成临时文件，在数据写入本地磁盘之前，先对数据进行一次本地排序，并在必要的时候对数据进行合并、压缩等操作</p>
+                <h2 id="maptask">MapTask</h2>
+<ol type="1">
+<li><p><strong>Read阶段</strong>：MapTask通过InputFormat获得RecordReader，从输入中解析出一个个键值对</p></li>
+<li><p><strong>Map阶段</strong>：将得到的键值对交给用户编写的map函数进行处理，并产生一系列新的键值对</p></li>
+<li><p><strong>Collect阶段</strong>：将生成的键值对进行分区（调用Partitioner），并写入一个环形缓冲区内</p></li>
+<li><p><strong>Spill阶段</strong>：溢写阶段。溢写阶段会生成临时文件，在数据写入本地磁盘之前，先对数据进行一次本地排序，并在必要的时候对数据进行合并、压缩等操作</p>
 <ul>
 <li>使用快排：先按照分区编号进行排序，然后按照key进行排序。这样经过排序之后，数据以分区为单位聚集在一起，并且同一分区所有的数据对key有序</li>
 <li>按照分区编号由小到大将数据写入临时文件中（任务工作目录下的<code>output/spillN.out</code>）。如果用户设置了Combiner，则在写入文件之前还会对每个分区的数据进行一次合并操作</li>
 <li>分区数据的元信息也会写入内存中，每个分区的元信息中包括了分区在临时文件中的偏移量，压缩前数据大小和压缩后数据大小。如果当前内存的索引超过1MB，也会将内存索引写入文件<code>output/spillN.out.index</code>中</li>
-</ul>
-</li>
-<li>
-<p><strong>Merge阶段</strong>：当所有数据处理完成之后，MapTask对所有的临时文件进行一次合并，以确保最终只会生成一个数据文件。</p>
+</ul></li>
+<li><p><strong>Merge阶段</strong>：当所有数据处理完成之后，MapTask对所有的临时文件进行一次合并，以确保最终只会生成一个数据文件。</p>
 <ul>
 <li>所有的临时文件合并成一个大文件<code>output/file.out</code>，同时生成相应的索引文件<code>output/file.out.index</code></li>
 <li>在进行文件合并的过程中，MapTask以分区为单位进行合并，对于某个分区来说，会采用多轮递归合并的方式。（每轮合并<code>mapreduce.task.io.sort.factor</code>默认10个文件）</li>
 </ul>
 <blockquote>
 <p>让每个MapTask最终只生成一个数据文件，可以避免同时打开大量文件和同时读取大量小文件产生的随机读取带来的开销</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ol>
-<h2 id="ReduceTask">ReduceTask</h2>
-<ol>
+<h2 id="reducetask">ReduceTask</h2>
+<ol type="1">
 <li><strong>Copy阶段</strong>：ReduceTask从各个MapTask上远程拷贝对应数据。并且针对某一片数据，如果其大小超过一定阈值，则写在磁盘上，否则直接放在内存当中</li>
 <li><strong>Sort阶段</strong>：在远程拷贝数据的同时，ReduceTsk启动了两个后台线程对内存和磁盘上的文件进行合并，以防止内存使用过多或磁盘上的文件过多。</li>
 <li><strong>Reduce阶段</strong>：用户自定义的reduce函数进行结果计算</li>
 </ol>
 <p>对于ReduceTask的启动个数：</p>
-<ol>
-<li>ReduceTask = 0，表示没有Reduce阶段，输出文件个数和Map个数一致，这时候也没有Shuffle阶段</li>
+<ol type="1">
+<li>ReduceTask =
+0，表示没有Reduce阶段，输出文件个数和Map个数一致，这时候也没有Shuffle阶段</li>
 <li>ReduceTask默认值为1</li>
 <li>如果数据分布不均匀，在Reduce阶段很有可能产生数据倾斜</li>
 <li>ReduceTask数量并不是任意设置的，还要考虑业务逻辑需求</li>

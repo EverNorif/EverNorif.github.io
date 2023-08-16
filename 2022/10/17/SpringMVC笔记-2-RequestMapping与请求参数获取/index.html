@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,7 +326,8 @@
             
               <div class="markdown-body">
                 
-                <h1>@RequestMapping注解</h1>
+                <h1 id="requestmapping注解"><span class="citation"
+data-cites="RequestMapping注解">@RequestMapping注解</span></h1>
 <h2 id="介绍">介绍</h2>
 <p>在控制器方法中，我们会使用<code>@RequestMapping</code>注解来说明该方法匹配的请求路径，该注解的功能也就是将请求和处理请求的控制器方法进行关联，建立起映射关系。SpringMVC接收到指定的请求之后，就会在映射关系中找到对应的控制器方法来处理这个请求。</p>
 <p><code>@RequestMapping</code>注解可以用来标识一个类，也可以用来标识一个方法</p>
@@ -351,7 +352,7 @@
 </ul>
 </blockquote>
 <p>params属性表示通过请求的请求参数来匹配请求。这是一个字符串类型的数组，其中每一个字符串都是一个表达式。浏览器发送的请求，只有当它的参数满足params属性中全部表达式时，才能被响应。表达式主要有如下四种：</p>
-<ol>
+<ol type="1">
 <li><code>param</code>：请求必须携带param参数</li>
 <li><code>!param</code>：请求不能携带param参数</li>
 <li><code>param=value</code>：请求必须携带param参数，并且值必须为value</li>
@@ -377,10 +378,10 @@
 <blockquote>
 <p>注意这里我们获取的不是实际意义上的参数，只是解析了路径中的内容作为我们的参数，实际意义上的参数还是指的整个链接中<code>?</code>后面的内容，这也是我们后面要介绍的内容。</p>
 </blockquote>
-<h1>请求参数获取</h1>
+<h1 id="请求参数获取">请求参数获取</h1>
 <h2 id="参数获取">参数获取</h2>
 <p>下面我们介绍在SpringMVC中如何获取请求参数。主要指的是利用<code>&amp;</code>拼接的参数，即get请求携带参数的样式。如果是post请求，请求体中的参数如果满足形式与get请求参数相同，也能够被解析。</p>
-<h3 id="通过ServletAPI获取">通过ServletAPI获取</h3>
+<h3 id="通过servletapi获取">通过ServletAPI获取</h3>
 <p>在JavaWeb中我们可以通过ServletAPI来获取请求参数，这里自然也可以。要使用相关对象，我们可以在控制器方法中增加对应类型的形参，如下所示。此时，<code>HttpServletRequest</code>类型的参数就表示封装了当前请求请求报文的对象，然后我们就可以通过对应方法获取到对应参数：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testParam1&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testParam1</span><span class="hljs-params">(HttpServletRequest request)</span> &#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;id&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">username</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;username&quot;</span>);<br>    System.out.println(id);<br>    System.out.println(username);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h3 id="通过形参获取">通过形参获取</h3>
@@ -391,7 +392,7 @@
 <ul>
 <li><code>value</code>：指定为该形参赋值的请求参数名称</li>
 <li><code>required</code>：设置是否必须传输此请求参数，默认值为true</li>
-<li><code>defaultValue</code>：设置该参数的默认值，如果没有传递或者传递为<code>&quot;&quot;</code>时，则使用该默认参数值</li>
+<li><code>defaultValue</code>：设置该参数的默认值，如果没有传递或者传递为<code>""</code>时，则使用该默认参数值</li>
 </ul>
 <p>注意这里，只有当没有设置defaultValue并且required指定为true的时候，不携带对应参数才会报错400。</p>
 <blockquote>

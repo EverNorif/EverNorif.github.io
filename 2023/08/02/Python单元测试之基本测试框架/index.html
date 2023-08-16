@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,8 +325,11 @@
             
               <div class="markdown-body">
                 
-                <h1>unittest</h1>
-<p>unittest是Python标准库中提供的一个单元测试框架，官方文档为：<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/unittest.html">unittest-Unit testing framework</a>。使用unittest，我们主要需要学习测试用例的书写，以及一些相关的测试方法、断言方法等。</p>
+                <h1 id="unittest">unittest</h1>
+<p>unittest是Python标准库中提供的一个单元测试框架，官方文档为：<a
+target="_blank" rel="noopener" href="https://docs.python.org/3/library/unittest.html">unittest-Unit
+testing
+framework</a>。使用unittest，我们主要需要学习测试用例的书写，以及一些相关的测试方法、断言方法等。</p>
 <p>首先我们准备需要被测试的代码。首先在项目根目录下提供<code>src</code>和<code>tests</code>两个目录，在<code>src</code>目录中存放源代码，在<code>tests</code>中存放后续的测试代码。</p>
 <p>这里的源代码模拟了一个计算的功能，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># My Calculator</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">calculate</span>(<span class="hljs-params">num1: <span class="hljs-built_in">int</span>, op: <span class="hljs-built_in">str</span>, num2: <span class="hljs-built_in">int</span></span>):<br>    <span class="hljs-keyword">if</span> op == <span class="hljs-string">&#x27;+&#x27;</span>:<br>        <span class="hljs-keyword">return</span> num1 + num2<br>    <span class="hljs-keyword">if</span> op == <span class="hljs-string">&#x27;-&#x27;</span>:<br>        <span class="hljs-keyword">return</span> num1 - num2<br>    <span class="hljs-keyword">if</span> op == <span class="hljs-string">&#x27;*&#x27;</span>:<br>        <span class="hljs-keyword">return</span> num1 * num2<br>    <span class="hljs-keyword">if</span> op == <span class="hljs-string">&#x27;/&#x27;</span>:<br>        <span class="hljs-keyword">return</span> num1 / num2<br><br></code></pre></td></tr></table></figure>
@@ -340,21 +343,24 @@
 <p>注意上面除零异常的测试，需要使用with语句进行包裹。我们可以运行main函数，会发现一共有3个测试案例运行了。当然也可以使用命令行的方式，在项目根目录下运行下面的命令，unittest就会检测项目中所有的测试案例并进行运行。注意测试案例的规范，即文件名和测试方法名均以<code>test_</code>开头。（一个较为规范的格式是测试类也以<code>Test</code>开头）</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">python -m unittest<br></code></pre></td></tr></table></figure>
 <p>可以看到，利用unittest完成单元测试还是非常简单的，只需要按照如下的步骤：</p>
-<ol>
+<ol type="1">
 <li>根据规范建立测试案例，包括测试源代码文件、测试类以及测试方法</li>
 <li>在测试方法中进行逻辑测试，以及相应的assert断言</li>
 <li>利用命令行或者main函数的方法进行测试</li>
 </ol>
 <p>当然除了断言方法外，unittest中还提供了一些较为常用的函数。例如下面的方法可以帮助我们在测试的前后都进行一些相关逻辑的处理：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">setUp</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-literal">None</span>:  <span class="hljs-comment"># 每条用例执行之前都会执行</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test case &#123;&#125; start ...&quot;</span>.<span class="hljs-built_in">format</span>(self))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">tearDown</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-literal">None</span>:  <span class="hljs-comment"># 每条用例执行之后都会执行</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test case &#123;&#125; end ...&quot;</span>.<span class="hljs-built_in">format</span>(self))<br><br><span class="hljs-meta">@classmethod  </span><span class="hljs-comment"># 注意该装饰器必须使用</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">setUpClass</span>(<span class="hljs-params">cls</span>) -&gt; <span class="hljs-literal">None</span>:  <span class="hljs-comment"># 整个测试用例类执行之前会执行一次</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test class &#123;&#125; start ...&quot;</span>.<span class="hljs-built_in">format</span>(cls))<br><br><span class="hljs-meta">@classmethod</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">tearDownClass</span>(<span class="hljs-params">cls</span>) -&gt; <span class="hljs-literal">None</span>:  <span class="hljs-comment"># 整个测试类执行之后会执行一次</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test class &#123;&#125; end ...&quot;</span>.<span class="hljs-built_in">format</span>(cls))<br></code></pre></td></tr></table></figure>
-<h1>pytest</h1>
+<h1 id="pytest">pytest</h1>
 <h2 id="quick-start">quick start</h2>
-<p>pytest是一个第三方Python单元测试框架，官方文档为：<a target="_blank" rel="noopener" href="https://docs.pytest.org/en/7.4.x/">pytest: helps you write better programs</a>。相比于unittest，pytest更加灵活简便，支持参数化，具有丰富的第三方插件，支持自定义扩展等。</p>
+<p>pytest是一个第三方Python单元测试框架，官方文档为：<a
+target="_blank" rel="noopener" href="https://docs.pytest.org/en/7.4.x/">pytest: helps you write better
+programs</a>。相比于unittest，pytest更加灵活简便，支持参数化，具有丰富的第三方插件，支持自定义扩展等。</p>
 <p>在使用pytest之前需要进行安装，直接使用pip安装即可。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">pip install -U pytest<br></code></pre></td></tr></table></figure>
 <p>之后我们可以进行测试代码的书写，被测试的代码仍然是上面的<code>MyCalculator</code>。pytest的测试书写更为灵活，可以是函数级别的组织，也可以是类级别的组织。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> src.MyCalculator <span class="hljs-keyword">import</span> calculate<br><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_sum_method</span>():<br>    <span class="hljs-keyword">assert</span> <span class="hljs-number">2</span> == calculate(<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;+&#x27;</span>, <span class="hljs-number">1</span>)<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TestCalculate</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_multipy_method</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">assert</span> <span class="hljs-number">8</span> == calculate(<span class="hljs-number">4</span>, <span class="hljs-string">&#x27;*&#x27;</span>, <span class="hljs-number">2</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_zero_division</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># 可以通过match来assert指定的错误信息格式</span><br>        <span class="hljs-keyword">with</span> pytest.raises(ZeroDivisionError, <span class="hljs-keyword">match</span>=<span class="hljs-string">&#x27;division by zero&#x27;</span>):<br>            calculate(<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-number">0</span>)<br>           <br></code></pre></td></tr></table></figure>
-<p>利用pytest进行测试案例的书写同样需要遵循一定的<a target="_blank" rel="noopener" href="https://docs.pytest.org/en/7.4.x/explanation/goodpractices.html#test-discovery">规则</a>：</p>
+<p>利用pytest进行测试案例的书写同样需要遵循一定的<a
+target="_blank" rel="noopener" href="https://docs.pytest.org/en/7.4.x/explanation/goodpractices.html#test-discovery">规则</a>：</p>
 <ul>
 <li>测试文件以<code>test_</code>开头，或者<code>_test</code>结尾；</li>
 <li>测试类以<code>Test</code>开头，并且不能带有init方法；</li>
@@ -381,7 +387,7 @@
 <li><code>pytest-cov</code>：集成了coverage来计算代码覆盖率，直接通过<code>pytest --cov</code>来测试代码覆盖率</li>
 <li><code>pytest-djano</code>：提供Django的测试框架</li>
 </ul>
-<h1>coverage</h1>
+<h1 id="coverage">coverage</h1>
 <p>通过unittest或者pytest等单元测试框架，我们可以书写各式各样的单元测试，但是如何判断我们的单元测试是否足够呢？一个非常基础的评价指标是行覆盖率，它表达的是单元测试执行到的代码行数占总行数的比例。</p>
 <p>我们可以通过coverage这个package来帮助计算单元测试的覆盖率。coverage属于第三方库，需要额外安装。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install coverage<br></code></pre></td></tr></table></figure>
@@ -391,13 +397,17 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">coverage report	<br>coverage report -m <span class="hljs-comment"># 查看miss的是哪些行，给出line number</span><br></code></pre></td></tr></table></figure>
 <p>当然表格形式的结果看起来还是比较费劲的，coverage同样支持以html形式展示覆盖率结果。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">coverage html<br></code></pre></td></tr></table></figure>
-<p>上面的命令会在当前目录下生成一个名为<code>htmlcov	</code>的文件夹，之后我们可以通过下面的命令在本机运行一个http server，之后通过浏览器访问<code>http://0.0.0.0:8000/</code>，就可以以更加直观地方式查看覆盖率结果。</p>
+<p>上面的命令会在当前目录下生成一个名为<code>htmlcov</code>的文件夹，之后我们可以通过下面的命令在本机运行一个http
+server，之后通过浏览器访问<code>http://0.0.0.0:8000/</code>，就可以以更加直观地方式查看覆盖率结果。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">python -m http.server --directory htmlcov/<br></code></pre></td></tr></table></figure>
-<p>有的时候，我们的一些代码确实可能无法通过测试代码覆盖到，那么就可以通过增加注释来让coverage在计算覆盖率的时候不统计这些代码。这个特殊的注释是<code> # pragma: no cover</code>。如果该注释放在函数定义的那一行，则整个函数在统计覆盖率的时候都会被忽略；如果该注释放在函数中实际逻辑的某一行，则这一行在统计覆盖率的时候会被忽略。</p>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://realpython.com/pytest-python-testing/">Effective Python Testing With Pytest|Real Python</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gmjianchi/p/12930691.html">pytest测试用例编写----预期的异常测试Expecting Exceptions</a></li>
+<p>有的时候，我们的一些代码确实可能无法通过测试代码覆盖到，那么就可以通过增加注释来让coverage在计算覆盖率的时候不统计这些代码。这个特殊的注释是<code># pragma: no cover</code>。如果该注释放在函数定义的那一行，则整个函数在统计覆盖率的时候都会被忽略；如果该注释放在函数中实际逻辑的某一行，则这一行在统计覆盖率的时候会被忽略。</p>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://realpython.com/pytest-python-testing/">Effective
+Python Testing With Pytest|Real Python</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/gmjianchi/p/12930691.html">pytest测试用例编写----预期的异常测试Expecting
+Exceptions</a></li>
 </ol>
 
                 

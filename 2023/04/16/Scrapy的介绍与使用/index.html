@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -327,21 +327,22 @@
             
               <div class="markdown-body">
                 
-                <h1>Scrapy</h1>
+                <h1 id="scrapy">Scrapy</h1>
 <h2 id="框架概述">框架概述</h2>
 <p>Scrapy是一个非常流行的基于Python的网络爬虫框架，可以用来抓取Web站点并从页面中提取结构化的数据。利用Scrapy框架，我们仅需要关注核心的网页解析框架，而不用关注其他的一些常规流程，例如发送请求，下载请求，失败重试等等，极大地简化了爬虫程序的开发。下面是Scrapy的核心组件以及它的工作流程示意图：</p>
 <img src="/2023/04/16/Scrapy%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/Scrapy%E6%9E%B6%E6%9E%84.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Scrapy架构">
 <p>在Scrapy中，有如下的核心组件：</p>
-<ol>
+<ol type="1">
 <li>Scrapy引擎（Engine）：用来控制整个系统的数据处理流程</li>
 <li>调度器（Scheduler）：调度器从引擎接受请求并排序列入队列，同时接受引擎的调度请求</li>
 <li>下载器（Downloader）：负责抓取网页并将网页内容返回给爬虫程序</li>
 <li>爬虫程序（Spiders）：爬虫程序是用户自定义的用来解析网页并抓取特定URL的类，每个蜘蛛都能够处理一个域名或者一组域名。简单来说，就是用来定义特定网站的抓取和解析规则的模块</li>
-<li>数据管道（Item Pipeline）：主要负责处理爬虫程序从网页中抽取的数据条目，负责数据的清理，验证和存储。</li>
+<li>数据管道（Item
+Pipeline）：主要负责处理爬虫程序从网页中抽取的数据条目，负责数据的清理，验证和存储。</li>
 <li>中间件（Middleware）：提供自定义的代码来扩展Scrapy的功能，包括下载器中间件以及爬虫中间件</li>
 </ol>
 <p>下面是Scrapy的工作流程：</p>
-<ol>
+<ol type="1">
 <li>引擎询问爬虫程序需要处理哪个或者哪些网站，爬虫程序将第一个需要处理的URL返回</li>
 <li>引擎将需要处理的URL传送给调度器，调度器负责URL的调度</li>
 <li>引擎从调度器中获取接下来需要爬取的URL，并将其发送给下载器</li>
@@ -351,7 +352,7 @@
 <li>引擎将爬取到的数据条目送入数据管道，并将新的URL传送给调度器</li>
 <li>重复以上过程，直到调度器中没有需要请求的URL</li>
 </ol>
-<h2 id="Getting-Started">Getting Started</h2>
+<h2 id="getting-started">Getting Started</h2>
 <p>我们可以通过下面的案例，利用Scrapy快速创建一个爬虫项目。首先需要安装Scrapy，通过pip或者conda进行安装都可以。安装完成之后，可以执行下面的<code>scrapy startproject</code>命令来创建一个模板项目，其中会提供Scrapy项目所需要的基本文件。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install scrapy<br><br>scrapy startproject xxx<br></code></pre></td></tr></table></figure>
 <p>这里我们选择创建一个项目，名称为<code>scrapytest</code>。进入创建好的目录中，我们可以看到如下的项目结构：</p>
@@ -359,7 +360,7 @@
 <p>可以看到这里的文件或者目录名称，与Scrapy中的相关组件可以相互对应。其中我们首先需要关注的就是爬虫程序，这里是存放在<code>spiders</code>目录下。根据创建项目时命令行中打印的提示，我们可以通过<code>scrapy genspider example example.com</code>来创建示例爬虫程序。我们这里拿一个经典新手例子，豆瓣电影Top250。创建douban爬虫程序，会生成如下的基本内容：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> scrapy<br><span class="hljs-keyword">from</span> scrapy <span class="hljs-keyword">import</span> Selector, Request<br><span class="hljs-keyword">from</span> scrapy.http <span class="hljs-keyword">import</span> HtmlResponse<br><span class="hljs-keyword">from</span> scrapytest.items <span class="hljs-keyword">import</span> MovieItem<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">DouBanSpider</span>(scrapy.Spider):<br>    name = <span class="hljs-string">&quot;douban&quot;</span><br>    allowed_domains = [<span class="hljs-string">&quot;movie.douban.com&quot;</span>]<br>    start_urls = [<span class="hljs-string">&quot;https://movie.douban.com/top250&quot;</span>]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">self, response: HtmlResponse</span>):<br>        <span class="hljs-keyword">pass</span><br></code></pre></td></tr></table></figure>
 <p>这里就是我们需要核心关注的地方。其中，name是这个爬虫的识别名称，必须是唯一的，在不同的爬虫必须定义不同的名字。</p>
-<p><code>allow_domains </code>是搜索的域名范围，也就是爬虫的约束区域，规定爬虫只爬取这个域名下的网页，不存在的URL会被忽略。</p>
+<p><code>allow_domains</code>是搜索的域名范围，也就是爬虫的约束区域，规定爬虫只爬取这个域名下的网页，不存在的URL会被忽略。</p>
 <p><code>start_urls</code>是爬取的URL元祖/列表。爬虫从这里开始抓取数据，所以，第一次下载的数据将会从这些urls开始。其他子URL将会从这些起始URL中继承性生成。</p>
 <p>parse方法接收响应，然后对响应进行解析。在这里我们主要需要将网页中的内容进行解析，解析成一个<code>Item</code>类的形式，以便持久化到后续的文件当中。同时我们还可以解析网页中的相关url，将其传送给核心引擎，进行下一轮的爬取。在这里，我们首先可以定义一个相关的Item类，来进行数据的承接。这个类需要继承<code>Scrapy.Item</code>，且需要定义在<code>item.py</code>文件当中。这里我们简单的利用三个属性来进行承接。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MovieItem</span>(scrapy.Item):<br>    title = scrapy.Field()<br>    rank = scrapy.Field()<br>    subject = scrapy.Field()<br></code></pre></td></tr></table></figure>
@@ -373,11 +374,13 @@
 <p>完成之后，我们就可以启动项目了。在项目目录下执行下面的命令，就可以启动爬虫项目。这个命令表示我们需要启动<code>douban</code>爬虫，也就是对应爬虫程序中的<code>douban.py</code>。<code>-o</code>则表示将爬取的内容持久化到对应的路径中。项目执行会打印一些日志，可以使用<code>--nolog</code>来禁止日志打印。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">scrapy crawl douban -o douban.csv<br></code></pre></td></tr></table></figure>
 <p>Scrapy保存信息的基本格式有四种，分别是<code>json</code>，<code>jsonl</code>，<code>csv</code>和<code>xml</code>。</p>
-<h2 id="Pipeline">Pipeline</h2>
+<h2 id="pipeline">Pipeline</h2>
 <p>利用数据管道，我们可以将数据存储到更多形式的文件中，例如excel，mysql中，同时可以进行更多的数据处理。数据管道的相关代码都存放在<code>pipelines.py</code>中。初始生成的数据管道中会有一个默认的<code>process_item</code>方法，它不做任何处理直接返回Item对象。当然我们也可以自定义自己的数据管道类，进行定制化的处理。</p>
-<p>除了<code>process_item(self, item, spider)</code>方法，在数据管道中还可以定义其他的方法，包括爬虫开始时执行，爬虫结束时执行的方法等，详情可以在官方文档中进行查询：<a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/item-pipeline.html">Item Pipeline — Scrapy 2.8.0 documentation</a>。</p>
+<p>除了<code>process_item(self, item, spider)</code>方法，在数据管道中还可以定义其他的方法，包括爬虫开始时执行，爬虫结束时执行的方法等，详情可以在官方文档中进行查询：<a
+target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/topics/item-pipeline.html">Item
+Pipeline — Scrapy 2.8.0 documentation</a>。</p>
 <p>数据管道的使用配置同样需要在<code>settings.py</code>中进行，对应常量为<code>ITEM_PIPELINES</code>，这是一个字典对象，Key为数据管道的全类名，Value是一个数值，表示管道执行的优先级，数字越小优先级越高，越先执行。</p>
-<h2 id="Middleware">Middleware</h2>
+<h2 id="middleware">Middleware</h2>
 <p>中间件分为下载中间件和爬虫中间件。中间件实质上就是一个拦截器，例如下载中间件就可以在发送Request以及接收Response之前对相应的对象进行一次处理，然后再放行。比如再发送Request之前，给请求加上相关的proxy，cookie信息等。</p>
 <p>中间件的内容存放在<code>middlewares.py</code>中，每个中间件类同样有许多方法，可以达到不同的效果。中间件的配置在<code>settings.py</code>中对应<code>xxx_MIDDLEWARES</code>常量，这同样是一个字典常量，与上面的数据管道配置有相同的约定，Key为全类名，Value为数字。数字越小优先级越高。</p>
 <h2 id="不同页面的爬取">不同页面的爬取</h2>
@@ -420,14 +423,22 @@
 </ul>
 <p>在使用Scrapy的时候，我们也可以在Scrapy中输出日志信息。在每个Spider实例中，都有一个内置的logger，我们可以通过<code>self.logger</code>来获取到日志记录器，然后调用相关方法进行日志输出。使用这个日志记录器输出的日志，将会与Scrapy中的日志放在一起统一管理。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">self.logger.info(<span class="hljs-string">&quot;get url:%s&quot;</span>, response.url)<br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/">Scrapy 2.8 documentation — Scrapy 2.8.0 documentation</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/scrapy-detail.html">Scrapy 入门教程 | 菜鸟教程 (runoob.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/x2584179909/article/details/102502226">优雅的操作scrapy爬虫的开始和结束</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45617055/article/details/115149001">爬虫框架Scrapy（8）使用 LinkExtractor 提取链接</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pythonClub/p/9853078.html">scrapy 日志处理 - CrossPython - 博客园 (cnblogs.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.yiibai.com/scrapy/scrapy_logging.html">Scrapy日志 - Scrapy教程 (yiibai.com)</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/">Scrapy 2.8
+documentation — Scrapy 2.8.0 documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/scrapy-detail.html">Scrapy
+入门教程 | 菜鸟教程 (runoob.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/x2584179909/article/details/102502226">优雅的操作scrapy爬虫的开始和结束</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45617055/article/details/115149001">爬虫框架Scrapy（8）使用
+LinkExtractor 提取链接</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pythonClub/p/9853078.html">scrapy
+日志处理 - CrossPython - 博客园 (cnblogs.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.yiibai.com/scrapy/scrapy_logging.html">Scrapy日志 -
+Scrapy教程 (yiibai.com)</a></li>
 </ol>
 
                 

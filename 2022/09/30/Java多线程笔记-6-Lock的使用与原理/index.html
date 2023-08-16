@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,7 +326,7 @@
             
               <div class="markdown-body">
                 
-                <h1>Lock</h1>
+                <h1 id="lock">Lock</h1>
 <h2 id="概述">概述</h2>
 <p>在前面的学习中，我们知道<code>synchronized</code>关键字能够帮助我们完成加锁操作，保证代码的原子性、有序性和可见性。而在Java中，除了这个关键字以外还提供了相关的锁类，来帮助我们完成相应的功能。这些能够帮助我们完成锁功能的类，都有一个公共接口<code>Lock</code>，包名为<code>java.util.concurrent.locks</code>。接口中有如下抽象方法：</p>
 <ul>
@@ -361,11 +361,13 @@
 <p>Condition 类 API：</p>
 <ul>
 <li><code>void await()</code>：当前线程从运行状态进入等待状态，释放锁</li>
-<li><code>void signal()</code>：唤醒一个等待在 Condition 上的线程，但是必须获得与该 Condition 相关的锁</li>
+<li><code>void signal()</code>：唤醒一个等待在 Condition
+上的线程，但是必须获得与该 Condition 相关的锁</li>
 </ul>
 <p>使用流程：</p>
-<ol>
-<li>使用 await / signal 前都需要获得锁，只有获得锁的线程才能调用这些方法</li>
+<ol type="1">
+<li>使用 await / signal
+前都需要获得锁，只有获得锁的线程才能调用这些方法</li>
 <li>线程执行 await之后，会释放锁进入ConditionObject等待</li>
 <li>线程被 signal唤醒之后，重新竞争Lock锁</li>
 <li>线程在条件对象队列中被打断会抛出中断异常</li>
@@ -373,8 +375,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Lock</span> <span class="hljs-variable">myLock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantLock</span>();<br><span class="hljs-type">Condition</span> <span class="hljs-variable">condition1</span> <span class="hljs-operator">=</span> myLock.newCondition();<br><span class="hljs-type">Condition</span> <span class="hljs-variable">condition2</span> <span class="hljs-operator">=</span> myLock.newCondition();<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        myLock.lock();<br>        log.debug(<span class="hljs-string">&quot;获取锁，在condition1上等待&quot;</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            condition1.await();<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        log.debug(<span class="hljs-string">&quot;被唤醒&quot;</span>);<br>    &#125; <span class="hljs-keyword">finally</span> &#123;<br>        myLock.unlock();<br>        log.debug(<span class="hljs-string">&quot;释放锁&quot;</span>);<br>    &#125;<br>&#125;, <span class="hljs-string">&quot;thread1&quot;</span>).start();<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        myLock.lock();<br>        log.debug(<span class="hljs-string">&quot;获取锁，在condition2上等待&quot;</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            condition2.await();<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        log.debug(<span class="hljs-string">&quot;被唤醒&quot;</span>);<br>    &#125; <span class="hljs-keyword">finally</span> &#123;<br>        myLock.unlock();<br>        log.debug(<span class="hljs-string">&quot;释放锁&quot;</span>);<br>    &#125;<br>&#125;, <span class="hljs-string">&quot;thread2&quot;</span>).start();<br><br>Thread.sleep(<span class="hljs-number">1000</span>);<br>myLock.lock();<br>log.debug(<span class="hljs-string">&quot;唤醒condition1&quot;</span>);<br>condition1.signal();<br>myLock.unlock();<br>Thread.sleep(<span class="hljs-number">1000</span>);<br>myLock.lock();<br>log.debug(<span class="hljs-string">&quot;唤醒condition2&quot;</span>);<br>condition2.signal();<br>myLock.unlock();<br></code></pre></td></tr></table></figure>
 <p>输出如下：通过多个条件变量我们可以实现更加细粒度的唤醒。</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">42.203</span> <span class="hljs-selector-attr">[thread1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 获取锁，在condition1上等待<br><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">42.219</span> <span class="hljs-selector-attr">[thread2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 获取锁，在condition2上等待<br><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">43.218</span> <span class="hljs-selector-attr">[main]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 唤醒condition1<br><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">43.218</span> <span class="hljs-selector-attr">[thread1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 被唤醒<br><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">43.218</span> <span class="hljs-selector-attr">[thread1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 释放锁<br><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">44.219</span> <span class="hljs-selector-attr">[main]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 唤醒condition2<br><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">44.219</span> <span class="hljs-selector-attr">[thread2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 被唤醒<br><span class="hljs-number">15</span>:<span class="hljs-number">34</span>:<span class="hljs-number">44.219</span> <span class="hljs-selector-attr">[thread2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - 释放锁<br></code></pre></td></tr></table></figure>
-<h1>AQS</h1>
-<h2 id="概述-2">概述</h2>
+<h1 id="aqs">AQS</h1>
+<h2 id="概述-1">概述</h2>
 <p>我们前面也提到了Lock本身只是一个接口，规定了阻塞式锁需要提供的相关操作，但是一个可用的锁还是需要落到具体实现上。</p>
 <p>AQS，全称<code>AbstractQueuedSynchronizer</code>，抽象队列同步器，是阻塞式锁和相关同步器工具的框架，它作为抽象父类，向我们提供了一些模板方法。通过AQS我们可以较为方便地实现Lock接口中的抽象方法，Lock接口的实现类基本都是通过聚合了一个同步器的子类来完成线程访问控制的</p>
 <blockquote>
@@ -392,8 +394,7 @@
 <li>对这个状态的操作使用AQS中提供的三个方法（getState、setState、compareAndSetState）</li>
 <li>独占模式：只有一个线程能够访问资源</li>
 <li>共享模式：允许多个线程访问资源</li>
-</ul>
-</li>
+</ul></li>
 <li>提供了基于FIFO的等待队列，类似于Monitor的EntryList</li>
 <li>使用条件变量来实现等待唤醒机制，支持多个条件变量，类似于Monitor的WaitSet</li>
 </ul>
@@ -415,30 +416,31 @@
 <p>AQS使用了模板方法模式，继承AQS的自定义同步器可以重写的方法如下，默认情况下下面的方法都是直接抛出<code>UnsupportedOperationException</code>。</p>
 <p>在实现方法的过程中，需要注意这些方法的实现必须是内部线程安全的</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法名称</th>
 <th>语义描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>protected boolean tryAcquire(int arg)</td>
 <td>独占式获取锁<br />该方法的实现需要查询当前状态并判断同步状态是否符合预期，然后再进行CAS设置同步状态</td>
 </tr>
-<tr>
+<tr class="even">
 <td>protected boolean tryRelease(int arg)</td>
 <td>独占式释放锁。等待获取同步锁的线程将有机会获取同步状态</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>protected int tryAcquireShared(int arg)</td>
 <td>共享式获取锁<br />返回大于等于0的值则表示获取成功，反之则表示获取失败</td>
 </tr>
-<tr>
+<tr class="even">
 <td>protected boolean tryReleaseShared(int arg)</td>
 <td>共享式释放锁</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>protected boolean isHeldExclusively()</td>
 <td>判断当前的锁是否被占用。一般用来判断是否被当前线程所独占</td>
 </tr>
@@ -447,52 +449,55 @@
 <h2 id="提供的模板方法">提供的模板方法</h2>
 <p>实现自定义同步组件的时候，会调用同步器提供的模板方法，常用的模板方法如下：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法名称</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>void acquire(int arg)</td>
-<td>独占式获取锁。<br />如果当前线程获取同步状态成功，则由该方法返回，否则将会进入同步队列等待。该方法会调用重写的tryAcquire(int arg)方法</td>
+<td>独占式获取锁。<br />如果当前线程获取同步状态成功，则由该方法返回，否则将会进入同步队列等待。该方法会调用重写的tryAcquire(int
+arg)方法</td>
 </tr>
-<tr>
+<tr class="even">
 <td>void acquireInterruptibly(int arg)</td>
-<td>与acquire(int arg)相同，但是该方法响应中断，当前线程未获取到同步状态而进入同步队列中，如果当前线程被中断，则该方法会抛出InterruptedException返回</td>
+<td>与acquire(int
+arg)相同，但是该方法响应中断，当前线程未获取到同步状态而进入同步队列中，如果当前线程被中断，则该方法会抛出InterruptedException返回</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>boolean tryAcquireNanos(int arg, long nanos)</td>
 <td>在acquireInterruptibly(int arg)基础上增加了超时限制</td>
 </tr>
-<tr>
+<tr class="even">
 <td>void acquireShared(int arg)</td>
 <td>共享式获取锁。与独占式获取的主要区别是在同一时刻可以有多个线程获取到锁</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>void acquireSharedInterruptibly(int arg)</td>
 <td>与acquireShared(int arg)相同，该方法响应中断</td>
 </tr>
-<tr>
+<tr class="even">
 <td>boolean tryAcquireSharedNanos(int arg, long nanos)</td>
 <td>在acquireSharedInterruptibly(int arg)的基础上增加了超时限制</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>boolean release(int arg)</td>
 <td>独占式释放锁。释放锁之后会将同步队列中第一个节点包含的线程唤醒</td>
 </tr>
-<tr>
+<tr class="even">
 <td>boolean releaseShared(int arg)</td>
 <td>共享式释放锁</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Collection&lt;Thread&gt; getQueuedThreads()</td>
 <td>获取等待在同步队列上的线程集合</td>
 </tr>
 </tbody>
 </table>
-<h2 id="示例：自定义不可重入锁实现">示例：自定义不可重入锁实现</h2>
+<h2 id="示例自定义不可重入锁实现">示例：自定义不可重入锁实现</h2>
 <p>利用AQS，我们可以尝试实现一个自定义的不可重入锁</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 自定义锁(不可重入锁)</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyLock</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Lock</span> &#123;<br>    <span class="hljs-comment">// 自定义同步器(继承AQS)</span><br>    <span class="hljs-keyword">class</span> <span class="hljs-title class_">MySync</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractQueuedSynchronizer</span> &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">protected</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">tryAcquire</span><span class="hljs-params">(<span class="hljs-type">int</span> arg)</span> &#123;<br>            <span class="hljs-comment">// 利用state来表示锁状态，如果将state从0修改为1，表示获取锁成功</span><br>            <span class="hljs-comment">// state为0表示没有线程持有锁，为1表示有线程得到锁</span><br>            <span class="hljs-keyword">if</span> (compareAndSetState(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>)) &#123;<br>                <span class="hljs-comment">// 将Owner设置为当前线程</span><br>                setExclusiveOwnerThread(Thread.currentThread());<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">protected</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">tryRelease</span><span class="hljs-params">(<span class="hljs-type">int</span> arg)</span> &#123;<br>            <span class="hljs-keyword">if</span> (getState() == <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalMonitorStateException</span>();<br><br>            setExclusiveOwnerThread(<span class="hljs-literal">null</span>);<br>            setState(<span class="hljs-number">0</span>); <span class="hljs-comment">// volatile 修饰的变量放在后面，防止指令重排</span><br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">protected</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isHeldExclusively</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> getState() == <span class="hljs-number">1</span>;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> Condition <span class="hljs-title function_">newCondition</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConditionObject</span>();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">MySync</span> <span class="hljs-variable">sync</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MySync</span>();<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">lock</span><span class="hljs-params">()</span> &#123;<br>        sync.acquire(<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">lockInterruptibly</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>        sync.acquireInterruptibly(<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">tryLock</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> sync.tryAcquire(<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">tryLock</span><span class="hljs-params">(<span class="hljs-type">long</span> time, TimeUnit unit)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>        <span class="hljs-keyword">return</span> sync.tryAcquireNanos(<span class="hljs-number">1</span>, unit.toNanos(time));<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">unlock</span><span class="hljs-params">()</span> &#123;<br>        sync.release(<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Condition <span class="hljs-title function_">newCondition</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> sync.newCondition();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 

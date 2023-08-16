@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,10 +326,11 @@
             
               <div class="markdown-body">
                 
-                <h1>简介</h1>
-<p>在单元测试中，Mock是一个很重要的行为，它可以帮助我们排除其他服务的依赖，将需要进行的测试隔离开来。<code>mock</code>是Python中提供的测试库，在Python2中，<code>mock</code>是独立的库，而在Python3中，<code>mock</code>被加入了标准单元测试库<code>unittest</code>当中，官方文档为<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock|docs</a>。</p>
+                <h1 id="简介">简介</h1>
+<p>在单元测试中，Mock是一个很重要的行为，它可以帮助我们排除其他服务的依赖，将需要进行的测试隔离开来。<code>mock</code>是Python中提供的测试库，在Python2中，<code>mock</code>是独立的库，而在Python3中，<code>mock</code>被加入了标准单元测试库<code>unittest</code>当中，官方文档为<a
+target="_blank" rel="noopener" href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock|docs</a>。</p>
 <p>在<code>mock</code>库中，有两个非常重要的概念，分别是<code>Mock</code>以及<code>patch</code>。<code>Mock</code>指的是<code>mock</code>库中提供的<code>Mock</code>类，它产生的对象可以模拟各种行为，简单来说就是根据程序员指定输入和输出进行工作。而<code>patch</code>则用于在特定作用范围内执行模拟，将指定的实际对象变为<code>Mock</code>对象，此时实际对象就会按照我们预先指定的方式进行工作。<code>Mock</code>和<code>patch</code>结合工作，联系紧密。</p>
-<h1>Mock</h1>
+<h1 id="mock">Mock</h1>
 <h2 id="quick-start">quick start</h2>
 <p>Mock是unittest.mock库中提供的一个类，要使用它首先得进行对象的创建。</p>
 <p>Mock类的构造方法签名如下：</p>
@@ -357,49 +358,49 @@
 <h2 id="相关方法">相关方法</h2>
 <p>Mock类还有其他一些常用的方法，主要是一些assert方法。因为Mock对象除了可以用来模拟对象、属性和方法等，它还会记录自身被使用的过程。利用相关assert方法可以验证代码是否被执行过，被怎样执行过。</p>
 <ul>
-<li><code>assert_called(*args, **kwargs)</code> ：断言mock至少被调用一次</li>
-<li><code>assert_called_once(*args, **kwargs)</code>： 断言mock调用仅一次</li>
-<li><code>assert_called_with(*args, **kwargs)</code> ：断言mock以某种参数至少调用一次，且符合条件的调用是最近一次</li>
-<li><code>assert_called_once_with(*args, **kwargs)</code>： 断言mock调用仅一次，并且调用参数符合条件</li>
-<li><code>assert_any_called(*args, **kwargs)</code> ：断言mock以某种参数曾经被调用过，注意上面的<code>assert_called_with()</code>必须是最近的那次调用符合断言，而any不需要</li>
-<li><code>assert_has_calls(calls, any_order=False)</code> ：断言mock被按照的特定一组调用的方式调用过。如果<code>any_order</code>是False，那么必须满足calls中的调用顺序，而且必须是连续的，如果<code>any_order</code>是True，那么就只需要执行了calls中的调用即可</li>
+<li><code>assert_called(*args, **kwargs)</code>
+：断言mock至少被调用一次</li>
+<li><code>assert_called_once(*args, **kwargs)</code>：
+断言mock调用仅一次</li>
+<li><code>assert_called_with(*args, **kwargs)</code>
+：断言mock以某种参数至少调用一次，且符合条件的调用是最近一次</li>
+<li><code>assert_called_once_with(*args, **kwargs)</code>：
+断言mock调用仅一次，并且调用参数符合条件</li>
+<li><code>assert_any_called(*args, **kwargs)</code>
+：断言mock以某种参数曾经被调用过，注意上面的<code>assert_called_with()</code>必须是最近的那次调用符合断言，而any不需要</li>
+<li><code>assert_has_calls(calls, any_order=False)</code>
+：断言mock被按照的特定一组调用的方式调用过。如果<code>any_order</code>是False，那么必须满足calls中的调用顺序，而且必须是连续的，如果<code>any_order</code>是True，那么就只需要执行了calls中的调用即可</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># assert_has_calls</span><br><span class="hljs-keyword">from</span> unittest.mock <span class="hljs-keyword">import</span> Mock, call<br><br>mock = Mock(return_value=<span class="hljs-string">&quot;123&quot;</span>)<br>mock(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br>mock(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>)<br>mock.assert_has_calls([call(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>), call(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)], any_order=<span class="hljs-literal">True</span>)  <span class="hljs-comment"># assert pass</span><br>mock.assert_has_calls([call(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>), call(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)], any_order=<span class="hljs-literal">False</span>)  <span class="hljs-comment"># assert error</span><br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p><code>assert_not_called()</code>： 断言没有被调用</p>
-</li>
-<li>
-<p><code>reset_mock(*args, return_value=False, side_effect=False)</code> ：重置mock对象的所有调用</p>
-</li>
-<li>
-<p><code>call_count</code>： 返回调用次数</p>
-</li>
-<li>
-<p><code>call_args</code> ：返回最后调用的参数</p>
-</li>
-<li>
-<p><code>call_args_list</code>：返回调用的历史参数列表</p>
-</li>
-<li>
-<p><code>method_calls</code>：返回调用的历史方法列表</p>
-</li>
+<li><p><code>assert_not_called()</code>： 断言没有被调用</p></li>
+<li><p><code>reset_mock(*args, return_value=False, side_effect=False)</code>
+：重置mock对象的所有调用</p></li>
+<li><p><code>call_count</code>： 返回调用次数</p></li>
+<li><p><code>call_args</code> ：返回最后调用的参数</p></li>
+<li><p><code>call_args_list</code>：返回调用的历史参数列表</p></li>
+<li><p><code>method_calls</code>：返回调用的历史方法列表</p></li>
 </ul>
-<h2 id="其他Mock类">其他Mock类</h2>
+<h2 id="其他mock类">其他Mock类</h2>
 <ul>
 <li><code>NonCallableMock</code>：一个不可被调用的Mock类，<code>return_value</code>和<code>side_effect</code>这两个参数对它来说是无意义的</li>
 <li><code>PropertyMock</code>：一个专门用于替换属性的Mock类，它提供了属性对应的get和set方法</li>
-<li><code>AsyncMock</code>：MagicMock的异步版本。AsyncMock对象会像一个异步数一样运行，它的调用的返回值是一个awaitable对象，这个awaitable对象返回 <code>side_effect</code> 或者 <code>return_value</code> 指定的值</li>
+<li><code>AsyncMock</code>：MagicMock的异步版本。AsyncMock对象会像一个异步数一样运行，它的调用的返回值是一个awaitable对象，这个awaitable对象返回
+<code>side_effect</code> 或者 <code>return_value</code> 指定的值</li>
 </ul>
-<h1>Patch</h1>
-<h2 id="quick-start-2">quick start</h2>
+<h1 id="patch">Patch</h1>
+<h2 id="quick-start-1">quick start</h2>
 <p><code>patch</code>可以帮助我们在特定范围内执行模拟，在代码运行时将指定的对象变为Mock对象。<code>patch</code>有多种使用方式，可以使用装饰器、with语句以及利用<code>start()</code>和<code>stop()</code>方法指定模拟的开始和结束。</p>
 <p><code>patch</code>实际上是一个方法，方法签名如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">unittest.mock.patch(target, new=DEFAULT, spec=<span class="hljs-literal">None</span>, create=<span class="hljs-literal">False</span>, spec_set=<span class="hljs-literal">None</span>, autospec=<span class="hljs-literal">None</span>, new_callable=<span class="hljs-literal">None</span>, **kwargs)<br></code></pre></td></tr></table></figure>
-<p>其中参数<code>target</code> 用于指定被模拟的对象，是一个类似<code>package.module.className</code> 格式的字符串；参数<code>new_callable</code> 可以用于指定最终创建的模拟对象类型，默认情况下是MagicMock类型的Mock对象。</p>
+<p>其中参数<code>target</code>
+用于指定被模拟的对象，是一个类似<code>package.module.className</code>
+格式的字符串；参数<code>new_callable</code>
+可以用于指定最终创建的模拟对象类型，默认情况下是MagicMock类型的Mock对象。</p>
 <p>patch装饰器的使用方式如下。通过target参数指定被模拟的类，创建出的Mock对象通过参数传递给方法。此时的模拟范围是函数的范围。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> unittest.mock <span class="hljs-keyword">import</span> patch<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeClass</span>:<br>    <span class="hljs-keyword">pass</span><br><br><br><span class="hljs-meta">@patch(<span class="hljs-params"><span class="hljs-string">&#x27;__main__.SomeClass&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">func</span>(<span class="hljs-params">a, b, mock_class</span>):<br>    <span class="hljs-built_in">print</span>(a)<br>    <span class="hljs-built_in">print</span>(b)<br>    <span class="hljs-built_in">print</span>(mock_class)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    func(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>)<br>    <br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">print content: </span><br><span class="hljs-string">2</span><br><span class="hljs-string">3</span><br><span class="hljs-string">&lt;MagicMock name=&#x27;SomeClass&#x27; id=&#x27;4488196304&#x27;&gt;</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
-<p>patch with语句的使用方式如下。通过上下文管理的方式设置模拟范围，创建出的Mock对象通过as语句进行传递。</p>
+<p>patch
+with语句的使用方式如下。通过上下文管理的方式设置模拟范围，创建出的Mock对象通过as语句进行传递。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">with</span> patch(<span class="hljs-string">&#x27;__main__.SomeClass&#x27;</span>) <span class="hljs-keyword">as</span> mock_class:<br>    <span class="hljs-built_in">print</span>(mock_class)<br>    <br><span class="hljs-comment"># &lt;MagicMock name=&#x27;SomeClass&#x27; id=&#x27;4365561808&#x27;&gt;</span><br></code></pre></td></tr></table></figure>
 <p>patch手动指定作用范围的使用方式如下。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">patcher = patch(<span class="hljs-string">&#x27;__main__.SomeClass&#x27;</span>)<br>mock_class = patcher.start()<br><span class="hljs-built_in">print</span>(mock_class)<br>patcher.stop()<br><br><span class="hljs-comment"># &lt;MagicMock name=&#x27;SomeClass&#x27; id=&#x27;4437302224&#x27;&gt;</span><br></code></pre></td></tr></table></figure>
@@ -407,11 +408,13 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> unittest.mock <span class="hljs-keyword">import</span> patch<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeClass</span>:<br>    num = <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">func</span>(<span class="hljs-params">self, other_num</span>):<br>        <span class="hljs-keyword">return</span> self.num + other_num<br><br><br><span class="hljs-meta">@patch(<span class="hljs-params"><span class="hljs-string">&#x27;__main__.SomeClass.func&#x27;</span>, return_value=<span class="hljs-string">&quot;mock&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_patch_some_class</span>(<span class="hljs-params">mock_func</span>):<br>    some_class = SomeClass()<br>    <span class="hljs-built_in">print</span>(some_class.func(<span class="hljs-number">2</span>))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_patch_some_class()<br><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">print content: mock</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
 <h2 id="其他方法">其他方法</h2>
 <ul>
-<li><code>patch.object() </code>：用于模拟对象的属性，使用Mock对象模拟对象的属性。初始化时使用参数<code>target</code> 指定对象，使用参数<code>attribute</code> 设置模拟的属性。</li>
+<li><code>patch.object()</code>：用于模拟对象的属性，使用Mock对象模拟对象的属性。初始化时使用参数<code>target</code>
+指定对象，使用参数<code>attribute</code> 设置模拟的属性。</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 仍然借用上面最近的SomeClass定义，包含一个num属性以及一个func相加方法</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_patch_some_class</span>():<br>    <span class="hljs-keyword">with</span> patch.<span class="hljs-built_in">object</span>(SomeClass, <span class="hljs-string">&#x27;func&#x27;</span>, return_value=<span class="hljs-string">&quot;mock&quot;</span>) <span class="hljs-keyword">as</span> mock_func:<br>        some_class = SomeClass()<br>        <span class="hljs-built_in">print</span>(some_class.func(<span class="hljs-number">2</span>))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_patch_some_class()<br>    <br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">print content: mock</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
 <ul>
-<li><code>patch.dict()</code> ：用于模拟dict类型的对象，在模拟结束时恢复被模拟对象的数据</li>
+<li><code>patch.dict()</code>
+：用于模拟dict类型的对象，在模拟结束时恢复被模拟对象的数据</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_patch_dict</span>():<br>    foo = &#123;<span class="hljs-string">&#x27;key&#x27;</span>: <span class="hljs-string">&#x27;value&#x27;</span>&#125;<br>    original = foo.copy()  <span class="hljs-comment"># 浅拷贝</span><br>    <span class="hljs-comment"># clear参数表示是否保留原有的项，True表示不保留， 默认保留</span><br>    <span class="hljs-keyword">with</span> patch.<span class="hljs-built_in">dict</span>(foo, &#123;<span class="hljs-string">&#x27;new_key&#x27;</span>: <span class="hljs-string">&#x27;new_value&#x27;</span>&#125;, clear=<span class="hljs-literal">True</span>):<br>        <span class="hljs-built_in">print</span>(foo)<br>        <span class="hljs-keyword">assert</span> foo == &#123;<span class="hljs-string">&#x27;new_key&#x27;</span>: <span class="hljs-string">&#x27;new_value&#x27;</span>&#125;<br><br>    <span class="hljs-built_in">print</span>(foo)  <span class="hljs-comment"># foo原本的值并没有被改变</span><br>    <span class="hljs-keyword">assert</span> foo == original<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_patch_dict()<br><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">print content：</span><br><span class="hljs-string">&#123;&#x27;new_key&#x27;: &#x27;new_value&#x27;&#125;</span><br><span class="hljs-string">&#123;&#x27;key&#x27;: &#x27;value&#x27;&#125;</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
 <ul>
@@ -421,29 +424,29 @@
 <p>如果在with语句中使用，则返回一个字典对象：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python">thing = <span class="hljs-built_in">object</span>()<br>other = <span class="hljs-built_in">object</span>()<br><br><span class="hljs-keyword">with</span> patch.multiple(<span class="hljs-string">&#x27;__main__&#x27;</span>, thing=DEFAULT, other=DEFAULT) <span class="hljs-keyword">as</span> values:<br>    <span class="hljs-keyword">assert</span> <span class="hljs-string">&#x27;other&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">repr</span>(values[<span class="hljs-string">&#x27;other&#x27;</span>])<br>    <span class="hljs-keyword">assert</span> <span class="hljs-string">&#x27;thing&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">repr</span>(values[<span class="hljs-string">&#x27;thing&#x27;</span>])<br>    <span class="hljs-keyword">assert</span> values[<span class="hljs-string">&#x27;thing&#x27;</span>] <span class="hljs-keyword">is</span> thing<br>    <span class="hljs-keyword">assert</span> values[<span class="hljs-string">&#x27;other&#x27;</span>] <span class="hljs-keyword">is</span> other<br></code></pre></td></tr></table></figure>
 <h2 id="特殊情况">特殊情况</h2>
-<h3 id="Method-not-exist">Method not exist</h3>
+<h3 id="method-not-exist">Method not exist</h3>
 <p>在一些时候，我们可能需要模拟一个不存在的方法，例如下面的代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 仍然借用上面最近的SomeClass定义，包含一个num属性以及一个func相加方法</span><br><span class="hljs-meta">@patch(<span class="hljs-params"><span class="hljs-string">&#x27;__main__.SomeClass.func_not_exist&#x27;</span>, return_value=<span class="hljs-string">&quot;mock&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_patch_some_class</span>(<span class="hljs-params">mock_func</span>):<br>    some_class = SomeClass()<br>    <span class="hljs-built_in">print</span>(some_class.func(<span class="hljs-number">2</span>))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_patch_some_class()<br>    <br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">AttributeError: &lt;class &#x27;__main__.SomeClass&#x27;&gt; does not have the attribute &#x27;func_not_exist&#x27;</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
 <p>这里我们模拟了一个不存在的方法，默认情况是会报错的，报无法找到属性的错。此时我们可以指定<code>create=True</code>，此时如果patch对象不存在的话，会自动创建，不会报错。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@patch(<span class="hljs-params"><span class="hljs-string">&#x27;__main__.SomeClass.func_not_exist&#x27;</span>, return_value=<span class="hljs-string">&quot;mock&quot;</span>, create=<span class="hljs-literal">True</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_patch_some_class</span>(<span class="hljs-params">mock_func</span>):<br>    some_class = SomeClass()<br>    <span class="hljs-built_in">print</span>(some_class.func(<span class="hljs-number">2</span>))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_patch_some_class()<br><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">print content: 3</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
 <p>上面的代码不会报错，并且由于我们并没有Mock真实的逻辑，因此输出也是正常的3。</p>
-<h3 id="Module-not-exist">Module not exist</h3>
+<h3 id="module-not-exist">Module not exist</h3>
 <p>在一些时候，我们可能要模拟一个方法，但是这个方法所属的Module又没有安装，例如下面的代码，正常运行的话，会报错为<code>Module not found</code>。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> unittest.mock <span class="hljs-keyword">import</span> patch<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">method_need_to_be_test</span>():<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">from</span> xxx.yyy.zzz <span class="hljs-keyword">import</span> some_method<br>    <span class="hljs-keyword">except</span> ModuleNotFoundError:<br>        <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;Module not found, please make sure the dependency have installed&quot;</span>)<br>    <span class="hljs-keyword">return</span> some_method()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_method</span>():<br>    method_need_to_be_test()<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_method()<br><br></code></pre></td></tr></table></figure>
 <p>为了解决Module不存在的情况，我们首先需要安装<code>surrogate</code>。这个库允许为一个不存在的Module创建测试桩。</p>
 <p>安装了依赖之后，利用<code>@surrogate</code>装饰器为不存在的Module创建测试桩之后，再利用<code>@patch</code>装饰器为这个不存在的方法进行模拟和Mock，如下所示。之后再次运行，就可以得到Mock后的结果了。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> unittest.mock <span class="hljs-keyword">import</span> patch<br><span class="hljs-keyword">from</span> surrogate <span class="hljs-keyword">import</span> surrogate<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">method_need_to_be_test</span>():<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">from</span> xxx.yyy.zzz <span class="hljs-keyword">import</span> some_method<br>    <span class="hljs-keyword">except</span> ModuleNotFoundError:<br>        <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;Module not found, please make sure the dependency have installed&quot;</span>)<br>    <span class="hljs-keyword">return</span> some_method()<br><br><br><span class="hljs-meta">@surrogate(<span class="hljs-params"><span class="hljs-string">&#x27;xxx.yyy.zzz.some_method&#x27;</span></span>)</span><br><span class="hljs-meta">@patch(<span class="hljs-params"><span class="hljs-string">&#x27;xxx.yyy.zzz.some_method&#x27;</span>, return_value=<span class="hljs-string">&quot;mock result&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_method</span>(<span class="hljs-params">mock_func</span>):<br>    <span class="hljs-built_in">print</span>(method_need_to_be_test())<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_method()<br>    <br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">print content: mock result</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li>
-<p><a target="_blank" rel="noopener" href="https://hustyichi.github.io/2018/11/24/mock/">单元测试mock模块介绍</a></p>
-</li>
-<li>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/guyuyun/p/14880885.html">Python内置库 unittest.mock 的基础使用</a></p>
-</li>
-<li>
-<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/12585046/how-do-i-mock-the-hierarchy-of-non-existing-modules">How do I mock the hierarchy of non-existing modules|StackOverflow</a></p>
-</li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><p><a
+target="_blank" rel="noopener" href="https://hustyichi.github.io/2018/11/24/mock/">单元测试mock模块介绍</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/guyuyun/p/14880885.html">Python内置库
+unittest.mock 的基础使用</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/12585046/how-do-i-mock-the-hierarchy-of-non-existing-modules">How
+do I mock the hierarchy of non-existing
+modules|StackOverflow</a></p></li>
 </ol>
 
                 

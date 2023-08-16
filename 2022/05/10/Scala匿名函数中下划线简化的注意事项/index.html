@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -278,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          13 分钟
+          12 分钟
         
       </span>
     
@@ -340,7 +340,7 @@
 <p>在使用下划线的场景中，我们最终得到的会是很简化的表达，但是这个简化表达往往可能会误导我们，尤其是容易将代码块的返回值和匿名函数混淆。</p>
 <p>例如下面的代码：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> list = <span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).map(&#123;<br>    println(<span class="hljs-string">&quot;-map-&quot;</span>)<br>    _ + <span class="hljs-number">1</span><br>&#125;)<br>println(list)<br></code></pre></td></tr></table></figure>
-<p>我们容易将整个<code>&#123;&#125;</code>代码块中的内容都看作是传入map中的匿名函数的内容。但是实际上，传入map中的参数是一个代码块，而这个代码块的返回值是一个下划线表达式，这个下划线表达式可以扩展为一个匿名函数，因此最终传入map中的函数应该为<code>x=&gt;&#123;x + 1&#125;</code>，在获得代码块的返回值的过程中，会执行依次<code>println(&quot;-map-&quot;)</code>，后面都不会执行了，因此上面代码的输出为</p>
+<p>我们容易将整个<code>&#123;&#125;</code>代码块中的内容都看作是传入map中的匿名函数的内容。但是实际上，传入map中的参数是一个代码块，而这个代码块的返回值是一个下划线表达式，这个下划线表达式可以扩展为一个匿名函数，因此最终传入map中的函数应该为<code>x=&gt;&#123;x + 1&#125;</code>，在获得代码块的返回值的过程中，会执行依次<code>println("-map-")</code>，后面都不会执行了，因此上面代码的输出为</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">-map-<br>List(2, 3, 4, 5)<br></code></pre></td></tr></table></figure>
 <p>如果要实现每个元素操作的时候都输出一次<code>-map-</code>，则还是需要使用没有简化的匿名函数</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> list = <span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).map(num =&gt; &#123;<br>    println(<span class="hljs-string">&quot;-map-&quot;</span>)<br>    num + <span class="hljs-number">1</span><br>&#125;)<br>println(list)<br></code></pre></td></tr></table></figure>

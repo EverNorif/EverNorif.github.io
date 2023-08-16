@@ -82,7 +82,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -324,7 +324,7 @@
             
               <div class="markdown-body">
                 
-                <h1>Singleton</h1>
+                <h1 id="singleton">Singleton</h1>
 <h2 id="简介">简介</h2>
 <p>在程序运行的时候，通常都会生成很多实例。但是有时我们也会希望某个类在程序运行的过程中只能生成一个实例，此时就需要用到Singleton模式。当然，只要我们在编写程序的时候多加注意，确保只调用一次new，那么就可以达到只生成一个实例的目的。但是这种来自程序员本身的保障是不可靠的，而利用Singleton模式，我们能够确保在任何情况下都绝对只有一个实例，并且能够在程序上表现出只存在一个实例。</p>
 <h2 id="实例程序">实例程序</h2>
@@ -336,8 +336,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton</span>&#123;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Singleton instance;<br> <span class="hljs-keyword">private</span> <span class="hljs-title function_">Singleton</span><span class="hljs-params">()</span>&#123;&#125;;<br> <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">synchronized</span> Singleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span>&#123;<br>     <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">null</span>)&#123;<br>         instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Singleton</span>();<br>     &#125;<br>     <span class="hljs-keyword">return</span> instance;<br> &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>但是上面的方式还是存在缺陷的，就是无论何时，getInstance方法都只能有一个线程调用，这样实际上会造成一些效率上的问题。而事实上，在实例创建完成之后，我们就应该允许并发调用getInstance。因此有如下的双重检验锁版本，它只在创建实例的时候不允许并发，保证单例模式的正确性，而在实例创建完成之后，就允许并发调用获取实例了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton</span>&#123;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">volatile</span> Singleton instance;<br> <span class="hljs-keyword">private</span> <span class="hljs-title function_">Singleton</span><span class="hljs-params">()</span>&#123;&#125;;<br> <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Singleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span>&#123;<br>     <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">null</span>)&#123;<br>         <span class="hljs-keyword">synchronized</span>(Singleton.class)&#123;<br>             <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">null</span>)&#123;<br>                 instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Singleton</span>();<br>             &#125;<br>         &#125;<br>     &#125;<br>     <span class="hljs-keyword">return</span> instance;<br> &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h1>Prototype</h1>
-<h2 id="简介-2">简介</h2>
+<h1 id="prototype">Prototype</h1>
+<h2 id="简介-1">简介</h2>
 <p>在Java中，通常情况下，我们生成一个实例都是通过new关键字来完成的，这就意味着在源代码中一定会出现特定类的名称。这似乎是个很自然的结果，但是一些情况下我们不希望在源代码中出现某个特定类的名称，因为这样就意味着该源代码与这个特定类强耦合。</p>
 <p>Prototype模式想要达到的效果就是不通过new关键字来生成实例，而是通过实例的复制来生成实例。在Prototype模式中有如下的角色：</p>
 <ul>
@@ -357,11 +357,16 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// prototype register</span><br>    <span class="hljs-type">PrototypeManager</span> <span class="hljs-variable">prototypeManager</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PrototypeManager</span>();<br>    prototypeManager.register(<span class="hljs-string">&quot;messageBox&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">MessageBox</span>());<br>    prototypeManager.register(<span class="hljs-string">&quot;underlinePen&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnderlinePen</span>());<br><br>    <span class="hljs-comment">// create instance from prototype</span><br>    <span class="hljs-type">Prototype</span> <span class="hljs-variable">messageBox</span> <span class="hljs-operator">=</span> prototypeManager.create(<span class="hljs-string">&quot;messageBox&quot;</span>);<br>    messageBox.use(<span class="hljs-string">&quot;Hello, World&quot;</span>);<br>    <span class="hljs-type">Prototype</span> <span class="hljs-variable">underlinePen</span> <span class="hljs-operator">=</span> prototypeManager.create(<span class="hljs-string">&quot;underlinePen&quot;</span>);<br>    underlinePen.use(<span class="hljs-string">&quot;Hello, World&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="说明">说明</h2>
 <p>Prototype模式通过复制来生成实例，我们可以避免代码之间的强耦合，达到组件的更强的复用性，同时便于管理各种原型。在上面的示例程序中，我们在测试代码中手动注册了原型。事实上，我们完全可以将原型的注册过程放在PrototypeManager的构造方法中，这样在测试代码中将不会出现具体的类名称，进一步解耦了相关代码。</p>
-<p>注意到Prototype接口继承了Cloneable接口。在Java中已经提供了用于复制实例的clone方法，但是想要调用该方法，则对应的类必须要实现<code>java.lang.Cloneable</code>接口。如果没有实现该接口的实例调用了clone方法，则会在运行的时候抛出<code>CloneNotSupportedException</code>异常。不过需要注意的是，clone方法并不是定义在Cloneable接口中，而是定义在Object Class中的。Cloneable仅仅是一个标记接口（marker interface），它只是用来标记，说明“可以使用clone方法来进行复制”。同时clone方法进行的是浅复制，当浅复制无法满足要求时，则可以重写clone方法，进行定制化的处理。</p>
+<p>注意到Prototype接口继承了Cloneable接口。在Java中已经提供了用于复制实例的clone方法，但是想要调用该方法，则对应的类必须要实现<code>java.lang.Cloneable</code>接口。如果没有实现该接口的实例调用了clone方法，则会在运行的时候抛出<code>CloneNotSupportedException</code>异常。不过需要注意的是，clone方法并不是定义在Cloneable接口中，而是定义在Object
+Class中的。Cloneable仅仅是一个标记接口（marker
+interface），它只是用来标记，说明“可以使用clone方法来进行复制”。同时clone方法进行的是浅复制，当浅复制无法满足要求时，则可以重写clone方法，进行定制化的处理。</p>
 <p>不过实例的复制流程一般来说都是一致的。像在上面的createClone方法中，我们可以看到在MessageBox和UnderlinePen中实现是一致的，因此我们完全可以在接口中提供一个默认实现，完成最基本的复制。而如果某个子类需要进行定制化的复制，则只需要覆盖接口中的默认实现即可。</p>
-<h1>Abstract Factory</h1>
-<p>在谈到工厂Factory的时候，我们都是希望通过工厂来构建出具体的实例。在一些时候，我们可能需要许多不同的工厂，这些不同的具体的工厂完成不同的具体的行为，但是又具有一定的共性。Abstract Factory模式就是对工厂的进一步抽象，在该模式中，我们会定义抽象的Factory，在该抽象类中会定义生成实例的方式，但是在其中使用的都是抽象的Item类，这里可以理解为抽象的零件。因此抽象工厂模式完成的就是构造一个抽象的工厂，该工厂利用抽象的零件构建出抽象的产品。而如果需要将这些都转为具体的，则需要提供具体的零件实现，具体的产品，具体的工厂。这种方式便于多种工厂的管理，同时增加具体的工厂也是非常容易的。如果需要新增新的具体工厂，则只需要编写对应抽象工厂、抽象零件、抽象产品的子类，并实现其中的抽象方法即可。</p>
-<p>该模式的核心思想与Template Method基本一致，都是定义模版之后交由子类实现，只不过在Abstract Factory模式中特定定义了工厂的模版。这里不再提供相关的实例程序。</p>
+<h1 id="abstract-factory">Abstract Factory</h1>
+<p>在谈到工厂Factory的时候，我们都是希望通过工厂来构建出具体的实例。在一些时候，我们可能需要许多不同的工厂，这些不同的具体的工厂完成不同的具体的行为，但是又具有一定的共性。Abstract
+Factory模式就是对工厂的进一步抽象，在该模式中，我们会定义抽象的Factory，在该抽象类中会定义生成实例的方式，但是在其中使用的都是抽象的Item类，这里可以理解为抽象的零件。因此抽象工厂模式完成的就是构造一个抽象的工厂，该工厂利用抽象的零件构建出抽象的产品。而如果需要将这些都转为具体的，则需要提供具体的零件实现，具体的产品，具体的工厂。这种方式便于多种工厂的管理，同时增加具体的工厂也是非常容易的。如果需要新增新的具体工厂，则只需要编写对应抽象工厂、抽象零件、抽象产品的子类，并实现其中的抽象方法即可。</p>
+<p>该模式的核心思想与Template
+Method基本一致，都是定义模版之后交由子类实现，只不过在Abstract
+Factory模式中特定定义了工厂的模版。这里不再提供相关的实例程序。</p>
 
                 
               </div>

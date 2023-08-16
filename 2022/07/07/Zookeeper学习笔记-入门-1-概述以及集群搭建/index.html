@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,11 +325,12 @@
             
               <div class="markdown-body">
                 
-                <h1>概述</h1>
-<p>Zookeeper 是一个开源的分布式的，为分布式框架提供协调服务的 Apache 项目。它的设计目标是将复杂且容易出错的分布式一致性服务封装起来，提供一系列简单易用的接口提供给用户使用。</p>
+                <h1 id="概述">概述</h1>
+<p>Zookeeper 是一个开源的分布式的，为分布式框架提供协调服务的 Apache
+项目。它的设计目标是将复杂且容易出错的分布式一致性服务封装起来，提供一系列简单易用的接口提供给用户使用。</p>
 <p>在设计方面，Zookeeper上存储和管理了数据，观察者可以监听上面的某些数据。一旦这些数据的状态发生变化，Zookeeper就负责通知对应的观察者，触发对应的行为。可以理解为<strong>Zookeeper=文件系统+通知机制</strong></p>
 <p>Zookeeper的特点如下：</p>
-<ol>
+<ol type="1">
 <li>在集群构成方面，集群中存在一个Leader和多个Follower</li>
 <li>只要集群中有半数以上的节点存活，Zookeeper就能够正常提供服务</li>
 <li>Zookeeper集群中数据保持全局的一致性，集群中每个服务器都保存了相同的数据副本。客户端无论连接到哪个服务器上，数据都是一致的</li>
@@ -345,39 +346,36 @@
 <li>将配置信息写入Zookeeper上的一个Node</li>
 <li>各个客户端服务器监听这个ZNode</li>
 <li>一旦ZNode中的数据被修改，Zookeeper将通知各个客户端服务器</li>
-</ul>
-</li>
+</ul></li>
 <li>统一集群管理：在分布式环境下，实时掌握每个节点的状态是必要的，而Zookeeper可以实现实时监控节点状态变化
 <ul>
 <li>节点将自己的信息写入Zookeeper上的一个ZNode</li>
 <li>监听这个ZNode可以获取集群的实时状态</li>
-</ul>
-</li>
+</ul></li>
 <li>服务器动态上下线：客户端和服务器连接的情形中，客户端希望知道当前服务器的状态
 <ul>
 <li>服务器向Zookeeper上注册，维护ZNode信息</li>
 <li>客户端监听对应的ZNode</li>
 <li>当服务器动态上下线，ZNode信息发生变化，Zookeeper也会通知对应的客户端</li>
-</ul>
-</li>
+</ul></li>
 <li>负载均衡：在Zookeeper中记录每台服务器的访问数，让访问数最少的服务器去处理最新的客户端请求</li>
 </ul>
 </blockquote>
-<h1>重要概念</h1>
+<h1 id="重要概念">重要概念</h1>
 <h2 id="会话">会话</h2>
 <p>会话Session，指的是客户端与Zookeeper服务器之间的连接。这里的客户端可以是Zookeeper提供的命令行工具，也可以是Java中的API等。</p>
 <p>客户端启动的时候，首先会与服务器建立一个TCP连接，通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向ZooKeeper服务器发送请求并接受响应，同时还能够通过该连接接收来自服务器的Watch事件通知。而我们也可以设置客户端会话的超时时间等。</p>
 <p>在为客户端创建会话之前，服务端首先会为每个客户端分配一个sessionID。由于sessionID是ZooKeeper会话的一个重要标识，许多与会话相关的而运行机制都是基于这个sessionID的，因此，无论是哪台服务器为客户端分配的sessionID,都务必保证全局唯一。</p>
-<h2 id="ZNode">ZNode</h2>
+<h2 id="znode">ZNode</h2>
 <p>Zookeeper中组织数据的模式类似于Unix文件系统，整体上可以看作是一棵树，每个节点称为一个ZNode。（注意这里的节点指的是Zookeeper中的数据存储节点，而不是集群中的服务器节点）<strong>每个ZNode默认存储1MB的数据</strong>，其中会维护一些属性，Zookeeper就根据这些数据来实现特定的功能。这种树形的结构使得每个ZNode都可以通过路径来唯一进行标识。Zookeeper的数据保存在内存中，这意味着Zookeeper可以实现高吞吐量和低延迟。</p>
 <p>在Zookeeper中，ZNode主要可以分为持久节点和临时节点两类。持久节点指的是一旦这个ZNode被创建，除非主动进行ZNode的移除，否则它将会一直保存在Zookeeper上；而临时节点的生命周期与客户端会话绑定，当会话失效后，这个客户端创建的所有临时节点也都会被移除。</p>
 <p>另外，Zookeeper还允许用户为每个节点添加一个特殊的属性<code>SEQUENTIAL</code>，一旦节点被标记上这个属性，那么再被创建的时候，Zookeeper会自动在其节点名称后面追加上一个整型数字，这个整型数字是由父节点维护的一个自增数字。</p>
 <p>Zookeeper向我们提供对数据操作的API，操作的就是ZNode。包括ZNode的创建，数据修改，删除和监听等。</p>
 <h2 id="版本">版本</h2>
 <p>ZooKeeper的每个Znode上都会都会存储数据，对应于每个Znode,ZooKeeper都会为其维护一个叫做Stat的数据结构，Stat中记录了这个Znode的三个数据版本，分别是version(当前Znode的版本)、cversion(当前Znode子节点的版本)和cversion(当前Znode的ACL版本)。</p>
-<h2 id="Watcher">Watcher</h2>
+<h2 id="watcher">Watcher</h2>
 <p>Watcher，事件监听器，是Zookeeper中一个很重要的特性。Zookeeper允许用户在指定节点上注册一些Watcher。在一些特定事件触发的时候，例如ZNode状态改变的时候，Zookeeper服务端会将事件通知到对应的客户端上。这个机制也是Zookeeper实现分布式协调服务的重要特性。</p>
-<h2 id="ACL">ACL</h2>
+<h2 id="acl">ACL</h2>
 <p>ACL，AccessControlLists，是Zookeeper用来进行权限控制的策略，类似于UNIX文件系统的权限控制。Zookeeper中定义了如下5种权限：</p>
 <ul>
 <li>create：创建子节点的权限</li>
@@ -386,7 +384,7 @@
 <li>delete：删除子节点的权限</li>
 <li>admin：设置节点ACL的权限</li>
 </ul>
-<h1>集群搭建</h1>
+<h1 id="集群搭建">集群搭建</h1>
 <p>首先将压缩包解压到对应的目录下</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">tar -zxvf apache-zookeeper-3.5.7-bin.tar.gz -C /opt/module/<br></code></pre></td></tr></table></figure>
 <p>之后在对应目录下创建zkData目录，然后在zkData目录下创建一个名称为myid的文件，在myid文件种添加server对应的编号。例如这里hadoop102，我们给它编号为2。后续这个zkData目录会被配置为Zookeeper数据存储的目录。</p>
@@ -406,7 +404,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">启动集群(在三台机器上分别启动)</span><br>bin/zkServer.sh start<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看集群状态</span><br>bin/zkServer.sh status<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">关闭集群</span><br>bin/zkServer.sh stop<br></code></pre></td></tr></table></figure>
 <p>类似地，我们也可以编写Zookeeper集群的启动停止脚本<code>zk.sh</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-keyword">case</span> <span class="hljs-variable">$1</span> <span class="hljs-keyword">in</span><br><span class="hljs-string">&quot;start&quot;</span>)&#123;<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> hadoop102 hadoop103 hadoop104<br><span class="hljs-keyword">do</span><br> <span class="hljs-built_in">echo</span> ---------- zookeeper <span class="hljs-variable">$i</span> 启动 ------------<br> ssh <span class="hljs-variable">$i</span> <span class="hljs-string">&quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh start&quot;</span><br><span class="hljs-keyword">done</span><br>&#125;;;<br><span class="hljs-string">&quot;stop&quot;</span>)&#123;<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> hadoop102 hadoop103 hadoop104<br><span class="hljs-keyword">do</span><br> <span class="hljs-built_in">echo</span> ---------- zookeeper <span class="hljs-variable">$i</span> 停止 ------------ <br> ssh <span class="hljs-variable">$i</span> <span class="hljs-string">&quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh stop&quot;</span><br><span class="hljs-keyword">done</span><br>&#125;;;<br><span class="hljs-string">&quot;status&quot;</span>)&#123;<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> hadoop102 hadoop103 hadoop104<br><span class="hljs-keyword">do</span><br> <span class="hljs-built_in">echo</span> ---------- zookeeper <span class="hljs-variable">$i</span> 状态 ------------ <br> ssh <span class="hljs-variable">$i</span> <span class="hljs-string">&quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh status&quot;</span><br><span class="hljs-keyword">done</span><br>&#125;;;<br><span class="hljs-keyword">esac</span><br></code></pre></td></tr></table></figure>
-<h1>选举机制</h1>
+<h1 id="选举机制">选举机制</h1>
 <p>Zookeeper中的角色分为Leader和Follower。Leader是通过Zookeeper中的服务选举得来的。而Leader的选举又分为首次启动的选举和非首次启动的选举。</p>
 <p>首先我们明确下面几个概念：</p>
 <ul>
@@ -419,9 +417,10 @@
 <p>而当一台服务器进入Leader选举流程的时候，当前集群也可能会处于两种状态：分别是集群中已经存在Leader，以及集群中确实不存在Leader。</p>
 <p>如果是第一种状况，集群中已经存在Leader，那么机器试图进行选举的时候，会被告知当前集群的Leader信息，那么当前服务器仅需要和Leader机器进行对接，然后进行状态同步即可</p>
 <p>如果是第二种情况，集群中确实不存在Leader，那么则根据特定的规则进行Leader选举，主要就是利用前面说到的3个值的大小，优先级为Epoch&gt;ZXID&gt;SID，即Epoch大的直接胜出；Epoch相同，则事务ID大的胜出；事务ID相同，则服务器ID大d</p>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45569634/article/details/104903030?spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-104903030-blog-107553902.pc_relevant_multi_platform_whitelistv2&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-104903030-blog-107553902.pc_relevant_multi_platform_whitelistv2&amp;utm_relevant_index=2">ZooKeeper的各种各样及各样各种概念_叽里呱啦啦啦。的博客-CSDN博客</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45569634/article/details/104903030?spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-104903030-blog-107553902.pc_relevant_multi_platform_whitelistv2&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-104903030-blog-107553902.pc_relevant_multi_platform_whitelistv2&amp;utm_relevant_index=2">ZooKeeper的各种各样及各样各种概念_叽里呱啦啦啦。的博客-CSDN博客</a></li>
 </ol>
 
                 

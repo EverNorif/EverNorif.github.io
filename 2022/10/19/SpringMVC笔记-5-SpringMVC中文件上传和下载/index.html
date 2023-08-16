@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,12 +326,13 @@
             
               <div class="markdown-body">
                 
-                <h1>文件下载</h1>
+                <h1 id="文件下载">文件下载</h1>
 <p>文件下载有较为固定的套路，代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testDownLoad&quot;)</span><br><span class="hljs-keyword">public</span> ResponseEntity&lt;<span class="hljs-type">byte</span>[]&gt; testDownLoad(HttpSession session) <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 获取ServletContext对象</span><br>    <span class="hljs-type">ServletContext</span> <span class="hljs-variable">servletContext</span> <span class="hljs-operator">=</span> session.getServletContext();<br>    <span class="hljs-comment">// 获取服务器中文件的真实路径</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">realPath</span> <span class="hljs-operator">=</span> servletContext.getRealPath(<span class="hljs-string">&quot;/img/test.png&quot;</span>);<br>    <span class="hljs-comment">// 创建输入流，并将其读入字节数组中</span><br>    <span class="hljs-type">FileInputStream</span> <span class="hljs-variable">fileInputStream</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(realPath);<br>    <span class="hljs-type">byte</span>[] bytes = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[fileInputStream.available()];<br>    fileInputStream.read(bytes);<br>    <span class="hljs-comment">// 创建HttpHeaders对象设置响应头信息</span><br>    MultiValueMap&lt;String, String&gt; headers = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpHeaders</span>();<br>    headers.add(<span class="hljs-string">&quot;Content-Disposition&quot;</span>, <span class="hljs-string">&quot;attachment;filename=test.png&quot;</span>);<br>    <span class="hljs-comment">// 设置响应状态码</span><br>    <span class="hljs-type">HttpStatus</span> <span class="hljs-variable">status</span> <span class="hljs-operator">=</span> HttpStatus.OK;<br>    <span class="hljs-comment">// 创建ResponseEntity对象</span><br>    ResponseEntity&lt;<span class="hljs-type">byte</span>[]&gt; responseEntity = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResponseEntity</span>&lt;&gt;(bytes, headers, status);<br>    <span class="hljs-comment">// 关闭输入流</span><br>    fileInputStream.close();<br><br>    <span class="hljs-keyword">return</span> responseEntity;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这里我们的返回值类型为<code>ResponseEntity</code>，它表示响应到浏览器的完整的响应报文。</p>
-<p>我们首先需要获取到ServletContext对象，然后获取对应文件的真实路径。这个真实路径实际上就是拼接上当前项目的对应路径。我们将需要文件放在<code>webapp</code>目录下。获取真实路径并读取后，得到字节数组，之后就是创建ResponseEntity对象。在此之前还需要响应头以及响应状态码，在响应头中我们设置了下载方式以及下载文件的名称，响应状态码则为200 OK。</p>
-<h1>文件上传</h1>
+<p>我们首先需要获取到ServletContext对象，然后获取对应文件的真实路径。这个真实路径实际上就是拼接上当前项目的对应路径。我们将需要文件放在<code>webapp</code>目录下。获取真实路径并读取后，得到字节数组，之后就是创建ResponseEntity对象。在此之前还需要响应头以及响应状态码，在响应头中我们设置了下载方式以及下载文件的名称，响应状态码则为200
+OK。</p>
+<h1 id="文件上传">文件上传</h1>
 <p>在SpringMVC中，对上传的文件都需要封装成<code>MultipartFile</code>对象进行处理，我们后续的处理也是基于此类对象的。因此，我们需要先完成相关配置，让上传的文件能够被封装成该对象。</p>
 <p>首先需要添加相关依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>commons-fileupload<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>commons-fileupload<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.3.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -344,7 +345,8 @@
 <p>如果需要处理文件重名问题，我们可以随机获取一个不会重复的名称来替换原本的文件名，可以使用如下的方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 获取后缀名</span><br><span class="hljs-type">String</span> <span class="hljs-variable">suffixName</span> <span class="hljs-operator">=</span> filename.substring(filename.lastIndexOf(<span class="hljs-string">&quot;.&quot;</span>));<br><span class="hljs-comment">// 重新命名</span><br><span class="hljs-type">String</span> <span class="hljs-variable">newName</span> <span class="hljs-operator">=</span> UUID.randomUUID().toString() + suffixName;<br></code></pre></td></tr></table></figure>
 <blockquote>
-<p>UUID，全称为Universally Unique Identifier，通用唯一标识码。它的作用是让分布式系统中的所有元素都能有唯一的标识符，UUID保证对同一时空中的所有资源唯一。我们这里调用Java中UUID的接口，获得一个唯一标识，来解决文件重名的问题。</p>
+<p>UUID，全称为Universally Unique
+Identifier，通用唯一标识码。它的作用是让分布式系统中的所有元素都能有唯一的标识符，UUID保证对同一时空中的所有资源唯一。我们这里调用Java中UUID的接口，获得一个唯一标识，来解决文件重名的问题。</p>
 </blockquote>
 
                 

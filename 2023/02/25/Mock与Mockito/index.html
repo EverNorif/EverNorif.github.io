@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,27 +326,20 @@
             
               <div class="markdown-body">
                 
-                <h1>Mock</h1>
+                <h1 id="mock">Mock</h1>
 <p>在协同开发过程中，我们经常会遇到这样的场景。我们开发了一个类，这个类的功能是依赖于其他服务的接口，或者第三方的功能模块。但是由于是协同开发，可能其他服务的接口此时还没有实现，而我们需要对实现的类进行单元测试，那可能需要等待其他服务的实现。或者是借助的第三方功能模块非常复杂，每次测试都需要比较长的时间，此时单元测试与开发之间体验就会非常割裂。</p>
 <p>Mock就是用来解决上面的问题的。Mock意为模拟，借助Mock我们可以模拟出所需要的对象，并且可以定义这个对象的行为。Mock可以解决如下问题：</p>
 <ul>
-<li>
-<p>解决依赖问题：在测试一个接口或者功能模块的时候，如果这个接口或者功能模块依赖其他接口或者其他模块，且所依赖的接口或功能模块未开发完毕，那么我们可以使用Mock模拟被依赖的接口，完成目标接口的测试</p>
-</li>
-<li>
-<p>模拟复杂业务的接口：依赖一个非常复杂的业务或者第三方接口，可以直接使用Mock来模拟这个复杂的业务接口，定义它能够返回正确的结果</p>
-</li>
-<li>
-<p>单独测试：在对某个类进行测试的时候，可能会涉及到一些RPC的调用，数据库，缓存操作等，这些外部的依赖我们可以将其模拟Mock掉，达到<strong>单独</strong>测试某个类的效果</p>
-</li>
-<li>
-<p>前后端联调：进行前后端分离编程的时候，前端页面开发需要调用后台的接口，但是后台接口还没有开发完成，那么完全可以借助Mock来模拟后台这个接口返回想要的数据</p>
-</li>
+<li><p>解决依赖问题：在测试一个接口或者功能模块的时候，如果这个接口或者功能模块依赖其他接口或者其他模块，且所依赖的接口或功能模块未开发完毕，那么我们可以使用Mock模拟被依赖的接口，完成目标接口的测试</p></li>
+<li><p>模拟复杂业务的接口：依赖一个非常复杂的业务或者第三方接口，可以直接使用Mock来模拟这个复杂的业务接口，定义它能够返回正确的结果</p></li>
+<li><p>单独测试：在对某个类进行测试的时候，可能会涉及到一些RPC的调用，数据库，缓存操作等，这些外部的依赖我们可以将其模拟Mock掉，达到<strong>单独</strong>测试某个类的效果</p></li>
+<li><p>前后端联调：进行前后端分离编程的时候，前端页面开发需要调用后台的接口，但是后台接口还没有开发完成，那么完全可以借助Mock来模拟后台这个接口返回想要的数据</p></li>
 </ul>
-<h1>Mockito</h1>
+<h1 id="mockito">Mockito</h1>
 <h2 id="简介">简介</h2>
 <p>Mocito是一个功能强大的Java测试框架。通过Mockito可以创建Mock对象，排除外部依赖对被测试类的干扰。Mocito可以模拟对象，模拟方法的返回值，模拟抛出异常等等，同时也会记录这些模拟方法的调用次数、调用顺序等，从而进行校验，断言程序是否按照我们期望的效果运行。</p>
-<p>在Java中主流的Mock测试工具有Mockito、JMock、EasyMock。其中，Spring Boot默认的测试框架就是Mockito。</p>
+<p>在Java中主流的Mock测试工具有Mockito、JMock、EasyMock。其中，Spring
+Boot默认的测试框架就是Mockito。</p>
 <p>在开始使用Mockito之前，需要介绍几个简单的相关概念：</p>
 <ul>
 <li>Mock对象：在调试期间用来作为真实对象的替代，是<strong>被测试对象所依赖的对象</strong></li>
@@ -355,7 +348,7 @@
 <li>Verify：行为验证，验证指定方法调用情况（是否被调用，调用次数等）</li>
 <li>Assert：断言，判断输出效果是否与我们期望一致</li>
 </ul>
-<h2 id="Getting-Started">Getting Started</h2>
+<h2 id="getting-started">Getting Started</h2>
 <p>为了使用Mocito，我们需要在项目中引入相关依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Mocito相关依赖--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.mockito<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mockito-core<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.8.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--单元测试--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.junit.jupiter<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit-jupiter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.9.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>由于SpringBoot默认使用Mockito作为测试框架，因此如果我们正在开发的是SpringBoot项目，那么可以通过引入下面的starter来引入依赖：</p>
@@ -387,7 +380,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 验证方法被调用了一次</span><br>verify(mock).complexFunc(any());<br><span class="hljs-comment">// 验证方法被调用了至少2次</span><br>verify(mock, atLeast(<span class="hljs-number">2</span>)).complexFunc(any());<br><span class="hljs-comment">// 验证方法被调用了最多3次</span><br>verify(mock,atMost(<span class="hljs-number">3</span>)).complexFunc(<span class="hljs-number">1</span>);<br><span class="hljs-comment">// 验证方法没有被调用</span><br>verify(mock,never()).complexFunc(<span class="hljs-number">2</span>);<br><span class="hljs-comment">// 指定方法调用超时时间</span><br>verify(mock, timeout(<span class="hljs-number">100</span>)).complexFunc(<span class="hljs-number">1</span>);<br><span class="hljs-comment">// 指定时间内需要完成的次数</span><br>verify(mock,timeout(<span class="hljs-number">200</span>).atLeastOnce()).complexFunc(any());<br></code></pre></td></tr></table></figure>
 <p>执行顺序验证，需要从Mock对象中创建InOrder对象：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 验证同一个对象多个方法的执行顺序</span><br><span class="hljs-keyword">final</span> <span class="hljs-type">List</span> <span class="hljs-variable">mockList</span> <span class="hljs-operator">=</span> mock(List.class);<br>mockList.add(<span class="hljs-string">&quot;first&quot;</span>);<br>mockList.add(<span class="hljs-string">&quot;second&quot;</span>);<br><span class="hljs-keyword">final</span> <span class="hljs-type">InOrder</span> <span class="hljs-variable">inOrder</span> <span class="hljs-operator">=</span> inOrder(mockList);<br>inOrder.verify(mockList).add(<span class="hljs-string">&quot;first&quot;</span>);<br>inOrder.verify(mockList).add(<span class="hljs-string">&quot;second&quot;</span>);<br><br><span class="hljs-comment">// 验证多个对象多个方法的执行顺序</span><br><span class="hljs-keyword">final</span> <span class="hljs-type">List</span> <span class="hljs-variable">mockList1</span> <span class="hljs-operator">=</span> mock(List.class);<br><span class="hljs-keyword">final</span> <span class="hljs-type">List</span> <span class="hljs-variable">mockList2</span> <span class="hljs-operator">=</span> mock(List.class);<br>mockList1.get(<span class="hljs-number">0</span>);<br>mockList1.get(<span class="hljs-number">1</span>);<br>mockList2.get(<span class="hljs-number">0</span>);<br>mockList1.get(<span class="hljs-number">2</span>);<br>mockList2.get(<span class="hljs-number">1</span>);<br><span class="hljs-keyword">final</span> <span class="hljs-type">InOrder</span> <span class="hljs-variable">inOrder1</span> <span class="hljs-operator">=</span> inOrder(mockList1, mockList2);<br>inOrder1.verify(mockList1).get(<span class="hljs-number">0</span>);<br>inOrder1.verify(mockList1).get(<span class="hljs-number">2</span>);<br>inOrder1.verify(mockList2).get(<span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
-<h3 id="Spy监控">Spy监控</h3>
+<h3 id="spy监控">Spy监控</h3>
 <p>我们可以为真实的依赖对象创建一个Spy对象。这个对象与上面的Mock对象存在一定的区别。</p>
 <p>Mock对象是对真实对象的完全Mock，我们创建的Mock对象与真实对象无关，我们可以对Mock对象的方法进行打桩，人为指定对应的返回值。而没有打桩的方法，则是默认的返回值。我们可以基于接口、实现类创建Mock对象。</p>
 <p>Spy对象则是对真实对象的部分Mock，它是基于真实对象的。我们同样可以对对应的方法进行打桩。但是没有打桩的方法，走的是真实对象的实现。因此我们只能基于实现类来创建Spy对象，因为否则在调用没有打桩的方法时走真实实现的时候会出现异常。</p>
@@ -397,10 +390,14 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">MockitoAnnotations.openMocks(<span class="hljs-built_in">this</span>);<br></code></pre></td></tr></table></figure>
 <p>由于每个单元测试方法是单独执行的，并且都需要开启注解，所以我们可以将注解的开启放在所有测试方法的前面，即实现一个<code>setUp</code>方法，其中完成注解功能开启。以下是使用示例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AnnotationTest</span> &#123;<br><br>    <span class="hljs-meta">@Mock</span><br>    <span class="hljs-keyword">private</span> OtherService otherService;<br><br>    <span class="hljs-meta">@BeforeEach</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">setUp</span><span class="hljs-params">()</span>&#123;<br>        MockitoAnnotations.openMocks(<span class="hljs-built_in">this</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">testMyService</span><span class="hljs-params">()</span>&#123;<br>        when(otherService.complexFunc(<span class="hljs-number">1</span>)).thenReturn(<span class="hljs-number">2</span>); <span class="hljs-comment">// stub</span><br>        System.out.println(otherService.complexFunc(<span class="hljs-number">1</span>)); <span class="hljs-comment">// 2</span><br>        System.out.println(otherService.complexFunc(<span class="hljs-number">2</span>)); <span class="hljs-comment">// 0(默认值)</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html">Mockito (Mockito 5.1.1 API) (javadoc.io)</a></li>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7202666869965520952">手把手教你Mockito的使用 - 掘金 (juejin.cn)</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html">Mockito
+(Mockito 5.1.1 API) (javadoc.io)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://juejin.cn/post/7202666869965520952">手把手教你Mockito的使用
+- 掘金 (juejin.cn)</a></li>
 </ol>
 
                 

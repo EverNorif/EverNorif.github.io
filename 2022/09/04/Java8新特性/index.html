@@ -82,7 +82,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -324,18 +324,26 @@
             
               <div class="markdown-body">
                 
-                <h1>Java8新特性</h1>
+                <h1 id="java8新特性">Java8新特性</h1>
 <ul>
-<li><strong>Lambda 表达式</strong>：Lambda 允许把函数作为一个方法的参数（函数作为参数传递到方法中）。</li>
-<li><strong>方法引用</strong> ：方法引用提供了非常有用的语法，可以直接引用已有Java类或对象（实例）的方法或构造器。与lambda联合使用，方法引用可以使语言的构造更紧凑简洁，减少冗余代码。</li>
-<li><strong>默认方法</strong> ：默认方法就是一个在接口里面有了一个实现的方法。</li>
-<li><strong>新工具</strong> ：新的编译工具，如：Nashorn引擎 jjs、 类依赖分析器jdeps。</li>
-<li><strong>Stream API</strong>：新添加的Stream API（java.util.stream） 把真正的函数式编程风格引入到Java中。</li>
+<li><strong>Lambda 表达式</strong>：Lambda
+允许把函数作为一个方法的参数（函数作为参数传递到方法中）。</li>
+<li><strong>方法引用</strong>
+：方法引用提供了非常有用的语法，可以直接引用已有Java类或对象（实例）的方法或构造器。与lambda联合使用，方法引用可以使语言的构造更紧凑简洁，减少冗余代码。</li>
+<li><strong>默认方法</strong>
+：默认方法就是一个在接口里面有了一个实现的方法。</li>
+<li><strong>新工具</strong> ：新的编译工具，如：Nashorn引擎 jjs、
+类依赖分析器jdeps。</li>
+<li><strong>Stream API</strong>：新添加的Stream API（java.util.stream）
+把真正的函数式编程风格引入到Java中。</li>
 <li><strong>Date Time API</strong> ： 加强对日期与时间的处理。</li>
-<li><strong>Optional 类</strong> ：Optional 类已经成为 Java 8 类库的一部分，用来解决空指针异常。</li>
-<li><strong>Nashorn, JavaScript 引擎</strong> ： Java 8提供了一个新的Nashorn javascript引擎，它允许我们在JVM上运行特定的javascript应用。</li>
+<li><strong>Optional 类</strong> ：Optional 类已经成为 Java 8
+类库的一部分，用来解决空指针异常。</li>
+<li><strong>Nashorn, JavaScript 引擎</strong> ： Java
+8提供了一个新的Nashorn
+javascript引擎，它允许我们在JVM上运行特定的javascript应用。</li>
 </ul>
-<h1>Lambda表达式</h1>
+<h1 id="lambda表达式">Lambda表达式</h1>
 <h2 id="语法格式">语法格式</h2>
 <p>lambda表达式的语法格式如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">(parameters) -&gt; expression<br>或<br>(parameters) -&gt;&#123; statements; &#125;<br></code></pre></td></tr></table></figure>
@@ -345,17 +353,20 @@
 <li>可选大括号：如果主体只包含一个语句，就不需要使用大括号</li>
 </ul>
 <h2 id="函数式接口">函数式接口</h2>
-<p>函数式接口（Function Interface）：是一个接口。这个接口有且仅有一个抽象方法，但是可以有多个非抽象方法。</p>
+<p>函数式接口（Function
+Interface）：是一个接口。这个接口有且仅有一个抽象方法，但是可以有多个非抽象方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@FunctionalInterface</span><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">MyFunctionalInterface</span>&#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayMessage</span><span class="hljs-params">(String message)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <blockquote>
 <p>在函数式编程语言当中，函数被当作一等公民。在将函数作为一等公民的编程语言中，Lambda表达式的类型是函数。但是在Java8中有所不同。在Java8中，Lambda表达式是对象，而不是函数。它们必须依附于一类特别的对象类型——函数式接口而存在。</p>
 <p>简单来说，在Java8中，Lambda表达式就是一个函数式接口的实例。只要一个对象是函数式接口的实例，那么该对象就可以用Lambda表达式来表示（在此之前，完成对应功能的是匿名类）</p>
 </blockquote>
-<p><code>java.util.function</code> 它包含了很多类，用来支持 Java的 函数式编程。</p>
+<p><code>java.util.function</code> 它包含了很多类，用来支持 Java的
+函数式编程。</p>
 <p>并且在Java中，有四大核心函数式编程接口：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>函数式接口</th>
 <th>参数类型</th>
 <th>返回类型</th>
@@ -363,25 +374,25 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>Consumer&lt;T&gt;</code></td>
 <td>T</td>
 <td>void</td>
 <td>对类型为T的对象应用操作<br />对应的抽象方法为<code>void accept(T t)</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>Supplier&lt;T&gt;</code></td>
 <td>无</td>
 <td>T</td>
 <td>返回类型为T的对象<br />对应的抽象方法为<code>T get()</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>Function&lt;T, R&gt;</code></td>
 <td>T</td>
 <td>R</td>
 <td>对类型为T的对象应用操作并返回类型为R的对象<br />对应的抽象方法为<code>R apply(T t)</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>Predicate&lt;T&gt;</code></td>
 <td>T</td>
 <td>boolean</td>
@@ -403,28 +414,31 @@
 </blockquote>
 <p>当然这里的方法也可以是构造器方法，此时的调用方式如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 类::new</span><br>String::<span class="hljs-keyword">new</span>; <span class="hljs-comment">// 构造器引用</span><br><span class="hljs-type">int</span>[]::<span class="hljs-keyword">new</span>; <span class="hljs-comment">// 数组引用</span><br></code></pre></td></tr></table></figure>
-<h1>Stream API</h1>
+<h1 id="stream-api">Stream API</h1>
 <h2 id="介绍">介绍</h2>
-<p>Strream API，所在的包为<code>java.util.stream</code>，把真正的函数式编程风格引入到Java中，极大程度上提高Java程序员的生产力，写出高效率、干净、简洁的代码。Stream是Java8中处理集合的关键抽象概念，它可以指定我们希望对集合进行的操作，执行非常复杂的查找、过滤和映射等。还可以使用Stream API来并行执行操作。简言之，Stream API提供了一种高效且易于使用的处理数据的方式。</p>
+<p>Strream
+API，所在的包为<code>java.util.stream</code>，把真正的函数式编程风格引入到Java中，极大程度上提高Java程序员的生产力，写出高效率、干净、简洁的代码。Stream是Java8中处理集合的关键抽象概念，它可以指定我们希望对集合进行的操作，执行非常复杂的查找、过滤和映射等。还可以使用Stream
+API来并行执行操作。简言之，Stream
+API提供了一种高效且易于使用的处理数据的方式。</p>
 <p>利用Stream，我们可以完成一系列的链式调用，最终得到想要的结果。（可以联想到Scala中的函数式编程）</p>
 <blockquote>
 <p>Stream和Collection集合的区别：Collection是一种静态的内存数据接口，而Stream是有关计算的，前者主要面向内存，存储在内存中；后者主要面向CPU，通过CPU实现计算</p>
 </blockquote>
-<ol>
+<ol type="1">
 <li>Stream自己不会存储元素</li>
 <li>Stream不会改变源对象，而是会返回一个持有结果的新Stream</li>
 <li>Stream操作是惰性执行的，需要结果的时候才会执行</li>
 </ol>
 <p>Stream的操作一般分为以下步骤：</p>
-<ol>
+<ol type="1">
 <li>创建Stream，进行Stream的实例化</li>
 <li>一系列中间操作</li>
 <li>终止操作</li>
 </ol>
 <p>需要注意的是，调用了终止操作之后，流就会关闭，不能再进行新的操作。强行调用操作会报错<code>java.lang.IllegalStateException: stream has already been operated upon or closed</code>。我们需要生成新的流才能继续操作。</p>
-<h2 id="Stream实例化">Stream实例化</h2>
+<h2 id="stream实例化">Stream实例化</h2>
 <p>Stream的实例化主要分为四种情况：</p>
-<ol>
+<ol type="1">
 <li>通过集合进行创建，调用集合的方法</li>
 <li>通过数组进行创建，调用Arrays的静态方法</li>
 <li>调用<code>Stream.of</code>方法</li>
@@ -438,26 +452,27 @@
 <h2 id="中间操作">中间操作</h2>
 <p>筛选与切片</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>filter(Predicate p)</code></td>
 <td>从流中过滤某些元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>distinct()</code></td>
 <td>去重</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>limit(long maxSize)</code></td>
 <td>截断流，使其元素不超过给定数量</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>skip(long n)</code></td>
 <td>跳过前n个元素。如果流中元素不足n个，则返回一个空流</td>
 </tr>
@@ -465,30 +480,31 @@
 </table>
 <p>映射</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>map(Function f)</code></td>
 <td>接收一个函数作为参数，该函数会应用到每个元素上，并将其映射成一个新的元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>mapToDouble(ToDoubleFunction f)</code></td>
 <td>接收一个函数作为参数，该函数会被应用到每个元素上，并产生一个新的DoubleStream</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>mapToInt(ToIntFunction f)</code></td>
 <td>接收一个函数作为参数，该函数会被应用到每个元素上，并产生一个新的IntStream</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>mapToLong(ToLongFunction f)</code></td>
 <td>接收一个函数作为参数，该函数会被应用到每个元素上，并产生一个新的LongStream</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>flatMap(Function f)</code></td>
 <td>接收一个函数作为参数，将流中的每个值都换成另一个流，然后把所有的流连接成一个流</td>
 </tr>
@@ -497,17 +513,17 @@
 <p>排序</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>sorted()</code></td>
 <td>产生一个新流，其中按照自然顺序排序</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>sorted(Comparator com)</code></td>
 <td>产生一个新流，其中按照比较器顺序排序</td>
 </tr>
@@ -516,46 +532,47 @@
 <h2 id="终止操作">终止操作</h2>
 <p>匹配与查找</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>allMatch(Predicate p)</code></td>
 <td>返回布尔值，检查是否所有元素都符合条件</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>anyMatch(Predicate p)</code></td>
 <td>返回布尔值，检查是否至少有一个元素符合条件</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>noneMatch(Precicate p)</code></td>
 <td>返回布尔值，检查是否所有元素都不符合条件</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>findFirst()</code></td>
 <td>返回第一个元素</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>findAny()</code></td>
 <td>返回任意一个元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>count()</code></td>
 <td>返回流中元素总数</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>max(Comparator c)</code></td>
 <td>返回流中最大值</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>min(Comparator c)</code></td>
 <td>返回流中最小值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>forEach(Consumer c)</code></td>
 <td>内部迭代，对流中每个元素执行对应操作</td>
 </tr>
@@ -563,18 +580,19 @@
 </table>
 <p>规约</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>reduce(T iden, BinaryOperator b)</code></td>
 <td>对流中元素进行规约，iden为初始值。返回T</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>reduce(BinaryOperator b)</code></td>
 <td>对流中元素进行规约，返回<code>Optional&lt;T&gt;</code></td>
 </tr>
@@ -582,21 +600,22 @@
 </table>
 <p>收集</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>collect(Collector c)</code></td>
 <td>将流转化为其他形式。接收一个Collector接口的实现，用于汇总流中的元素</td>
 </tr>
 </tbody>
 </table>
 <p>Collector接口中方法的实现决定了如何对流执行收集（如收集到List、Set、Map）。另外在Collectors类中，提供了很多静态方法，可以方便地创建常见收集器实例。</p>
-<h1>Optional</h1>
+<h1 id="optional">Optional</h1>
 <p><code>Optional&lt;T&gt;</code>类是一个容器类，来自<code>java.util.Optional</code>。它可以保存类型T的值，代表这个值存在；或者仅仅保存null，代表这个值不存在。原来使用null表示一个值不存在，现在使用Optional可以更好地表达这个概念，并且可以避免<strong>空指针异常</strong>。Optional中提供很多有用的方法，让我们不需要显式地进行空值检测</p>
 <p>创建Optional类对象：</p>
 <ul>
@@ -616,9 +635,10 @@
 <li><code>T orElseGet(Supplier&lt;? extends T&gt; other)</code>：如果有值则将其返回，否则返回由Supplier接口实现提供的对象</li>
 <li><code>T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier)</code>：如果有值则将其返回，否则抛出由Supplier接口实现提供的异常</li>
 </ul>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://www.runoob.com/java/java8-new-features.html">Java 8 新特性 | 菜鸟教程 (runoob.com)</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/java/java8-new-features.html">Java 8
+新特性 | 菜鸟教程 (runoob.com)</a></li>
 </ol>
 
                 

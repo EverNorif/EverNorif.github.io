@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,42 +326,38 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Yarn常用命令">Yarn常用命令</h2>
-<h3 id="1-任务查看">1.任务查看</h3>
+                <h2 id="yarn常用命令">Yarn常用命令</h2>
+<h3 id="任务查看">1.任务查看</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 列出所有的Application<br>yarn application -list<br><br>// 根据Application状态进行过滤<br>yarn application -list -appStates 状态<br><br>// 根据application_id来kill掉Appliation<br>yarn application -kill application_id<br></code></pre></td></tr></table></figure>
 <ul>
 <li>任务的所有状态有：ALL、NEW、NEW_SAVING、SUBMITTED、ACCEPTED、RUNNING、FINISHED、FAILED、KILLED</li>
 </ul>
-<h3 id="2-日志查看">2.日志查看</h3>
+<h3 id="日志查看">2.日志查看</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 查询Application日志<br>yarn logs -applicationId application_id<br><br>// 查询Container日志<br>yarn logs -applicationId application_id -containerId container_id<br></code></pre></td></tr></table></figure>
 <ul>
 <li>application_id可以通过任务查看得到，container_id可以通过容器查看得到</li>
 </ul>
-<h3 id="3-运行任务查看">3.运行任务查看</h3>
+<h3 id="运行任务查看">3.运行任务查看</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 列出所有Application尝试的列表<br>yarn applicationattempt -list application_id<br><br>// 打印ApplicationAttempt状态<br>yarn applicationattempt -status application_id<br></code></pre></td></tr></table></figure>
-<h3 id="4-容器查看">4.容器查看</h3>
+<h3 id="容器查看">4.容器查看</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 列出某个application的所有container<br>yarn container -list application_id<br><br>// 打印Container的状态<br>yarn container -status container_id<br></code></pre></td></tr></table></figure>
 <ul>
 <li>注意只有任务在运行的过程中才能看到Container的状态，因为任务运行完成之后Container会释放</li>
 </ul>
-<h3 id="5-节点状态查看">5.节点状态查看</h3>
+<h3 id="节点状态查看">5.节点状态查看</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 列出所有节点<br>yarn node -list -all<br></code></pre></td></tr></table></figure>
-<h3 id="6-队列查看">6.队列查看</h3>
+<h3 id="队列查看">6.队列查看</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 打印队列信息<br>yarn queue -status QueueName<br></code></pre></td></tr></table></figure>
 <ul>
 <li>QueueName即在调度器中的队列名称</li>
 </ul>
-<h3 id="7-队列配置更新">7.队列配置更新</h3>
+<h3 id="队列配置更新">7.队列配置更新</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 更新队列配置<br>yarn rmadmin -refreshQueues<br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>只有队列配置信息更新之后可以刷新</p>
-</li>
-<li>
-<p>如果更改了Yarn配置的话则无法使用这个命令刷新，需要重启Yarn</p>
-</li>
+<li><p>只有队列配置信息更新之后可以刷新</p></li>
+<li><p>如果更改了Yarn配置的话则无法使用这个命令刷新，需要重启Yarn</p></li>
 </ul>
-<h2 id="Yarn重要参数配置">Yarn重要参数配置</h2>
+<h2 id="yarn重要参数配置">Yarn重要参数配置</h2>
 <p>1）ResourceManager相关</p>
 <ul>
 <li><code>yarn.resourcemanager.scheduler.class</code>：配置调度器，默认为容量调度器</li>
@@ -369,36 +365,18 @@
 </ul>
 <p>2）NodeManager相关</p>
 <ul>
-<li>
-<p><code>yarn.nodemanager.resource.detect-hardware-capabilities</code>：是否让yarn自动检测硬件进行配置，默认为false</p>
-</li>
-<li>
-<p><code>yarn.nodemanager.resource.count-logical-processors-as-cores</code>：是否将虚拟核数当作CPU核数，默认为false</p>
-</li>
-<li>
-<p><code>yarn.nodemanager.resource.pcores-vcores-multiplier</code>：虚拟核数与物理核数的比例</p>
-</li>
-<li>
-<p><code>yarn.nodemanager.resource.memory-mb</code>：NodeManager使用内存，默认为8G</p>
-</li>
-<li>
-<p><code>yarn.nodemanager.resource.system-reserved-memory-mb</code>：NodeManager为系统保留多少内存</p>
+<li><p><code>yarn.nodemanager.resource.detect-hardware-capabilities</code>：是否让yarn自动检测硬件进行配置，默认为false</p></li>
+<li><p><code>yarn.nodemanager.resource.count-logical-processors-as-cores</code>：是否将虚拟核数当作CPU核数，默认为false</p></li>
+<li><p><code>yarn.nodemanager.resource.pcores-vcores-multiplier</code>：虚拟核数与物理核数的比例</p></li>
+<li><p><code>yarn.nodemanager.resource.memory-mb</code>：NodeManager使用内存，默认为8G</p></li>
+<li><p><code>yarn.nodemanager.resource.system-reserved-memory-mb</code>：NodeManager为系统保留多少内存</p>
 <blockquote>
 <p>上面两个参数只需要配置一个即可</p>
-</blockquote>
-</li>
-<li>
-<p><code>yarn.nodemanager.resource.cpu-vcores</code>：NodeManager使用CPU核数，默认为8个</p>
-</li>
-<li>
-<p><code>yarn.nodemanager.pmem-check-enabled</code>：是否开启物理内存检查限制container，默认打开</p>
-</li>
-<li>
-<p><code>yarn.nodemanager.vmem-check-enabled</code>：是否开启虚拟内存检查限制container，默认打开</p>
-</li>
-<li>
-<p><code>yarn.nodemanager.vmem-pmem-ratio</code>：虚拟内存与物理内存比例，默认为2:1</p>
-</li>
+</blockquote></li>
+<li><p><code>yarn.nodemanager.resource.cpu-vcores</code>：NodeManager使用CPU核数，默认为8个</p></li>
+<li><p><code>yarn.nodemanager.pmem-check-enabled</code>：是否开启物理内存检查限制container，默认打开</p></li>
+<li><p><code>yarn.nodemanager.vmem-check-enabled</code>：是否开启虚拟内存检查限制container，默认打开</p></li>
+<li><p><code>yarn.nodemanager.vmem-pmem-ratio</code>：虚拟内存与物理内存比例，默认为2:1</p></li>
 </ul>
 <p>3）Container相关</p>
 <ul>
@@ -411,13 +389,10 @@
 <h2 id="调度器配置">调度器配置</h2>
 <p>容量调度器和公平调度器默认情况下都只有一个default队列，不能满足生产要求。可以在配置文件中配置多队列。</p>
 <p>配置多队列可以防止单个任务将所有资源全部耗尽；并且可以实现任务的降级使用，在特殊时期保证重要的任务队列资源充足</p>
-<ol>
-<li>
-<p>容量调度器配置：相关配置在<code>$HADOOP_HOME/etc/hadoop/capacity-scheduler.xml</code>中，可以配置多队列、配置每个队列的最低和最大使用资源、队列使用权限、队列优先级、任务超时设置等</p>
-</li>
-<li>
-<p>公平调度器配置：公平调度器的配置默认在Apache Hadoop中没有，需要自己创建配置文件，然后在<code>yarn-site.xml</code>文件中指定相关的配置信息，同样可以配置队列相关的信息</p>
-</li>
+<ol type="1">
+<li><p>容量调度器配置：相关配置在<code>$HADOOP_HOME/etc/hadoop/capacity-scheduler.xml</code>中，可以配置多队列、配置每个队列的最低和最大使用资源、队列使用权限、队列优先级、任务超时设置等</p></li>
+<li><p>公平调度器配置：公平调度器的配置默认在Apache
+Hadoop中没有，需要自己创建配置文件，然后在<code>yarn-site.xml</code>文件中指定相关的配置信息，同样可以配置队列相关的信息</p></li>
 </ol>
 <blockquote>
 <p>通过-D来表示运行时改变参数值，例如：</p>

@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,7 +326,7 @@
             
               <div class="markdown-body">
                 
-                <h1>动态SQL</h1>
+                <h1 id="动态sql">动态SQL</h1>
 <p>在前面，我们学习了MyBatis的获取参数的功能，通过获取参数可以实现SQL的动态变化。在MyBatis中，还提供一种根据特定条件动态拼接SQL语句的功能，利用不同功能的标签，来动态拼接SQL语句。</p>
 <h2 id="if">if</h2>
 <p>if标签中我们可以指定test条件，这是一个条件表达式，如果表达式的结果为true，则会将标签中的内容进行拼接，反之则不会拼接。</p>
@@ -339,7 +339,7 @@
 <p>上面的示例中，我们使用<code>where 1=1</code>来避免全部条件不匹配时的SQL语句错误问题，不过在MyBatis中也提供了where标签来实现相应的功能。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--List&lt;Emp&gt; getEmpListByCondition(Emp emp);--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpListByMoreTJ&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;Emp&quot;</span>&gt;</span><br>    select * from emp <br>    <span class="hljs-tag">&lt;<span class="hljs-name">where</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;empId != &#x27;&#x27; and empId != null&quot;</span>&gt;</span><br>            emp_id = #&#123;empId&#125;<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;empName != &#x27;&#x27; and empName != null&quot;</span>&gt;</span><br>            and emp_name = #&#123;empName&#125;<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">where</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>where标签一般和if标签结合使用，它可以达到以下的效果：</p>
-<ol>
+<ol type="1">
 <li>如果where标签中的if条件都不满足，则where标签不会添加where关键字</li>
 <li>如果where标签中的if条件满足，则where标签会自动添加where关键字，并且会将条件最前方多余的and去除，但是不能去除条件后方多余的and</li>
 </ol>
@@ -354,7 +354,7 @@
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--List&lt;Emp&gt; getEmpListByCondition(Emp emp);--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpListByMoreTJ&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;Emp&quot;</span>&gt;</span><br>    select * from emp <br>    <span class="hljs-tag">&lt;<span class="hljs-name">trim</span> <span class="hljs-attr">prifix</span>=<span class="hljs-string">&quot;where&quot;</span> <span class="hljs-attr">suffixOverrides</span>=<span class="hljs-string">&quot;and&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;empId != &#x27;&#x27; and empId != null&quot;</span>&gt;</span><br>            emp_id = #&#123;empId&#125; and<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;empName != &#x27;&#x27; and empName != null&quot;</span>&gt;</span><br>            emp_name = #&#123;empName&#125;<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">trim</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>上面的动态SQL语句，可以自动添加where关键字，并删除最后多余的and关键字。</p>
-<h2 id="choose，when，otherwise">choose，when，otherwise</h2>
+<h2 id="choosewhenotherwise">choose，when，otherwise</h2>
 <p>choose、when、otherwise标签三者通常结合使用，表示在多选一的情况。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--List&lt;Emp&gt; getEmpListByCondition(Emp emp);--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getEmpListByMoreTJ&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;Emp&quot;</span>&gt;</span><br>    select * from emp <br>    <span class="hljs-tag">&lt;<span class="hljs-name">where</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">choose</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">when</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;empId != &#x27;&#x27; and empId != null&quot;</span>&gt;</span><br>                emp_id = #&#123;empId&#125;<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">when</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">when</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;empName != &#x27;&#x27; and empName != null&quot;</span>&gt;</span><br>                emp_name = #&#123;empName&#125;<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">when</span>&gt;</span>   <br>            <span class="hljs-tag">&lt;<span class="hljs-name">otherwise</span>&gt;</span><br>                1 = 1<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">otherwise</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">choose</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">where</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <h2 id="foreach">foreach</h2>
@@ -364,11 +364,11 @@
 <h2 id="sql片段">sql片段</h2>
 <p>SQL片段对应<code>sql</code>标签，它用来记录一段公共的SQL片段，在需要使用的地方，通过include标签进行引入即可。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">sql</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;empColumns&quot;</span>&gt;</span><br>    emp_id, emp_name, dept_id<br><span class="hljs-tag">&lt;/<span class="hljs-name">sql</span>&gt;</span><br><br>select <span class="hljs-tag">&lt;<span class="hljs-name">include</span> <span class="hljs-attr">refid</span>=<span class="hljs-string">&quot;empColumns&quot;</span>/&gt;</span> from emp<br></code></pre></td></tr></table></figure>
-<h1>缓存</h1>
+<h1 id="缓存">缓存</h1>
 <p>MyBatis中存在缓存机制，分为一级和二级缓存。同时MyBatis中也提供了整合第三方缓存的功能。</p>
 <h2 id="一级缓存">一级缓存</h2>
 <p>一级缓存是SqlSession级别的，通过同一个SqlSession查询的数据会被缓存。下次查询相同的数据，则会直接命中缓存，不需要从数据库重新访问。不过会有一些情况使得一级缓存失效：</p>
-<ol>
+<ol type="1">
 <li>不同的SqlSession对应不同的一级缓存</li>
 <li>使用了同一个SqlSession，但是查询条件不同，无法命中缓存</li>
 <li>同一个SqlSession的两次查询期间执行了增删改操作，导致缓存与数据库不一致，缓存失效</li>
@@ -377,7 +377,7 @@
 <h2 id="二级缓存">二级缓存</h2>
 <p>二级缓存是SqlSessionFactory级别的，通过同一个SqlSessionFactory创建的SqlSession查询的结果会被缓存。</p>
 <p>二级缓存开启的条件如下：</p>
-<ol>
+<ol type="1">
 <li>在核心配置文件中，设置全局配置属性<code>cacheEnabled</code>为true，当然它的默认值就是true</li>
 <li>在映射文件中设置标签<code>&lt;cache/&gt;</code></li>
 <li>二级缓存在SqlSession关闭或提交后有效，一级缓存对应的SqlSession关闭或提交后，才会存入二级缓存中</li>
@@ -385,23 +385,21 @@
 </ol>
 <p>如果两次查询之间执行了任意的增删改操作，会使得一级和二级缓存同时失效。在查询的时候，优先查询二级缓存，然后再查询一级缓存，最后查询数据库。</p>
 <p>在映射文件的<code>&lt;cache/&gt;</code>标签中可以设置二级缓存的相关属性：</p>
-<ol>
+<ol type="1">
 <li><code>eviction</code>：缓存回收策略，可选值如下，默认值为<code>LRU</code>
 <ul>
 <li><code>LRU</code>：最近最少使用策略</li>
 <li><code>FIFO</code>：先进先出策略</li>
 <li><code>SOFT</code>：软引用</li>
 <li><code>WEAK</code>：弱引用</li>
-</ul>
-</li>
+</ul></li>
 <li><code>flushInterval</code>：表示缓存刷新间隔，单位为ms。默认情况没有设置，表示没有刷新间隔，在调用语句的时候刷新</li>
 <li><code>size</code>：表示引用数目，为正整数。代表缓存最多可以存储对象的个数，如果设置的过大容易导致内存溢出</li>
 <li><code>readOnly</code>：表示是否只读，可选值为<code>true|false</code>，默认值为<code>false</code>
 <ul>
 <li><code>true</code>：只读缓存。在缓存命中的时候会给所有调用者返回缓存对象的相同示例，因此这些对象不能被修改。这种情况下性能更优。</li>
 <li><code>false</code>：读写缓存。在缓存命中的时候返回缓存对象的拷贝，因此需要对象实现序列化。这种情况下的性能差一些，但是更加安全。</li>
-</ul>
-</li>
+</ul></li>
 </ol>
 
                 

@@ -82,7 +82,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,55 +326,54 @@
                 
                 <h2 id="问题记录">问题记录</h2>
 <p>目前已经记录的问题简要描述如下：</p>
-<ol>
-<li>
-<p>table组件切换时会有不同程度的长度变化</p>
-</li>
-<li>
-<p>带输入建议的input中，输入建议显示空白</p>
-</li>
-<li>
-<p>input输入建议的模糊查询</p>
-</li>
-<li>
-<p>table的定位跳转</p>
-</li>
-<li>
-<p>侧边栏子菜单展开后会多出1px</p>
-</li>
-<li>
-<p>弹出对话框的抖动问题</p>
-</li>
+<ol type="1">
+<li><p>table组件切换时会有不同程度的长度变化</p></li>
+<li><p>带输入建议的input中，输入建议显示空白</p></li>
+<li><p>input输入建议的模糊查询</p></li>
+<li><p>table的定位跳转</p></li>
+<li><p>侧边栏子菜单展开后会多出1px</p></li>
+<li><p>弹出对话框的抖动问题</p></li>
 </ol>
 <h2 id="解决方案">解决方案</h2>
-<h3 id="1-table组件长度变化">1.table组件长度变化</h3>
-<p>如果将elementUI table作为动态组件在页面中显示，第一次显示是正常的，而后续来回切换之后再显示，table会出现不同程度的长度变化，据官方所说这好像是内部的一个小bug。</p>
+<h3 id="table组件长度变化">1.table组件长度变化</h3>
+<p>如果将elementUI
+table作为动态组件在页面中显示，第一次显示是正常的，而后续来回切换之后再显示，table会出现不同程度的长度变化，据官方所说这好像是内部的一个小bug。</p>
 <p>一种解决方案是在每次切换回表格的时候对数据进行重新加载，在activate生命周期的时候执行下面的方法。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-variable language_">this</span>.$nextTick(<span class="hljs-function">() =&gt;</span> &#123;<br>     <span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>.<span class="hljs-property">multipleTable</span>.<span class="hljs-title function_">doLayout</span>();<br>     <span class="hljs-comment">// el-table加ref=&quot;multipleTable&quot;</span><br> &#125;);<br></code></pre></td></tr></table></figure>
-<h3 id="2-带输入建议的input组件显示空白">2.带输入建议的input组件显示空白</h3>
+<h3
+id="带输入建议的input组件显示空白">2.带输入建议的input组件显示空白</h3>
 <p>elementUI中提供有带输入建议的input组件使用如下：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">el-autocomplete</span></span><br><span class="hljs-tag"><span class="hljs-attr">class</span>=<span class="hljs-string">&quot;inline-input&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">v-show</span>=<span class="hljs-string">&quot;show&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;searchName&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">:fetch-suggestions</span>=<span class="hljs-string">&quot;querySearch&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;名称搜索&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">:trigger-on-focus</span>=<span class="hljs-string">&quot;false&quot;</span></span><br><span class="hljs-tag"><span class="hljs-attr">:model-append-to-body</span>=<span class="hljs-string">&quot;false&quot;</span></span><br><span class="hljs-tag">@<span class="hljs-attr">select</span>=<span class="hljs-string">&quot;handleSelect&quot;</span></span><br><span class="hljs-tag">&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">el-autocomplete</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>其中实现返回输入建议的是绑定在<code>:fetch-suggestions</code>里的方法，下面的问题3中会提供一种模糊查询的方式。目前遇到的问题是返回建议是空白的，原因在于显示的数据中，输入建议必须是在<code>value</code>字段当中。</p>
-<h3 id="3-返回模糊查询的输入建议">3.返回模糊查询的输入建议</h3>
+<h3 id="返回模糊查询的输入建议">3.返回模糊查询的输入建议</h3>
 <p>input组件通过绑定在<code>:fetch-suggestions</code>里的方法实现输入建议。通常在输入建议当中，我们会返回模糊查询之后的结果，通过以下方式来实现：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//用来实现模糊查找的两个函数</span><br><span class="hljs-title function_">querySearch</span>(<span class="hljs-params">queryString, cb</span>) &#123;<br>    <span class="hljs-keyword">var</span> searchData = <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>;<span class="hljs-comment">//需要查询的全部数据</span><br>    <span class="hljs-keyword">var</span> results = queryString ? searchData.<span class="hljs-title function_">filter</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">createFilter</span>(queryString)) : searchData;<br>    <span class="hljs-comment">// 调用 callback 返回建议列表的数据</span><br>    <span class="hljs-title function_">cb</span>(results);<br>&#125;,<br>    <br><span class="hljs-title function_">createFilter</span>(<span class="hljs-params">queryString</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">searchData</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">return</span> (searchData.<span class="hljs-property">label</span>.<span class="hljs-title function_">toLowerCase</span>().<span class="hljs-title function_">indexOf</span>(queryString.<span class="hljs-title function_">toLowerCase</span>()) &gt; -<span class="hljs-number">1</span>);<br>    &#125;;<br>&#125;,<br></code></pre></td></tr></table></figure>
-<h3 id="4-table的定位跳转">4.table的定位跳转</h3>
+<h3 id="table的定位跳转">4.table的定位跳转</h3>
 <p>目前需要完成的任务是，在输入框中输入了数据，然后表格需要将对应数据行显示当前的第一列。这个功能可以通过获取所需数据行在全部数据中的index，然后通过index进行定位跳转来实现。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//element-ui跳转到指定行</span><br><span class="hljs-title function_">tableScrollMove</span>(<span class="hljs-params">refName,index=<span class="hljs-number">0</span></span>)&#123;<br>    <span class="hljs-keyword">if</span>(!refName || !<span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>[refName]) <span class="hljs-keyword">return</span><span class="hljs-comment">//不存在表格的ref vm 则返回</span><br>    <span class="hljs-keyword">let</span> vmEl = <span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>[refName].<span class="hljs-property">$el</span><br>    <span class="hljs-keyword">if</span>(!vmEl) <span class="hljs-keyword">return</span><br>    <span class="hljs-comment">//计算滚动条的位置</span><br>    <span class="hljs-keyword">const</span> targetTop = vmEl.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&#x27;.el-table__body tr&#x27;</span>)[index].<span class="hljs-title function_">getBoundingClientRect</span>().<span class="hljs-property">top</span>;<br>    <span class="hljs-keyword">const</span> containerTop = vmEl.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;.el-table__body&#x27;</span>).<span class="hljs-title function_">getBoundingClientRect</span>().<span class="hljs-property">top</span>;<br>    <span class="hljs-keyword">const</span> scrollParent = vmEl.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;.el-table__body-wrapper&#x27;</span>);<br>    scrollParent.<span class="hljs-property">scrollTop</span> = targetTop - containerTop;<br>&#125;,<br></code></pre></td></tr></table></figure>
 <p>其中refName表示table表格的ref值，index表示当前需要展示的数据对应的index。</p>
 <p>目前遇到的实现情况是，在输入框中输入了对应数据的名称（声优或者动漫的名称），通过监听目前输入框中数据的变化，动态查找到该数据在全部数据中的index，然后调用上面的定位方式。</p>
-<h3 id="5-侧边栏子菜单展开后会多出1px">5.侧边栏子菜单展开后会多出1px</h3>
+<h3 id="侧边栏子菜单展开后会多出1px">5.侧边栏子菜单展开后会多出1px</h3>
 <p>elementUI中提供侧边栏功能，侧边栏展开后子菜单可能会出现宽度多出1px的问题，解决方案如下：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css">//对<span class="hljs-selector-tag">table</span>设置以下样式<br><span class="hljs-selector-class">.el-menu</span>&#123;<br>    <span class="hljs-attribute">border-right-width</span>: <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="6-弹出对话框的抖动问题">6.弹出对话框的抖动问题</h3>
+<h3 id="弹出对话框的抖动问题">6.弹出对话框的抖动问题</h3>
 <p>弹出对话框的时候会导致页面抖动，这是因为出现滑块的原因，解决方案如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;style scope&gt;<br>/* 防止打开对话框时页面的抖动 */<br>body&#123;<br>  padding-right: 0px !important;<br>  overflow: hidden;<br>&#125;<br>&lt;/style&gt;<br>如果按照上述的设置不会起到作用，因为&quot;&lt;style scope&gt;&quot;中将css样式设定为局部的。所以需要将&quot;scope&quot;去掉。<br></code></pre></td></tr></table></figure>
 <h2 id="参考文章">参考文章</h2>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000020355390#/">element-ui的table，切换路由后高度变小 - SegmentFault 思否</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wyhstars/article/details/81672195#/">element-ui带输入建议的input框踩坑(输入建议空白以及会闪出上一次的输入建议问题)_wyhstars的博客-CSDN博客_element input</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yuwenjing0727/p/14741875.html#/">element-ui表格定位到某一行 - yuwenjing - 博客园 (cnblogs.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/YingDaoMonkey/article/details/81809865#/">element UI 导航栏展开后子菜单宽度多出1px问题_YingDaoMonkey的博客-CSDN博客</a></li>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000020355390#/">element-ui的table，切换路由后高度变小
+- SegmentFault 思否</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/wyhstars/article/details/81672195#/">element-ui带输入建议的input框踩坑(输入建议空白以及会闪出上一次的输入建议问题)_wyhstars的博客-CSDN博客_element
+input</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/yuwenjing0727/p/14741875.html#/">element-ui表格定位到某一行
+- yuwenjing - 博客园 (cnblogs.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/YingDaoMonkey/article/details/81809865#/">element
+UI
+导航栏展开后子菜单宽度多出1px问题_YingDaoMonkey的博客-CSDN博客</a></li>
 </ol>
 
                 

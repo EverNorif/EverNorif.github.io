@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,49 +326,31 @@
               <div class="markdown-body">
                 
                 <h2 id="源码对比">源码对比</h2>
-<h3 id="旧API">旧API</h3>
+<h3 id="旧api">旧API</h3>
 <p>首先来查看旧API中的<code>getSplits</code>，所在的位置为<code>package org.apache.hadoop.mapred.FileInputFormat</code>，以下代码只保留了核心的切分逻辑。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> InputSplit[] getSplits(JobConf job, <span class="hljs-type">int</span> numSplits) <span class="hljs-keyword">throws</span> IOException &#123;<br>    	...<br>    <span class="hljs-type">long</span> <span class="hljs-variable">totalSize</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;                           <span class="hljs-comment">// compute total size</span><br>    	...<br>    <br>    List&lt;FileStatus&gt; files = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(stats.length);<br>    <span class="hljs-keyword">for</span> (FileStatus file: stats) &#123;                <span class="hljs-comment">// check we have valid files</span><br>        ...<br>            files.add(file);<br>            totalSize += file.getLen();<br>        ...<br>    &#125;<br><br>    <span class="hljs-type">long</span> <span class="hljs-variable">goalSize</span> <span class="hljs-operator">=</span> totalSize / (numSplits == <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : numSplits);<br>    <span class="hljs-type">long</span> <span class="hljs-variable">minSize</span> <span class="hljs-operator">=</span> Math.max(job.getLong(org.apache.hadoop.mapreduce.lib.input.<br>                                        FileInputFormat.SPLIT_MINSIZE, <span class="hljs-number">1</span>), minSplitSize);<br><br>    	...<br>                <span class="hljs-type">long</span> <span class="hljs-variable">blockSize</span> <span class="hljs-operator">=</span> file.getBlockSize();<br>                <span class="hljs-type">long</span> <span class="hljs-variable">splitSize</span> <span class="hljs-operator">=</span> computeSplitSize(goalSize, minSize, blockSize);<br><br>                <span class="hljs-type">long</span> <span class="hljs-variable">bytesRemaining</span> <span class="hljs-operator">=</span> length;<br>                <span class="hljs-keyword">while</span> (((<span class="hljs-type">double</span>) bytesRemaining)/splitSize &gt; SPLIT_SLOP) &#123;<br>                    String[][] splitHosts = getSplitHostsAndCachedHosts(blkLocations,<br>                                                                        length-bytesRemaining, splitSize, clusterMap);<br>                    splits.add(makeSplit(path, length-bytesRemaining, splitSize,<br>                                         splitHosts[<span class="hljs-number">0</span>], splitHosts[<span class="hljs-number">1</span>]));<br>                    bytesRemaining -= splitSize;<br>                &#125;<br><br>                <span class="hljs-keyword">if</span> (bytesRemaining != <span class="hljs-number">0</span>) &#123;<br>                    String[][] splitHosts = getSplitHostsAndCachedHosts(blkLocations, length<br>                                                                        - bytesRemaining, bytesRemaining, clusterMap);<br>                    splits.add(makeSplit(path, length - bytesRemaining, bytesRemaining,<br>                                         splitHosts[<span class="hljs-number">0</span>], splitHosts[<span class="hljs-number">1</span>]));<br>                &#125;<br>		...<br>&#125;<br><br></code></pre></td></tr></table></figure>
 <p>其中的重要参数：</p>
 <ul>
-<li>
-<p><code>totalSize</code>：文件夹中所有文件大小总和</p>
-</li>
-<li>
-<p><code>goalSize</code>：目标分区大小，通过<code>totalSize</code>和传入参数<code>numSplits</code>计算得来（<code>totalSize / numSplits</code>）</p>
-</li>
-<li>
-<p><code>minSize</code>：分区最小大小，由配置参数<code>mapreduce.input.fileinputformat.split.minsize</code>，为该配置参数与<code>minSplitSize=1</code>之间的最大值，默认情况下<code>minSize</code>值为1</p>
-</li>
-<li>
-<p><code>blockSize</code>：文件系统的块大小</p>
-</li>
-<li>
-<p><code>splitSize</code>：分区大小，通过以下方法确定</p>
+<li><p><code>totalSize</code>：文件夹中所有文件大小总和</p></li>
+<li><p><code>goalSize</code>：目标分区大小，通过<code>totalSize</code>和传入参数<code>numSplits</code>计算得来（<code>totalSize / numSplits</code>）</p></li>
+<li><p><code>minSize</code>：分区最小大小，由配置参数<code>mapreduce.input.fileinputformat.split.minsize</code>，为该配置参数与<code>minSplitSize=1</code>之间的最大值，默认情况下<code>minSize</code>值为1</p></li>
+<li><p><code>blockSize</code>：文件系统的块大小</p></li>
+<li><p><code>splitSize</code>：分区大小，通过以下方法确定</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">computeSplitSize</span><span class="hljs-params">(<span class="hljs-type">long</span> goalSize, <span class="hljs-type">long</span> minSize, <span class="hljs-type">long</span> blockSize)</span> &#123;<br>    <span class="hljs-keyword">return</span> Math.max(minSize, Math.min(goalSize, blockSize));<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>默认情况下，如果<code>goalSize</code>不超过<code>blockSize</code>，则分区大小为<code>goalSize</code>；否则为<code>blockSize</code>。</p>
-</li>
+<p>默认情况下，如果<code>goalSize</code>不超过<code>blockSize</code>，则分区大小为<code>goalSize</code>；否则为<code>blockSize</code>。</p></li>
 </ul>
 <p>确认了分区大小之后，就可以进行切片操作。这里需要注意的是<code>SPLIT_SLOP = 1.1</code>，只有当剩余大小和分区大小的比值大于1.1才能继续切片，否则将剩余内容作为一个完整的切片。</p>
-<h3 id="新API">新API</h3>
+<h3 id="新api">新API</h3>
 <p>在新的API中，分区大小的计算逻辑进行改善，并且<code>getSplits</code>不再接受<code>int numSplits</code>参数，以下是新API中的<code>getSplits</code>，位置为<code>org.apache.hadoop.mapreduce.lib.input.FileInputFormat</code>，同样以下代码只保留了核心的切片逻辑：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> List&lt;InputSplit&gt; <span class="hljs-title function_">getSplits</span><span class="hljs-params">(JobContext job)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">StopWatch</span> <span class="hljs-variable">sw</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StopWatch</span>().start();<br>    <span class="hljs-type">long</span> <span class="hljs-variable">minSize</span> <span class="hljs-operator">=</span> Math.max(getFormatMinSplitSize(), getMinSplitSize(job));<br>    <span class="hljs-type">long</span> <span class="hljs-variable">maxSize</span> <span class="hljs-operator">=</span> getMaxSplitSize(job);<br><br>    <span class="hljs-comment">// generate splits</span><br>    List&lt;InputSplit&gt; splits = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;InputSplit&gt;();<br>    List&lt;FileStatus&gt; files = listStatus(job);<br>    	<br>    	...<br>    	<br>    <span class="hljs-keyword">for</span> (FileStatus file: files) &#123;<br>		...<br>        <span class="hljs-type">long</span> <span class="hljs-variable">length</span> <span class="hljs-operator">=</span> file.getLen();<br>			<br>        	...<br>                <br>                <span class="hljs-type">long</span> <span class="hljs-variable">blockSize</span> <span class="hljs-operator">=</span> file.getBlockSize();<br>                <span class="hljs-type">long</span> <span class="hljs-variable">splitSize</span> <span class="hljs-operator">=</span> computeSplitSize(blockSize, minSize, maxSize);<br><br>                <span class="hljs-type">long</span> <span class="hljs-variable">bytesRemaining</span> <span class="hljs-operator">=</span> length;<br>                <span class="hljs-keyword">while</span> (((<span class="hljs-type">double</span>) bytesRemaining)/splitSize &gt; SPLIT_SLOP) &#123;<br>                    <span class="hljs-type">int</span> <span class="hljs-variable">blkIndex</span> <span class="hljs-operator">=</span> getBlockIndex(blkLocations, length-bytesRemaining);<br>                    splits.add(makeSplit(path, length-bytesRemaining, splitSize,<br>                                         blkLocations[blkIndex].getHosts(),<br>                                         blkLocations[blkIndex].getCachedHosts()));<br>                    bytesRemaining -= splitSize;<br>                &#125;<br><br>                <span class="hljs-keyword">if</span> (bytesRemaining != <span class="hljs-number">0</span>) &#123;<br>                    <span class="hljs-type">int</span> <span class="hljs-variable">blkIndex</span> <span class="hljs-operator">=</span> getBlockIndex(blkLocations, length-bytesRemaining);<br>                    splits.add(makeSplit(path, length-bytesRemaining, bytesRemaining,<br>                                         blkLocations[blkIndex].getHosts(),<br>                                         blkLocations[blkIndex].getCachedHosts()));<br>                &#125;<br>       <br>        ...<br>       <br>    &#125;<br>    <span class="hljs-keyword">return</span> splits;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>其中的重要参数：</p>
 <ul>
-<li>
-<p><code>minSize</code>：配置参数<code>mapreduce.input.fileinputformat.split.minsize</code>与1的最大值，在不配置的情况下，<code>minSize=1</code></p>
-</li>
-<li>
-<p><code>maxSize</code>：配置参数<code>mapreduce.input.fileinputformat.split.maxsize</code>的值，在不配置的情况下，<code>maxSize=Long.MAX_VALUE</code></p>
-</li>
-<li>
-<p><code>blockSize</code>：文件系统的块大小</p>
-</li>
-<li>
-<p><code>splitSize</code>：分区大小，通过以下方法确定</p>
+<li><p><code>minSize</code>：配置参数<code>mapreduce.input.fileinputformat.split.minsize</code>与1的最大值，在不配置的情况下，<code>minSize=1</code></p></li>
+<li><p><code>maxSize</code>：配置参数<code>mapreduce.input.fileinputformat.split.maxsize</code>的值，在不配置的情况下，<code>maxSize=Long.MAX_VALUE</code></p></li>
+<li><p><code>blockSize</code>：文件系统的块大小</p></li>
+<li><p><code>splitSize</code>：分区大小，通过以下方法确定</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">computeSplitSize</span><span class="hljs-params">(<span class="hljs-type">long</span> blockSize, <span class="hljs-type">long</span> minSize, <span class="hljs-type">long</span> maxSize)</span> &#123;<br>    <span class="hljs-keyword">return</span> Math.max(minSize, Math.min(maxSize, blockSize));<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>默认情况下，分区大小为<code>blockSize</code></p>
-</li>
+<p>默认情况下，分区大小为<code>blockSize</code></p></li>
 </ul>
 <p>新API中的分区逻辑改变不大，只是改变了传入参数，删减了<code>goalSize</code>。当然同样存在<code>SPLIT_SLOP = 1.1</code>的逻辑。</p>
 

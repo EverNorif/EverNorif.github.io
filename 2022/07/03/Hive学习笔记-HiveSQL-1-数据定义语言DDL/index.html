@@ -87,7 +87,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -329,20 +329,22 @@
             
               <div class="markdown-body">
                 
-                <h1>数据定义语言概述</h1>
-<p>数据定义语言（Data Definition Language， DDL），是SQL中对数据库内部的对象结构进行创建，删除，修改等操作的语言，核心语法由create、alter和drop三个部分组成，并不涉及表内部数据的操作</p>
+                <h1 id="数据定义语言概述">数据定义语言概述</h1>
+<p>数据定义语言（Data Definition Language，
+DDL），是SQL中对数据库内部的对象结构进行创建，删除，修改等操作的语言，核心语法由create、alter和drop三个部分组成，并不涉及表内部数据的操作</p>
 <p>Hive SQL与标准SQL的语法大体相同，在细节处存在少量差异。</p>
 <blockquote>
 <p>推荐使用IDEA中的DataBase来连接Hive，其中需要下载指定对应版本的驱动。</p>
 </blockquote>
-<h1>Hive SQL DDL 建表语法</h1>
+<h1 id="hive-sql-ddl-建表语法">Hive SQL DDL 建表语法</h1>
 <h2 id="完整语法树">完整语法树</h2>
 <p>Hive建表语法的完整语法树如下：</p>
 <img src="/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/Hive%E5%BB%BA%E8%A1%A8%E8%AF%AD%E6%B3%95.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Hive建表语法">
 <ul>
 <li>蓝色字体是建表语法的关键字，用于指定某些特定的功能</li>
 <li>【】中括号的语法表示可选</li>
-<li>| 表示使用的时候，左右语法需要二选一</li>
+<li><div
+class="line-block">表示使用的时候，左右语法需要二选一</div></li>
 <li><strong>建表语法中，语法顺序需要和语法树中的顺序保持一致</strong></li>
 </ul>
 <h2 id="数据类型">数据类型</h2>
@@ -352,7 +354,7 @@
 <li>复杂数据类型包括：Array数组、Map映射、Struct结构、Union联合体</li>
 </ul>
 <p>注意事项：</p>
-<ol>
+<ol type="1">
 <li>HQL中，数据类型<strong>大小写不敏感</strong></li>
 <li>除了SQL数据类型之外，也支持Java数据类型</li>
 <li>复杂数据类型的使用通常需要和分隔符指定语法来配合使用</li>
@@ -375,7 +377,8 @@
 <li>serde表示指定其他的SerDe类，或者自己自定义的SerDE类来处理数据</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs hive">--默认使用delimited<br>row format delimited<br>	[fields terminated by &#x27;xxx&#x27;] --指定字段之间的分隔符<br>	[collection items terminated by &#x27;xxx&#x27;] --指定集合元素之间的分隔符<br>	[map keys terminated by &#x27;xxx&#x27;] --指定Map里面KV之间的分隔符<br>	[lines terminated by &#x27;xxx&#x27;] --指定行数据之间的分隔符<br></code></pre></td></tr></table></figure>
-<p>如果在建表的时候如果没有使用row format指定分隔符，则采用默认分隔符，默认分隔符为<code>\001</code>，是一种特殊字符，在Vim编辑器中表现为<code>^A</code>，在一些文本编辑器中，可以显示的表示法显示为<code>SOH</code></p>
+<p>如果在建表的时候如果没有使用row
+format指定分隔符，则采用默认分隔符，默认分隔符为<code>\001</code>，是一种特殊字符，在Vim编辑器中表现为<code>^A</code>，在一些文本编辑器中，可以显示的表示法显示为<code>SOH</code></p>
 <ul>
 <li>这里的分隔符都是单字节，类型为char的分隔符</li>
 </ul>
@@ -386,7 +389,7 @@
 <blockquote>
 <p>如果指定了数据的路径，那么对应的默认路径下将没有该表的文件夹</p>
 </blockquote>
-<h2 id="Hive-内部表和外部表">Hive 内部表和外部表</h2>
+<h2 id="hive-内部表和外部表">Hive 内部表和外部表</h2>
 <p>在Hive中存在内部表和外部表的概念。</p>
 <p><strong>内部表</strong>：</p>
 <ul>
@@ -397,14 +400,15 @@
 </ul>
 <p><strong>外部表</strong>：</p>
 <ul>
-<li>外部表（External Table），其中的数据不是Hive拥有或者管理的，Hive只管理外部表元数据的生命周期</li>
+<li>外部表（External
+Table），其中的数据不是Hive拥有或者管理的，Hive只管理外部表元数据的生命周期</li>
 <li>创建外部表，只需要在创建表的时候增加<code>external</code>关键字</li>
 <li><strong>删除外部表只会删除元数据，不会删除实际数据</strong>。在Hive外部，HDFS上仍然可以访问到真实数据</li>
 </ul>
 <blockquote>
 <p>通常我们会使用外部表搭配location语法来指定数据的路径，让数据更加安全。但是需要注意的是，location的使用与否与是否是外部表没有绝对的联系。</p>
 </blockquote>
-<h2 id="Hive-Partitioned-分区表">Hive Partitioned 分区表</h2>
+<h2 id="hive-partitioned-分区表">Hive Partitioned 分区表</h2>
 <p>分区表是Hive中的一种优化手段。当Hive表中的数据量变大，文件个数变多的时候，为了避免查询的时候进行全表扫描，Hive支持根据指定的字段对表进行分区，分区的字段可以是日期、地域、种类等具有标识意义的字段。</p>
 <p>表现在HDFS文件的存储上，表文件夹下会有多个分区文件夹，命名形式为<code>分区字段=分区值</code>，在不同的分区文件夹下，存放了分区对应的数据文件</p>
 <img src="/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/%E5%8D%95%E5%88%86%E5%8C%BA%E5%9C%A8hdfs%E4%B8%8A%E7%9A%84%E5%AD%98%E5%82%A8.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="单分区在hdfs上的存储">
@@ -429,7 +433,7 @@
 <p>启用Hive动态分区，需要在Hive会话中设置下面两个参数</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs hive">--是否开启动态分区<br>set hive.exec.dynamic.partition=ture;<br><br>-- 指定动态分区模式，分为nonstrict非严格模式和strict严格模式<br>-- strict严格模式下，要求至少有一个分区为静态分区<br>set hive.exec.dynamic.partition.mode=nonstrict<br></code></pre></td></tr></table></figure>
 <blockquote>
-<p>严格模式经常和多分区匹配使用，其中至少要有一个分区为jing’tai</p>
+<p>严格模式经常和多分区匹配使用，其中至少要有一个分区为jing'tai</p>
 </blockquote>
 <p>之后结合insert和select进行动态分区加载：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs hive">insert into table 动态分区表 partition(role) <br>select tmp.*,tmp.role_main from 查询表 as tmp;<br></code></pre></td></tr></table></figure>
@@ -439,12 +443,13 @@
 <li>根据位置进行分区字段的对应，即tmp.role_main对应到分区字段</li>
 </ul>
 <p>总结来说，如果使用动态分区加载，完成的逻辑就是从已有的表中进行查询，然后将需要作为分区依据的字段查询到最后，然后插入分区表中。这样Hive会在查询的过程中判断分区字段，然后存放到不同的分区文件夹中。</p>
-<p>上面说的是单分区，实际上观察建表语句中分区的相关语法，我们可以发现Hive也支持多重分区，只需要在partitioned by后面指定多个分区字段即可。但是分区字段有先后之分，是一种递进的关系。具体来说会在前一个分区文件夹下继续划分子文件夹。</p>
+<p>上面说的是单分区，实际上观察建表语句中分区的相关语法，我们可以发现Hive也支持多重分区，只需要在partitioned
+by后面指定多个分区字段即可。但是分区字段有先后之分，是一种递进的关系。具体来说会在前一个分区文件夹下继续划分子文件夹。</p>
 <p>分区表的本质在于提供了一种将Hive表数据分离成多个目录的方法。不同分区对应不同文件夹，同一分区的数据存储在同一个文件夹下。在查询过滤的时候只需要根据分区值找到对应的文件夹，然后扫描文件夹下本分区的文件即可，这样就避免了全表扫描。这种指定分区查询的方式就叫做<strong>分区裁剪</strong>。</p>
 <p>分区表的使用重点在于，建表的时候要根据业务场景设置合适的分区字段，例如日期、地域、类别等，然后在查询的时候尽量先使用where进行分区过滤，查询指定分区的数据来避免全表扫描。</p>
 <blockquote>
 <p>简单总结：</p>
-<ol>
+<ol type="1">
 <li>分区表不是建表的必要语法规则，是一种优化手段，可选</li>
 <li>分区字段不能是表中已有的字段，不能重复</li>
 <li>分区字段是虚拟字段，其数据并不存储在底层的文件中</li>
@@ -452,9 +457,9 @@
 <li>Hive支持多重分区，也就是说在分区的基础上继续分区，划分更加细粒度</li>
 </ol>
 </blockquote>
-<h2 id="Hive-Bucketed-分桶表">Hive Bucketed 分桶表</h2>
+<h2 id="hive-bucketed-分桶表">Hive Bucketed 分桶表</h2>
 <p>分桶表也是Hive中的一种优化方式。分桶表对应的数据文件在HDFS底层会被分解为若干个部分，即被拆分成多个独立的小文件。拆分的依据在建表的时候指定要根据哪个字段将数据分为几个部分。</p>
- <img src="/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/%E5%88%86%E6%A1%B6%E8%A1%A8.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="分桶表">
+<p><img src="/2022/07/03/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-1-%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80DDL/%E5%88%86%E6%A1%B6%E8%A1%A8.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="分桶表"></p>
 <p>具体语法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">clustered by (col_name) <br>[sorted by (xxx desc|asc)]<br>into n buckets;<br></code></pre></td></tr></table></figure>
 <ul>
@@ -468,33 +473,25 @@
 <li>哈希方法取决于分桶字段的类型，如果是ini则直接是原值，如果是其他复杂数据类型，哈希方法是从该类型派生出来的某个数字，例如hashcode值</li>
 </ul>
 <p>分桶表的数据加载需要经过如下的流程，核心语法也是<strong>insert+select</strong>：</p>
-<ol>
-<li>
-<p>开启分桶的功能（从Hive2.0开始不需要设置，默认开启）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">set hive.enforce.bucketing=ture<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>将源数据加载到普通的hive表中，包括hive表创建以及文件上传到HDFS对应路径两个步骤</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 普通hive表这里命名为tmp<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>使用分桶语法创建分桶表</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 分桶表这里命名为bucket_table<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>使用insert+select语法将数据加载到分桶表中（类似于分区表的动态架加载）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">insert into bucket_table select * from tmp;<br></code></pre></td></tr></table></figure>
-</li>
+<ol type="1">
+<li><p>开启分桶的功能（从Hive2.0开始不需要设置，默认开启）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">set hive.enforce.bucketing=ture<br></code></pre></td></tr></table></figure></li>
+<li><p>将源数据加载到普通的hive表中，包括hive表创建以及文件上传到HDFS对应路径两个步骤</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 普通hive表这里命名为tmp<br></code></pre></td></tr></table></figure></li>
+<li><p>使用分桶语法创建分桶表</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 分桶表这里命名为bucket_table<br></code></pre></td></tr></table></figure></li>
+<li><p>使用insert+select语法将数据加载到分桶表中（类似于分区表的动态架加载）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">insert into bucket_table select * from tmp;<br></code></pre></td></tr></table></figure></li>
 </ol>
 <p>经过以上的流程之后，就可以将数据加载到分桶表中。并且在HDFS上查看对应目录可以发现数据被分成了几个部分，分桶字段一样的数据就一定被分到了同一个桶中。</p>
 <p>分桶表的核心在于原始的数据被拆分成了不同的文件，分桶字段对应值相同的数据进入同一个桶（同一个桶中，数据的对应字段可能不同）</p>
 <p>使用分桶表可以带来下面的好处：</p>
-<ol>
+<ol type="1">
 <li>基于分桶字段查询的时候，减少全表扫描</li>
 <li>在Join的时候可以提高效率，减少笛卡尔积的数量（基于分桶字段join）</li>
 <li>分桶表数据进行高效抽样</li>
 </ol>
-<h2 id="Hive-Transactional-事务表">Hive Transactional 事务表</h2>
+<h2 id="hive-transactional-事务表">Hive Transactional 事务表</h2>
 <p>Hive本身从设计之初时，就是不支持事务的，因为Hive的核心目标是将已经存在的结构化数据文件映射成为表，然后提供基于表的SQL分析处理，是一款面向分析的工具。且映射的数据通常存储于HDFS上，而HDFS是不支持随机修改文件数据的。这个定位就意味着在早期的Hive的SQL语法中是没有update，delete操作的，也就没有所谓的事务支持了，因为都是select查询分析操作。</p>
 <p>从Hive0.14版本开始，事务开始添加到Hive中，解决一些可能需要事务的场景，例如流式传输数据、数据修正、插入或更新单条记录等场景。</p>
 <p>但是Hive毕竟不是专门用于这类场景的工具，虽然支持了具有ACID性质的事务，在使用的时候还是有很多局限性：</p>
@@ -509,7 +506,7 @@
 <p>而开启了事务之后，可以执行update和delete操作，但是底层并不是随机修改的（由于HDFS不支持随机修改），而是通过标记机制来达到对应的效果</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs hive">--Hive中事务表的创建使用<br>--1、开启事务配置（可以使用set设置当前session生效 也可以配置在hive-site.xml中）<br>set hive.support.concurrency = true; --Hive是否支持并发<br>set hive.enforce.bucketing = true; --从Hive2.0开始不再需要  是否开启分桶功能<br>set hive.exec.dynamic.partition.mode = nonstrict; --动态分区模式  非严格<br>set hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager; --<br>set hive.compactor.initiator.on = true; --是否在Metastore实例上运行启动线程和清理线程<br>set hive.compactor.worker.threads = 1; --在此metastore实例上运行多少个压缩程序工作线程。<br><br>--2、创建Hive事务表<br>drop table if exists trans_student;<br>create table trans_student(<br>   id int,<br>   name String,<br>   age int<br>)clustered by (id) into 2 buckets stored as orc TBLPROPERTIES(&#x27;transactional&#x27;=&#x27;true&#x27;);<br>--注意 事务表创建几个要素：开启参数、分桶表、存储格式orc、表属性<br></code></pre></td></tr></table></figure>
 <p>关于事务表更加详细的说明可以查看后续的笔记。</p>
-<h2 id="Hive-Views-视图">Hive Views 视图</h2>
+<h2 id="hive-views-视图">Hive Views 视图</h2>
 <p>Hive中的视图View是一张虚拟的表，只保存定义，而不实际存储数据。我们可以将视图看作是一张普通的Hive表</p>
 <ul>
 <li>通常从真实的物理表查询中创建生成视图，也可以从已经存在的视图上创建新视图</li>
@@ -519,18 +516,21 @@
 <p>视图的语法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs hive">-- 创建视图<br>create view &lt;视图名称&gt; as select * from xxx;<br><br>-- 删除视图<br>drop view &lt;视图名称&gt;<br><br>-- 更改视图属性<br>alter view &lt;视图名称&gt; set tblproperties(&#x27;comment&#x27;=&#x27;new_comment&#x27;)<br><br>-- 更改视图定义<br>alter view &lt;视图名称&gt; as [新的selet语句]<br></code></pre></td></tr></table></figure>
 <p>使用视图可以将真实表中的特定列数据提供给用户，保护数据的隐私；也可以降低查询的复杂度，优化查询语句。</p>
-<h2 id="Hive-Materialized-Views-物化视图">Hive Materialized Views 物化视图</h2>
+<h2 id="hive-materialized-views-物化视图">Hive Materialized Views
+物化视图</h2>
 <p>物化视图是Hive3.0中的新特性，指的是一个包括查询结果的数据库对象，可以用于预先计算并保存操作的结果。相当于一个预处理和缓存的操作，在执行查询的时候，可以避免进行这些耗时的操作，从而快速地得到结果。</p>
 <p>使用物化视图的目的就是通过预先计算来提高查询性能，当然相应的需要占用一定的存储空间。</p>
 <ul>
-<li>Hive3.0开始尝试引入物化视图，并提供对于物化视图的查询自动重写机制（基于Apache Calcite实现）</li>
-<li>Hive的物化视图还提供了物化视图存储选择机制，可以本地存储在Hive，也可以通过用户自定义storage handlers存储在其他系统（如Druid）</li>
+<li>Hive3.0开始尝试引入物化视图，并提供对于物化视图的查询自动重写机制（基于Apache
+Calcite实现）</li>
+<li>Hive的物化视图还提供了物化视图存储选择机制，可以本地存储在Hive，也可以通过用户自定义storage
+handlers存储在其他系统（如Druid）</li>
 <li>Hive引入物化视图的目的就是为了优化数据查询访问的效率,相当于从数据预处理的角度优化数据访问</li>
 <li>Hive从3.0丢弃了index索引的语法支持，推荐使用物化视图和列式存储文件格式来加快查询的速度</li>
 </ul>
 <blockquote>
 <p>视图 VS 物化视图：</p>
-<ol>
+<ol type="1">
 <li>视图是虚拟的，只有定义没有存储数据</li>
 <li>物化视图是真实的，里面存储了预计算的数据</li>
 <li>使用物化视图的时候，直接将物化视图当作一张表，将数据缓存</li>
@@ -542,23 +542,19 @@
 <p>物化视图的语法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs hive">create materialized view &lt;物化视图名称&gt;<br>as select语句<br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>物化视图创建之后，会自动执行select来查询。直到查询完成之后物化视图才变成可用状态</p>
-</li>
-<li>
-<p>当数据源发生变更，物化视图也应该需要更新来保持数据的一致性，但是目前需要用户主动触发rebuild进行重构</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">alter materialized view &lt;物化视图名称&gt; rebuild;<br></code></pre></td></tr></table></figure>
-</li>
+<li><p>物化视图创建之后，会自动执行select来查询。直到查询完成之后物化视图才变成可用状态</p></li>
+<li><p>当数据源发生变更，物化视图也应该需要更新来保持数据的一致性，但是目前需要用户主动触发rebuild进行重构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">alter materialized view &lt;物化视图名称&gt; rebuild;<br></code></pre></td></tr></table></figure></li>
 </ul>
 <p><strong>基于物化视图的查询重写</strong>：这是一种查询的优化手段，物化视图创建之后可以用于相关查询的加速。如果用户提交了一个查询，而这个查询正好和某个物化视图的定义相同，则可以直接通过物化视图返回结果，以实现查询的加速</p>
 <p>是否使用基于物化视图的查询重写可以通过全局参数控制，默认为true</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">hive.materializedview.rewriting=true;<br></code></pre></td></tr></table></figure>
 <p>用户也可以选择性的控制，指定特定的物化视图用于重写机制</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">alter materialized view &lt;物化视图名称&gt; enable|disable rewrite;<br></code></pre></td></tr></table></figure>
-<h1>Hive SQL DDL 其他语法</h1>
-<h2 id="DataBase-数据库操作">DataBase 数据库操作</h2>
+<h1 id="hive-sql-ddl-其他语法">Hive SQL DDL 其他语法</h1>
+<h2 id="database-数据库操作">DataBase 数据库操作</h2>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs hive">--创建数据库<br>create database if not exists test_database<br>comment &quot;数据库注释说明&quot; --指定数据库的注释说明<br>location hdfs_path --指定数据库在hdfs上的存储位置<br>with dbproperties (&#x27;createdBy&#x27;=&#x27;xxx&#x27;); -- 指定数据库的属性配置<br><br>--描述数据库信息<br>describe database test_database;<br>describe database extended test_database; --显示更多信息<br>desc database extended test_database; --简写<br><br>--切换数据库<br>use default;<br>use test_database;<br><br>--删除数据库<br>--注意 CASCADE关键字慎重使用<br>--默认情况下只有在数据库为空的时候才可以删除，使用的是restrict，但是我们可以使用CASCADE来强制删除<br>drop (database|schema) [if exists] database_name [restrict|cascade];<br>drop database test_database cascade ;<br><br>--更改数据库属性<br>alter (database|schema) database_name set dbproperties (property_name=property_value, ...);<br>--更改数据库所有者<br>alter (database|schema) database_name set owner [user|role] user_or_role;<br>--更改数据库位置<br>alter (database|schema) database_name set location hdfs_path;<br></code></pre></td></tr></table></figure>
-<h2 id="Table-表操作">Table 表操作</h2>
+<h2 id="table-表操作">Table 表操作</h2>
 <p>Hive中针对表的操作是DDL中的核心操作，包括建表、修改表、删除表、描述表元数据信息，其中的建表语句又是一个核心。</p>
 <blockquote>
 <p>由于Hive建表之后加载映射数据很快，实际中如果建表有问题，更多可以直接删除重建</p>
@@ -570,7 +566,7 @@
 <li>删除外部表，只删除元数据</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs hive">--修改操作<br>--1、更改表名<br>alter table table_name rename to new_table_name;<br><br>--2、更改表属性<br>alter table table_name set tblproperties (property_name = property_value, ... );<br>--更改表注释<br>alter table student set tblproperties (&#x27;comment&#x27; = &quot;new comment for student table&quot;);<br><br>--3、更改serde属性<br>alter table table_name set serde serde_class_name [with serdeproperties (property_name = property_value, ... )];<br>alter table table_name [partition partition_spec] set serdeproperties serde_properties;<br>alter table table_name set serdeproperties (&#x27;field.delim&#x27; = &#x27;,&#x27;);<br>--移除serde属性<br>alter table table_name [partition partition_spec] unset serdeproperties (property_name, ... );<br><br>--4、更改表的文件存储格式 该操作仅更改表元数据。现有数据的任何转换都必须在hive之外进行。<br>alter table table_name  set fileformat file_format;<br>--5、更改表的存储位置路径<br>alter table table_name set location &quot;new location&quot;;<br><br>--6、更改列名称/类型/位置/注释<br>create table test_change (a int, b int, c int);<br>alter table test_change change a a1 int;<br>alter table test_change change a1 a2 string after b;<br>alter table test_change change c c1 int first;<br>alter table test_change change a1 a1 int comment &#x27;this is column a1&#x27;;<br><br>--7、添加/替换列<br>--使用add columns，可以将新列添加到现有列的末尾但在分区列之前。<br>--replace columns 将删除所有现有列，并添加新的列集。<br>alter table table_name add|replace columns (col_name data_type,...);<br></code></pre></td></tr></table></figure>
-<h2 id="Partition-分区操作">Partition 分区操作</h2>
+<h2 id="partition-分区操作">Partition 分区操作</h2>
 <p>Hive中针对分区Partition的操作主要包括增加分区、删除分区、重命名分区、修复分区和修改分区。</p>
 <p>增加分区：增加分区会更改表的元数据，但是不会加载数据。如果分区位置中不存在数据，则查询的时候不会返回结果。（需要自己将数据加载到增加的分区当中）</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs hive">--添加分区<br>alter table table_name add partition (分区字段=&#x27;分区值&#x27;) <br>location hdfs_path;<br><br>--一次性添加多个分区<br>alter table table_name add <br>partition (分区字段=&#x27;分区值&#x27;) location hdfs_path<br>partition (分区字段=&#x27;分区值&#x27;) location hdfs_path;<br></code></pre></td></tr></table></figure>
@@ -583,14 +579,17 @@
 <p>修复分区：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">msck [repair] table table_name [add/drop/sync partitions];<br></code></pre></td></tr></table></figure>
 <p>在前面我们都是使用Hive来进行分区数据加载，之后Hive会维护元数据，以及在HDFS上有规律地组织文件夹结构。具体表现为在表文件夹下存在对应的分区文件夹。</p>
-<p>那么如果我们直接手动创建或者删除HDFS上的分区文件夹，Metastore将不会意识到分区信息的更改，我们也无法查询到对应的信息。而msck就是Metastore Check的缩写，表示元数据检查操作，可以用于元数据的修复。</p>
+<p>那么如果我们直接手动创建或者删除HDFS上的分区文件夹，Metastore将不会意识到分区信息的更改，我们也无法查询到对应的信息。而msck就是Metastore
+Check的缩写，表示元数据检查操作，可以用于元数据的修复。</p>
 <ul>
-<li>msck默认行为为add partitions：将hdfs上存在但是元数据中不存在的分区添加到metastore（也可以看作是一种数据导入的方法）</li>
+<li>msck默认行为为add
+partitions：将hdfs上存在但是元数据中不存在的分区添加到metastore（也可以看作是一种数据导入的方法）</li>
 <li>drop partitions：将hdfs上不存在但是元数据中存在的分区信息删除</li>
 <li>sync partitions：同步分区信息，等效于上面两个的综合</li>
-<li>如果存在大量未跟踪的分区，则可以批量运行msck repair table，以避免内存不足的错误</li>
+<li>如果存在大量未跟踪的分区，则可以批量运行msck repair
+table，以避免内存不足的错误</li>
 </ul>
-<h1>Hive Show 语法</h1>
+<h1 id="hive-show-语法">Hive Show 语法</h1>
 <p>show语法主要功能是展示数据库、数据表的一些相关信息</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">--显示所有数据库 schemas和databases的用法 功能一样<br>show databases;<br>show schemas;<br></code></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs hive">--显示当前数据库所有表/视图/物化视图/分区/索引<br>show tables;<br>show tables [in database_name]; --指定某个数据库<br><br>--显示当前数据库下所有视图<br>show views;<br>show views &#x27;test_*&#x27;; --正则匹配，展示所有以test_开头的view<br>show views [in/from database_name]; -- 展示数据库test的所有视图<br><br>--显示当前数据库下所有物化视图<br>show materialized views [in/from database_name];<br></code></pre></td></tr></table></figure>

@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,44 +328,53 @@
                 <h2 id="运行架构">运行架构</h2>
 <p>Spark框架的核心是一个计算引擎，采用了标准的主从结构。整体架构中包括Driver以及Executor。其中Driver是Master，负责整个集群中的作业任务调度，而Executor则是Slave（Worker），负责实际的任务执行。</p>
 <p>Spark框架有如下两个核心组件：</p>
-<p><strong>Driver</strong>： Spark驱动节点，用于执行Spark任务中的main方法。所谓的Driver就是驱使整个应用运行起来的程序，也称之为Driver类</p>
+<p><strong>Driver</strong>：
+Spark驱动节点，用于执行Spark任务中的main方法。所谓的Driver就是驱使整个应用运行起来的程序，也称之为Driver类</p>
 <ul>
 <li>将用户任务转化为作业（Job）</li>
 <li>在Executor之间进行任务调度</li>
 <li>跟踪Executor的执行情况</li>
 <li>通过UI展示查询运行情况</li>
 </ul>
-<p><strong>Executor</strong>： Spark Executor是集群中工作节点的一个JVM进程，负责在Spark作业中运行具体任务，任务之间彼此独立。如果有Executor节点发生了故障或崩溃，Spark应用也可以继续执行，会将出错节点上的任务调度到其他Executor节点上继续运行</p>
+<p><strong>Executor</strong>： Spark
+Executor是集群中工作节点的一个JVM进程，负责在Spark作业中运行具体任务，任务之间彼此独立。如果有Executor节点发生了故障或崩溃，Spark应用也可以继续执行，会将出错节点上的任务调度到其他Executor节点上继续运行</p>
 <ul>
 <li>负责运行Spark应用的任务，并将结果返回给驱动器进程</li>
 <li>通过自身的块管理器为用户程序中要求缓存的RDD提供内存存储。RDD直接缓存在Executor进程当中，因此任务可以在运行时充分利用缓存数据加速运算</li>
 </ul>
 <p>除了上面提到的两个核心组件，Spark中还有以下的组件：</p>
-<p><strong>Master &amp; Worker</strong>： 如果Spark集群采用独立部署环境，则不需要其他的资源调度框架，自身已经实现了资源调度的功能。其中：</p>
+<p><strong>Master &amp; Worker</strong>：
+如果Spark集群采用独立部署环境，则不需要其他的资源调度框架，自身已经实现了资源调度的功能。其中：</p>
 <ul>
-<li>Master进程：主要负责资源的调度和分配，并进行集群的监控（类似于Yarn中的Resource Manager）</li>
-<li>Worker进程：一个Worker运行在集群中的一台服务器上，管理集群中的一个节点，由Master分配资源对数据进行并行的处理和计算（类似于Yarn中的Node Manager）</li>
+<li>Master进程：主要负责资源的调度和分配，并进行集群的监控（类似于Yarn中的Resource
+Manager）</li>
+<li>Worker进程：一个Worker运行在集群中的一台服务器上，管理集群中的一个节点，由Master分配资源对数据进行并行的处理和计算（类似于Yarn中的Node
+Manager）</li>
 </ul>
-<p><strong>Application Master</strong>：如果Spark集群采用Yarn作为资源调度，则在向Yarn集群中提交应用程序的时候，提交程序中应该包含Application Master，管理当前的应用任务。</p>
-<p>Spark Executor 是集群中运行在工作节点（Worker）中的一个JVM进程，是整个集群中专门用于计算的节点。在提交应用中，可以提供参数指定计算节点的个数，以及对应的资源。这里的资源一般指的是工作节点 Executor 的内存大小和使用的虚拟CPU核（Core）数量</p>
+<p><strong>Application
+Master</strong>：如果Spark集群采用Yarn作为资源调度，则在向Yarn集群中提交应用程序的时候，提交程序中应该包含Application
+Master，管理当前的应用任务。</p>
+<p>Spark Executor
+是集群中运行在工作节点（Worker）中的一个JVM进程，是整个集群中专门用于计算的节点。在提交应用中，可以提供参数指定计算节点的个数，以及对应的资源。这里的资源一般指的是工作节点
+Executor 的内存大小和使用的虚拟CPU核（Core）数量</p>
 <p>应用程序相关的启动参数如下：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>名称</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>--num-executors</code></td>
 <td>配置Executor的数量</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>--executor-memory</code></td>
 <td>配置每个Executor的内存大小</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>--executor-cores</code></td>
 <td>配置每个Executor的虚拟CPU核数量</td>
 </tr>
@@ -378,8 +387,10 @@
 <ul>
 <li>Driver在任务提交的本地机器上运行</li>
 <li>Driver启动后会和Resource Manager通讯申请启动Application Master</li>
-<li>Resource Manager分配Container，在合适的Node Manager上启动Application Manager，负责向Resource Manager申请Executor内存</li>
-<li>Resource Manager接受申请，分配Container，然后Application Master在指定的Node Manager上启动Executor进程</li>
+<li>Resource Manager分配Container，在合适的Node Manager上启动Application
+Manager，负责向Resource Manager申请Executor内存</li>
+<li>Resource Manager接受申请，分配Container，然后Application
+Master在指定的Node Manager上启动Executor进程</li>
 <li>Executor进程启动后会向Driver反向注册，在Executor全部注册完成之后Driver开始执行main函数</li>
 <li>直到执行到行动算子，才触发一个Job，并根据宽依赖开始划分stage，每个stage生成对应的TaskSet，之后将Task分发到各个Executor上执行</li>
 </ul>
@@ -387,9 +398,11 @@
 <p>Cluster模式将用于监控和调度的Driver模块运行在Yarn集群中，一般应用于实际生产环境（运行步骤大体上相同，有细节上的差异）</p>
 <ul>
 <li>任务提交后与Resource Manager通讯申请启动Application Master</li>
-<li>Resource Manager分配Container，在合适的Node Manager上启动Application Master，此时的Application Master就是Driver</li>
+<li>Resource Manager分配Container，在合适的Node Manager上启动Application
+Master，此时的Application Master就是Driver</li>
 <li>Driver启动后向Resource Manager申请Executor内存</li>
-<li>Resource Manager接受申请，分配Container，然后Application Master在指定的Node Manager上启动Executor进程</li>
+<li>Resource Manager接受申请，分配Container，然后Application
+Master在指定的Node Manager上启动Executor进程</li>
 <li>Executor进程启动后会向Driver反向注册，在Executor全部注册完成之后Driver开始执行main函数</li>
 <li>直到执行到行动算子，才触发一个Job，并根据宽依赖开始划分stage，每个stage生成对应的TaskSet，之后将Task分发到各个Executor上执行</li>
 </ul>

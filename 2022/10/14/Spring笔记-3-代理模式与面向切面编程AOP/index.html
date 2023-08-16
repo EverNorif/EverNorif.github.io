@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,7 +326,7 @@
             
               <div class="markdown-body">
                 
-                <h1>代理模式</h1>
+                <h1 id="代理模式">代理模式</h1>
 <h2 id="场景分析">场景分析</h2>
 <p>在介绍AOP之前，我们需要先了解一下代理模式。考虑以下场景，我们现在需要实现一个计算器的功能，那么我们会先生命一个<code>Calculator</code>接口，在其中声明需要实现的方法，包括加减乘除：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Calculator</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-title function_">add</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span>;<br><br>    <span class="hljs-type">int</span> <span class="hljs-title function_">sub</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span>;<br><br>    <span class="hljs-type">int</span> <span class="hljs-title function_">mul</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span>;<br><br>    <span class="hljs-type">int</span> <span class="hljs-title function_">div</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -335,7 +335,7 @@
 <p>至此，我们完成了一个简单的计算功能。但是这时候我们想要在每个方法执行的前后都增加日志输出功能，一种实现方法就是在每个方法的最开始和最后增加输出代码，如下所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CalculatorImp</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Calculator</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">add</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;执行开始&quot;</span>);<br>        <span class="hljs-type">int</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> i + j;<br>        System.out.println(<span class="hljs-string">&quot;执行结束&quot;</span>);<br>        <span class="hljs-keyword">return</span> result;<br>    &#125;<br>    <br>    <span class="hljs-comment">// 其他方法类似省略</span><br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这种方式的确能够完成需求，但是较为繁琐。在这个需求中，我们的核心代码是加减乘除的实现，日志功能算非核心代码。这种实现方式一些弊端：</p>
-<ol>
+<ol type="1">
 <li>首先需要重复书写很多非核心业务</li>
 <li>其次这些代码对核心业务功能干扰，导致我们在开发核心业务的时候容易被分散精力</li>
 <li>同时这些功能虽然功能相同，但是分散在各个业务方法中，不利于统一维护</li>
@@ -366,12 +366,13 @@
 </ul>
 <p>有了代理工厂类，我们就可以很容易得到目标类的代理类，然后调用代理类的相关方法，达到效果。在这里的测试代码中，我们需要对getProxy获取到的代理类进行类型转换。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ProxyFactory</span> <span class="hljs-variable">proxyFactory</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProxyFactory</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">CalculatorImp</span>());<br><span class="hljs-type">Calculator</span> <span class="hljs-variable">proxy</span> <span class="hljs-operator">=</span> (Calculator) proxyFactory.getProxy();<br>proxy.div(<span class="hljs-number">10</span>, <span class="hljs-number">2</span>);<br></code></pre></td></tr></table></figure>
-<h1>基于注解的AOP</h1>
-<h2 id="AOP简介">AOP简介</h2>
-<p>AOP，全称为Aspect Oriented Programming，意为面向切面编程。这是一种编程思想，是对面向对象的一种补充和完善。利用面向切面编程，我们可以通过预编译方式和动态代理方式，在不修改源代码的情况下下给程序动态添加额外的功能，即在不修改源代码的情况下对其进行功能扩展。</p>
+<h1 id="基于注解的aop">基于注解的AOP</h1>
+<h2 id="aop简介">AOP简介</h2>
+<p>AOP，全称为Aspect Oriented
+Programming，意为面向切面编程。这是一种编程思想，是对面向对象的一种补充和完善。利用面向切面编程，我们可以通过预编译方式和动态代理方式，在不修改源代码的情况下下给程序动态添加额外的功能，即在不修改源代码的情况下对其进行功能扩展。</p>
 <p>回顾上面的方式，我们的核心代码在Calculator实现类中，我们没有修改它的源代码，但是使用代理的方式扩展了日志打印功能。</p>
 <p>下面介绍AOP相关的一些概念：</p>
-<ol>
+<ol type="1">
 <li>横切关注点：从方法中抽取出来的一类非核心业务。在一个项目中，我们可以使用多个横切关注点对相关方法进行多方面的增强</li>
 <li>通知方法：一个横切关注点上需要完成的工作需要使用一个方法来实现，这样的方法叫做通知方法</li>
 <li>切面类：对通知方法进行管理，封装通知方法的类称为切面类</li>
@@ -404,7 +405,7 @@
 <p>上面的代码已经能够达到相应的效果，在add方法执行之前，输出了对应的日志信息。</p>
 <h2 id="通知方法">通知方法</h2>
 <p>根据通知方法的位置不同，有如下的通知类型：</p>
-<ol>
+<ol type="1">
 <li>前置通知：使用<code>@Before</code>注解进行标识，在目标方法执行前执行</li>
 <li>返回通知：使用<code>@AfterRunning</code>注解进行标识，在目标方法正常退出后执行</li>
 <li>异常通知：使用<code>@AfterThrowing</code>注解进行标识，在目标方法异常介结束后执行，对应catch代码块功能</li>
@@ -412,7 +413,8 @@
 <li>环绕通知：使用<code>@Around</code>注解进行标识，使用try-catch-finally结构围绕整个被代理的目标方法，定义了代理目标方法的全流程</li>
 </ol>
 <blockquote>
-<p>通知的执行顺序为前置通知 -&gt; 目标操作 -&gt; 返回通知或异常通知 -&gt; 后置通知，与正常try-catch-finally的执行逻辑类似。</p>
+<p>通知的执行顺序为前置通知 -&gt; 目标操作 -&gt; 返回通知或异常通知
+-&gt; 后置通知，与正常try-catch-finally的执行逻辑类似。</p>
 </blockquote>
 <p>在通知方法中，我们可以获取连接点的相关信息，包括目标方法的签名信息，参数，返回值等。</p>
 <p>要想获取连接点信息，我们需要在通知方法的参数位置设置<code>JoinPoint</code>类型的形参，然后通过该参数获取相关信息：</p>
@@ -427,7 +429,7 @@
 <h2 id="切入点">切入点</h2>
 <p>在目标方法的注解中，需要提供切入点表达式，表明该通知方法要在哪些被代理的方法前后执行。切入点表达式语法如下，在括号中，需要提供方法的签名描述，让Spring能够找到对应的一个或者多个方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">execution(...)<br><span class="hljs-comment">// 举例</span><br><span class="hljs-meta">@Before(&quot;execution(* com.syh.spring.aop.Calculator.*(..))&quot;)</span><br></code></pre></td></tr></table></figure>
-<ol>
+<ol type="1">
 <li>可以使用<code>*</code>代替修饰符+返回值，表示不限（注意是两者一起被代替，而不是其中一个）</li>
 <li>如果要明确指定一个返回类型，必须同时写明权限修饰符</li>
 <li>在包名的部分，一个<code>*</code>只能代表层次结构中的一层</li>
@@ -445,7 +447,7 @@
 <p>如果相同的目标方法上同时存在多个切面类，那么会存在切面的优先级。切面执行的优先级控制切面的内外嵌套顺序，如果切面类的优先级更高，则该切面类会先执行，后退出。</p>
 <p>我们可以使用<code>@Order</code>注解来控制切面的优先级，其中需要提供一个整数，整数值越小表示优先级越高，默认值为<code>INT_MAX</code>。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Aspect</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-meta">@Order(1)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LogAspect</span> &#123;<br>    <span class="hljs-comment">//...</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<h1>基于XML的AOP</h1>
+<h1 id="基于xml的aop">基于XML的AOP</h1>
 <p>上面我们是使用了基于注解实现的AOP，同样我们也可以基于XML来使用AOP。主要在配置文件中进行完成，主要标签为<code>aop:config</code>。此时不需要开启基于注解的AOP，即<code>aop:aspectj-autoproxy</code>标签：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">aop:config</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--配置切面类--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">aop:aspect</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;logAspect&quot;</span> <span class="hljs-attr">order</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">aop:pointcut</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;pointCut&quot;</span> <span class="hljs-attr">expression</span>=<span class="hljs-string">&quot;execution(* com.syh.spring.aop.Calculator.*(..))&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">aop:before</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;beforeMethod&quot;</span> <span class="hljs-attr">pointcut-ref</span>=<span class="hljs-string">&quot;pointCut&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">aop:after</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;afterMethod&quot;</span> <span class="hljs-attr">pointcut-ref</span>=<span class="hljs-string">&quot;pointCut&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">aop:after-returning</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;afterReturningMethod&quot;</span> <span class="hljs-attr">pointcut-ref</span>=<span class="hljs-string">&quot;pointCut&quot;</span> <span class="hljs-attr">returning</span>=<span class="hljs-string">&quot;result&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">aop:after-throwing</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;afterThrowingMethod&quot;</span> <span class="hljs-attr">pointcut-ref</span>=<span class="hljs-string">&quot;pointCut&quot;</span> <span class="hljs-attr">throwing</span>=<span class="hljs-string">&quot;exception&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">aop:around</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;aroundMethod&quot;</span> <span class="hljs-attr">pointcut-ref</span>=<span class="hljs-string">&quot;pointCut&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">aop:aspect</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">aop:config</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>在config标签中进行切面类的配置，一个<code>aspect</code>对应一个切面类。其中的ref属性对应Bean对象的引用，由于我们通过注解将类对象交给了IOC进行管理，这里会提供logAspect的Bean对象id。这里的order属性对应优先级的设置。</p>

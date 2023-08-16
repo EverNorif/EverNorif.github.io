@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,7 +325,7 @@
             
               <div class="markdown-body">
                 
-                <h1>类型操作</h1>
+                <h1 id="类型操作">类型操作</h1>
 <p>python3中有六个标准数据类型，分别是Number数字、String字符串、List列表、Tuple元组、Set集合、Dictionary字典。数据类型有可变与不可变之分：</p>
 <ul>
 <li>不可变数据：Number、String、Tuple</li>
@@ -338,7 +338,7 @@
 <li>如果是可变类型，则是引用传递，函数内部的修改会对实际对象产生影响</li>
 </ul>
 </blockquote>
-<h2 id="数字-Number">数字(Number)</h2>
+<h2 id="数字number">数字(Number)</h2>
 <p>python3中的数字类型支持int、float、bool、complex（复数）。</p>
 <blockquote>
 <p>可以使用<code>type()</code>内置函数来查询变量所指的对象类型，或者使用<code>isinstance()</code>来判断是否是某种类型：</p>
@@ -351,34 +351,34 @@
 <p>在变量赋值的时候创建Number对象，可以使用del语句删除单个或者多个对象的引用。</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>相关数学函数</th>
 <th></th>
 <th></th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>abs(x)</td>
 <td>ceil(x)</td>
 <td>exp(x)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>fabs(x)</td>
 <td>floor(x)</td>
 <td>log(x)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>log10(x)</td>
-<td>max(x1,x2,…)</td>
-<td>min(x1,x2,…)</td>
+<td>max(x1,x2,...)</td>
+<td>min(x1,x2,...)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>modf(x)</td>
 <td>pow(x, y)</td>
 <td>round(x [,n])</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>sqrt(x)</td>
 <td></td>
 <td></td>
@@ -389,12 +389,16 @@
 <li><code>fabs(x)</code>：返回数字的绝对值</li>
 <li><code>modf(x)</code>：返回x的整数部分与小数部分</li>
 </ul>
-<h2 id="字符串-String">字符串(String)</h2>
+<h2 id="字符串string">字符串(String)</h2>
 <ul>
 <li>反斜杠可以用来转义，使用<code>r</code>可以让反斜杠不发生转义</li>
-<li>按字面意义级联字符串，如 <code>&quot;this &quot; &quot;is &quot; &quot;string&quot; </code>会被自动转换为 <code>this is string</code></li>
-<li>字符串可以用 <code>+ </code>运算符连接在一起，用 <code>*</code> 运算符重复。</li>
-<li>Python 中的字符串有两种索引方式，从左往右以<code>0</code>开始，从右往左以<code>-1</code>开始</li>
+<li>按字面意义级联字符串，如
+<code>"this " "is " "string"</code>会被自动转换为
+<code>this is string</code></li>
+<li>字符串可以用 <code>+</code>运算符连接在一起，用 <code>*</code>
+运算符重复。</li>
+<li>Python
+中的字符串有两种索引方式，从左往右以<code>0</code>开始，从右往左以<code>-1</code>开始</li>
 <li>字符串的截取的语法格式如下：<code>变量[头下标:尾下标:步长]</code></li>
 <li>python字符串不能被改变，不能向一个索引位置赋值</li>
 </ul>
@@ -402,260 +406,263 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 1.使用%</span><br><span class="hljs-string">&quot;name: %s and age: %d&quot;</span>% (<span class="hljs-string">&quot;haha&quot;</span>, <span class="hljs-number">10</span>)<br><br><span class="hljs-comment"># 2.使用fomat</span><br><span class="hljs-string">&quot;&#123;name&#125;---&#123;url&#125;&quot;</span>.<span class="hljs-built_in">format</span>(name=<span class="hljs-string">&quot;hahaha&quot;</span>, url=<span class="hljs-string">&quot;hahaha.com&quot;</span>)<br><br><span class="hljs-comment"># 3.f-string</span><br>name = <span class="hljs-string">&quot;haha&quot;</span><br><span class="hljs-string">f&quot;Hello <span class="hljs-subst">&#123;name&#125;</span>&quot;</span> <span class="hljs-comment"># 变量替换</span><br><span class="hljs-string">f&quot;<span class="hljs-subst">&#123;<span class="hljs-number">1</span>+<span class="hljs-number">2</span>&#125;</span>&quot;</span> <span class="hljs-comment"># 表达式计算</span><br></code></pre></td></tr></table></figure>
 <p>字符串常用方法：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>capitalize()</td>
 <td>字符串首字母大写</td>
 </tr>
-<tr>
+<tr class="even">
 <td>swapcase()</td>
 <td>大写转小写、小写zhuan</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>count(str, beg=0, end=len(string))</td>
 <td>返回str在字符串里面出现的次数</td>
 </tr>
-<tr>
+<tr class="even">
 <td>startswith(substr, beg=0, end=len(string))</td>
 <td>检查字符串是否以substr开始，返回布尔值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>endswith(suffix, beg=0, end=len(string))</td>
 <td>检查字符串是否以suffix结束，返回布尔值</td>
 </tr>
-<tr>
+<tr class="even">
 <td>find(str, beg=0, end=len(string))</td>
 <td>检查str是否包含在字符串中，如果找到则返回开始索引，否则返回-1</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>rfind(str, beg=0, end=len(string))</td>
 <td>与find类似，不过是从右边开始查找</td>
 </tr>
-<tr>
+<tr class="even">
 <td>index(str, beg=0, end=len(string))</td>
 <td>与find类似，但是如果没有找到会报异常</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>rindex(str, beg=0, end=len(string))</td>
 <td>与index类似，不过是从右边开始查找</td>
 </tr>
-<tr>
+<tr class="even">
 <td>join(seq)</td>
 <td>以字符串作为分隔符，对seq进行拼接</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>len(string)</td>
 <td>返回字符串长度</td>
 </tr>
-<tr>
+<tr class="even">
 <td>replace(old, new [,max])</td>
 <td>将字符串中的old替换为new，max指定替换的最大次数</td>
 </tr>
-<tr>
-<td>split(str=“”, num=string.count(str))</td>
+<tr class="odd">
+<td>split(str="", num=string.count(str))</td>
 <td>以str为分隔符截取字符串，如果num有指定值，则仅截取num+1个子字符串</td>
 </tr>
-<tr>
+<tr class="even">
 <td>lstrip() / rstrip() / strip()</td>
 <td>删除字符串左边/右边/左右的空格</td>
 </tr>
 </tbody>
 </table>
-<h2 id="列表-List">列表(List)</h2>
+<h2 id="列表list">列表(List)</h2>
 <p>增删改查：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-built_in">list</span> = [<span class="hljs-string">&quot;haha&quot;</span>, <span class="hljs-number">1</span>, <span class="hljs-literal">True</span>]<br><span class="hljs-comment"># 增</span><br><span class="hljs-built_in">list</span>.append(<span class="hljs-number">456</span>)<br><br><span class="hljs-comment"># 删</span><br><span class="hljs-keyword">del</span> <span class="hljs-built_in">list</span>[<span class="hljs-number">1</span>]<br><br><span class="hljs-comment"># 改</span><br><span class="hljs-built_in">list</span>[<span class="hljs-number">1</span>] = <span class="hljs-number">23</span><br><br><span class="hljs-comment"># 查</span><br><span class="hljs-built_in">list</span>[<span class="hljs-number">0</span>]<br><br><span class="hljs-comment"># + 号用于组合列表，* 号用于重复列表</span><br></code></pre></td></tr></table></figure>
 <p>列表常用方法：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>list.append(obj)</td>
 <td>在列表末尾添加新的对象</td>
 </tr>
-<tr>
+<tr class="even">
 <td>list.count(obj)</td>
 <td>统计某个元素在列表中出现的次数</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>list.extend(seq)</td>
 <td>在列表末尾一次性追加另一个序列中的多个值</td>
 </tr>
-<tr>
+<tr class="even">
 <td>list.index(obj)</td>
 <td>从列表中找到某个值第一次匹配的索引位置</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>list.insert(index, obj)</td>
 <td>将对象插入列表</td>
 </tr>
-<tr>
+<tr class="even">
 <td>list.pop([index = -1])</td>
 <td>移除列表中的元素并返回该值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>list.remove(obj)</td>
 <td>移除列表中某个值的第一个匹配项</td>
 </tr>
-<tr>
+<tr class="even">
 <td>list.reverse()</td>
 <td>列表逆序</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>list.sort(key=None, reverse=False)</td>
 <td>列表排序</td>
 </tr>
-<tr>
+<tr class="even">
 <td>list.clear()</td>
 <td>清空列表</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>list.copy()</td>
 <td>复制列表</td>
 </tr>
 </tbody>
 </table>
-<h2 id="元组-Tuple">元组(Tuple)</h2>
+<h2 id="元组tuple">元组(Tuple)</h2>
 <ul>
 <li>可以使用下标索引来访问元组中的值，也可以截取其中的部分元素</li>
 <li>元组中的元素值不允许修改，但是可以对元组进行连接组合</li>
 <li>元组中的元素值不允许删除，但是可以用del语句删除整个元组</li>
 </ul>
-<h2 id="集合-Set">集合(Set)</h2>
+<h2 id="集合set">集合(Set)</h2>
 <ul>
 <li>空集合的创建只能使用<code>set()</code>，因为<code>&#123;&#125;</code>是用来创建空字典的</li>
 </ul>
 <p>集合常用方法：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>add()</td>
 <td>为集合添加元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td>update()</td>
 <td>为集合添加元素</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>clear()</td>
 <td>移除集合中的所有元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td>copy()</td>
 <td>复制集合</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>union()</td>
 <td>返回两个集合的并集</td>
 </tr>
-<tr>
+<tr class="even">
 <td>difference()</td>
 <td>返回集合的差集</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>intersection()</td>
 <td>返回集合的交集</td>
 </tr>
-<tr>
+<tr class="even">
 <td>symmetric_difference()</td>
 <td>返回两个集合中不重复元素集合</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>isdisjoint()</td>
 <td>判断两个集合是否包含相同元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td>issubset()</td>
 <td>判断集合是否为另一个集合的子集</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>issuperset()</td>
 <td>判断集合是否为另一个集合的超集</td>
 </tr>
-<tr>
+<tr class="even">
 <td>pop()</td>
 <td>随机移除元素</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>remove()</td>
 <td>移除指定元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td>discard()</td>
 <td>删除集合中指定元素</td>
 </tr>
 </tbody>
 </table>
-<h2 id="字典-Dictionary">字典(Dictionary)</h2>
+<h2 id="字典dictionary">字典(Dictionary)</h2>
 <ul>
 <li>键值对中的Key必须是不可变类型，例如数字、字符串、元组</li>
 </ul>
 <p>字典常用方法：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>dict.clear()</td>
 <td>删除字典内所有元素</td>
 </tr>
-<tr>
+<tr class="even">
 <td>dict.copy()</td>
 <td>返回一个字典的浅复制</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>dict.fromkeys(seq[, value])</td>
 <td>静态方法。创建一个新字典，以序列seq中的值为key，value为默认值</td>
 </tr>
-<tr>
+<tr class="even">
 <td>dict.get(key, default=None)</td>
 <td>返回指定Key的值，如果不在则返回默认值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>dict.setdefault(key, default=None)</td>
 <td>返回指定Key的值，如果不在则会添加对应的Key并将值设置为default</td>
 </tr>
-<tr>
+<tr class="even">
 <td>dict.items()</td>
 <td>返回Key-Value集合</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>dict.keys()</td>
 <td>返回Key集合</td>
 </tr>
-<tr>
+<tr class="even">
 <td>dict.values()</td>
 <td>返回value集合</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>dict.update(dict2)</td>
 <td>利用dict2来更新dict</td>
 </tr>
-<tr>
+<tr class="even">
 <td>dict.pop(key[,default])</td>
 <td>删除Key所对应的值并返回</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>dict.popitem()</td>
 <td>返回并删除字典中的最后一个键值对</td>
 </tr>
@@ -663,76 +670,77 @@
 </table>
 <h2 id="数据类型转换">数据类型转换</h2>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>函数</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>int(x [,base])</td>
 <td>将x转换为一个整数，可以指定base进制</td>
 </tr>
-<tr>
+<tr class="even">
 <td>float(x)</td>
 <td>将x转换为一个浮点数</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>complex(real [,imag])</td>
 <td>创建一个复数</td>
 </tr>
-<tr>
+<tr class="even">
 <td>str(x)</td>
 <td>将x转换为字符串</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>repr(x)</td>
 <td>将x转化为表达式字符串，返回一个对象的String格式</td>
 </tr>
-<tr>
+<tr class="even">
 <td>eval(str)</td>
 <td>执行字符串中的有效Python表达式并返回一个对象</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>tuple(s)</td>
 <td>将序列s转换为一个元组</td>
 </tr>
-<tr>
+<tr class="even">
 <td>list(s)</td>
 <td>将序列s转换为一个列表</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>set(s)</td>
 <td>将序列s转换为可变集合</td>
 </tr>
-<tr>
+<tr class="even">
 <td>dict(d)</td>
 <td>创建一个字典，d是键值对元组序列</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>frozenset(s)</td>
 <td>将s转换为不可变集合</td>
 </tr>
-<tr>
+<tr class="even">
 <td>chr(x)</td>
 <td>将整数转换为一个字符，对应ASCII码</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>ord(x)</td>
 <td>将字符转换为对应的ASCII码整数</td>
 </tr>
-<tr>
+<tr class="even">
 <td>hex(x)</td>
 <td>将一个整数转换为十六进制字符串</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>oct(x)</td>
 <td>将一个整数转换为八进制字符串</td>
 </tr>
 </tbody>
 </table>
-<h1>模块和包</h1>
+<h1 id="模块和包">模块和包</h1>
 <p>模块是一个包含所有定义函数和变量的文件，其后缀名为<code>.py</code>。模块可以被其他的程序<code>import</code>引入，以使用该模块中的函数等功能。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> module1, module2, ...<br></code></pre></td></tr></table></figure>
 <p>一个模块被另一个程序第一次引用的时候，其主程序将被运行。我们可以使用<code>__name__</code>属性来使得程序块仅在模块自身运行时执行：</p>
@@ -743,11 +751,11 @@
 <p>包是一种管理Python模块命名空间的形式，在包中组织了目录的层级关系。目录只有包含了一个叫做<code>__init__.py</code>的文件才会被认作是一个包，在这个文件中可以包含一些初始化代码等，当然也可以什么都不写。</p>
 <p>注意，如果是使用形如<code>from package import item</code>引入的时候，item既可以是包中的子模块，也可以是包中定义的其他名称，比如函数，类或者变量。如果是使用形如<code>import item.subitem.subsubitem</code>这种形式引入的时候，则除了最后一项，其他的都必须是包，并且最后一项可以是模块或者包，但是不可以是类、函数或者变量的名字。</p>
 <p>当我们引入一个包的时候，会执行它的<code>__init__.py</code>文件，因此在这个文件我们可以定义一些初始化操作。在这个文件中，我们也可以定义一个名称为<code>__all__</code>的列表变量，这样如果我们使用形如<code>from package import *</code>的形式引入的话，就会引入<code>__all__</code>列表变量中定义的相关模块。如果此时<code>__all__</code>没有定义的话，则不会导入包中的任何子模块。不过总结来说，我们还是推荐使用<code>from package import sepcific_submodule</code>这种形式来引入。</p>
-<h1>错误和异常</h1>
+<h1 id="错误和异常">错误和异常</h1>
 <p>异常处理机制：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">try</span>:<br>    <span class="hljs-comment">#...需要捕获异常的代码块</span><br><span class="hljs-keyword">except</span> RuntimeError <span class="hljs-keyword">as</span> err:<br>    <span class="hljs-comment"># ...有异常时的执行代码</span><br><span class="hljs-keyword">except</span>:<br>    <span class="hljs-comment"># ...有异常时的执行代码</span><br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-comment"># ...没有异常时的执行的代码</span><br><span class="hljs-keyword">finally</span>:<br>    <span class="hljs-comment"># ...最终一定会执行的代码</span><br></code></pre></td></tr></table></figure>
 <p>抛出异常使用<code>raise</code>关键字。我们也可以创建一个新的异常类，它需要直接或者间接继承<code>Exception</code>。</p>
-<h1>面向对象</h1>
+<h1 id="面向对象">面向对象</h1>
 <h2 id="基础">基础</h2>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span>:<br>    name = <span class="hljs-string">&quot;&quot;</span><br>    age = <span class="hljs-number">18</span><br>    gender = <span class="hljs-string">&quot;man&quot;</span><br>    __weight = <span class="hljs-number">0</span>  <span class="hljs-comment"># 私有属性</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, name, age, gender</span>):<br>        self.name = name<br>        self.age = age<br>        self.gender = gender<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">say</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Person[name:&#123;name&#125;, age:&#123;age&#125;, gender:&#123;gender&#125;&quot;</span>.<span class="hljs-built_in">format</span>(name=self.name, age=self.age, gender=self.gender))<br></code></pre></td></tr></table></figure>
 <ul>
@@ -775,73 +783,73 @@
 <p>在Python中，类存在一些特殊方法，即前后均为双下划线的方法。这些特殊方法有着各自的功能。</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>专有方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>__new__</code></td>
 <td>创建类实例时会被调用，优先于构造函数执行</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__init__</code></td>
 <td>构造函数</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>__del__</code></td>
 <td>析构函数</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__str__</code></td>
 <td>对象的字符串表示，用于print</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>__repr__</code></td>
 <td>对象的字符串表示，一般用于调试</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__setitem__</code></td>
 <td>按照索引赋值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>__getitem__</code></td>
 <td>实现通过索引取值</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__len__</code></td>
 <td>获取长度</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>__cmp__</code></td>
 <td>比较运算</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__call__</code></td>
 <td>直接对实例进行调用，就像使用函数一样</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>__add__</code></td>
 <td>加运算，用于运算符重载</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__sub__</code></td>
 <td>减运算，用于运算符重载</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>__mul__</code></td>
 <td>乘运算，用于运算符重载</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__truediv__</code></td>
 <td>除运算，用于运算符重载</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>__mod__</code></td>
 <td>求余运算，用于运算符重载</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>__pow__</code></td>
 <td>乘方运算，用于运算符重载</td>
 </tr>
@@ -862,7 +870,7 @@
 </ul>
 <p>setattr()函数可以用来修改实例对象中的属性值，也可以实现为实例对象动态添加属性或者方法：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># setattr(obj, name, value)</span><br><br>cat = Cat()<br><span class="hljs-comment"># 设置属性值或方法</span><br><span class="hljs-built_in">setattr</span>(cat, <span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;123&quot;</span>)<br><span class="hljs-built_in">setattr</span>(cat, <span class="hljs-string">&quot;master&quot;</span>, <span class="hljs-string">&quot;456&quot;</span>)<br><span class="hljs-built_in">setattr</span>(cat, <span class="hljs-string">&quot;miao&quot;</span>, <span class="hljs-keyword">lambda</span>: <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;xxxxxx...&quot;</span>))<br><br><span class="hljs-comment"># 添加属性或方法</span><br><span class="hljs-built_in">setattr</span>(cat, <span class="hljs-string">&quot;add&quot;</span>, <span class="hljs-number">789</span>)<br><span class="hljs-built_in">setattr</span>(cat, <span class="hljs-string">&quot;run&quot;</span>, <span class="hljs-keyword">lambda</span>: <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;run....&quot;</span>))<br></code></pre></td></tr></table></figure>
-<h1>迭代器与生成器</h1>
+<h1 id="迭代器与生成器">迭代器与生成器</h1>
 <h2 id="迭代器">迭代器</h2>
 <p>迭代器是一个可以记住遍历位置的对象，它从集合的第一个元素开始访问，知道所有的元素都被访问结束。迭代器只能往前而不能后退。我们需要利用<code>iter()</code>方法来创建一个迭代器对象，然后使用其中提供的一个<code>next</code>方法来访问下一个元素，我们也可以用常规的for来遍历一个迭代器对象。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">a = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>]<br>it = <span class="hljs-built_in">iter</span>(a) <span class="hljs-comment"># 创建迭代器对象</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">next</span>(it)) <span class="hljs-comment"># 1</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">next</span>(it)) <span class="hljs-comment"># 2</span><br></code></pre></td></tr></table></figure>
@@ -875,17 +883,21 @@
 <h2 id="生成器">生成器</h2>
 <p>使用了yield的函数被称生成器（Generator）。生成器是一个返回迭代器的函数，只能用于迭代操作，我们可以将生成器理解为一个迭代器。在每次调用生成器的时候，遇到yield函数会暂停并保存当前的运行信息，返回yield的值，直到下一次调用next方法的时候再从当前位置继续运行。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">generateOdd</span>(<span class="hljs-params">n</span>):<br>    a = <span class="hljs-number">1</span><br>    <span class="hljs-keyword">while</span> a &lt; n:<br>        <span class="hljs-keyword">yield</span> a<br>        a += <span class="hljs-number">2</span><br><br><br>it = generateOdd(<span class="hljs-number">26</span>)  <span class="hljs-comment"># it为一个迭代器，由生成器返回生成</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> it:<br>    <span class="hljs-built_in">print</span>(i)<br></code></pre></td></tr></table></figure>
-<h1>依赖生成</h1>
+<h1 id="依赖生成">依赖生成</h1>
 <p>一个好的习惯是对于每一个Python项目都准备一个对应的虚拟环境，这样可以保证不同项目之间的环境不会产生冲突。在Python中也提供了相关的命令来查看当前的依赖项，下面的命令可以列出当前环境中的依赖项。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip freeze<br></code></pre></td></tr></table></figure>
 <p>不过直接使用该命令可能会输出一些路径信息而非版本信息，此时使用下面的命令可以解决：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip list --format=freeze<br></code></pre></td></tr></table></figure>
 <p>通常情况下，我们会将项目的依赖项以及相关版本都存放在<code>requirements.txt</code>文件当中，此时我们将上面命令的输出进行重定向即可。同时，我们也可以很轻易地通过这个文件进行依赖项的安装，通过下面的命令即可：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install -r requirements.txt<br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://www.runoob.com/python3/python3-tutorial.html">Python3 教程 | 菜鸟教程 (runoob.com)</a></li>
-<li><a target="_blank" rel="noopener" href="http://c.biancheng.net/python/special_member/">Python类特殊成员（属性和方法） (biancheng.net)</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://www.runoob.com/python3/python3-tutorial.html">Python3 教程
+| 菜鸟教程 (runoob.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://c.biancheng.net/python/special_member/">Python类特殊成员（属性和方法）
+(biancheng.net)</a></li>
 </ol>
 
                 

@@ -82,7 +82,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -324,49 +324,50 @@
             
               <div class="markdown-body">
                 
-                <h1>概述</h1>
+                <h1 id="概述">概述</h1>
 <p>在collections中，主要包括如下相关类和方法：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>相关类/方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>namedtuple()</td>
 <td>创建命名元组子类的工厂函数，生成可以使用名字来访问元素内容的tuple子类</td>
 </tr>
-<tr>
+<tr class="even">
 <td>deque</td>
 <td>类似列表(list)的容器，实现了在两端快速添加(append)和弹出(pop)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>ChainMap</td>
 <td>类似字典(dict)的容器类，将多个映射集合到一个视图里面</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Counter</td>
 <td>字典的子类，提供了可哈希对象的计数功能</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>OrderedDict</td>
 <td>字典的子类，保存了他们被添加的顺序，有序字典</td>
 </tr>
-<tr>
+<tr class="even">
 <td>defaultdict</td>
 <td>字典的子类，提供了一个工厂函数，为字典查询提供一个默认值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>UserDict</td>
 <td>封装了字典对象，简化了字典子类化</td>
 </tr>
-<tr>
+<tr class="even">
 <td>UserList</td>
 <td>封装了列表对象，简化了列表子类化</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>UserString</td>
 <td>封装了字符串对象，简化了字符串子类化</td>
 </tr>
@@ -374,8 +375,9 @@
 </table>
 <p>我们可以引入该模块，然后打印出对应的信息：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> collections<br><span class="hljs-built_in">print</span>(collections.__all__)<br><br>[<span class="hljs-string">&#x27;ChainMap&#x27;</span>, <span class="hljs-string">&#x27;Counter&#x27;</span>, <span class="hljs-string">&#x27;OrderedDict&#x27;</span>, <span class="hljs-string">&#x27;UserDict&#x27;</span>, <span class="hljs-string">&#x27;UserList&#x27;</span>, <span class="hljs-string">&#x27;UserString&#x27;</span>, <span class="hljs-string">&#x27;defaultdict&#x27;</span>, <span class="hljs-string">&#x27;deque&#x27;</span>, <span class="hljs-string">&#x27;namedtuple&#x27;</span>]<br></code></pre></td></tr></table></figure>
-<h1>Named Tuple</h1>
-<p>named tuple含义为命名元组，它可以帮助我们生成一个允许使用名字访问元素内容的Tuple子类，提高程序的可读性。</p>
+<h1 id="named-tuple">Named Tuple</h1>
+<p>named
+tuple含义为命名元组，它可以帮助我们生成一个允许使用名字访问元素内容的Tuple子类，提高程序的可读性。</p>
 <p>例如，如果我们需要表示平面上的一个点，我们可以使用一个元组<code>(x, y)</code>来进行表示，但是这样的元组只能用下标来访问其中的内容。另一种解决方案是定义一个类Point，其中保存对应的坐标。而命名元组实际上就可以帮助我们更加简单地构造出这样一个类，利用该方法，我们可以指定类名以及元组的名次，之后就可以用更加具有可读性的代码来完成相关工作。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> namedtuple<br><br>Point = namedtuple(<span class="hljs-string">&#x27;Point&#x27;</span>, [<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-string">&#x27;y&#x27;</span>])<br><br>point = Point(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br><span class="hljs-comment"># 使用字段名</span><br><span class="hljs-built_in">print</span>(point.x)  <span class="hljs-comment"># 1</span><br><span class="hljs-built_in">print</span>(point.y)  <span class="hljs-comment"># 2</span><br><span class="hljs-comment"># 使用index</span><br><span class="hljs-built_in">print</span>(point[<span class="hljs-number">0</span>])  <span class="hljs-comment"># 1</span><br><span class="hljs-built_in">print</span>(point[<span class="hljs-number">1</span>])  <span class="hljs-comment"># 2</span><br><span class="hljs-comment"># 实际上就是构造出的类 Point 就是内置 tuple 的一个子类</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">isinstance</span>(point, Point))  <span class="hljs-comment"># True</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">isinstance</span>(point, <span class="hljs-built_in">tuple</span>))  <span class="hljs-comment"># True</span><br></code></pre></td></tr></table></figure>
 <p><code>namedtuple</code>可以接收如下参数：</p>
@@ -386,7 +388,7 @@
 <li><code>verbose</code>：如果该参数设置为True，那么子类被创建之后，类定义就会被立即打印出来</li>
 <li><code>module</code>：用于指定类所在的module</li>
 </ul>
-<h1>Deque</h1>
+<h1 id="deque">Deque</h1>
 <p>python原生的list类型是线性存储数据的，按照索引访问元素很快，但是数据量很大的时候，插入和删除效率较低，而<code>deque</code>是一个双端队列，其中高效实现了插入和删除操作，适合用于队列和栈。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> deque<br><br>q = deque([<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;3&#x27;</span>])<br>q.append(<span class="hljs-number">2</span>)<br>q.appendleft(<span class="hljs-string">&#x27;c&#x27;</span>)<br><span class="hljs-built_in">print</span>(q)  <span class="hljs-comment"># deque([&#x27;c&#x27;, &#x27;a&#x27;, 1, &#x27;3&#x27;, 2])</span><br></code></pre></td></tr></table></figure>
 <p>deque和list具有几乎相同的使用方式，相关方法如下：</p>
@@ -407,13 +409,13 @@
 <li><code>rotate(n=1)</code>：将队列向右循环移动n步</li>
 <li><code>maxlen</code>：deque的最大尺寸</li>
 </ul>
-<h1>Chain Map</h1>
+<h1 id="chain-map">Chain Map</h1>
 <p><code>ChainMap</code>可以把一组<code>dict</code>组合成一个逻辑上的dict。在使用的使用，仍然可以按照操作一个dict那样操作，但是内部的逻辑则会在这组dict上依次进行。实际上，ChainMap实际上就是一个映射链，在进行操作的时候，会依次在内部的链上进行。</p>
 <p>ChainMap的一个常见应用场景是程序参数的获取。在获取应用程序参数的时候，我们通常可以从三个地方获取，分别是命令行传入、环境变量传入以及默认参数，它们可以对应三个dict，利用ChainMap可以实现参数的优先级查找。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> ChainMap<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> argparse<br><br><span class="hljs-comment"># default args</span><br>defaults = &#123;<br>    <span class="hljs-string">&#x27;color&#x27;</span>: <span class="hljs-string">&#x27;red&#x27;</span>,<br>    <span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;guest&#x27;</span><br>&#125;<br><br><span class="hljs-comment"># cmd args</span><br>parser = argparse.ArgumentParser()<br>parser.add_argument(<span class="hljs-string">&#x27;-u&#x27;</span>, <span class="hljs-string">&#x27;--user&#x27;</span>)<br>parser.add_argument(<span class="hljs-string">&#x27;-c&#x27;</span>, <span class="hljs-string">&#x27;--color&#x27;</span>)<br>namespace = parser.parse_args()<br>command_line_args = &#123;k: v <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> <span class="hljs-built_in">vars</span>(namespace).items() <span class="hljs-keyword">if</span> v&#125;<br><br><span class="hljs-comment"># 组合成ChainMap, 优先级依次下降：cmd args &gt; env args &gt; default args</span><br>combined = ChainMap(command_line_args, os.environ, defaults)<br><br><span class="hljs-comment"># 打印参数:</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;color=%s&#x27;</span> % combined[<span class="hljs-string">&#x27;color&#x27;</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;user=%s&#x27;</span> % combined[<span class="hljs-string">&#x27;user&#x27;</span>])<br><br></code></pre></td></tr></table></figure>
 <p>之后我们可以使用不同方式传入相关参数：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 不主动传入任何参数，则使用默认参数</span><br>python3 collections-test.py <br>color=red<br>user=guest<br><br><span class="hljs-comment"># 传入命令行参数，则使用命令行参数</span><br>python3 collections-test.py -u bob<br>color=red<br>user=bob<br><br><span class="hljs-comment"># 同时传入命令行参数和环境变量，命令行参数优先级更高</span><br>user=admin color=green python3 collections-test.py -u bob<br>color=green<br>user=bob<br></code></pre></td></tr></table></figure>
-<h1>Counter</h1>
+<h1 id="counter">Counter</h1>
 <p><code>Counter</code>是一个计数器，可以帮助我们统计次数。它本身也是<code>dict</code>的一个子类，key为元素值，value则为对应元素值出现的次数。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Counter<br><br><span class="hljs-comment"># 像操作dict一样使用计数器</span><br>count = Counter()<br><span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;green&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>]:<br>    count[word] += <span class="hljs-number">1</span><br><span class="hljs-built_in">print</span>(count)<br><span class="hljs-comment"># Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)</span><br><br><span class="hljs-comment"># 直接传入列表进行计算</span><br><span class="hljs-built_in">print</span>(Counter([<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;green&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>]))<br><span class="hljs-comment"># Counter(&#123;&#x27;blue&#x27;: 3, &#x27;red&#x27;: 2, &#x27;green&#x27;: 1&#125;)</span><br><br><span class="hljs-comment"># 直接传入字符串进行计算</span><br><span class="hljs-built_in">print</span>(Counter(<span class="hljs-string">&quot;abcabcabcd&quot;</span>))<br><span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 3, &#x27;b&#x27;: 3, &#x27;c&#x27;: 3, &#x27;d&#x27;: 1&#125;)</span><br></code></pre></td></tr></table></figure>
 <p>Counter作为dict的子类，能够提供dict相关的方法，同时它本身还提供了一些特有的方法：</p>
@@ -424,7 +426,7 @@
 </ul>
 <p>此外，Counter还提供强大的数学操作功能，要点在于对应位置的值进行对应操作，如果得到的计数小于等于0则会被忽略</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Counter<br><br>c = Counter(a=<span class="hljs-number">3</span>, b=<span class="hljs-number">1</span>)<br>d = Counter(a=<span class="hljs-number">1</span>, b=<span class="hljs-number">2</span>)<br><span class="hljs-comment"># c[x] + d[x]</span><br><span class="hljs-built_in">print</span>(c + d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 4, &#x27;b&#x27;: 3&#125;)</span><br><br><span class="hljs-comment"># c[x] - d[x]</span><br><span class="hljs-built_in">print</span>(c - d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 2&#125;)</span><br><br><span class="hljs-comment"># intersection: min(c[x], d[x])</span><br><span class="hljs-built_in">print</span>(c &amp; d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 1, &#x27;b&#x27;: 1&#125;)</span><br><br><span class="hljs-comment"># union: max(c[x], d[x])</span><br><span class="hljs-built_in">print</span>(c | d)  <span class="hljs-comment"># Counter(&#123;&#x27;a&#x27;: 3, &#x27;b&#x27;: 2&#125;)</span><br></code></pre></td></tr></table></figure>
-<h1>Ordered Dict</h1>
+<h1 id="ordered-dict">Ordered Dict</h1>
 <p>在使用dict的时候，key是无序的，因此我们在对dict进行迭代的时候，是无法确定key的顺序的，而<code>OrderedDict</code>就为我们解决了这个问题。它可以按照插入的顺序对Key进行保存，这样在进行迭代的时候同样是可以保证顺序的。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> OrderedDict<br><br>orderedDict = OrderedDict([(<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-number">1</span>), (<span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-number">2</span>), (<span class="hljs-string">&#x27;c&#x27;</span>, <span class="hljs-number">3</span>)])<br><span class="hljs-built_in">print</span>(orderedDict)  <span class="hljs-comment"># OrderedDict([(&#x27;a&#x27;, 1), (&#x27;b&#x27;, 2), (&#x27;c&#x27;, 3)])</span><br><span class="hljs-built_in">print</span>(orderedDict.keys())  <span class="hljs-comment"># odict_keys([&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;])</span><br></code></pre></td></tr></table></figure>
 <p>OrderedDict的使用方法几乎等同于内置的dict，不过它自身还是提供了一些其他的功能：</p>
@@ -436,18 +438,24 @@
 <blockquote>
 <p>需要注意，Python3.8之后，内置的dict已经是有序的了。</p>
 </blockquote>
-<h1>Default Dict</h1>
+<h1 id="default-dict">Default Dict</h1>
 <p>使用Python内置的dict，如果我们访问一个不存在的key，则会抛出KeyError错误。而<code>defaultdict</code>可以帮助我们指定默认值，如果Key不存在，返回的是实现指定的默认值。而<code>default dict</code>的其他使用方式与内置的dict完全相同。</p>
-<p><code>defaultdict</code>对象包含一个名为<code>default_factory</code>的属性。在构造的时候，第一个参数用于为该属性提供初始构造方法，默认为 None。所有其他参数（包括关键字参数）都相当于传递给 dict 的构造函数。</p>
+<p><code>defaultdict</code>对象包含一个名为<code>default_factory</code>的属性。在构造的时候，第一个参数用于为该属性提供初始构造方法，默认为
+None。所有其他参数（包括关键字参数）都相当于传递给 dict 的构造函数。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> defaultdict<br><br>s = [(<span class="hljs-string">&#x27;yellow&#x27;</span>, <span class="hljs-number">1</span>), (<span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-number">2</span>), (<span class="hljs-string">&#x27;yellow&#x27;</span>, <span class="hljs-number">3</span>), (<span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-number">4</span>), (<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-number">1</span>)]<br>d = defaultdict(<span class="hljs-built_in">list</span>)<br><span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> s:<br>    d[k].append(v)<br><span class="hljs-built_in">print</span>(d)  <span class="hljs-comment"># defaultdict(&lt;class &#x27;list&#x27;&gt;, &#123;&#x27;yellow&#x27;: [1, 3], &#x27;blue&#x27;: [2, 4], &#x27;red&#x27;: [1]&#125;)</span><br></code></pre></td></tr></table></figure>
 <p>例如这里我们使用list作为default_factory。当第一次遇见某个key的时候，它还没有在字典里面，所以会自动创建，调用default_factory方法返回一个空的list，之后空的list进行append。再次遇到对应的key，就与正常dict操作相同了。</p>
-<h1>基类</h1>
+<h1 id="基类">基类</h1>
 <p>除了上面专门的数据类型之外，在Collections中还提供了三个基类，分别是UserDict、UserList和UserString，以方便用户创建自定义的字典、列表和字符串。如果我们想要自定义类似于dict、list和str的类，那么可以继承这些基类，之后进行个性化地定制即可。</p>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://docs.python.org/3/library/collections.html#module-collections">Collections-Python Doc</a></li>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/343747724">万字长文详解 Python库collections，让你击败99%的Pythoner</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017681679479008">collections python</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://docs.python.org/3/library/collections.html#module-collections">Collections-Python
+Doc</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/343747724">万字长文详解
+Python库collections，让你击败99%的Pythoner</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017681679479008">collections
+python</a></li>
 </ol>
 
                 

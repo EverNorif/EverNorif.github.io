@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,7 +326,7 @@
             
               <div class="markdown-body">
                 
-                <h1>参数值获取</h1>
+                <h1 id="参数值获取">参数值获取</h1>
 <p>在之前的SQL书写中，我们都是直接将SQL写死在映射文件中，但是实际应用中，我们的SQL是动态变化的，体现在我们可能需要获取一些相关参数，然后拼接在SQL中。MyBatis也给我们提供了参数值获取的方式。</p>
 <p>在MyBatis中，参数值获取的方式分为两种，<code>$&#123;&#125;</code>以及<code>#&#123;&#125;</code></p>
 <ul>
@@ -340,8 +340,8 @@
 <h2 id="多个参数访问">多个参数访问</h2>
 <p>如果Mapper接口中的方法传入的是多个字面量类型，则MyBatis会以两种方式进行管理，具体来说，是将这些参数按照顺序保存在Map中。</p>
 <ul>
-<li>第一种方式中Map的Key为arg0、arg1、…；Value为对应位置的参数</li>
-<li>第二种方式中Map的Key为param1、param2、…；Value为对应位置的参数</li>
+<li>第一种方式中Map的Key为arg0、arg1、...；Value为对应位置的参数</li>
+<li>第二种方式中Map的Key为param1、param2、...；Value为对应位置的参数</li>
 </ul>
 <p>在访问对应参数的使用，我们在括号中可以通过Key来访问到对应的参数。使用第一种方式的<code>arg0,arg1</code>：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--User getUserByAgeAndGender(int age, char gender)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUserByAgeAndGender&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span>&gt;</span><br>    select *<br>    from users<br>    where age = #&#123;arg0&#125;<br>    and gender = #&#123;arg1&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -367,7 +367,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> id;<br>    <span class="hljs-keyword">private</span> String username;<br>    <span class="hljs-keyword">private</span> String password;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> age;<br>    <span class="hljs-keyword">private</span> String gender;<br>    <span class="hljs-keyword">private</span> String email;<br>    <br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 省略了构造方法、get set方法、toString方法等</span><br>&#125;<br></code></pre></td></tr></table></figure>
 <p>在映射文件中定义如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--User getUserByUser(User user)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUserByUser&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span>&gt;</span><br>    select *<br>    from users<br>    where username = #&#123;username&#125;<br>    and password = #&#123;password&#125;<br>    and age = #&#123;age&#125;<br>    and gender = #&#123;gender&#125;<br>    and email = #&#123;email&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<h2 id="使用-Param表示参数">使用@Param表示参数</h2>
+<h2 id="使用param表示参数">使用@Param表示参数</h2>
 <p>还有一种方式是我们可以通过注解的方式来表示Mapper中的方法接口，在注解中指定我们希望它的访问方式，后续在SQL中我们就能够通过对应的方式来访问参数了。</p>
 <p>在接口中我们定义如下内容：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">User <span class="hljs-title function_">getUserByIdAndName</span><span class="hljs-params">(<span class="hljs-meta">@Param(&quot;user_id&quot;)</span> <span class="hljs-type">int</span> id,<span class="hljs-meta">@Param(&quot;user_name&quot;)</span> String username)</span>;<br></code></pre></td></tr></table></figure>
@@ -377,28 +377,29 @@
 <p>在这种情况下，MyBatis也是使用了两种方式来保存参数：</p>
 <ul>
 <li>第一种方式中Map的Key为我们设置的参数；Value为对应位置的参数</li>
-<li>第二种方式中Map的Key为param1、param2、…；Value为对应位置的参数</li>
+<li>第二种方式中Map的Key为param1、param2、...；Value为对应位置的参数</li>
 </ul>
 </blockquote>
 <p>最终我们推荐都是使用@Param来表示参数，这样也无需考虑多种情况的不同，都使用统一的方式进行访问。</p>
-<h1>查询功能举例</h1>
+<h1 id="查询功能举例">查询功能举例</h1>
 <p>下面我们可以利用参数值获取功能来完成一些查询功能：</p>
 <h2 id="查询一个实体类对象">查询一个实体类对象</h2>
 <p>根据用户名称查询用户信息：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- User getUserByName(String name)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUserByName&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span>&gt;</span><br>    select *<br>    from users<br>    where username = #&#123;name&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<h2 id="查询一个List集合">查询一个List集合</h2>
+<h2 id="查询一个list集合">查询一个List集合</h2>
 <p>查询用户信息成为一个List集合：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- List&lt;User&gt; getUserList()--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUserList&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span>&gt;</span><br>    select *<br>    from users<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <h2 id="查询单个数据">查询单个数据</h2>
 <p>查询单个数据指的是查询得到一个int值或者其他字面量，例如这里查询用户的总数。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--int getSumOfUsers()--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getSumOfUsers&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;int&quot;</span>&gt;</span><br>    select count(*)<br>    from users<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>上面需要设置返回类型，我们可以写全类名<code>java.lang.Integer</code>，但是在MyBatis中提供了相应的类型别名，例如<code>java.lang.Integer</code>的别名为<code>int</code>或者<code>integer</code>，<code>int</code>的别名为<code>_int</code>或者<code>_integer</code>，<code>Map</code>的别名为<code>map</code>，<code>List</code>的别名为<code>list</code>。注意这里设置的是别名，别名是不区分大小写的。</p>
-<p>相关的别名参数可以在官方文档中查询得到<a target="_blank" rel="noopener" href="https://mybatis.net.cn/configuration.html#typeAliases">配置_MyBatis|类型别名</a></p>
-<h2 id="查询单个记录为Map">查询单个记录为Map</h2>
+<p>相关的别名参数可以在官方文档中查询得到<a
+target="_blank" rel="noopener" href="https://mybatis.net.cn/configuration.html#typeAliases">配置_MyBatis|类型别名</a></p>
+<h2 id="查询单个记录为map">查询单个记录为Map</h2>
 <p>我们也可以将一条记录查询成为Map类型，对应Map的Key就是表格中的字段名，Value就是对应的值。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Map&lt;String, Object&gt; getUserToMap(@Param(&quot;id&quot;) int id)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUserToMap&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;map&quot;</span>&gt;</span><br>    select *<br>    from users<br>    where id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>指的注意的是，这里查询出的结果中，如果有字段的值为null，是不会保存到结果Map中的，但是如果是查询单个记录为实体类，那么对应的值上是会保存null的。</p>
-<h2 id="查询多条记录为Map">查询多条记录为Map</h2>
+<h2 id="查询多条记录为map">查询多条记录为Map</h2>
 <p>查询多条记录为Map有两种方式。</p>
 <p>第一种方式是将每一条记录都查询成一个Map，然后将多个Map放入List队列中。如下面所示，注意接口的返回值类型以及标签中的<code>resultType</code>：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--List&lt;Map&lt;String, Object&gt;&gt; getUsersToMap()--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUsersToMap&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;map&quot;</span>&gt;</span><br>    select *<br>    from users<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -409,7 +410,7 @@
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Map&lt;String, Object&gt; getAllUserToMap()--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getAllUserToMap&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;map&quot;</span>&gt;</span><br>    select *<br>    from users<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>查询结果如下：</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">&#123;<br>2=&#123;<span class="hljs-attribute">password</span>=123456, <span class="hljs-attribute">gender</span>=男, <span class="hljs-attribute">id</span>=2, <span class="hljs-attribute">age</span>=23, <span class="hljs-attribute">email</span>=654321@haha.com, <span class="hljs-attribute">username</span>=root&#125;,<br>3=&#123;<span class="hljs-attribute">password</span>=normal, <span class="hljs-attribute">gender</span>=男, <span class="hljs-attribute">id</span>=3, <span class="hljs-attribute">age</span>=2, <span class="hljs-attribute">email</span>=333333@haha.com, <span class="hljs-attribute">username</span>=normal&#125;,<br>4=&#123;<span class="hljs-attribute">password</span>=123123, <span class="hljs-attribute">gender</span>=女, <span class="hljs-attribute">id</span>=4, <span class="hljs-attribute">age</span>=18, <span class="hljs-attribute">email</span>=123456@haha.com, <span class="hljs-attribute">username</span>=admin&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h1>特殊SQL</h1>
+<h1 id="特殊sql">特殊SQL</h1>
 <p>上面的SQL中，我们获取参数使用的都是<code>#&#123;&#125;</code>，采用占位符的方式拼接。我们大多数情况使用的的确是这种方式，但是也有一些情况下我们需要使用字符串拼接的操作，或者其他的特殊操作，下面就进行相关说明。</p>
 <blockquote>
 <p>主要需要注意的问题就是<code>#&#123;&#125;</code>使用占位符，如果传入字符串的话会自动添加引号，而<code>$&#123;&#125;</code>直接使用字符串拼接，不会进行引号的添加。在使用过程中，注意这点就可以解决很多问题</p>

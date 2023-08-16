@@ -82,7 +82,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -324,7 +324,7 @@
             
               <div class="markdown-body">
                 
-                <h1>Vistor</h1>
+                <h1 id="vistor">Vistor</h1>
 <h2 id="简介">简介</h2>
 <p>在程序中会有很多数据结构，其中保存了许多元素，我们需要对这些元素进行处理。对于一个类来说，访问其中元素的代码通常是放在表示数据结构的类中。但是如果处理有多种的时候，每增加一种处理，都需要再去修改表示数据结构的类。而在Visitor模式中，数据结构与处理被分离开来。我们通过编写一个表示访问者的类来访问数据结构中的元素，将各个元素的处理交给访问者。这样当需要增加新处理的时候，只需要编写新的访问者，然后让数据结构接受访问者的访问即可。</p>
 <p>在Vistor模式中有如下一些角色：</p>
@@ -350,18 +350,21 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Book</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-string">&quot;book1&quot;</span>, <span class="hljs-string">&quot;author1&quot;</span>);<br>    <span class="hljs-type">Movie</span> <span class="hljs-variable">movie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Movie</span>(<span class="hljs-string">&quot;movie1&quot;</span>, <span class="hljs-number">2023</span>);<br>    <span class="hljs-type">Visitor</span> <span class="hljs-variable">visitor</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ShowVisitor</span>();<br><br>    book.accept(visitor);<br>    movie.accept(visitor);<br>&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="说明">说明</h2>
 <p>Visitor模式的目的是将处理从数据结构中分离出来。数据结构完成的是元素集合等的关联，而保存数据结构和以数据结构为基础进行处理是两种不同的东西，分离之后我们可以更加有条理地完成管理。同时Visitor模式提高了组件的独立性，在增加处理模式的时候我们不需要去修改原先代表数据结构的类，而只需要新增新的Visitor类的实现即可，这样使得功能扩展和修改变得更加有条理，易于管理。关于功能扩展和修改有一个著名的开闭原则。</p>
-<p>开闭原则（The Open-Close Principle，OCP），它的核心观点可以用一句话来概括，就是“对扩展开放，对修改关闭”。</p>
+<p>开闭原则（The Open-Close
+Principle，OCP），它的核心观点可以用一句话来概括，就是“对扩展开放，对修改关闭”。</p>
 <p>对扩展开放指的是在设计类的时候，通常需要考虑到将来可能会扩展类。对修改关闭则是说需要能够在不用修改现有类的前提下进行类的扩展。因为如果每次扩展类的时候都需要修改现有代码，这样就太麻烦了。<strong>在不修改现有代码的前提下进行扩展，这就是开闭原则</strong>。</p>
 <p>但是另一方面，由于在Visitor模式中，对数据结构中元素进行处理的任务被交给了Visitor类，这意味着Element角色必须要向Visitor角色公开足够多的信息。访问者只有从数据结构中获取了足够多的信息之后才能工作。在这种意义上，数据结构需要小心地平衡信息的公开以及处理。</p>
-<h1>Chain of Responsibility</h1>
-<h2 id="简介-2">简介</h2>
-<p><code>Chain of Responsibility</code>，含义为责任链。直观地说，就是将多个对象组织成一条责任链，当有需求需要进行处理的时候，就从头开始，依次判断是否能够进行处理。对于责任链上的每一个对象来说，它都是从前面收到需求，如果自己能够处理这个需求，那么就进行处理，如果不能处理，就沿着责任链交给下一个对象进行处理，直到没有下一个对象，则表示无法处理这个需求。使用Chain of Responsibitly模式弱化了请求方和处理方之间的关联关系，让各自都成为可独立复用的组件。同时，使用责任链设计模式的程序，它能够应对的需求时可扩展的，我们可以根据情况的不同增加或者修改负责处理的对象。</p>
+<h1 id="chain-of-responsibility">Chain of Responsibility</h1>
+<h2 id="简介-1">简介</h2>
+<p><code>Chain of Responsibility</code>，含义为责任链。直观地说，就是将多个对象组织成一条责任链，当有需求需要进行处理的时候，就从头开始，依次判断是否能够进行处理。对于责任链上的每一个对象来说，它都是从前面收到需求，如果自己能够处理这个需求，那么就进行处理，如果不能处理，就沿着责任链交给下一个对象进行处理，直到没有下一个对象，则表示无法处理这个需求。使用Chain
+of
+Responsibitly模式弱化了请求方和处理方之间的关联关系，让各自都成为可独立复用的组件。同时，使用责任链设计模式的程序，它能够应对的需求时可扩展的，我们可以根据情况的不同增加或者修改负责处理的对象。</p>
 <p>在责任链设计模式中出现了如下角色：</p>
 <ul>
 <li><code>Handler</code>：该角色定义了处理请求的接口，同时持有另一个或者说下一个Handler对象。如果自己无法处理请求，就将请求转给下一对象。向外暴露support方法接口，用于支持问题解决。</li>
 <li><code>ConcreteHandler</code>：该角色实现了Handler角色，是处理请求的具体角色。</li>
 </ul>
-<h2 id="示例程序-2">示例程序</h2>
+<h2 id="示例程序-1">示例程序</h2>
 <p>在示例程序中，我们将模拟一条责任链的构成和运行。首先我们构造一个表示问题或者说需求的类<code>Trouble</code>，每个问题有一个编号ID。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Trouble</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> number;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Trouble</span><span class="hljs-params">(<span class="hljs-type">int</span> number)</span> &#123;<br>        <span class="hljs-built_in">this</span>.number = number;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getNumber</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> number;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;[Trouble &quot;</span> + number + <span class="hljs-string">&quot;]&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>之后我们定义一个类表示用于解决需求的类<code>Support</code>，这个类是抽象类，其他所有具体的解决需求的类都需要继承该类。在这个抽象类中，有如下几个需要注意的点。首先，每个Support对象内部还会持有一个Support对象，这表示在该对象沿着责任链的下一个对象。之后，我们声明了抽象的resolve方法，它接收一个Trouble对象，这个方法表示该对象应该如何处理对应的Trouble，返回值表示是否成功处理。而Support暴露出来用于支持Trouble处理的方法就是support，这也是整个责任链模式的核心所在。如果当前对象能够处理这个Trouble，就让它进行处理，如果不能，就交给下一个对象进行处理。</p>
@@ -372,13 +375,17 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">alice</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NoSupport</span>(<span class="hljs-string">&quot;Alice&quot;</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">bob</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LimitSupport</span>(<span class="hljs-string">&quot;Bob&quot;</span>, <span class="hljs-number">100</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">charlie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpecialSupport</span>(<span class="hljs-string">&quot;Charlie&quot;</span>, <span class="hljs-number">429</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">diana</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LimitSupport</span>(<span class="hljs-string">&quot;Diana&quot;</span>,<span class="hljs-number">200</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">elmo</span> <span class="hljs-operator">=</span>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">OddSupport</span>(<span class="hljs-string">&quot;Elmo&quot;</span>);<br>    <span class="hljs-type">Support</span> <span class="hljs-variable">fred</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LimitSupport</span>(<span class="hljs-string">&quot;Fred&quot;</span>, <span class="hljs-number">300</span>);<br><br>    alice.setNext(bob).setNext(charlie).setNext(diana).setNext(elmo).setNext(fred);<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">500</span>; i+=<span class="hljs-number">33</span>) &#123;<br>        alice.support(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Trouble</span>(i));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>最终的输出效果如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs shell">[Trouble 0] is resolved by [Bob].<br>[Trouble 33] is resolved by [Bob].<br>[Trouble 66] is resolved by [Bob].<br>[Trouble 99] is resolved by [Bob].<br>[Trouble 132] is resolved by [Diana].<br>[Trouble 165] is resolved by [Diana].<br>[Trouble 198] is resolved by [Diana].<br>[Trouble 231] is resolved by [Elmo].<br>[Trouble 264] is resolved by [Fred].<br>[Trouble 297] is resolved by [Elmo].<br>[Trouble 330] cannot be resolved.<br>[Trouble 363] is resolved by [Elmo].<br>[Trouble 396] cannot be resolved.<br>[Trouble 429] is resolved by [Charlie].<br>[Trouble 462] cannot be resolved.<br>[Trouble 495] is resolved by [Elmo].<br></code></pre></td></tr></table></figure>
+<h2 id="说明-1">说明</h2>
+<p>Chain of
+Responsibility模式的最大优点就是它弱化了发出请求的角色（Client）和处理请求的角色（ConcreteHandler）之间的关系。Client角色只需要向第一个ConcreteHandler角色发出请求，之后请求会在责任链中进行传播，直到某个ConcreteHandler角色处理了该请求。不过也是因为Chain
+of
+Responsibility模式一直在推卸责任，直到找到合适的处理请求的对象，这一方面提高了程序的灵活性，另一方面导致了延迟的处理。这是一个需要权衡的问题。实际上，如果请求和处理者之间的对应关系是能够确定的，而且需要非常快的响应时间，此时不使用Chain
+of Responsibility模式会更好。</p>
+<h1 id="facade">Facade</h1>
 <h2 id="说明-2">说明</h2>
-<p>Chain of Responsibility模式的最大优点就是它弱化了发出请求的角色（Client）和处理请求的角色（ConcreteHandler）之间的关系。Client角色只需要向第一个ConcreteHandler角色发出请求，之后请求会在责任链中进行传播，直到某个ConcreteHandler角色处理了该请求。不过也是因为Chain of Responsibility模式一直在推卸责任，直到找到合适的处理请求的对象，这一方面提高了程序的灵活性，另一方面导致了延迟的处理。这是一个需要权衡的问题。实际上，如果请求和处理者之间的对应关系是能够确定的，而且需要非常快的响应时间，此时不使用Chain of Responsibility模式会更好。</p>
-<h1>Facade</h1>
-<h2 id="说明-3">说明</h2>
 <p>在进行复杂程序开发的时候，我们会涉及到许许多多的类，这些类之间相互关联，导致程序结构变得越来越复杂。在使用这些类之前，我们需要格外注意它们之间的关系，这导致在开发时会增加许多复杂度。而Facade模式就能够帮助我们将这种情况进行简单化。Facade源自一个法语单词，意思为建筑物的正面。使用Facade模式，我们可以将互相关联在一起的错综复杂的类整理出高层API，其中Facade角色让系统对外只有一个简单接口，而内部实际类的关系和调用则由Facade角色来完成。Facade模式本质上就是对一个复杂系统进行包装，向外暴露简单的API，对使用者隐藏内部的复杂逻辑。</p>
-<h1>Mediator</h1>
-<h2 id="说明-4">说明</h2>
+<h1 id="mediator">Mediator</h1>
+<h2 id="说明-3">说明</h2>
 <p>在一个复杂程序的运行过程中，一种常见的情况是许多不同的类都需要对某种状态进行维护或者更改，根据不同情况做出不同反应。如果将状态控制的代码分散在各个相关类中，会导致使用和调试变得非常困难，而Mediator模式则可以帮助我们简单化这种情况。Mediator意为仲裁者，它来决定程序中如何进行状态的维护以及后续行为的定义。每个相关类发现状态更新，则报告给仲裁者，由仲裁者来决定如何进行下一步的行为。Mediator模式本质上就是将分散的控制逻辑统一集中在一个类中，便于管理和调试。当其他相关类需要使用到其中的某种逻辑时，就通知仲裁者即可。</p>
 
                 

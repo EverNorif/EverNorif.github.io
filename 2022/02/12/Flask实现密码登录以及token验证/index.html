@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,7 +326,7 @@
               <div class="markdown-body">
                 
                 <p>下面主要完成的是通过Flask实现密码登录，用户成功登录之后，后端返回一个token。此后用户通过token即可访问其他需要验证的网站。</p>
-<h2 id="Flask实现密码登录">Flask实现密码登录</h2>
+<h2 id="flask实现密码登录">Flask实现密码登录</h2>
 <p>首先安装所需的模块：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install flask_httpauth<br>pip install itsdangerous<br></code></pre></td></tr></table></figure>
 <p>之后创建一个工具对象<code>utils/MyToken.py</code>，用于生成token以及验证token（通过捕获不同的错误来确定token的状态：正确、错误、过期等）：</p>
@@ -338,7 +338,7 @@
 <p>如下，完成登录链接的逻辑：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 登录验证</span><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/login&#x27;</span>, methods=[<span class="hljs-string">&#x27;POST&#x27;</span>]</span>)</span><br><span class="hljs-meta">@auth_user.login_required</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">login</span>():<br>    user = g.user_id<br>    token = Token.generate_auth_token(g.user_id)<br>    <span class="hljs-keyword">return</span> jsonify(&#123;<span class="hljs-string">&#x27;token&#x27;</span>: token&#125;)<br></code></pre></td></tr></table></figure>
 <p>如果用户访问该链接，会首先进行auth_use的验证，只有当验证返回True的时候才会进入login函数。login函数中返回token给前端。</p>
-<h2 id="Flask实现token验证">Flask实现token验证</h2>
+<h2 id="flask实现token验证">Flask实现token验证</h2>
 <p>token验证的实现与前面类似，同样是通过实现验证函数来完成。token验证主要是使用HTTPTokenAuth，在postman的测试中，指定路径为<code>Authorization -&gt; Bearer Token</code>。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask_httpauth <span class="hljs-keyword">import</span> HTTPTokenAuth<br><br>auth_token = HTTPTokenAuth()  <span class="hljs-comment"># token验证</span><br><br><span class="hljs-comment"># token验证</span><br><span class="hljs-meta">@auth_token.verify_token</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">verify_token</span>(<span class="hljs-params">token</span>):<br>    token = re.sub(<span class="hljs-string">r&#x27;^&quot;|&quot;$&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>, token)<br>    label = Token.verify_auth_token(token)<br>    <span class="hljs-keyword">return</span> label<br></code></pre></td></tr></table></figure>
 <p>然后在需要token验证的链接之前增加修饰：<code>@auth_token.login_required</code></p>
@@ -350,8 +350,10 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js">$axios.<span class="hljs-title function_">onRequest</span>(<span class="hljs-function"><span class="hljs-params">config</span> =&gt;</span> &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>    <span class="hljs-comment">//match api</span><br>    <span class="hljs-keyword">let</span> token = app.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;token&#x27;</span>);<br>    <span class="hljs-comment">//add token</span><br>    <span class="hljs-keyword">if</span> (token) config.<span class="hljs-property">headers</span>.<span class="hljs-property">Authorization</span> = <span class="hljs-string">&#x27;Bearer &#x27;</span> + token;<br>    <span class="hljs-comment">//其他的请求前业务逻辑 比如：api map</span><br>    <span class="hljs-title function_">resolve</span>(config);<br>  &#125;)<br>&#125;);<br></code></pre></td></tr></table></figure>
 <p>这里涉及到cookies和axios拦截器的使用，内容可以查看相关文章。</p>
 <h2 id="参考文章">参考文章</h2>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/-wenli/p/14016905.html#/">Flask实现token认证 - -零 - 博客园 (cnblogs.com)</a></li>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/-wenli/p/14016905.html#/">Flask实现token认证
+- -零 - 博客园 (cnblogs.com)</a></li>
 </ol>
 
                 

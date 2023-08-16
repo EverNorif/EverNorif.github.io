@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,8 +325,8 @@
             
               <div class="markdown-body">
                 
-                <h2 id="HBase表结构设计">HBase表结构设计</h2>
-<h3 id="命名空间：NameSpace">命名空间：NameSpace</h3>
+                <h2 id="hbase表结构设计">HBase表结构设计</h2>
+<h3 id="命名空间namespace">命名空间：NameSpace</h3>
 <p>在一个项目中，需要使用HBase来保存多张表，不同的表可能有不同的业务关系，可以按照某种业务域来划分这些表。为了方便管理，不同的业务域以命名空间（NameSpace）来划分。</p>
 <p>HBase初始存在两个命名空间，<code>defalut</code>和<code>hbase</code>。</p>
 <ul>
@@ -356,22 +356,16 @@
 </ul>
 <p>压缩方式的设置是以列族为单位的，即每个列族可以设置一个压缩方式。具体修改属性为<code>COMPRESSION</code>，举例如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">alter &quot;MY_NAMESPACE:MY_TABLE&quot;, &#123;NAEM =&gt; &quot;C1&quot;, COMPRESSION =&gt; &quot;GZ&quot;&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="行键Row-Key设计原则">行键Row Key设计原则</h3>
+<h3 id="行键row-key设计原则">行键Row Key设计原则</h3>
 <p>行键唯一标识了一个逻辑行的数据，在HBase中具有相当的重要性。因此在设计行键的时候也应当遵循一定的设计原则。</p>
 <p>官方提供的行键设计原则：</p>
-<ol>
-<li>
-<p>避免使用递增或者时序数据作为行键</p>
-<p>由于在存储的过程中，数据会按照行键进行顺序存储，如果使用的是递增或者时序数据，会导致负载都在一台或某几台机器上，不利于负载均衡。</p>
-</li>
-<li>
-<p>避免行键和列的长度过大</p>
-<p>在HBase中，如果要访问一个单元格，需要有对应的行键、列族名、列标识符，如果这些名称的长度过大，则会占用较大的内存空间。因此行键和列的长度应该尽可能短，其中行键的最大长度支持64KB。</p>
-</li>
-<li>
-<p>需要保证行键的唯一性</p>
-<p>在设计行键的时候，必须保证它的唯一性。在HBase中数据的存储是键值对形式，如果向HBase中同一张表插入相同行键的数据，原先的数据会被覆盖。</p>
-</li>
+<ol type="1">
+<li><p>避免使用递增或者时序数据作为行键</p>
+<p>由于在存储的过程中，数据会按照行键进行顺序存储，如果使用的是递增或者时序数据，会导致负载都在一台或某几台机器上，不利于负载均衡。</p></li>
+<li><p>避免行键和列的长度过大</p>
+<p>在HBase中，如果要访问一个单元格，需要有对应的行键、列族名、列标识符，如果这些名称的长度过大，则会占用较大的内存空间。因此行键和列的长度应该尽可能短，其中行键的最大长度支持64KB。</p></li>
+<li><p>需要保证行键的唯一性</p>
+<p>在设计行键的时候，必须保证它的唯一性。在HBase中数据的存储是键值对形式，如果向HBase中同一张表插入相同行键的数据，原先的数据会被覆盖。</p></li>
 </ol>
 <h3 id="避免数据热点">避免数据热点</h3>
 <p>HBase原生支持分布式存储，并且它的应用场景也多是分布式的，因此避免数据热点是一个非常重要的方面。数据热点指的是大量的客户端直接访问集群中的一个或者某几个节点（进行读写操作），而其他节点一直处于空闲状态。大量的访问操作可能会导致某个服务器节点超出承受能力，导致整个RegionServer的性能下降，其他的Region也会受影响。</p>
@@ -380,14 +374,17 @@
 <p>HBase中存在自动分区的机制，当然我们也可以手动进行预分区。默认情况，一个HBase的表只有一个Region，由一个RegionServer进行管理。</p>
 <ul>
 <li>每个Region存在两个重要的属性：<code>start key</code>和<code>end key</code>。这两个属性表示这个Region维护的行键范围，在存储的时候，根据行键的不同存储到不同的Region中</li>
-<li>如果只有一个Region，那么start key和end key都为空，表示均可存储。当数据量越来越大的时候，HBase会进行Region分裂</li>
+<li>如果只有一个Region，那么start key和end
+key都为空，表示均可存储。当数据量越来越大的时候，HBase会进行Region分裂</li>
 <li>我们也可以预先设置预分区，建议预分区的个数设置为节点的倍数，让Region均匀地分布在各个节点上</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">指定预分区</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">1. 指定start key和end key</span><br>create &quot;MY_TABLE&quot;, &quot;C1&quot;, &#123;SPLITS =&gt; [&#x27;10&#x27;, &#x27;20&#x27;, &#x27;30&#x27;, &#x27;40&#x27;]&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">2. 指定分区数量和分区策略</span><br>create &quot;MY_TABLE&quot;, &quot;C1&quot;， &#123;NUMREGIONS =&gt; 5, SPLITALGO =&gt; &#x27;HexStringSplit&#x27;&#125;<br></code></pre></td></tr></table></figure>
-<p>第一种方式通过指定start key和end key进行预分区，给定SPLITS列表表示指定划分界限，如示例中所示，切分4处，形成了5个分区。</p>
+<p>第一种方式通过指定start key和end
+key进行预分区，给定SPLITS列表表示指定划分界限，如示例中所示，切分4处，形成了5个分区。</p>
 <p>第二种方式通过指定分区数量和分区策略来进行预分区，支持的分区策略有以下几种：</p>
 <ul>
-<li>HexStringSplit： 适用于形式为十六进制的字符串的行键，预定义范围为<code>00000000</code>-&gt;<code>FFFFFFFF</code>。对于位数不够的行键，则使用0在填充高位。</li>
+<li>HexStringSplit：
+适用于形式为十六进制的字符串的行键，预定义范围为<code>00000000</code>-&gt;<code>FFFFFFFF</code>。对于位数不够的行键，则使用0在填充高位。</li>
 <li>DecimalStringSplit： 适用于形式为十进制的字符串的行键。</li>
 <li>UniformSplit： 适用于形式为随机字节数组的行键。</li>
 </ul>
@@ -397,29 +394,37 @@
 <li><strong>反转策略</strong></li>
 </ul>
 <p>如果设计的行键在数据分布上不均匀，但是行键的尾部数据呈现出良好的随机性，则可以考虑将行键反转，或者直接将尾部的bytes提前到行键的开头（例如手机号码、时间戳等）</p>
-<p>优点：使得Row Key随机分布，利于数据均匀分布在不同Region中，利于Get操作</p>
-<p>缺点：不利于Scan操作，牺牲了Row Key的有序性，因为数据在原Row Key上的自然顺序已经被打乱</p>
+<p>优点：使得Row
+Key随机分布，利于数据均匀分布在不同Region中，利于Get操作</p>
+<p>缺点：不利于Scan操作，牺牲了Row Key的有序性，因为数据在原Row
+Key上的自然顺序已经被打乱</p>
 <ul>
 <li><strong>加盐策略</strong></li>
 </ul>
-<p>加盐的原理是在原Row Key的前面添加固定长度的随机数，即给Row Key分配一个随机的前缀</p>
+<p>加盐的原理是在原Row Key的前面添加固定长度的随机数，即给Row
+Key分配一个随机的前缀</p>
 <p>优点：随机数使得Row Key随机分布，利于负载均衡</p>
-<p>缺点：由于添加的是随机数，因此基于Row Key进行查询的时候无法得知随机数是什么，最后只能进行全表扫描，效率低</p>
+<p>缺点：由于添加的是随机数，因此基于Row
+Key进行查询的时候无法得知随机数是什么，最后只能进行全表扫描，效率低</p>
 <ul>
 <li><strong>哈希策略</strong></li>
 </ul>
-<p>对原Row Key进行哈希，得到哈希值完整或部分替换原Row Key的前缀部分。可以使用的哈希算法包括MD5、sha1、sha256、sha512等算法</p>
+<p>对原Row Key进行哈希，得到哈希值完整或部分替换原Row
+Key的前缀部分。可以使用的哈希算法包括MD5、sha1、sha256、sha512等算法</p>
 <p>优点：利于负载均衡</p>
 <p>缺点：不利于Scan操作，因为打乱了原Row Key的自然顺序</p>
 <blockquote>
 <p>补充阅读：</p>
 <p>HBase默认只支持对行键的索引，如果要针对其他的列进行查询，那么只能全表扫描，这样的效率是不高的，尤其在表存储数据量很大的情况下表现更加明显。</p>
-<p>Apache Phoenix可以帮助解决这样的问题。（<a target="_blank" rel="noopener" href="https://phoenix.apache.org/">Overview | Apache Phoenix</a> ）</p>
-<p>Apache Phoenix可以很好地和其他Hadoop组件整合在一起，包括Spark、Hive、MapReduce等，使得支持低延迟OLTP和业务操作分析。简单来说，它提供标准的SQL以及完备的ACID事务分析；通过利用HBase作为存储，通过SQL进行操作，如创建表、对数据增删改查等。</p>
+<p>Apache Phoenix可以帮助解决这样的问题。（<a
+target="_blank" rel="noopener" href="https://phoenix.apache.org/">Overview | Apache Phoenix</a> ）</p>
+<p>Apache
+Phoenix可以很好地和其他Hadoop组件整合在一起，包括Spark、Hive、MapReduce等，使得支持低延迟OLTP和业务操作分析。简单来说，它提供标准的SQL以及完备的ACID事务分析；通过利用HBase作为存储，通过SQL进行操作，如创建表、对数据增删改查等。</p>
 </blockquote>
 <h2 id="参考文章">参考文章</h2>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://hbase.apache.org/book.html">Apache HBase ™ Reference Guide</a></li>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://hbase.apache.org/book.html">Apache HBase ™
+Reference Guide</a></li>
 </ol>
 
                 

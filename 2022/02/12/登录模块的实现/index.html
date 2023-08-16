@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -327,28 +327,17 @@
                 
                 <h2 id="登录模块的实现步骤">登录模块的实现步骤</h2>
 <p>首先描述登录模块的设计步骤和思想：</p>
-<ol>
-<li>
-<p>首先在前台提供输入表单，表单可以使用element UI中提供的表单元素（有前端规则验证）</p>
-</li>
-<li>
-<p>获取到前端输入之后，向后端发送请求，这里需要通过BasicAuth的验证，在axios参数中需要携带auth</p>
-</li>
-<li>
-<p>向后端发送请求通过之后，可以得到返回的token，这里的token需要持久化记录，所以可以选择利用Cookies进行记录，此后需要用到的地方也可以直接从Cookies中取出</p>
-</li>
-<li>
-<p>登录之后，由前端发出的其余请求都需要携带token，并且进行TokenAuth的验证。这里可以通过利用axios的拦截器来进行完成，在请求前完成对请求头的token添加</p>
-</li>
-<li>
-<p>之后需要完成路由鉴权，如果当前路由需要token才能访问，而Cookies中没有token，那么就跳转到登录页面</p>
-</li>
-<li>
-<p>登录退出的话，只需要进行Cookies的清除即可</p>
-</li>
+<ol type="1">
+<li><p>首先在前台提供输入表单，表单可以使用element
+UI中提供的表单元素（有前端规则验证）</p></li>
+<li><p>获取到前端输入之后，向后端发送请求，这里需要通过BasicAuth的验证，在axios参数中需要携带auth</p></li>
+<li><p>向后端发送请求通过之后，可以得到返回的token，这里的token需要持久化记录，所以可以选择利用Cookies进行记录，此后需要用到的地方也可以直接从Cookies中取出</p></li>
+<li><p>登录之后，由前端发出的其余请求都需要携带token，并且进行TokenAuth的验证。这里可以通过利用axios的拦截器来进行完成，在请求前完成对请求头的token添加</p></li>
+<li><p>之后需要完成路由鉴权，如果当前路由需要token才能访问，而Cookies中没有token，那么就跳转到登录页面</p></li>
+<li><p>登录退出的话，只需要进行Cookies的清除即可</p></li>
 </ol>
 <p>以上是登录模块的设计思想，下面的细节说明是基于nuxt-cli工程的，其余工程也可以有类似的实现方式。</p>
-<h2 id="Nuxt中Cookies的应用">Nuxt中Cookies的应用</h2>
+<h2 id="nuxt中cookies的应用">Nuxt中Cookies的应用</h2>
 <p>前端的Cookies可以简单的理解为一个携带信息的字符串，它保存在客户端，通过代码可以从中解析出对应的信息。因此，Cookies在Nuxt中就可以作为一个全局变量的提取器（个人理解）。在获得信息的时候将其存入Cookies中，当需要的时候再将它从Cookies中解析出来使用。</p>
 <p>Nuxt要使用Cookies，需要引入插件：cookie-universal-nuxt 。</p>
 <p>首先进行安装：</p>
@@ -358,20 +347,22 @@
 <p>之后就可以使用了，下面是一些常见的操作：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//设置cookies</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">set</span>(<span class="hljs-string">&#x27;token&#x27;</span>, token)<br><br><span class="hljs-comment">//获取cookies</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;token&#x27;</span>)<br><br><span class="hljs-comment">//清除cookies</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">remove</span>(<span class="hljs-string">&#x27;token&#x27;</span>)<br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">removeAll</span>()<br></code></pre></td></tr></table></figure>
 <p>于是，可以在登录axios的response中完成相应的cookies存储工作，以便后续的使用。</p>
-<h2 id="Nuxt中axios拦截器的使用">Nuxt中axios拦截器的使用</h2>
+<h2 id="nuxt中axios拦截器的使用">Nuxt中axios拦截器的使用</h2>
 <p>axios拦截器可以在项目中任何一个axios请求的不同阶段发生之前进行事先定义的操作。我们需要在nuxt项目中定义axios拦截器，在axios发送请求之前给它加上token。</p>
 <p>首先需要修改配置文件<code>nuxt.config.js</code>，进行模块和插件的添加：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-attr">plugins</span>: [<br>    <span class="hljs-string">&#x27;@/plugins/axios&#x27;</span>,<br>],<br><span class="hljs-attr">modules</span>: [<br>    <span class="hljs-string">&#x27;@nuxtjs/axios&#x27;</span>,<br>],<br><br></code></pre></td></tr></table></figure>
 <p>然后创建插件文件<code>plugins/axios.js</code>：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//添加插件文件 plugins/axios.js</span><br><span class="hljs-keyword">let</span> isClient = process.<span class="hljs-property">env</span>.<span class="hljs-property">VUE_ENV</span> === <span class="hljs-string">&#x27;client&#x27;</span> <span class="hljs-comment">//区分端</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (&#123;redirect, $axios, app&#125;) =&gt; &#123;<br>  $axios.<span class="hljs-title function_">onRequest</span>(<span class="hljs-function"><span class="hljs-params">config</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>      <span class="hljs-comment">//match api</span><br>      <span class="hljs-keyword">let</span> token = app.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;token&#x27;</span>);<br>      <span class="hljs-comment">//add token</span><br>      <span class="hljs-keyword">if</span> (token) config.<span class="hljs-property">headers</span>.<span class="hljs-property">Authorization</span> = <span class="hljs-string">&#x27;Bearer &#x27;</span> + token;<br>      <span class="hljs-comment">//其他的请求前业务逻辑 比如：api map</span><br>      <span class="hljs-title function_">resolve</span>(config);<br>    &#125;)<br>  &#125;);<br><br>  $axios.<span class="hljs-title function_">onResponse</span>(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>      <span class="hljs-comment">//返回数据逻辑处理 比如：error_code错误处理</span><br>      <span class="hljs-title function_">resolve</span>(res);<br>    &#125;)<br>  &#125;);<br><br>  $axios.<span class="hljs-title function_">onError</span>(<span class="hljs-function"><span class="hljs-params">config</span> =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Making request to &#x27;</span> + config.<span class="hljs-property">url</span>);<br>    <span class="hljs-title function_">alert</span>(<span class="hljs-string">&#x27;出现了未知的异常，请重新登录&#x27;</span>);<br>  &#125;)<br>&#125;;<br><br></code></pre></td></tr></table></figure>
-<h2 id="Nuxt路由鉴权">Nuxt路由鉴权</h2>
+<h2 id="nuxt路由鉴权">Nuxt路由鉴权</h2>
 <p>Nuxt中的路由鉴权可以通过中间件来完成，中间件允许定义一个自定义函数运行在一个页面或者一组页面渲染之前。这里只说明自定义函数中应该完成的逻辑，中间件的引入和使用就不再说明。于是在这个自定义函数中，我们可以对当前路由进行判断，如果不满足要求，就跳转到登录页面。</p>
 <p>以下为<code>middleware/auth.js</code>中的内容：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params">context</span>) &#123;<br>  <span class="hljs-keyword">let</span> now_route = context.<span class="hljs-property">route</span>.<span class="hljs-property">fullPath</span>;<br>  <span class="hljs-comment">//检查当前路由是否在/data下</span><br>  <span class="hljs-keyword">if</span> (now_route.<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">&quot;/data&quot;</span>) === <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-comment">//检查是否有token,如果没有token，则跳转到登录页面</span><br>    <span class="hljs-keyword">let</span> token = context.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;token&#x27;</span>);<br>    <span class="hljs-keyword">if</span> (!token) &#123;<br>      context.<span class="hljs-title function_">redirect</span>(<span class="hljs-string">&#x27;/login&#x27;</span>);<br>    &#125;<br>  &#125;<br>  <span class="hljs-comment">//检查是否是admin页面</span><br>  <span class="hljs-keyword">if</span> (now_route.<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">&quot;/data/admin&quot;</span>) === <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-comment">//检查是否有权限</span><br>    <span class="hljs-keyword">let</span> auth = context.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;auth&#x27;</span>);<br>    <span class="hljs-keyword">if</span> (auth !== <span class="hljs-number">0</span>) &#123;<br>      context.<span class="hljs-title function_">redirect</span>(<span class="hljs-string">&#x27;/login&#x27;</span>);<br>    &#125;<br>  &#125;<br>  <span class="hljs-comment">//检查是否是editor页面</span><br>  <span class="hljs-keyword">if</span> (now_route.<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">&quot;/editor&quot;</span>) === <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-comment">//检查是否有权限</span><br>    <span class="hljs-keyword">let</span> auth = context.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;auth&#x27;</span>);<br>    <span class="hljs-keyword">if</span> (auth !== <span class="hljs-number">0</span> &amp;&amp; auth !== <span class="hljs-number">1</span>) &#123;<br>      context.<span class="hljs-title function_">redirect</span>(<span class="hljs-string">&#x27;/login&#x27;</span>);<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="参考文章">参考文章</h2>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/AK852369/article/details/115792191#/">Nuxt引用cookie-universal-nuxt在服务端请求cookie_明知山-CSDN博客_cookie-universal-nuxt</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2479eaca2bf7#/">nuxt 服务端进行请求时带上token - 简书 (jianshu.com)</a></li>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/AK852369/article/details/115792191#/">Nuxt引用cookie-universal-nuxt在服务端请求cookie_明知山-CSDN博客_cookie-universal-nuxt</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2479eaca2bf7#/">nuxt
+服务端进行请求时带上token - 简书 (jianshu.com)</a></li>
 </ol>
 
                 

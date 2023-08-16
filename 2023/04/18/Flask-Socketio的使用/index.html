@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -280,7 +280,7 @@
         
         
           <!-- compatible with older versions-->
-          34 分钟
+          33 分钟
         
       </span>
     
@@ -327,16 +327,17 @@
             
               <div class="markdown-body">
                 
-                <h1>WebSocket</h1>
+                <h1 id="websocket">WebSocket</h1>
 <p>WebSocket是一种网络协议，可以用来实现在客户端和服务器之间的双向实时通信，前端可以向后端发送请求，同时后端也可以向前端进行实时数据推送。传统的HTTP协议是无状态的，每次请求都需要重新建立连接，而利用WebSocket可以在建立连接之后保持连接状态，双方可以随时发送信息。</p>
 <p>在一个实时的Web应用程序中，我们可以使用Vue作为前端框架，使用Flask作为后端框架。前后端都有相关的工具来支持WebSocket，使得开发WebSocket应用更加容易。</p>
-<h1>案例介绍</h1>
+<h1 id="案例介绍">案例介绍</h1>
 <h2 id="相关概念">相关概念</h2>
 <p>在介绍案例之前，我们可以简单了解一下WebSocket的工作原理。WebSocket可以实现服务器和客户端之间的双向通信，我们可以想象是在双方之间建立了一个通道，前后端都可以进行信息发送和信息接收。具体来说，我们会在后面见到<code>emit</code>和<code>on</code>的操作，分别代表发送信息以及接收信息。</p>
 <p>如果客户端想要使用websocket接受服务器推送的话，Socketio是一个不错的选择。Socket.io将Websocket、轮询机制以及其它的实时通信方式（ajax等）封装成了通用的接口，并且在服务端也实现了这些实时机制的相应代码。所以，使用Socket.io便不需要担心浏览器兼容问题。</p>
 <p>在socketio中还有两个重要的概念，分别为<code>namespace</code>和<code>event</code>，前后端如果要进行双向通信，这些信息应该同属于一个namespace。而event则是在信息发送和接收的时候使用到，我们可以触发一个event，也可以监听一个event，这样就形成了一个通道，使得数据能够正确传递。在后面我们也可以在代码中看到对应的概念。</p>
-<h2 id="Flask-SocketIO">Flask SocketIO</h2>
-<p>Flask SocketIO是在Flask框架中对WebSocket的支持，通过它我们能够在Flask中很方便地完成WebSocket应用的编写。可以通过pip来进行依赖的安装：</p>
+<h2 id="flask-socketio">Flask SocketIO</h2>
+<p>Flask
+SocketIO是在Flask框架中对WebSocket的支持，通过它我们能够在Flask中很方便地完成WebSocket应用的编写。可以通过pip来进行依赖的安装：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install flask-socketio<br></code></pre></td></tr></table></figure>
 <p>之后，我们可以通过如下的代码来获取对应的SocketIO对象。这里为了解决跨域问题，我们使用了CORS以及<code>cors_allowed_origins='*'</code>。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><span class="hljs-keyword">from</span> flask_cors <span class="hljs-keyword">import</span> CORS<br><span class="hljs-keyword">from</span> flask_socketio <span class="hljs-keyword">import</span> SocketIO<br><br>app = Flask(__name__)<br>CORS(app, cors_allowed_origins=<span class="hljs-string">&#x27;*&#x27;</span>)<br>socketIO = SocketIO(app, cors_allowed_origins=<span class="hljs-string">&#x27;*&#x27;</span>)<br></code></pre></td></tr></table></figure>
@@ -344,14 +345,14 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@socketIO.on(<span class="hljs-params"><span class="hljs-string">&quot;my event&quot;</span>, namespace=<span class="hljs-string">&quot;/api&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">testSocketIO</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-built_in">print</span>(data)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test socket io...&quot;</span>)<br>    socketIO.emit(<span class="hljs-string">&quot;my response&quot;</span>, &#123;<span class="hljs-string">&#x27;dataInBackend&#x27;</span>: data&#125;, namespace=<span class="hljs-string">&quot;/api&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>SocketIO应用的启动和传统的Flask有所区别，需要使用<code>SocketIO</code>对象来run。如果使用的是dev模式，则需要额外增加属性<code>allow_unsafe_werkzeug=True</code></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    socketIO.run(app, allow_unsafe_werkzeug=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
-<h2 id="Vue-前端展现">Vue 前端展现</h2>
+<h2 id="vue-前端展现">Vue 前端展现</h2>
 <p>在前端我们同样需要SocketIO的支持。这里我们使用Vue框架作为前端的实现。在Vue中有两种方式来使用SocketIO，一种是直接使用官方包<code>SocketIO</code>，第二种是使用<code>VueSocketio</code>。第二种方式是对SocketIO的一层封装，更适合在Vue项目中使用，不过在案例实现的过程中，第二种方法会有版本不匹配的问题出现，因此这里还是选择使用第一种方式。</p>
 <p>首先需要通过npm安装相关依赖：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">npm install socket.io-client<br></code></pre></td></tr></table></figure>
 <p>之后，我们可以在需要使用WebSocket的组件中进行使用。下面来介绍一个简单案例。首先展现组件的完整代码：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>  &lt;h1&gt;SocketIO Shower&lt;/h1&gt;<br>  &lt;div&gt;&#123;&#123; this.data &#125;&#125;&lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>import io from &#x27;socket.io-client&#x27;;<br><br>export default &#123;<br>  name: &quot;SocketIOShower&quot;,<br>  data() &#123;<br>    return &#123;<br>      data: &#123;&#125;<br>    &#125;<br>  &#125;,<br>  mounted() &#123;<br>    const socket = io(&#x27;http://127.0.0.1:5000/api&#x27;);<br>    socket.emit(&#x27;my event&#x27;, &#123;&#x27;data&#x27;: &quot;data from fronend&quot;&#125;);<br>    socket.on(&#x27;my response&#x27;, (data) =&gt; &#123;<br>      this.data = data<br>    &#125;)<br>  &#125;<br>&#125;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 <p>在测试组件中，我们的data中返回一个data字段，用于承接后端推送的信息，并将其渲染在页面中。在组件mounted的声明周期，我们通过<code>io</code>获取一个<code>SocketIO</code>对象，然后通过该对象分别调用了emit以及on方法。注意这里在对象初始化的时候，我们已经在url中指定了<code>namespace</code>，实际上namespace就相当于path的拼接。</p>
-<p>对应到前面Flask的案例代码，首先前端通过<code>emit</code>触发<code>my event</code>事件传递数据<code>&#123;'data': &quot;data from fronend&quot;&#125;</code>，后端flask监听了对应namespace下的该事件，于是会在控制台中进行打印，同时调用<code>emit</code>方法触发<code>my response</code>事件，向前端传送信息。前端使用了<code>on</code>方法来监听<code>my response</code>事件，因此能够得到后端传送来的数据，同时更新<code>this.data</code>，进行页面渲染。</p>
+<p>对应到前面Flask的案例代码，首先前端通过<code>emit</code>触发<code>my event</code>事件传递数据<code>&#123;'data': "data from fronend"&#125;</code>，后端flask监听了对应namespace下的该事件，于是会在控制台中进行打印，同时调用<code>emit</code>方法触发<code>my response</code>事件，向前端传送信息。前端使用了<code>on</code>方法来监听<code>my response</code>事件，因此能够得到后端传送来的数据，同时更新<code>this.data</code>，进行页面渲染。</p>
 <p>最终我们可以在前端页面上看见如下效果：</p>
 <img src="/2023/04/18/Flask-Socketio%E7%9A%84%E4%BD%BF%E7%94%A8/socketio-frontend.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="socketio-frontend">
 <h2 id="动态推送">动态推送</h2>
@@ -361,49 +362,56 @@
 <h2 id="注意事项">注意事项</h2>
 <p>在使用过程中，可能出现如下异常情况。在Flask后端中出现下面的提示信息，同时前端控制台上会一直提示400以及跨域错误。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">The client is using an unsupported version of the Socket.IO or Engine.IO protocols<br></code></pre></td></tr></table></figure>
-<p>这是因为相关依赖的版本不能匹配。在使用过程中，前后端使用的SocketIO以及相关依赖的版本需要能够匹配上，否则会无法工作。匹配的版本可以在<a target="_blank" rel="noopener" href="https://flask-socketio.readthedocs.io/en/latest/intro.html#version-compatibility">Introduction — Flask-SocketIO documentation</a>中进行查看，目前的对应关系如下所示。</p>
+<p>这是因为相关依赖的版本不能匹配。在使用过程中，前后端使用的SocketIO以及相关依赖的版本需要能够匹配上，否则会无法工作。匹配的版本可以在<a
+target="_blank" rel="noopener" href="https://flask-socketio.readthedocs.io/en/latest/intro.html#version-compatibility">Introduction
+— Flask-SocketIO
+documentation</a>中进行查看，目前的对应关系如下所示。</p>
 <table>
+
 <thead>
-<tr>
-<th style="text-align:left">JavaScript <a target="_blank" rel="noopener" href="http://Socket.IO">Socket.IO</a> version</th>
-<th style="text-align:left"><a target="_blank" rel="noopener" href="http://Socket.IO">Socket.IO</a> protocol revision</th>
-<th style="text-align:left"><a target="_blank" rel="noopener" href="http://Engine.IO">Engine.IO</a> protocol revision</th>
-<th style="text-align:left">Flask-SocketIO version</th>
-<th style="text-align:left">python-socketio version</th>
-<th style="text-align:left">python-engineio version</th>
+<tr class="header">
+<th style="text-align: left;">JavaScript Socket.IO version</th>
+<th style="text-align: left;">Socket.IO protocol revision</th>
+<th style="text-align: left;">Engine.IO protocol revision</th>
+<th style="text-align: left;">Flask-SocketIO version</th>
+<th style="text-align: left;">python-socketio version</th>
+<th style="text-align: left;">python-engineio version</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left">0.9.x</td>
-<td style="text-align:left">1, 2</td>
-<td style="text-align:left">1, 2</td>
-<td style="text-align:left">Not supported</td>
-<td style="text-align:left">Not supported</td>
-<td style="text-align:left">Not supported</td>
+<tr class="odd">
+<td style="text-align: left;">0.9.x</td>
+<td style="text-align: left;">1, 2</td>
+<td style="text-align: left;">1, 2</td>
+<td style="text-align: left;">Not supported</td>
+<td style="text-align: left;">Not supported</td>
+<td style="text-align: left;">Not supported</td>
 </tr>
-<tr>
-<td style="text-align:left">1.x and 2.x</td>
-<td style="text-align:left">3, 4</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">4.x</td>
-<td style="text-align:left">4.x</td>
-<td style="text-align:left">3.x</td>
+<tr class="even">
+<td style="text-align: left;">1.x and 2.x</td>
+<td style="text-align: left;">3, 4</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">4.x</td>
+<td style="text-align: left;">4.x</td>
+<td style="text-align: left;">3.x</td>
 </tr>
-<tr>
-<td style="text-align:left">3.x and 4.x</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">5.x</td>
-<td style="text-align:left">5.x</td>
-<td style="text-align:left">4.x</td>
+<tr class="odd">
+<td style="text-align: left;">3.x and 4.x</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">5.x</td>
+<td style="text-align: left;">5.x</td>
+<td style="text-align: left;">4.x</td>
 </tr>
 </tbody>
 </table>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904201781248007">vue flask nginx socketio实现服务器推送（demo实现一个聊天室） - 掘金 (juejin.cn)</a></li>
-<li><a target="_blank" rel="noopener" href="https://flask-socketio.readthedocs.io/en/latest/index.html">Flask-SocketIO — Flask-SocketIO documentation</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904201781248007">vue flask nginx
+socketio实现服务器推送（demo实现一个聊天室） - 掘金 (juejin.cn)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://flask-socketio.readthedocs.io/en/latest/index.html">Flask-SocketIO
+— Flask-SocketIO documentation</a></li>
 </ol>
 
                 

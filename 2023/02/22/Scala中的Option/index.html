@@ -82,7 +82,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -324,10 +324,10 @@
             
               <div class="markdown-body">
                 
-                <h1>空值处理背景</h1>
+                <h1 id="空值处理背景">空值处理背景</h1>
 <p>在Java中，空值被定义为<code>null</code>。这是一个特殊的关键字，用来表示某个引用为空。正是因为这只是一个关键字，而不是一个对象，因此用它调用任何方法都是非法的。但是仔细思考，这一点实际上存在不合理的地方，我们明明希望返回的是一个对象，可是返回的却是一个关键字。</p>
 <p>于是在Scala中，使用<code>Option</code>对象来对这一现象进行处理。Option类表示的是那种可能存在，也可能不存在的值，对应到Java中，就是说这个值可能为null。但是由于使用Option进行了一层包装，无论值是否存在，返回的都是一个对象，可以进行方法调用。一个很好的编程习惯是当方法的返回值有可能为null的时候，都使用Option对象来代替。</p>
-<h1>Option</h1>
+<h1 id="option">Option</h1>
 <p>为了使得一切皆对象的目标更加一致，Scala鼓励在变量和函数返回值可能不会引用任何值的时候使用Option类型。在没有值的时候，使用None；在有值的时候，则使用Some来包装这个值。</p>
 <p><code>Option[T]</code>是一个带泛型的类，我们可以将其看作是一个包装了某个值的容器。<code>Some</code>和<code>None</code>都是Option的子类。Some是一个class，表示有值；None是一个object，表示没有值。Some和None都可以调用<code>isEmpty</code>以及<code>get</code>方法：</p>
 <ul>
@@ -345,35 +345,38 @@
 <p>使用Option的好处在于返回了一个统一的对象，无论真实值是否存在，都能够进行方法的调用。在Java中，我们可以利用<code>!= null</code>来进行空值的处理，但是如果一个不小心没有处理到，就很容易出现NullPointException异常，并且出现异常之后，问题排查是一个比较难的问题。另一方面，一个Java方法是否会返回空值无法通过返回值看出来，只能通过看相关文档。而Scala的Option类型可以避免这种情况，使用Option类型就表示这个地方可能返回None。</p>
 <p>Option类型本身还有一些相关的方法，列举如下：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>def get: A</td>
 <td>获取对应的值</td>
 </tr>
-<tr>
+<tr class="even">
 <td>def getOrElse(B): A</td>
 <td>获取对应的值，如果是None则返回默认值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>def isEmpty: Boolean</td>
 <td>检查是否为None，是返回true，否则返回false</td>
 </tr>
-<tr>
+<tr class="even">
 <td>def isDefined: Boolean</td>
 <td>与上面相反，检查是否为Some。是返回true，否则返回false</td>
 </tr>
 </tbody>
 </table>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Android_xue/article/details/119972710">Scala中如何优雅的处理Null</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.runoob.com/scala/scala-options.html">Scala Option | 菜鸟教程 (runoob.com)</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/Android_xue/article/details/119972710">Scala中如何优雅的处理Null</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/scala/scala-options.html">Scala
+Option | 菜鸟教程 (runoob.com)</a></li>
 </ol>
 
                 

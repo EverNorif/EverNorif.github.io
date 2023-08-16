@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,11 +326,14 @@
             
               <div class="markdown-body">
                 
-                <h1>快速开始</h1>
+                <h1 id="快速开始">快速开始</h1>
 <h2 id="简介">简介</h2>
 <p>MyBatis最初来源于Apache的开源项目iBatis，后续迁移到Google之后，更名为MyBatis，在后续的包名中，我们还可以看到iBatis的踪迹。</p>
-<p>MyBatis是一个基于Java的持久层框架，它支持定制化SQL，存储过程以及高级映射。它避免了几乎所有的JDBC代码，手动拼接参数，结果集获取等操作，而是使用简单的XML或者注解来对应配置和映射，将接口与Java中的普通Java对象（Plain Old Java Objects）映射成数据库中的记录。</p>
-<p>MyBatis的下载地址在此：<a target="_blank" rel="noopener" href="https://github.com/mybatis/mybatis-3">mybatis/mybatis-3: MyBatis SQL mapper framework for Java (github.com)</a></p>
+<p>MyBatis是一个基于Java的持久层框架，它支持定制化SQL，存储过程以及高级映射。它避免了几乎所有的JDBC代码，手动拼接参数，结果集获取等操作，而是使用简单的XML或者注解来对应配置和映射，将接口与Java中的普通Java对象（Plain
+Old Java Objects）映射成数据库中的记录。</p>
+<p>MyBatis的下载地址在此：<a
+target="_blank" rel="noopener" href="https://github.com/mybatis/mybatis-3">mybatis/mybatis-3: MyBatis
+SQL mapper framework for Java (github.com)</a></p>
 <p>持久层技术除了MyBatis还有很多，各个框架各有特点。</p>
 <ul>
 <li>对于JDBC，SQL会夹杂在Java代码中，导致耦合度高，维护不方便，需要频繁修改源代码；并且代码冗长，开发效率低</li>
@@ -338,7 +341,8 @@
 <li>对于MyBatis，它是一个轻量级，性能出色的持久层框架，在其中SQL与Java代码分离，分工明确。Java代码专注业务，SQL语句专注数据逻辑。虽然开发效率稍低于Hibernate，但是在接受范围内</li>
 </ul>
 <h2 id="入门案例">入门案例</h2>
-<p>下面我们通过一个入门案例来快速学习MyBatis的使用。其中部分配置文件的内容可以参考：<a target="_blank" rel="noopener" href="https://mybatis.net.cn/getting-started.html">入门_MyBatis中文网</a></p>
+<p>下面我们通过一个入门案例来快速学习MyBatis的使用。其中部分配置文件的内容可以参考：<a
+target="_blank" rel="noopener" href="https://mybatis.net.cn/getting-started.html">入门_MyBatis中文网</a></p>
 <p>首先我们准备相关的数据库测试环境。这里我们在本地的MySQL数据库中创建一个表格users，其中的字段分别有<code>id</code>、<code>username</code>、<code>password</code>、<code>age</code>、<code>gender</code>、<code>email</code>。</p>
 <p>之后我们来添加相关依赖，除了MyBaits的依赖项，还包括其他一些相关的辅助依赖，需要注意的是这些依赖并不是MyBaits必须的，而是方便我们进行项目的开发。依赖项如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--MyBatis核心--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.mybatis<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mybatis<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.7<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-comment">&lt;!--Junit测试--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.13.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-comment">&lt;!--MySQL驱动--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>mysql<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mysql-connector-java<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>8.0.28<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-comment">&lt;!--log4j日志--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.2.17<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -364,7 +368,7 @@
 <blockquote>
 <p>一般情况下，我们将映射文件命名为<code>表所对应的实体类类名+Mapper.xml</code>，表示一个映射文件对应一个实体类，对应一张表的操作。</p>
 <p>MyBatis中可以面向接口操作数据，但是其中要保证两个一致：</p>
-<ol>
+<ol type="1">
 <li>Mapper接口中的全类名和映射文件的namespace保持一致</li>
 <li>Mapper接口中方法的方法名和映射文件中编写SQL的标签的id属性保持一致</li>
 </ol>
@@ -379,20 +383,16 @@
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mapper</span> <span class="hljs-attr">namespace</span>=<span class="hljs-string">&quot;com.syh.mapper.UserMapper&quot;</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--int insertUser()--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">insert</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;insertUser&quot;</span>&gt;</span><br>        insert into users<br>        values (null, &#x27;admin&#x27;, &#x27;123123&#x27;, 18, &#x27;女&#x27;, &#x27;123456@haha.com&#x27;)<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">insert</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- int deleteUser()--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">delete</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;deleteUser&quot;</span>&gt;</span><br>        delete<br>        from users<br>        where id = 1<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">delete</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- int updateUser()--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">update</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;updateUser&quot;</span>&gt;</span><br>        update users<br>        set password = &#x27;normal&#x27;<br>        where username = &#x27;normal&#x27;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">update</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- User getUser()--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUser&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span>&gt;</span><br>        select *<br>        from users<br>        where id = 3<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- List&lt;User&gt; getUserList()--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getUserList&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span>&gt;</span><br>        select *<br>        from users<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mapper</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>在查询操作select中，我们需要指定属性resultType或者resultMap，用来设置实体类和数据库表中记录的映射关系。两种映射只能设置其中一种：</p>
 <ul>
-<li>
-<p>resultType：设置结果类型，即处理的数据要转换为的Java类型（一行数据需要转化为的类型）</p>
-</li>
-<li>
-<p>resultMap：自定义映射，处理多对一或一对多的映射关系，或字段名和属性名不一致的情况</p>
-</li>
+<li><p>resultType：设置结果类型，即处理的数据要转换为的Java类型（一行数据需要转化为的类型）</p></li>
+<li><p>resultMap：自定义映射，处理多对一或一对多的映射关系，或字段名和属性名不一致的情况</p></li>
 </ul>
-<h1>核心配置文件</h1>
+<h1 id="核心配置文件">核心配置文件</h1>
 <p>在入门案例中，我们使用的核心配置文件中只有一些最基本的内容，完整的核心配置文件，其中还提供了其他相关的标签，这里进行相关说明。</p>
 <p>在核心配置文件中提供有多种标签，但是这些标签必须按照固定的顺序进行书写，具体顺序如下：<code>properties</code>、<code>settings</code>、<code>typeAliases</code>、<code>typeHandlers</code>、<code>objectFactory</code>、<code>objectWrapperFactory</code>、<code>reflectorFactory</code>、<code>plugins</code>、<code>environments</code>、<code>databaseIdProvider</code>、<code>mappers</code>。这里先介绍一些常见的标签，其他标签后续使用到的时候再进行介绍。</p>
 <h2 id="properties">properties</h2>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span> <span class="hljs-attr">resource</span>=<span class="hljs-string">&quot;jdbc.properties&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p><code>properties</code>标签允许我们引入配置文件。在引入过后，properties文件中的值可以在核心配置文件中进行使用，使用<code>$&#123;key&#125;</code>的方式来访问value。</p>
-<h2 id="typeAliases">typeAliases</h2>
+<h2 id="typealiases">typeAliases</h2>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">typeAliases</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">typeAlias</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span> <span class="hljs-attr">alias</span>=<span class="hljs-string">&quot;abc&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">typeAlias</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">typeAlias</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.User&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">typeAlias</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">package</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;com.syh.bean&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">typeAliases</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p><code>typeAlias</code>标签允许我们设置类型的别名。</p>
 <p>基本的使用方式是在type中提供需要设置别名的类型，同时在alias中提供别名。如果不设置该属性，则该类型会使用默认的别名，即该类型的类名，这里默认的别名就是User，不过类名不区分大小写。</p>
@@ -416,7 +416,7 @@
 <h2 id="mappers">mappers</h2>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mappers</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">mapper</span> <span class="hljs-attr">resource</span>=<span class="hljs-string">&quot;mappers/UserMapper.xml&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">package</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;com.syh.mapper&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mappers</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p><code>mappers</code>标签中引入对应的映射文件。我们可以通过<code>mapper</code>标签的方式引入单个映射文件，在resource属性中指定对应的路径。另一种方式是以包为单位引入映射文件，使用<code>package</code>标签。引入后，包下所有的映射文件都会被引入，不过使用包引入需要满足下面的要求：</p>
-<ol>
+<ol type="1">
 <li>Mapper接口所在的包要和映射文件所在的包一致</li>
 <li>Mapper接口要和映射文件的名称一致</li>
 </ol>

@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,28 +326,16 @@
             
               <div class="markdown-body">
                 
-                <h1>ReentrantLock</h1>
+                <h1 id="reentrantlock">ReentrantLock</h1>
 <h2 id="概述">概述</h2>
 <p>ReentrantLock，可重入锁，即支持一个线程对资源的重复加锁。ReentrantLock实现的锁与synchronized非常类似，但是也是有一些区别，大体如下：</p>
 <ul>
-<li>
-<p>在锁的实现方面：synchronzied是JVM实现的，源码使用C++编写，而ReentrantLock是JDK实现，源码使用Java编写</p>
-</li>
-<li>
-<p>在使用方面：ReentrantLock实现了Lock接口，需要手动解锁，synchronized执行完代码块之后会自动解锁</p>
-</li>
-<li>
-<p>可中断：ReentrantLock可中断，但是synchronized不行</p>
-</li>
-<li>
-<p>公平锁：公平锁指的是多个线程在等待同一个锁的时候，必须按照申请锁的时间顺序来依次获得锁。ReentrantLock支持设置公平锁，而synchronzied中的锁的非公平的</p>
-</li>
-<li>
-<p>锁超时：ReentrantLock在获取锁的时候可以设置超时时间，而synchronized会一直等待</p>
-</li>
-<li>
-<p>等待队列：ReentrantLock可以提供多个Condition等待队列，而synchronized只有一个等待队列</p>
-</li>
+<li><p>在锁的实现方面：synchronzied是JVM实现的，源码使用C++编写，而ReentrantLock是JDK实现，源码使用Java编写</p></li>
+<li><p>在使用方面：ReentrantLock实现了Lock接口，需要手动解锁，synchronized执行完代码块之后会自动解锁</p></li>
+<li><p>可中断：ReentrantLock可中断，但是synchronized不行</p></li>
+<li><p>公平锁：公平锁指的是多个线程在等待同一个锁的时候，必须按照申请锁的时间顺序来依次获得锁。ReentrantLock支持设置公平锁，而synchronzied中的锁的非公平的</p></li>
+<li><p>锁超时：ReentrantLock在获取锁的时候可以设置超时时间，而synchronized会一直等待</p></li>
+<li><p>等待队列：ReentrantLock可以提供多个Condition等待队列，而synchronized只有一个等待队列</p></li>
 </ul>
 <blockquote>
 <p>非公平锁指的是阻塞队列内公平，阻塞队列外非公平。事实上，公平的锁机制往往没有非公平的效率更高，公平锁能够减少饥饿发生的概率，等待越久的请求越能够得到优先满足</p>
@@ -362,38 +350,35 @@
 <li>如果锁没有被占用，则将锁中计数state设置为1</li>
 <li>如果执行锁重入，则令计数state增加1</li>
 <li>如果锁被其他线程占用，则阻塞在锁上</li>
-</ul>
-</li>
+</ul></li>
 <li>解锁：<code>public void unlock()</code>
 <ul>
 <li>如果当前线程是该锁的持有者，则保持计数递减</li>
 <li>如果计数为0，则表示锁被释放</li>
 <li>如果当前线程不是该锁的持有者，则抛出异常</li>
-</ul>
-</li>
+</ul></li>
 <li>可打断：<code>public void lockInterruptibly()</code>
 <ul>
 <li>如果没有竞争，则获取对象锁</li>
 <li>如果有竞争，则加入阻塞队列，但是可以被其他线程打断</li>
-</ul>
-</li>
+</ul></li>
 <li>锁超时：
 <ul>
-<li><code>public boolean tryLock()</code>：尝试获取锁，获取到返回 true，获取不到直接放弃，不进入阻塞队列</li>
+<li><code>public boolean tryLock()</code>：尝试获取锁，获取到返回
+true，获取不到直接放弃，不进入阻塞队列</li>
 <li><code>public boolean tryLock(long timeout, TimeUnit unit)</code>：在给定时间内获取锁，获取不到就退出</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <h3 id="公平锁">公平锁</h3>
 <p>公平锁与非公平锁在Reentrant中，主要区别在于其中同步器的实现。公平锁对应的同步器为<code>FairSync</code>，而非公平锁对应的同步器为<code>NonfairSync</code>，Reentrant默认是非公平锁，如果给构造方法提供<code>true</code>的布尔值，则可以生成公平锁</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 指定是否是公平锁</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ReentrantLock</span><span class="hljs-params">(<span class="hljs-type">boolean</span> fair)</span> &#123;<br>    sync = fair ? <span class="hljs-keyword">new</span> <span class="hljs-title class_">FairSync</span>() : <span class="hljs-keyword">new</span> <span class="hljs-title class_">NonfairSync</span>();<br>&#125;<br><br><span class="hljs-comment">// 默认是非公平锁</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ReentrantLock</span><span class="hljs-params">()</span> &#123;<br>    sync = <span class="hljs-keyword">new</span> <span class="hljs-title class_">NonfairSync</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>公平锁和非公平锁的主要区别在于获取锁的逻辑。对于非公平锁来说，只需要CAS设置同步状态成功，就表示当前线程获取了锁。而对于公平锁来说，在进行获取锁之前，需要加入同步队列中，并检查当前节点是否有前驱节点，如果没有才能继续获取锁，否则需要等待前驱节点对应的线程获取并释放锁之后，才能继续获取锁</p>
-<h1>ReentrantReadWriteLock</h1>
-<h2 id="概述-2">概述</h2>
+<h1 id="reentrantreadwritelock">ReentrantReadWriteLock</h1>
+<h2 id="概述-1">概述</h2>
 <p>前面提到的ReentrantLock排他锁，指的是在同一个时刻只允许有一个线程进行访问。</p>
 <p>但是我们经常会遇到的一种情况是读写锁，读写锁允许读-读并发，在同一时刻允许多个读线程访问，但是在写线程访问的时候，所有的读线程和其他写线程均被阻塞。具体来说，读写锁维护了一对锁，分别是读锁和写锁。读锁是共享锁，写锁是独占锁。通过分离读锁和写锁，提高了并发性。</p>
 <p>ReentrantReadWriteLock是Java并发包中提供的一个读写锁的实现，它实现了读写锁接口ReadWriteLock，该接口中有两个抽象方法<code>readLock()</code>和<code>writeLock()</code>，分别返回读锁和写锁。</p>
-<h2 id="使用-2">使用</h2>
+<h2 id="使用-1">使用</h2>
 <p>ReentrantReadWriteLock的使用分为读锁和写锁，分别在不同情况下进行使用。这里同样可以设置公平和非公平锁，只需要在构造方法中指定<code>true</code>即可。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ReentrantReadWriteLock</span> <span class="hljs-variable">rw</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantReadWriteLock</span>();<br>ReentrantReadWriteLock.<span class="hljs-type">ReadLock</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> rw.readLock();<br>ReentrantReadWriteLock.<span class="hljs-type">WriteLock</span> <span class="hljs-variable">w</span> <span class="hljs-operator">=</span> rw.writeLock();<br></code></pre></td></tr></table></figure>
 <p>在使用的时候需要注意：</p>
@@ -407,32 +392,33 @@
 </blockquote>
 <p>除去接口方法获取读锁和写锁之外，ReentrantReadWriteLock还提供了一些便于外界监控其内部工作状态的方法，如下所示：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法名称</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>int getReadLockCount()</td>
 <td>返回当前读锁被获取的次数，重入次数重复计算</td>
 </tr>
-<tr>
+<tr class="even">
 <td>int getReadHoldCount()</td>
 <td>返回当前线程获取读锁的次数，重入次数重复计算</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>boolean isWriteLocked()</td>
 <td>判断写锁是否被获取</td>
 </tr>
-<tr>
+<tr class="even">
 <td>int getWriteHoldCount()</td>
 <td>返回当前写锁被获取的次数</td>
 </tr>
 </tbody>
 </table>
-<h1>StampedLock</h1>
+<h1 id="stampedlock">StampedLock</h1>
 <p>StampedLock也是一种读写锁，它的目的是进一步优化读的性能。和它的名字呼应，在使用StampedLock的时候，使用读锁和写锁都必须配合戳来使用。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">StampedLcok</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StampedLock</span>();<br><br><span class="hljs-comment">// 读锁的使用</span><br><span class="hljs-type">long</span> <span class="hljs-variable">r_stamp</span> <span class="hljs-operator">=</span> lock.readLock();<br>lock.unlockRead(r_stamp);<br><br><span class="hljs-comment">// 解锁的使用</span><br><span class="hljs-type">long</span> <span class="hljs-variable">w_stamp</span> <span class="hljs-operator">=</span> lock.writeLock();<br>lock.unlockWrite(w_stamp)<br></code></pre></td></tr></table></figure>
 <blockquote>
@@ -442,18 +428,21 @@
 <blockquote>
 <p>需要注意的是，StampedLock不支持条件变量，不支持重入</p>
 </blockquote>
-<h1>Semaphore</h1>
+<h1 id="semaphore">Semaphore</h1>
 <p>Semaphore，信号量，联想到操作系统中的信号量。它可以用来控制同时访问特定资源的线程数量，通过协调各个线程，以保证合理地使用公共资源。</p>
 <p>Semaphore的基本使用如下：</p>
 <p>构造方法：</p>
 <ul>
-<li><code>public Semaphore(int permits)</code>：permits 表示许可线程的数量，会将其直接设置到内部同步器中的state上</li>
-<li><code>public Semaphore(int permits, boolean fair)</code>：fair 表示公平性，如果设为 true，下次执行的线程会是等待最久的线程</li>
+<li><code>public Semaphore(int permits)</code>：permits
+表示许可线程的数量，会将其直接设置到内部同步器中的state上</li>
+<li><code>public Semaphore(int permits, boolean fair)</code>：fair
+表示公平性，如果设为 true，下次执行的线程会是等待最久的线程</li>
 </ul>
 <p>PV操作：</p>
 <ul>
 <li><code>public void acquire()</code>：表示获取许可</li>
-<li><code>public void release()</code>：表示释放许可，acquire() 和 release() 方法之间的代码为同步代码</li>
+<li><code>public void release()</code>：表示释放许可，acquire() 和
+release() 方法之间的代码为同步代码</li>
 </ul>
 <p>其他方法：</p>
 <ul>
@@ -463,7 +452,7 @@
 <li><code>protected void reducePermits(int reduction)</code>：减少reduction个许可</li>
 <li><code>protected Collection&lt;Thread&gt; getQueuedThreads()</code>：返回所有等待获取许可的线程集合</li>
 </ul>
-<h1>CountDownLatch</h1>
+<h1 id="countdownlatch">CountDownLatch</h1>
 <p>CountDownLatch允许一个或者多个线程等待其他线程完成操作。它可以用来进行线程同步线程，等待所有线程完成倒计时。</p>
 <p>构造器如下：</p>
 <ul>
@@ -471,7 +460,7 @@
 </ul>
 <p>常用API：</p>
 <ul>
-<li><code>public void await() </code>：让当前线程等待，只有当计数器减到0的时候才会继续执行（当然也提供有超时时间的版本）</li>
+<li><code>public void await()</code>：让当前线程等待，只有当计数器减到0的时候才会继续执行（当然也提供有超时时间的版本）</li>
 <li><code>public void countDown()</code>：计数器进行减 1</li>
 </ul>
 <p>举例：主线程等待其他线程执行结束</p>
@@ -489,20 +478,19 @@
 <p>CountDownLatch与join的区别：</p>
 <p>join同样能够完成等待线程结束操作，但是join是一个比较底层的API，并且是等待线程达到结束状态。而CountDownLatch是一个高级的API，更容易配合线程池等高级API进行使用。线程池中的线程进行复用，使用join不是等待不是很方便</p>
 </blockquote>
-<h1>CyclicBarrier</h1>
+<h1 id="cyclicbarrier">CyclicBarrier</h1>
 <p>CyclicBarrier：循环屏障，用来进行线程协作，等待线程满足某个计数之后，触发继续执行。</p>
 <p>常用方法：</p>
 <ul>
-<li><code>public CyclicBarrier(int parties)</code>：屏障前需要的线程数目</li>
-</ul>
-<ul>
-<li><code>public CyclicBarrier(int parties, Runnable barrierAction)</code>：用于在线程到达屏障 parties 时，执行 barrierAction
+<li><p><code>public CyclicBarrier(int parties)</code>：屏障前需要的线程数目</p></li>
+<li><p><code>public CyclicBarrier(int parties, Runnable barrierAction)</code>：用于在线程到达屏障
+parties 时，执行 barrierAction</p>
 <ul>
 <li>parties：代表多少个线程到达屏障开始触发线程任务</li>
 <li>barrierAction：等够线程之后，执行的任务</li>
-</ul>
-</li>
-<li><code>public int await()</code>：线程调用 await 方法通知 CyclicBarrier 本线程已经到达屏障</li>
+</ul></li>
+<li><p><code>public int await()</code>：线程调用 await 方法通知
+CyclicBarrier 本线程已经到达屏障</p></li>
 </ul>
 <p>举例：重复等待线程</p>
 <p>如果使用CountDownLatch来完成重复等待线程，由于它不能重用，我们需要多次创建新的CountDownLatch对象，但是使用CyclicBarrier，就不需要重新创建。</p>
@@ -518,11 +506,10 @@
 <ul>
 <li><code>getNumberWaiting()</code>：获得阻塞的线程数量</li>
 <li><code>isBroken()</code>：判断阻塞的线程是否被中断</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 </blockquote>
-<h1>Exchanger</h1>
+<h1 id="exchanger">Exchanger</h1>
 <p>Exchanger：交换器，是一个用于线程间协作的工具类，用于进行线程间的数据交换。</p>
 <p>Exchanger会提供一个同步点，在这个同步点，两个线程可以交换彼此的数据。线程之间通过exchange方法交换数据，线程1先执行到exchange之后，会等待第二个线程也执行到exchange，当两个线程都到达同步点之后，两个线程就可以交换数据</p>
 <p>常用方法：</p>

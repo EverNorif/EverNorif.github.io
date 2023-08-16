@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,7 +325,7 @@
             
               <div class="markdown-body">
                 
-                <h2 id="RDD序列化">RDD序列化</h2>
+                <h2 id="rdd序列化">RDD序列化</h2>
 <p>我们前面提到过，在RDD算子以外的代码都是在Driver端执行的，而算子内部的代码都是在Executor端执行的。而一个非常常见的情景是，在算子内部提供的函数会使用到算子外的数据，这样就形成了闭包的效果。为了能够正确实现操作，在Driver端的算子外的数据会传输给每个Task，这样在Task执行的时候也能够使用到对应的数据而不会产生错误。</p>
 <p>例如下面的代码，我们在map算子内部使用到了算子外部的数据<code>num</code>，但是程序能够正确执行，因为会将<code>num</code>传送给每个Task。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>))<br><span class="hljs-keyword">val</span> num = <span class="hljs-number">10</span><br><span class="hljs-keyword">val</span> res = rdd.map(_ + num)<br>res.collect().foreach(println)<br></code></pre></td></tr></table></figure>
@@ -344,7 +344,7 @@
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> conf: <span class="hljs-type">SparkConf</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>)<br> <span class="hljs-comment">// 替换默认的序列化机制</span><br> .set(<span class="hljs-string">&quot;spark.serializer&quot;</span>,  <span class="hljs-string">&quot;org.apache.spark.serializer.KryoSerializer&quot;</span>)<br> <span class="hljs-comment">// 注册需要使用 kryo 序列化的自定义类</span><br> .registerKryoClasses(<span class="hljs-type">Array</span>(classOf[<span class="hljs-type">User</span>]))<br></code></pre></td></tr></table></figure>
 <p>这里的User类需要实现<code>Serializable</code>特征或者使用样例类</p>
 </blockquote>
-<h2 id="RDD依赖关系">RDD依赖关系</h2>
+<h2 id="rdd依赖关系">RDD依赖关系</h2>
 <h3 id="依赖与血缘关系">依赖与血缘关系</h3>
 <p>一个RDD通过算子操作后可以得到一个新的RDD，我们可以说这个新的RDD依赖于旧的RDD。这样的关系我们称为依赖关系，即<strong>相邻两个RDD之间的关系称为依赖关系</strong>。而新的RDD又会经过一系列算子的操作，依赖关系彼此相连，形成血缘关系，即<strong>多个连续的RDD的依赖关系称为血缘关系</strong>。</p>
 <p>我们说RDD中不会保存数据，但是为了提高容错性，RDD之间的关系会进行保存，即RDD保存了依赖关系和血缘关系。RDD支持粗粒度的转换，即在大量记录上执行的单个操作，RDD会将创建的一系列依赖关系记录下来，以便可以完成恢复操作，根据这些信息来重新运算，恢复丢失的数据分区。</p>
@@ -373,7 +373,8 @@
 </blockquote>
 <h3 id="阶段划分">阶段划分</h3>
 <p>在RDD整体的执行流程中，实际上是分为多个阶段的。如果RDD之间的依赖是窄依赖，这就意味着一个分区中的数据无需等待其他分区中的数据处理完成，那么这些处理就可以处于同一个阶段。但是如果RDD之间的依赖是宽依赖，则新的一个分区中的数据依赖于旧的多个分区，因此需要等待其他分区中的数据处理完成。</p>
-<p>Spark根据Shuffle依赖来划分阶段，首先整体的逻辑是一个阶段，然后每遇到一个Shuffle依赖则会增加一个阶段。阶段之间的执行必须按照先后顺序，一个阶段执行完毕之后才能执行下一个阶段。整体流程的阶段数量 = Shuffle依赖数量 + 1</p>
+<p>Spark根据Shuffle依赖来划分阶段，首先整体的逻辑是一个阶段，然后每遇到一个Shuffle依赖则会增加一个阶段。阶段之间的执行必须按照先后顺序，一个阶段执行完毕之后才能执行下一个阶段。整体流程的阶段数量
+= Shuffle依赖数量 + 1</p>
 <h3 id="任务划分">任务划分</h3>
 <p>RDD的任务划分，其中会分为如下的部分：Application、Job、Stage和Task</p>
 <ul>
@@ -382,7 +383,7 @@
 <li>Stage：阶段的数量等于宽依赖数量的个数+1</li>
 <li>Task：在一个Stage中，最后一个RDD的分区数量就是Task的个数</li>
 </ul>
-<h2 id="RDD持久化">RDD持久化</h2>
+<h2 id="rdd持久化">RDD持久化</h2>
 <h3 id="重用分析">重用分析</h3>
 <p>在一些场景下，我们可能需要重复利用到一些前置的运算逻辑，然后做不同的行动算子的处理。例如下面的代码，我们需要重用前面map的逻辑，然后使用两次不同的行动算子逻辑进行处理。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>))<br><br><span class="hljs-keyword">val</span> mapRdd = rdd.map(num =&gt; num+<span class="hljs-number">1</span>)<br><br><span class="hljs-keyword">val</span> res1 = mapRdd.reduce(_ + _)<br><span class="hljs-keyword">val</span> res2 = mapRdd.reduce(_ * _)<br><br>println(res1)<br>println(res2)<br></code></pre></td></tr></table></figure>
@@ -393,7 +394,8 @@
 <blockquote>
 <p>注意这里不要将map中的逻辑写成下面的形式：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> mapRdd = rdd.map(&#123;<br>    println(<span class="hljs-string">&quot;-map-&quot;</span>)<br>    _ + <span class="hljs-number">1</span><br>&#125;)<br></code></pre></td></tr></table></figure>
-<p>如果写成上面的形式，最终&quot;-map-&quot;只会输出一次，实际传入map的函数只有<code>x=&gt;&#123;x+1&#125;</code>，可以参考 <a href="/2022/05/10/Scala%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0%E4%B8%AD%E4%B8%8B%E5%88%92%E7%BA%BF%E7%AE%80%E5%8C%96%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" title="Scala匿名函数中下划线简化的注意事项">Scala匿名函数中下划线简化的注意事项</a></p>
+<p>如果写成上面的形式，最终"-map-"只会输出一次，实际传入map的函数只有<code>x=&gt;&#123;x+1&#125;</code>，可以参考
+<a href="/2022/05/10/Scala%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0%E4%B8%AD%E4%B8%8B%E5%88%92%E7%BA%BF%E7%AE%80%E5%8C%96%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" title="Scala匿名函数中下划线简化的注意事项">Scala匿名函数中下划线简化的注意事项</a></p>
 </blockquote>
 <h3 id="临时缓存">临时缓存</h3>
 <p>上面我们分析了重用对象的逻辑，发现数据是没有被重用的。但是我们需要重用也是有办法的，首先介绍临时缓存。具体来说，RDD通过<code>Cache</code>或者<code>Persist</code>方法将前面的计算结果缓存，默认情况下会将数据缓存到JVM的堆内存当中。我们可以修改上面的代码，在调用reduce之前将mapRdd缓存下来。这样在后面调用reduce的时候，就不会重新调用mapRdd以及之前的逻辑，而是会采用缓存中的数据。</p>
@@ -408,18 +410,18 @@
 <p>上面的缓存操作只是临时缓存，而创建检查点可以将RDD的中间结果写入磁盘。在中间阶段做检查点容错，如果检查点之后RDD出现问题，则检查点之间的RDD均不需要再次检查，可以从检查点开始重新检查血缘，减小开销</p>
 <p>同样的，检查点持久化操作需要通过行动算子进行触发。检查点路径保存的文件在作业执行完毕之后不会被删除。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>).setAppName(<span class="hljs-string">&quot;RDD&quot;</span>)<br><span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br>sc.setCheckpointDir(<span class="hljs-string">&quot;./checkpoint&quot;</span>)<br><br><span class="hljs-keyword">val</span> rdd = sc.makeRDD(<span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>))<br><br><span class="hljs-keyword">val</span> mapRdd = rdd.map(<br>    num =&gt; &#123;<br>        println(<span class="hljs-string">&quot;-map-&quot;</span>)<br>        num + <span class="hljs-number">1</span><br>    &#125;<br>)<br>mapRdd.checkpoint()<br><br><span class="hljs-keyword">val</span> res1 = mapRdd.reduce(_ + _)<br><span class="hljs-keyword">val</span> res2 = mapRdd.reduce(_ * _)<br><span class="hljs-keyword">val</span> res3 = mapRdd.reduce(_ - _)<br><br>println(<span class="hljs-string">&quot;res1=&quot;</span> + res1)<br>println(<span class="hljs-string">&quot;res2=&quot;</span> + res2)<br>println(<span class="hljs-string">&quot;res3=&quot;</span> + res3)<br></code></pre></td></tr></table></figure>
-<p>需要注意，首先我们需要设置检查点存放的位置，并且注意到这里后续存在三个reduce行动算子，而输出如下。其中输出了四次&quot;-map-&quot;，是因为在checkpoint()方法中会重新触发一个job执行checkpoint。</p>
+<p>需要注意，首先我们需要设置检查点存放的位置，并且注意到这里后续存在三个reduce行动算子，而输出如下。其中输出了四次"-map-"，是因为在checkpoint()方法中会重新触发一个job执行checkpoint。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">-map-<br>-map-<br>-map-<br>-map-<br>res1=5<br>res2=6<br>res3=1<br></code></pre></td></tr></table></figure>
 <p>可以分析上面结果输出的原因，经过reduce行动算子触发之后，首先会过一遍前面的逻辑，直到checkpoint方法，输出了两个<code>-map-</code>。之后在checkpoint方法中会重新创建一个Job执行前面的逻辑来创建checkpoint。因此会再输出两个<code>-map-</code>。后面的三个reduce可以对前面的数据进行重用，因此直接输出最终的结果。我们通常会将cache和checkpoint配合使用，避免重新执行一遍前面的逻辑。增加之后，上面的代码运行只会输出两个<code>-map-</code>。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala">mapRDD.cache()<br>mapRdd.checkpoint()<br></code></pre></td></tr></table></figure>
 <h3 id="缓存和检查点的区别">缓存和检查点的区别</h3>
-<ol>
+<ol type="1">
 <li>cache缓存只是将数据保存起来，不会切断血缘关系，会添加一层cache的依赖。而checkpoints会切断血缘关系，重新建立新的血缘关系</li>
 <li>persist将数据临时存储在磁盘文件中进行数据重用，在涉及到磁盘IO的情况下，性能较低，但是数据安全。如果作业执行完毕，临时保存的数据文件会丢失。</li>
 <li>checkpoint将数据长久地保存在磁盘文件中进行数据重用，一般保存在hdfs中。涉及磁盘IO，性能较低，但是数据安全。并且为了提高效率，通常和<code>cache</code>配合使用</li>
 </ol>
-<h2 id="RDD分区器">RDD分区器</h2>
-<h3 id="Spark自带分区器">Spark自带分区器</h3>
+<h2 id="rdd分区器">RDD分区器</h2>
+<h3 id="spark自带分区器">Spark自带分区器</h3>
 <p>Spark目前支持Hash分区和Range分区，以及用户自定义分区。Hash分区为默认分区。分区器直接决定RDD中分区的个数，RDD中每条数据经过Shuffle后进入哪个分区。</p>
 <ul>
 <li>只有Key-Value类型的RDD才有分区器，非Key-Value类型的RDD分区值为None</li>

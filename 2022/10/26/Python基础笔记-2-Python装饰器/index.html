@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,7 +325,7 @@
             
               <div class="markdown-body">
                 
-                <h1>装饰器</h1>
+                <h1 id="装饰器">装饰器</h1>
 <h2 id="介绍">介绍</h2>
 <p>Python中的装饰器可以允许其他函数在不需要做任何代码修改的前提下额外增加功能，在函数执行的前后增加新的功能，类似于AOP，面向切面编程。</p>
 <p>在Python中，函数是一等公民，函数可以作为参数、返回值等而存在。考虑如下的场景，我们希望在每个函数调用之前执行日志打印功能，输出当前函数的名称。我们可以通过在每个函数开头增加相关功能，但是过于繁琐也不便于同一管理。我们可以通过定义一个统一的<code>debug</code>函数，它的参数是一个函数func，返回值也是一个函数wrapper。作为返回值的wrapper函数，它调用了参数func，并且在调用前后执行了相关操作：</p>
@@ -347,7 +347,8 @@
 <blockquote>
 <p>多层装饰器的执行顺序：从上到下依次执行，先执行的后退出，后执行的先退出。</p>
 </blockquote>
-<h2 id="functools-wrap">@functools.wrap</h2>
+<h2 id="functools.wrap"><span class="citation"
+data-cites="functools.wrap">@functools.wrap</span></h2>
 <p>如果我们直接利用上面的代码，执行<code>print(say)</code>，得到的输出结果如下：</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">&lt;<span class="hljs-keyword">function</span> <span class="hljs-keyword">debug</span>.&lt;locals&gt;.outerWrapper.&lt;locals&gt;.<span class="hljs-keyword">wrapper</span> at <span class="hljs-number">0x000001CA442A05E0</span>&gt;<br></code></pre></td></tr></table></figure>
 <p>可以发现我们原本的say函数信息被装饰器取代了，函数名等函数属性发生了改变。这对结果执行不会产生影响，但是如果在一些场景下，我们需要使用到函数的元信息，那么应该需要能够保留。这可以使用内置装饰器<code>@functools.wrap</code>来实现，它能够帮助我们保留原有函数的名称和函数属性：</p>
@@ -359,10 +360,14 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">DEBUG</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, func</span>):<br>        self.func = func<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__call__</span>(<span class="hljs-params">self, *args, **kwargs</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[DEBUG]: &#123;&#125;() start...&quot;</span>.<span class="hljs-built_in">format</span>(self.func.__name__))<br>        self.func(*args, **kwargs)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[DEBUG]: &#123;&#125;() finish...&quot;</span>.<span class="hljs-built_in">format</span>(self.func.__name__))<br><br><br><span class="hljs-meta">@DEBUG</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">say</span>(<span class="hljs-params">something</span>):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;I say: &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(something))<br><br><br>say(<span class="hljs-string">&quot;Hello&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>如果装饰器需要参数的话，可以通过下面的方法来实现，在<code>__call__()</code>方法中定义内部函数，这里<code>@functools.wraps</code>的用法和之前也是类似的：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">DEBUG</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, times</span>):<br>        self.times = times<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__call__</span>(<span class="hljs-params">self, func</span>):<br><span class="hljs-meta">        @functools.wraps(<span class="hljs-params">func</span>)</span><br>        <span class="hljs-keyword">def</span> <span class="hljs-title function_">wrapper</span>(<span class="hljs-params">*args, **kwargs</span>):<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[DEBUG]: &#123;&#125;() start...&quot;</span>.<span class="hljs-built_in">format</span>(func.__name__))<br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.times):<br>                func(*args, **kwargs)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[DEBUG]: &#123;&#125;() finish...&quot;</span>.<span class="hljs-built_in">format</span>(func.__name__))<br><br>        <span class="hljs-keyword">return</span> wrapper<br><br><br><span class="hljs-meta">@DEBUG(<span class="hljs-params">times=<span class="hljs-number">3</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">say</span>(<span class="hljs-params">something</span>):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;I say: &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(something))<br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6992410247914586142">Python装饰器，读完这篇你就懂了 - 掘金 (juejin.cn)</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/tobyqin/p/python-decorator.html">详解Python的装饰器 - Toby Qin - 博客园 (cnblogs.com)</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://juejin.cn/post/6992410247914586142">Python装饰器，读完这篇你就懂了
+- 掘金 (juejin.cn)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/tobyqin/p/python-decorator.html">详解Python的装饰器
+- Toby Qin - 博客园 (cnblogs.com)</a></li>
 </ol>
 
                 

@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -327,7 +327,7 @@
             
               <div class="markdown-body">
                 
-                <h1>Iterator</h1>
+                <h1 id="iterator">Iterator</h1>
 <h2 id="简介">简介</h2>
 <p>Iterator意为迭代器，Iterator模式通常用于在数据集合中按照顺序遍历集合。在许多程序语言中都有迭代器的相关实现，当然我们也可以自己利用Iterator模式来构造自己的迭代器。</p>
 <p>在Iterator模式中一般有如下角色：</p>
@@ -335,14 +335,13 @@
 <li><code>Iterator</code>：该角色代表迭代器，它负责定义相关API，按照顺序遍历元素
 <ul>
 <li>通常具有<code>hasNext</code>、<code>next</code>方法</li>
-</ul>
-</li>
+</ul></li>
 <li><code>ConcreteIterator</code>：该角色代表具体的迭代器，它负责实现Iterator角色所定义的API。该角色中包含了遍历集合所必需的信息</li>
 <li><code>Aggregate</code>：该角色代表集合，它其中定义创建Iterator角色的API，该API能够创建出对应的迭代器Iterator</li>
 <li><code>ConcreteAggregate</code>：该角色代表具体的集合，用于实现Aggregate角色所定义的API，具体实现如何进行迭代</li>
 </ul>
 <p>角色之间的关系如下：</p>
- <img src="/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Iterator.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Iterator">
+<p><img src="/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Iterator.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Iterator"></p>
 <h2 id="示例程序">示例程序</h2>
 <p>这里我们模拟一个书架类，通过Iterator模式来对书架上的书进行遍历。首先我们可以创建Book类，用于模拟书。Book类仅有一个String类型的name属性，以及相应的get、set、构造方法和toString方法，这里就不进行描述了。</p>
 <p>之后定义<code>Iterator</code>接口，这个接口通常情况下具有<code>hasNext</code>和<code>next</code>方法，用于判断是否有下一个元素以及获取下一个元素。</p>
@@ -356,8 +355,8 @@
 <h2 id="说明">说明</h2>
 <p>通过上面的例子可以看到，利用Iterator模式我们完成了一个数组或者集合的遍历。与通过下标index和for循环直接遍历相比，这种方式似乎更加繁琐，但在Iterator模式中，我们的遍历只使用到了Iterator接口中的方法，而不会依赖实际BookShelf的实现。也就是说，在BookShelf中，无论是使用数组，或者其他集合例如LinkedList来管理Book对象，只要BookShelf中的iterator方法能够正确地返回Iterator的实例，上面的while循环就是可以正常工作的，这段测试代码是不用变动的。而测试代码实际上就相当于其他对于BookShelf的调用者，这种仅依赖Iterator的特性使得调用者变得非常方便，因为他无需关心BookShelf的具体实现，只需要拿到一个正确的Iterator实例即可。</p>
 <p>这里也体现了设计模式的一个非常重要的思想，就是优先使用抽象类和接口来进行编程，这样能够弱化类之间的耦合，进而使得类能够更加容易地作为组件被再次利用。</p>
-<h1>Adapter</h1>
-<h2 id="简介-2">简介</h2>
+<h1 id="adapter">Adapter</h1>
+<h2 id="简介-1">简介</h2>
 <p>Adapter意为适配器，它位于实际情况和需求之间，填补两者之间的差异。在程序开发的过程中，经常会存在现有的程序无法直接使用，需要进行适当的变换之后才能够使用的情况。这种用于填补“现有的程序”与“所需的程序”之间差异的设计模式就是Adapter模式。</p>
 <p>Adapter模式也被称为Wrapper模式，即包装器。通过对现有的程序进行包装，使得其能够达到我们需要的效果。Adapter模式主要分为使用继承实现的Adapter以及使用委托实现的Adapter。</p>
 <p>在Adapter模式中，主要有以下角色：</p>
@@ -369,7 +368,7 @@
 </ul>
 <p>角色之间的关系如下：</p>
 <img src="/2023/03/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E7%AE%80%E5%8D%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%BA%A4%E7%BB%99%E5%AD%90%E7%B1%BB/Adaptor.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Adaptor">
-<h2 id="示例程序-2">示例程序</h2>
+<h2 id="示例程序-1">示例程序</h2>
 <p>假设我们需要完成一个Print接口，这个接口中有如下的方法，其中printWeak输出两端加上括号的结果；printStrong输出两端加上星号的结果。这就是我们的需求。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Print</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">printWeak</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">printStrong</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>而目前我们已经有一个完成了类似功能的Banner类，它的实现如下，它的相关方法能够一定程度上达到我们需要的效果：</p>
@@ -384,19 +383,21 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PrinterBanner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Printer</span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Banner banner;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">PrinterBanner</span><span class="hljs-params">(String string)</span>&#123;<br>        <span class="hljs-built_in">this</span>.banner = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Banner</span>(string);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printWeak</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>.banner.showWithParen();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printStrong</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>.banner.showWithAster();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>同样可以使用类似的测试代码进行测试，也是能够达到相同的效果。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test2</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">Printer</span> <span class="hljs-variable">printer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PrinterBanner</span>(<span class="hljs-string">&quot;hello&quot;</span>);<br>    printer.printStrong();<br>    printer.printWeak();<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="说明-2">说明</h2>
+<h2 id="说明-1">说明</h2>
 <p>Adapter模式是一个较为简单的设计模式，在日常程序开发的过程中非常常见，常见到很多时候我们往往都忽略了这是一个设计模式。Adapter模式能够帮助我们实现代码的复用，在开发时更加方便。简单来说，就是将我们需要使用的现有类进行包装，无论是以继承的方式还是成员变量的方式，需要达到的目的就是将现有的功能能够帮助到我们目前需求的实现。同时，现有的代码通常是经过了检测和测试的，这也就意味着我们新需求的代码如果出现Bug的时候，进行排查时就可以直接跳过这部分已经接受过检测的代码，减少考虑的范围。</p>
 <p>实际上，Adapter模式更多会作为一种好的编程习惯。如果我们有一个好的编程习惯，对于它的使用往往在不经意间就能够完成。</p>
-<h1>Template Method</h1>
-<h2 id="简介-3">简介</h2>
-<p>Template Mothod，即模板方法。这种模式提供模版功能，组成模板的方法被定义在父类中，父类提供一个模板方法，在模板方法中按照一定的逻辑进行处理，但是这里使用的是抽象方法，只通过父类的代码是无法知道这些方法最终会进行何种处理，唯一能够知道父类是如何调用这些方法的。抽象方法由子类进行实现，不同的实现也就导致实际处理的不同，不过具体的流程还是按照父类中的定义进行的。</p>
+<h1 id="template-method">Template Method</h1>
+<h2 id="简介-2">简介</h2>
+<p>Template
+Mothod，即模板方法。这种模式提供模版功能，组成模板的方法被定义在父类中，父类提供一个模板方法，在模板方法中按照一定的逻辑进行处理，但是这里使用的是抽象方法，只通过父类的代码是无法知道这些方法最终会进行何种处理，唯一能够知道父类是如何调用这些方法的。抽象方法由子类进行实现，不同的实现也就导致实际处理的不同，不过具体的流程还是按照父类中的定义进行的。</p>
 <p>在Template Method模式中有如下角色：</p>
 <ul>
 <li><code>AbstractClass</code>：抽象类，负责实现模板方法，同时负责声明在模板方法中所使用到的抽象方法。这些抽象方法由子类负责实现</li>
 <li><code>ConcreteClass</code>：具体类，负责具体实现在AbstractClass中定义的抽象方法。而方法的具体实现会在模板方法中被调用</li>
 </ul>
-<p>简单来说，Template Method模式就是在父类中定义处理流程的框架，在子类中实现具体的处理逻辑。</p>
-<h2 id="示例程序-3">示例程序</h2>
+<p>简单来说，Template
+Method模式就是在父类中定义处理流程的框架，在子类中实现具体的处理逻辑。</p>
+<h2 id="示例程序-2">示例程序</h2>
 <p>首先准备一个抽象父类<code>AbstractDisplay</code>，其中的核心方法是<code>display</code>。在display中，它首先调用了<code>open</code>方法，然后重复执行五次<code>print</code>方法，最后执行了<code>close</code>方法，不过这些被调用的方法都是抽象方法，等待子类实现。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AbstractDisplay</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">print</span><span class="hljs-params">()</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">display</span><span class="hljs-params">()</span> &#123;<br>        open();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++) &#123;<br>            print();<br>        &#125;<br>        close();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这里我们实现两个子类来观察不同的运行结果，第一个子类<code>CharDisplay</code>对相关抽象方法有如下的实现：</p>
@@ -405,20 +406,26 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">StringDisplay</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractDisplay</span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;+--------+&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">print</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;+Template+&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;+--------+&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>两个子类对抽象方法的实现各不相同，但是最终在<code>display</code>中的执行流程还是一样的，都是按照父类已经定义好的流程进行实现的。可以利用相关测试方法来查看不同的效果：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testCharDisplay</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">AbstractDisplay</span> <span class="hljs-variable">display</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CharDisplay</span>();<br>    display.display();<br>&#125;<br><br><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testStringDisplay</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">AbstractDisplay</span> <span class="hljs-variable">display</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringDisplay</span>();<br>    display.display();<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="说明-3">说明</h2>
-<p>在Template Method模式中，父类的模版方法内部定义了算法或者流程，这样就无需在每个子类内部重复编写算法。这种方式集中在父类内部管理核心流程，保证了关键代码的稳定，而具体的实现由不同的子类来完成，又可以适应多种不同的情况。在该类模式中，父类和子类之间是相互联系的，我们只有参考理解父类中模版方法的流程，才能够很好地在子类中实现相关的抽象方法。</p>
-<h1>Factory Method</h1>
-<h2 id="简介-4">简介</h2>
-<p>在Template Method模式中，我们在父类中规定处理的流程，而让子类来实现具体的处理。将这种思想应用于实例生成，则是Factory Method模式。在Factory Method模式中，父类将决定实例生成的流程和方式，但是具体的处理则交给子类来完成，如此，就可以将生成实例的框架和实际负责实例生成的类进行解耦。</p>
+<h2 id="说明-2">说明</h2>
+<p>在Template
+Method模式中，父类的模版方法内部定义了算法或者流程，这样就无需在每个子类内部重复编写算法。这种方式集中在父类内部管理核心流程，保证了关键代码的稳定，而具体的实现由不同的子类来完成，又可以适应多种不同的情况。在该类模式中，父类和子类之间是相互联系的，我们只有参考理解父类中模版方法的流程，才能够很好地在子类中实现相关的抽象方法。</p>
+<h1 id="factory-method">Factory Method</h1>
+<h2 id="简介-3">简介</h2>
+<p>在Template
+Method模式中，我们在父类中规定处理的流程，而让子类来实现具体的处理。将这种思想应用于实例生成，则是Factory
+Method模式。在Factory
+Method模式中，父类将决定实例生成的流程和方式，但是具体的处理则交给子类来完成，如此，就可以将生成实例的框架和实际负责实例生成的类进行解耦。</p>
 <p>在Factory Method中有如下角色：</p>
 <ul>
-<li><code>Product</code>：产品类，该角色属于框架这一方，属于抽象类。该角色定义了在Factory Method模式中生成的实例所需要有的接口</li>
+<li><code>Product</code>：产品类，该角色属于框架这一方，属于抽象类。该角色定义了在Factory
+Method模式中生成的实例所需要有的接口</li>
 <li><code>Creator</code>：创建者，同样属于框架这一方，属于抽象类，负责生成Product角色，生成过程可以安排，但是具体的处理由子类决定</li>
 <li><code>ConcreteProduct</code>：继承Product，属于具体的产品</li>
 <li><code>ConcreteCreator</code>：继承Creator，属于具体的创建者</li>
 </ul>
-<h2 id="示例程序-4">示例程序</h2>
-<p>考虑这样的场景，我们使用Factory Method模式来完成ID卡的生成。ID卡属于产品Product，我们需要有一个工厂Factory来生成产品。首先定义Product类和Factory类，它们属于框架提供的架构，也就是父类。在Product类中声明产品有一个使用方法，而在Factory中定义了产品的生产流程，关键步骤使用抽象方法，需要由子类进行实现。</p>
+<h2 id="示例程序-3">示例程序</h2>
+<p>考虑这样的场景，我们使用Factory
+Method模式来完成ID卡的生成。ID卡属于产品Product，我们需要有一个工厂Factory来生成产品。首先定义Product类和Factory类，它们属于框架提供的架构，也就是父类。在Product类中声明产品有一个使用方法，而在Factory中定义了产品的生产流程，关键步骤使用抽象方法，需要由子类进行实现。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Product</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">use</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Product <span class="hljs-title function_">create</span><span class="hljs-params">(String owner)</span>&#123;<br>        <span class="hljs-type">Product</span> <span class="hljs-variable">product</span> <span class="hljs-operator">=</span> createProduct(owner);<br>        registerProduct(product);<br>        <span class="hljs-keyword">return</span> product;<br>    &#125;<br><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">abstract</span> Product <span class="hljs-title function_">createProduct</span><span class="hljs-params">(String owner)</span>;<br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">registerProduct</span><span class="hljs-params">(Product product)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>接下来，我们就需要分别它们对应的子类，IDCard以及IDCardFactory。</p>
@@ -428,8 +435,10 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IDCardFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> List&lt;String&gt; owners = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> Product <span class="hljs-title function_">createProduct</span><span class="hljs-params">(String owner)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IDCard</span>(owner);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">registerProduct</span><span class="hljs-params">(Product product)</span> &#123;<br>        owners.add(((IDCard) product).getOwner());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>接下来就可以书写测试程序了。对于这些功能的使用者也就是我们的测试程序来说，它需要获得一个IDCard的实例，只需要通过工厂IDCardFactory进行创建即可，至于其内部的具体逻辑则不需要关心。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Factory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IDCardFactory</span>();<br>    <span class="hljs-type">Product</span> <span class="hljs-variable">card1</span> <span class="hljs-operator">=</span> factory.create(<span class="hljs-string">&quot;A&quot;</span>);<br>    <span class="hljs-type">Product</span> <span class="hljs-variable">card2</span> <span class="hljs-operator">=</span> factory.create(<span class="hljs-string">&quot;B&quot;</span>);<br>    <span class="hljs-type">Product</span> <span class="hljs-variable">card3</span> <span class="hljs-operator">=</span> factory.create(<span class="hljs-string">&quot;C&quot;</span>);<br>    card1.use();<br>    card2.use();<br>    card3.use();<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="说明-4">说明</h2>
-<p>Factory Method可以帮助我们对外提供一个简单的获取实例的方式。在一些情况下，某个实例的准备可能需要复杂的过程，但是对于外界来说，可能只需要知道如何能够生成就行。Factory Method就能够提供一个分离的方式获取实例。不过在编写具体类的时候，需要结合抽象父类进行理解，否则会对各个抽象方法实际需要完成的工作不够清楚，导致子类中的实现无法达到效果。</p>
+<h2 id="说明-3">说明</h2>
+<p>Factory
+Method可以帮助我们对外提供一个简单的获取实例的方式。在一些情况下，某个实例的准备可能需要复杂的过程，但是对于外界来说，可能只需要知道如何能够生成就行。Factory
+Method就能够提供一个分离的方式获取实例。不过在编写具体类的时候，需要结合抽象父类进行理解，否则会对各个抽象方法实际需要完成的工作不够清楚，导致子类中的实现无法达到效果。</p>
 <p>对于Factory中的需要子类实现的方法，我们一般有三种方式来定义。第一种就是直接声明为抽象方法，子类必须实现，否则在编译时会报错。第二种就是在父类中给一个最简单最基础的实现。第三种是默认实现抛出异常，如果在子类中没有实现，则是在执行的以后才会报错。</p>
 
                 

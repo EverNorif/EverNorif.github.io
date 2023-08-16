@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -351,8 +351,7 @@
 <ul>
 <li>IndexedSeq通过索引来查找和定位，因此速度快</li>
 <li>LinearSeq是线性的，有头尾的概念，这种数据结构一般通过遍历来查找（像这里队列，栈等被归类到了LinearSeq，因为我们一般只关注它们的首尾元素，操作的也是首尾元素）</li>
-</ul>
-</li>
+</ul></li>
 <li>前面我们学习的for语法，底层对应的就是IndexedSeq下的Range</li>
 <li>图中的Array和String使用虚线连接，它们其实对应的就是Java中的数组和<code>java.lang.String</code>，和Scala中的集合并没有直接关系。但是通过可以通过隐式转换成为一个包装类型之后就可以当作集合了</li>
 <li>Scala中更多地推荐使用不可变集合，能使用不可变就使用不可变</li>
@@ -361,45 +360,38 @@
 <img src="/2022/05/02/Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E6%A0%B8%E5%BF%83%E7%89%B9%E6%80%A7-3-%E9%9B%86%E5%90%88/%E5%8F%AF%E5%8F%98%E9%9B%86%E5%90%88%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="可变集合继承关系">
 <p>可变集合相较于不可变集合中多出了Buffer特征，其余的整体结构相差不大</p>
 <h2 id="数组">数组</h2>
-<h3 id="不可变数组-Array">不可变数组 Array</h3>
+<h3 id="不可变数组-array">不可变数组 Array</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 两种创建方式</span><br><span class="hljs-keyword">val</span> arr1 = <span class="hljs-keyword">new</span> <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>](<span class="hljs-number">5</span>)<br><span class="hljs-keyword">val</span> arr2 = <span class="hljs-type">Array</span>(<span class="hljs-number">5</span>, <span class="hljs-number">4</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>)<br><br><span class="hljs-comment">// 赋值和访问</span><br><span class="hljs-comment">// 采用符号=进行赋值</span><br><span class="hljs-keyword">for</span> (i &lt;- <span class="hljs-number">0</span> until arr1.length) arr1(i) = i<br><span class="hljs-comment">// 调用方法update进行赋值</span><br>arr2.update(<span class="hljs-number">0</span>, <span class="hljs-number">6</span>)<br><br><span class="hljs-comment">// 遍历</span><br><span class="hljs-comment">// 下标遍历</span><br><span class="hljs-keyword">for</span> (i &lt;- <span class="hljs-number">0</span> until arr1.length) print(arr1(i) + <span class="hljs-string">&quot; &quot;</span>)<br>println()<br><span class="hljs-comment">// 元素遍历</span><br><span class="hljs-keyword">for</span> (elem &lt;- arr1) print(elem + <span class="hljs-string">&quot; &quot;</span>)<br>println()<br><span class="hljs-comment">// 迭代器遍历</span><br><span class="hljs-keyword">val</span> iterator = arr2.iterator<br><span class="hljs-keyword">while</span> (iterator.hasNext) &#123;<br>    print(iterator.next() + <span class="hljs-string">&quot; &quot;</span>)<br>&#125;<br>println()<br><span class="hljs-comment">// foreach方法遍历</span><br>arr2.foreach((elem: <span class="hljs-type">Int</span>) =&gt; &#123;<br>    print(<span class="hljs-string">s&quot;<span class="hljs-subst">$&#123;elem&#125;</span> &quot;</span>)<br>&#125;)<br>println()<br><span class="hljs-comment">// mkString方法</span><br>println(arr2.mkString(<span class="hljs-string">&quot; &quot;</span>))<br><br><span class="hljs-comment">// 增加元素</span><br><span class="hljs-keyword">val</span> newArr1 = arr1 :+ <span class="hljs-number">10</span> <span class="hljs-comment">// 在末尾添加(调用方法或者省略成符号)</span><br><span class="hljs-keyword">val</span> newArr2 = arr1.+:(<span class="hljs-number">20</span>) <span class="hljs-comment">// 调用方法在首部添加</span><br><span class="hljs-keyword">val</span> newArr3 = <span class="hljs-number">30</span> +: arr2 <span class="hljs-comment">// 省略成符号在首部添加 需要注意顺序</span><br><span class="hljs-keyword">val</span> newArr4 = <span class="hljs-number">20</span> +: <span class="hljs-number">10</span> +: arr2 :+ <span class="hljs-number">30</span> :+ <span class="hljs-number">40</span> <span class="hljs-comment">// 完全使用符号，:需要朝向数组对象</span><br><br>println(newArr1.mkString(<span class="hljs-string">&quot; &quot;</span>))<br>println(newArr2.mkString(<span class="hljs-string">&quot; &quot;</span>))<br>println(newArr3.mkString(<span class="hljs-string">&quot; &quot;</span>))<br>println(newArr4.mkString(<span class="hljs-string">&quot; &quot;</span>))<br></code></pre></td></tr></table></figure>
 <ul>
 <li>不可变数组在创建的时候有两种方式
 <ul>
 <li>方式1：指定大小，不指定初值</li>
 <li>方式2：直接指定初值</li>
-</ul>
-</li>
+</ul></li>
 <li>不可变数组的值赋值和修改是不会返回新对象的，但是增删元素是会返回新对象的</li>
 <li>需要注意这里添加符号的使用<code>:+</code>和<code>+:</code>，<code>:</code>始终朝向对象</li>
 <li>遍历方式对于集合类型来说基本上都是通用的</li>
 <li>下标越界会抛出异常，在使用之前应该注意</li>
 <li><strong>建议不可变集合使用符号来操作</strong></li>
 </ul>
-<h3 id="可变数组-ArrayBuffer">可变数组 ArrayBuffer</h3>
+<h3 id="可变数组-arraybuffer">可变数组 ArrayBuffer</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 两种创建方式</span><br><span class="hljs-keyword">val</span> arr1 = <span class="hljs-keyword">new</span> <span class="hljs-type">ArrayBuffer</span>[<span class="hljs-type">Int</span>]()<br><span class="hljs-keyword">val</span> arr2 = <span class="hljs-type">ArrayBuffer</span>(<span class="hljs-number">5</span>, <span class="hljs-number">4</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br><br><br><span class="hljs-comment">// 增加元素</span><br>arr1 += <span class="hljs-number">10</span> <span class="hljs-comment">// 使用符号添加元素</span><br>arr2.append(<span class="hljs-number">30</span>) <span class="hljs-comment">// 调用append方法</span><br>arr2.insert(<span class="hljs-number">0</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>) <span class="hljs-comment">// insert方法向指定位置插入数据</span><br><span class="hljs-comment">// 使用类似于不可变数组的方式</span><br><span class="hljs-comment">// 但是这种方式不会修改源数组，而是需要新变量接收</span><br><span class="hljs-keyword">val</span> arr3 = arr1 :+ <span class="hljs-number">22</span><br><span class="hljs-keyword">val</span> arr4 = <span class="hljs-number">33</span> +: arr1<br><br><span class="hljs-comment">// 删除元素</span><br>arr1.remove(<span class="hljs-number">0</span>) <span class="hljs-comment">// 调用remove方法(从哪个下标开始删除，删除多少个)</span><br>arr2 -= <span class="hljs-number">1</span> <span class="hljs-comment">// 使用符号删除元素(遇到符合条件的即删除，执行一次)</span><br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>两种创建方式，不指定大小默认初始大小为16</p>
-</li>
-<li>
-<p>注意可变和不可变的理念，一个是在源数组上修改，另一个是返回一个新的修改后的数组</p>
-</li>
-<li>
-<p><strong>建议可变集合使用方法调用来操作</strong></p>
-</li>
+<li><p>两种创建方式，不指定大小默认初始大小为16</p></li>
+<li><p>注意可变和不可变的理念，一个是在源数组上修改，另一个是返回一个新的修改后的数组</p></li>
+<li><p><strong>建议可变集合使用方法调用来操作</strong></p></li>
 </ul>
 <p>可变数组和不可变数组之间可以相互转化，转化不会修改本身的类型，而是返回一个结果</p>
 <ul>
 <li>Array -&gt; ArrayBuffer：<code>toBuffer()</code></li>
 <li>ArrayBuffer -&gt; Array：<code>toArray()</code></li>
 </ul>
-<h3 id="多维数组-Array-ofDim">多维数组 Array.ofDim</h3>
+<h3 id="多维数组-array.ofdim">多维数组 Array.ofDim</h3>
 <p>多维数组可以使用<code>Array.ofDim[Type]来指定维度</code></p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建一个二维数组，2行3列</span><br><span class="hljs-keyword">val</span> array = <span class="hljs-type">Array</span>.ofDim[<span class="hljs-type">Int</span>](<span class="hljs-number">2</span>, <span class="hljs-number">3</span>)<br><br><span class="hljs-comment">// 访问和修改元素</span><br>array(<span class="hljs-number">0</span>)(<span class="hljs-number">2</span>) = <span class="hljs-number">10</span><br>array(<span class="hljs-number">1</span>)(<span class="hljs-number">0</span>) = <span class="hljs-number">25</span><br><br><span class="hljs-comment">// 遍历</span><br>array.foreach(line =&gt;&#123;<br>    line.foreach(print)<br>&#125;)<br></code></pre></td></tr></table></figure>
 <p>Scala中<code>ofDim</code>方法最多支持到构造5维的数组，更多维度的数组不支持</p>
 <h2 id="列表">列表</h2>
-<h3 id="不可变列表-List">不可变列表 List</h3>
+<h3 id="不可变列表-list">不可变列表 List</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建一个List(不能直接new，需要使用伴生对象的apply方法)</span><br><span class="hljs-keyword">val</span> list1 = <span class="hljs-type">List</span>(<span class="hljs-number">92</span>, <span class="hljs-number">39</span>, <span class="hljs-number">52</span>, <span class="hljs-number">23</span>)<br><br><span class="hljs-comment">// 访问和遍历元素</span><br>println(list1(<span class="hljs-number">1</span>))<br>list1.foreach(elem =&gt; print(<span class="hljs-string">s&quot;<span class="hljs-subst">$&#123;elem&#125;</span> &quot;</span>))<br>println()<br><br><span class="hljs-comment">// 添加元素(返回新列表)</span><br><span class="hljs-keyword">val</span> list2 = <span class="hljs-number">10</span> +: list1 <span class="hljs-comment">// 添加到首部</span><br><span class="hljs-keyword">val</span> list3 = list1 :+ <span class="hljs-number">10</span> <span class="hljs-comment">// 添加到尾部</span><br>println(list1)<br>println(list2)<br>println(list3)<br><br><span class="hljs-comment">// ::符号的使用</span><br><span class="hljs-keyword">val</span> list4 = list1.::(<span class="hljs-number">49</span>) <span class="hljs-comment">// 添加元素到列表头部</span><br><span class="hljs-keyword">val</span> list5 = <span class="hljs-number">49</span> :: list1<br>println(list4)<br>println(list5)<br><br><span class="hljs-comment">// 利用::来构造新列表,Nil表示空列表</span><br><span class="hljs-keyword">val</span> list6 = <span class="hljs-number">12</span> :: <span class="hljs-number">123</span> :: <span class="hljs-number">23</span> :: <span class="hljs-number">98</span> :: <span class="hljs-type">Nil</span><br>println(list6)<br><br><span class="hljs-comment">// 合并列表</span><br><span class="hljs-keyword">val</span> list7 = list1 :: list6 <span class="hljs-comment">// 这种方式会将list1当作一个整体添加到list6的首部</span><br><span class="hljs-keyword">val</span> list8 = list1 :::list6<br><span class="hljs-keyword">val</span> list9 = list1 ++ list6<br>println(list7)<br>println(list8)<br>println(list9)<br></code></pre></td></tr></table></figure>
 <ul>
 <li>List是抽象类，本身不能直接new，需要调用伴生对象的apply创建对象</li>
@@ -408,28 +400,18 @@
 <li>合并列表使用<code>:::</code>或者<code>++</code></li>
 <li>List本身可以使用apply进行随机访问，但是不能进行update更改，即不能通过类似<code>list1(0) = 1</code>的方式进行修改</li>
 </ul>
-<h3 id="可变列表-ListBuffer">可变列表 ListBuffer</h3>
+<h3 id="可变列表-listbuffer">可变列表 ListBuffer</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建可变列表</span><br><span class="hljs-keyword">val</span> list1 = <span class="hljs-keyword">new</span> <span class="hljs-type">ListBuffer</span>[<span class="hljs-type">Int</span>]()<br><span class="hljs-keyword">val</span> list2 = <span class="hljs-type">ListBuffer</span>(<span class="hljs-number">12</span>, <span class="hljs-number">23</span>, <span class="hljs-number">44</span>, <span class="hljs-number">53</span>)<br><br><span class="hljs-comment">// 添加元素</span><br>list1.append(<span class="hljs-number">32</span>) <span class="hljs-comment">// 添加到末尾</span><br>list2.prepend(<span class="hljs-number">46</span>) <span class="hljs-comment">// 添加到首部</span><br>list1.insert(<span class="hljs-number">1</span>, <span class="hljs-number">12</span>, <span class="hljs-number">32</span>) <span class="hljs-comment">// 在指定位置插入</span><br><span class="hljs-comment">// 利用符号+=:添加到首部</span><br><span class="hljs-number">10</span> +=: <span class="hljs-number">11</span>+=: list1 += <span class="hljs-number">12</span> += <span class="hljs-number">13</span><br>println(list1)<br>println(list2)<br><br><span class="hljs-comment">// 修改元素</span><br>list1(<span class="hljs-number">1</span>) = <span class="hljs-number">11</span><br>list2.update(<span class="hljs-number">1</span>, <span class="hljs-number">11</span>)<br>println(list1)<br>println(list2)<br><br><span class="hljs-comment">// 删除元素</span><br>list1.remove(<span class="hljs-number">0</span>)<br>list2 -= <span class="hljs-number">46</span><br>println(list1)<br>println(list2)<br><br><span class="hljs-comment">// 合并列表</span><br><span class="hljs-keyword">val</span> list4 = list1 ++ list2 <span class="hljs-comment">// ++合并成新列表</span><br>println(list4)<br>println(list1)<br>println(list2)<br><br>list1 ++= list2 <span class="hljs-comment">// 合并到前面的列表</span><br>println(list1)<br>println(list2)<br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>可变列表<code>ListBuffer</code>的操作与可变数组<code>ArrayBuffer</code>类似</p>
-</li>
-<li>
-<p>有两种方式进行对象的创建</p>
-</li>
-<li>
-<p>常用方法：<code>append prepend insert remove</code></p>
-</li>
-<li>
-<p>添加元素到头部或者尾部：<code>+=: +=</code></p>
-</li>
-<li>
-<p>合并列表：<code>++ ++=</code></p>
-</li>
+<li><p>可变列表<code>ListBuffer</code>的操作与可变数组<code>ArrayBuffer</code>类似</p></li>
+<li><p>有两种方式进行对象的创建</p></li>
+<li><p>常用方法：<code>append prepend insert remove</code></p></li>
+<li><p>添加元素到头部或者尾部：<code>+=: +=</code></p></li>
+<li><p>合并列表：<code>++ ++=</code></p></li>
 </ul>
 <h2 id="集合">集合</h2>
 <p>在Scala中，集合的可变和不可变版本的名称都是Set。默认情况下，Scala使用的是不可变集合，如果想要使用可变集合，则需要引用<code>scala.collection.mutable.Set</code>，建议在使用的时候，不可变集合使用<code>Set</code>，可变集合使用<code>mutable.Set</code></p>
-<h3 id="不可变集合-Set">不可变集合 Set</h3>
+<h3 id="不可变集合-set">不可变集合 Set</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建Set</span><br><span class="hljs-keyword">val</span> set1 = <span class="hljs-type">Set</span>(<span class="hljs-number">12</span>,<span class="hljs-number">23</span>,<span class="hljs-number">21</span>,<span class="hljs-number">12</span>,<span class="hljs-number">123</span>,<span class="hljs-number">43</span>,<span class="hljs-number">53</span>,<span class="hljs-number">4</span>)<br><br><span class="hljs-comment">// 添加元素</span><br><span class="hljs-keyword">val</span> set2 = set1 + <span class="hljs-number">111</span><br>println(set1)<br>println(set2)<br><br><span class="hljs-comment">// 删除元素</span><br><span class="hljs-keyword">val</span> set3 = set1 - <span class="hljs-number">123</span><br>println(set1)<br>println(set3)<br><br><span class="hljs-comment">// 合并Set</span><br><span class="hljs-keyword">val</span> set4 = set1 ++ set2<br>println(set4)<br></code></pre></td></tr></table></figure>
 <ul>
 <li>数据无序且不可重复</li>
@@ -438,7 +420,7 @@
 <li>合并：<code>++</code></li>
 <li>操作返回一个新的集合，不会修改源集合</li>
 </ul>
-<h3 id="可变集合-mutable-Set">可变集合 mutable.Set</h3>
+<h3 id="可变集合-mutable.set">可变集合 mutable.Set</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建Set</span><br><span class="hljs-keyword">val</span> set1 = mutable.<span class="hljs-type">Set</span>(<span class="hljs-number">12</span>, <span class="hljs-number">23</span>, <span class="hljs-number">12</span>, <span class="hljs-number">23</span>, <span class="hljs-number">34</span>, <span class="hljs-number">54</span>, <span class="hljs-number">65</span>, <span class="hljs-number">23</span>)<br><br><span class="hljs-comment">// 添加元素</span><br>set1 += <span class="hljs-number">11</span><br><br><span class="hljs-comment">// 返回结果为一个布尔值，表示是否执行成功</span><br><span class="hljs-keyword">val</span> flag1 = set1.add(<span class="hljs-number">33</span>)<br><span class="hljs-keyword">val</span> flag2 = set1.add(<span class="hljs-number">33</span>)<br>println(flag1)<br>println(flag2)<br>println(set1)<br><br><span class="hljs-comment">// 删除元素</span><br>set1 -= <span class="hljs-number">11</span><br><br><span class="hljs-keyword">val</span> flag3 = set1.remove(<span class="hljs-number">12</span>)<br><span class="hljs-keyword">val</span> flag4 = set1.remove(<span class="hljs-number">12</span>)<br>println(flag3)<br>println(flag4)<br>println(set1)<br><br><span class="hljs-comment">// 合并Set</span><br><span class="hljs-keyword">val</span> set2 = mutable.<span class="hljs-type">Set</span>(<span class="hljs-number">12</span>, <span class="hljs-number">5</span>, <span class="hljs-number">23</span>, <span class="hljs-number">1</span>, <span class="hljs-number">4</span>)<br>set1 ++= set2<br>println(set1)<br><br></code></pre></td></tr></table></figure>
 <ul>
 <li>操作在源集合上</li>
@@ -449,22 +431,18 @@
 </ul>
 <h2 id="映射">映射</h2>
 <p>Scala中的Map和Java中的类似，存储的内容是键值对。与Set相同，Map的可变与不可变类型的名称相同，只是存在不同的包中。默认的Map是不可变类型的，可变类型建议使用<code>mutable.Map</code>加以区别</p>
-<h3 id="不可变映射-Map">不可变映射 Map</h3>
+<h3 id="不可变映射-map">不可变映射 Map</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建Map</span><br><span class="hljs-keyword">val</span> map1: <span class="hljs-type">Map</span>[<span class="hljs-type">String</span>, <span class="hljs-type">Int</span>] = <span class="hljs-type">Map</span>(<span class="hljs-string">&quot;a&quot;</span> -&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&quot;b&quot;</span> -&gt; <span class="hljs-number">2</span>, <span class="hljs-string">&quot;c&quot;</span> -&gt; <span class="hljs-number">3</span>)<br>println(map1)<br><br><span class="hljs-comment">// 遍历元素，打印键值对</span><br>map1.foreach(println)<br>map1.foreach((kv: (<span class="hljs-type">String</span>, <span class="hljs-type">Int</span>)) =&gt; println(kv))<br><br><span class="hljs-comment">// 取出Map中所有的Key或者Value</span><br><span class="hljs-keyword">for</span>(key &lt;- map1.keys) println(<span class="hljs-string">s&quot;<span class="hljs-subst">$&#123;key&#125;</span> -&gt; <span class="hljs-subst">$&#123;map1.get(key)&#125;</span>&quot;</span>)<br><span class="hljs-keyword">for</span>(value &lt;-map1.values) println(<span class="hljs-string">s&quot;<span class="hljs-subst">$&#123;value&#125;</span> &quot;</span>)<br><br><span class="hljs-comment">// 通过key来访问value</span><br>println(map1.get(<span class="hljs-string">&quot;a&quot;</span>)) <span class="hljs-comment">// 得到Some对象</span><br>println(map1.get(<span class="hljs-string">&quot;a&quot;</span>).get) <span class="hljs-comment">// 得到确切的值</span><br>println(map1.get(<span class="hljs-string">&quot;d&quot;</span>).get) <span class="hljs-comment">// 先get(&quot;d&quot;)得到None，再进行get会报错</span><br>println(map1.getOrElse(<span class="hljs-string">&quot;d&quot;</span>, <span class="hljs-number">0</span>)) <span class="hljs-comment">// 普通get没有会得到None，再进行get会报错，getOrElse不会，可以设置默认值</span><br><br>println(map1(<span class="hljs-string">&quot;c&quot;</span>)) <span class="hljs-comment">// 直接得到确切的值，没有则报错</span><br><br><span class="hljs-comment">// 合并Map</span><br><span class="hljs-keyword">val</span> map2 = map1 ++ <span class="hljs-type">Map</span>(<span class="hljs-string">&quot;d&quot;</span>-&gt;<span class="hljs-number">4</span>)<br>println(map2)<br></code></pre></td></tr></table></figure>
 <ul>
 <li>通过<code>get(key)</code>得到的是一个Some对象，如果没有找到则返回None</li>
 <li>Some对象通过get可以得到确切的值</li>
 </ul>
-<h3 id="可变映射-mutable-Map">可变映射 mutable.Map</h3>
+<h3 id="可变映射-mutable.map">可变映射 mutable.Map</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建map</span><br><span class="hljs-keyword">val</span> map1:mutable.<span class="hljs-type">Map</span>[<span class="hljs-type">String</span>, <span class="hljs-type">Int</span>] = mutable.<span class="hljs-type">Map</span>(<span class="hljs-string">&quot;a&quot;</span>-&gt;<span class="hljs-number">1</span>, <span class="hljs-string">&quot;b&quot;</span>-&gt;<span class="hljs-number">2</span>, <span class="hljs-string">&quot;c&quot;</span>-&gt;<span class="hljs-number">3</span>)<br>println(map1)<br><br><span class="hljs-comment">// 添加元素</span><br>map1.put(<span class="hljs-string">&quot;d&quot;</span>, <span class="hljs-number">4</span>)<br>map1 += ((<span class="hljs-string">&quot;e&quot;</span>, <span class="hljs-number">5</span>)) <span class="hljs-comment">// 注意是两个括号</span><br>println(map1)<br><br><span class="hljs-comment">// 删除元素</span><br>map1.remove(<span class="hljs-string">&quot;c&quot;</span>)<br>map1 -= <span class="hljs-string">&quot;d&quot;</span><br>println(map1)<br><br><span class="hljs-comment">// 修改元素</span><br>map1.put(<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-number">-1</span>)<br>map1.update(<span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-number">-2</span>)<br>println(map1)<br><br><span class="hljs-comment">// 合并Map,合并的时候，相同的key，value以后面的为准，进行覆盖</span><br><span class="hljs-keyword">val</span> map2:mutable.<span class="hljs-type">Map</span>[<span class="hljs-type">String</span>, <span class="hljs-type">Int</span>] = mutable.<span class="hljs-type">Map</span>(<span class="hljs-string">&quot;a&quot;</span>-&gt;<span class="hljs-number">11</span>, <span class="hljs-string">&quot;b&quot;</span>-&gt;<span class="hljs-number">22</span>, <span class="hljs-string">&quot;c&quot;</span>-&gt;<span class="hljs-number">33</span>)<br>map1 ++= map2<br>println(map1)<br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>不可变中的访问等机制都支持</p>
-</li>
-<li>
-<p>put方式会可能会进行覆盖，返回值是一个Option对象，可以得到返回之前的值</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> maybeInt: <span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>] = map1.put(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">11</span>)<br>println(maybeInt.getOrELse(<span class="hljs-number">0</span>))<br></code></pre></td></tr></table></figure>
-</li>
+<li><p>不可变中的访问等机制都支持</p></li>
+<li><p>put方式会可能会进行覆盖，返回值是一个Option对象，可以得到返回之前的值</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> maybeInt: <span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>] = map1.put(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-number">11</span>)<br>println(maybeInt.getOrELse(<span class="hljs-number">0</span>))<br></code></pre></td></tr></table></figure></li>
 </ul>
 <h2 id="元组">元组</h2>
 <p>元组可以理解为是一个容器，其中可以存放相同和不同类型的数据。在Scala中，元组最多只能有22个元素</p>
@@ -505,24 +483,15 @@
 </ul>
 <h3 id="集合计算简单函数">集合计算简单函数</h3>
 <ul>
-<li>
-<p>求和<code>sum</code> 求乘积<code>product</code> 最小值<code>min</code> 最大值<code>max</code></p>
-</li>
-<li>
-<p><code>maxBy(func)</code>支持传入一个函数获取元素并返回比较依据的值</p>
+<li><p>求和<code>sum</code> 求乘积<code>product</code>
+最小值<code>min</code> 最大值<code>max</code></p></li>
+<li><p><code>maxBy(func)</code>支持传入一个函数获取元素并返回比较依据的值</p>
 <blockquote>
 <p>举例来说，元组默认就只会判断第一个元素，如果需要根据第二个元素判断，则返回第二个元素就行<code>xxx.maxBy(_._2)</code>。</p>
-</blockquote>
-</li>
-<li>
-<p>排序<code>sorted</code>，默认从小到大排序。从大到小排序<code>sorted(Ordering[Int].reverse)</code>。</p>
-</li>
-<li>
-<p>按元素排序<code>sortBy(func)</code>，指定要用来做排序的字段。也可以再传一个隐式参数逆序<code>sortBy(func)(Ordering[Int].reverse)</code></p>
-</li>
-<li>
-<p>自定义比较器<code>sortWith(cmp)</code>，比如按元素升序排列<code>sortWith((a, b) =&gt; a &lt; b)</code>或者<code>sortWith(_ &lt; _)</code>，按元组元素第二个元素升序<code>sortWith(_._2 &gt; _._2)</code>。</p>
-</li>
+</blockquote></li>
+<li><p>排序<code>sorted</code>，默认从小到大排序。从大到小排序<code>sorted(Ordering[Int].reverse)</code>。</p></li>
+<li><p>按元素排序<code>sortBy(func)</code>，指定要用来做排序的字段。也可以再传一个隐式参数逆序<code>sortBy(func)(Ordering[Int].reverse)</code></p></li>
+<li><p>自定义比较器<code>sortWith(cmp)</code>，比如按元素升序排列<code>sortWith((a, b) =&gt; a &lt; b)</code>或者<code>sortWith(_ &lt; _)</code>，按元组元素第二个元素升序<code>sortWith(_._2 &gt; _._2)</code>。</p></li>
 </ul>
 <h3 id="集合计算高级函数">集合计算高级函数</h3>
 <ul>
@@ -540,31 +509,30 @@
 <li>fold提供的初始值必须是同一类型，foldLeft中可以传入不同类型的初始值</li>
 </ul>
 <h2 id="集合应用案例">集合应用案例</h2>
-<h3 id="定制Map合并">定制Map合并</h3>
+<h3 id="定制map合并">定制Map合并</h3>
 <p>Map的默认合并操作是使用后面的相同Key中的value进行覆盖，现在需要定制一个合并方式，逻辑为相同的Key进行value的叠加</p>
 <p>（注意这里<code>foldLeft</code>的选用逻辑）</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> map1 = <span class="hljs-type">Map</span>(<span class="hljs-string">&quot;a&quot;</span> -&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&quot;b&quot;</span> -&gt; <span class="hljs-number">3</span>, <span class="hljs-string">&quot;c&quot;</span> -&gt; <span class="hljs-number">4</span>)<br><span class="hljs-comment">// 注意map2应该是可变Map</span><br><span class="hljs-keyword">val</span> map2 = mutable.<span class="hljs-type">Map</span>(<span class="hljs-string">&quot;a&quot;</span> -&gt; <span class="hljs-number">6</span>, <span class="hljs-string">&quot;b&quot;</span> -&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&quot;c&quot;</span> -&gt; <span class="hljs-number">9</span>, <span class="hljs-string">&quot;d&quot;</span> -&gt; <span class="hljs-number">10</span>)<br><span class="hljs-comment">// 如果是res = xxx.fold(a)(op(x, y)),每次进行的操作是op(x, y)</span><br><span class="hljs-comment">// y是集合中的每个元素，x是之前得到结果，如果是第一次则是传入的a</span><br><span class="hljs-keyword">val</span> map3 = map1.foldLeft(map2)(<br>    (mergedMap, kv) =&gt; &#123;<br>        <span class="hljs-keyword">val</span> key = kv._1<br>        <span class="hljs-keyword">val</span> value = kv._2<br>        mergedMap(key) = mergedMap.getOrElse(key, <span class="hljs-number">0</span>) + value<br>        mergedMap<br>    &#125;<br>)<br><br>println(map3)<br></code></pre></td></tr></table></figure>
-<h3 id="简单Word-Count">简单Word Count</h3>
+<h3 id="简单word-count">简单Word Count</h3>
 <p>对字符串进行切分，之后统计每个词出现的次数，并取其中排名前三的结果</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> stringList = <span class="hljs-type">List</span>(<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;hello world&quot;</span>, <span class="hljs-string">&quot;hello scala&quot;</span>, <span class="hljs-string">&quot;hello spark from scala&quot;</span>, <span class="hljs-string">&quot;hello flink form scala&quot;</span>)<br><br><span class="hljs-comment">// 对每个字符串进行切分，一个字符串得到一个word列表 map</span><br><span class="hljs-comment">// 将得到的列表进行扁平化 flatten</span><br><span class="hljs-comment">// 按照每个word进行分类 group</span><br><span class="hljs-comment">// 得到的Map可以计算出每个word的出现次数 map</span><br><span class="hljs-comment">// 得到一个Map(Word -&gt; times)，将其转换成list，排序取前3</span><br><span class="hljs-keyword">val</span> res = stringList<br>.flatMap(_.split(<span class="hljs-string">&quot; &quot;</span>))<br>.groupBy(word =&gt; word)<br>.map((kv: (<span class="hljs-type">String</span>, <span class="hljs-type">List</span>[<span class="hljs-type">String</span>])) =&gt; (kv._1, kv._2.length))<br>.toList<br>.sortWith(_._2 &gt; _._2)<br>.take(<span class="hljs-number">3</span>)<br>println(res)<br></code></pre></td></tr></table></figure>
-<h3 id="进阶Word-Count">进阶Word Count</h3>
-<p>原始输入中以及提供了部分出现次数的信息，利用这些信息，同样是完成上面Word Count的操作</p>
+<h3 id="进阶word-count">进阶Word Count</h3>
+<p>原始输入中以及提供了部分出现次数的信息，利用这些信息，同样是完成上面Word
+Count的操作</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> tupleList: <span class="hljs-type">List</span>[(<span class="hljs-type">String</span>, <span class="hljs-type">Int</span>)] = <span class="hljs-type">List</span>(<br>    (<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-number">1</span>),<br>    (<span class="hljs-string">&quot;hello world&quot;</span>, <span class="hljs-number">2</span>),<br>    (<span class="hljs-string">&quot;hello scala&quot;</span>, <span class="hljs-number">3</span>),<br>    (<span class="hljs-string">&quot;hello spark from scala&quot;</span>, <span class="hljs-number">1</span>),<br>    (<span class="hljs-string">&quot;hello flink from scala&quot;</span>, <span class="hljs-number">2</span>)<br>)<br><span class="hljs-comment">// 第一次map需要将词进行划分，并且带上自己的计数，同时需要进行扁平化</span><br><span class="hljs-keyword">val</span> res = tupleList<br>.flatMap((content: (<span class="hljs-type">String</span>, <span class="hljs-type">Int</span>)) =&gt; &#123;<br>    <span class="hljs-keyword">val</span> strings = content._1.split(<span class="hljs-string">&quot; &quot;</span>)<br>    <span class="hljs-comment">// 对分出来的每个词都需要生成一个描述计数(word, count)</span><br>    strings.map(word =&gt; (word, content._2))<br>&#125;)<br>.groupBy(content =&gt; content._1)<br>.map(content =&gt; &#123;<br>    <span class="hljs-keyword">val</span> word = content._1<br>    <span class="hljs-keyword">val</span> countList = content._2<br>    <span class="hljs-comment">// 计算countList中第二位的值的合计</span><br>    <span class="hljs-keyword">val</span> sum = countList.map(_._2).sum<br>    (word, sum)<br>&#125;).toList.sortWith(_._2 &gt; _._2).take(<span class="hljs-number">3</span>)<br><br>println(res)<br></code></pre></td></tr></table></figure>
-<h1>Scala与Java中的容器转换</h1>
+<h1 id="scala与java中的容器转换">Scala与Java中的容器转换</h1>
 <p>在Scala中我们经常会调用Java中的方法，但是这些方法可能返回的是Java中的容器对象。Scala中的容器与Java中的容器是可以相互转换的，这些转换可以通过一些方法很容易的完成。不过首先需要我们引入对应包：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> scala.collection.<span class="hljs-type">JavaConverters</span>._<br></code></pre></td></tr></table></figure>
 <p>之后可以调用对应的<code>asScala</code>和<code>asJava</code>方法，Java中的容器对象可以使用<code>asScala</code>方法，而Scala中的容器对象可以使用<code>asJava</code>方法。之后调用对应的<code>toxxx</code>方法就可以完成。举例来说，我现在有一个Java中的List数组，我想把它转化为Scala中的Array，则需要通过如下方式进行：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> scala.collection.<span class="hljs-type">JavaConverters</span>._<br><br><span class="hljs-keyword">val</span> listInJava: java.util.<span class="hljs-type">List</span>[<span class="hljs-type">String</span>] = <span class="hljs-keyword">new</span> <span class="hljs-type">ArrayList</span>(); <br><span class="hljs-comment">// Java中的ArrayList</span><br><br><span class="hljs-keyword">val</span> arrayInScala = listInJava.asScala.toArray;<br></code></pre></td></tr></table></figure>
 <p>当然一些容器之间可以直接相互转换，而另一些容器之间则只支持单向的转换。转换关系如下，其中左边的是Scala中的容器对象，右边则是Java中的容器对象：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 双向转换</span><br><span class="hljs-type">Iterator</span>               &lt;=&gt;     java.util.<span class="hljs-type">Iterator</span><br><span class="hljs-type">Iterator</span>               &lt;=&gt;     java.util.<span class="hljs-type">Enumeration</span><br><span class="hljs-type">Iterable</span>               &lt;=&gt;     java.lang.<span class="hljs-type">Iterable</span><br><span class="hljs-type">Iterable</span>               &lt;=&gt;     java.util.<span class="hljs-type">Collection</span><br>mutable.<span class="hljs-type">Buffer</span>         &lt;=&gt;     java.util.<span class="hljs-type">List</span><br>mutable.<span class="hljs-type">Set</span>            &lt;=&gt;     java.util.<span class="hljs-type">Set</span><br>mutable.<span class="hljs-type">Map</span>            &lt;=&gt;     java.util.<span class="hljs-type">Map</span><br>mutable.<span class="hljs-type">ConcurrentMap</span>  &lt;=&gt;     java.util.concurrent.<span class="hljs-type">ConcurrentMap</span><br><br><span class="hljs-comment">// 单向转换</span><br><span class="hljs-type">Seq</span>           =&gt;    java.util.<span class="hljs-type">List</span><br>mutable.<span class="hljs-type">Seq</span>   =&gt;    java.util.<span class="hljs-type">List</span><br><span class="hljs-type">Set</span>           =&gt;    java.util.<span class="hljs-type">Set</span><br><span class="hljs-type">Map</span>           =&gt;    java.util.<span class="hljs-type">Map</span><br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li>
-<p><a target="_blank" rel="noopener" href="https://docs.scala-lang.org/zh-cn/overviews/collections/conversions-between-java-and-scala-collections.html">scala-lang-docs</a></p>
-</li>
-<li>
-<p><a target="_blank" rel="noopener" href="http://xueai8.com/blog/21">Java中的List转化为Scala中的Array</a></p>
-</li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><p><a
+target="_blank" rel="noopener" href="https://docs.scala-lang.org/zh-cn/overviews/collections/conversions-between-java-and-scala-collections.html">scala-lang-docs</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://xueai8.com/blog/21">Java中的List转化为Scala中的Array</a></p></li>
 <li></li>
 </ol>
 

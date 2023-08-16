@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,8 +325,8 @@
             
               <div class="markdown-body">
                 
-                <h1>面向对象基础</h1>
-<h2 id="1-包package">1.包package</h2>
+                <h1 id="面向对象基础">面向对象基础</h1>
+<h2 id="包package">1.包package</h2>
 <p><strong>应用场景</strong>：</p>
 <ul>
 <li>区分相同名称的类</li>
@@ -363,52 +363,46 @@
 <p><strong>常用的包</strong>：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>包名</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>java.lang.*</td>
 <td>lang包是基本包，默认引入，不需要再引入</td>
 </tr>
-<tr>
+<tr class="even">
 <td>java.util.*</td>
 <td>util包，系统提供的工具包，工具类，使用Scanner</td>
 </tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="http://java.net">java.net</a>.*</td>
+<tr class="odd">
+<td>java.net.*</td>
 <td>网络包，网络开发</td>
 </tr>
-<tr>
+<tr class="even">
 <td>java.awt.*</td>
 <td>Java的界面开发，GUI</td>
 </tr>
 </tbody>
 </table>
-<h2 id="2-类与对象的快速入门">2.类与对象的快速入门</h2>
+<h2 id="类与对象的快速入门">2.类与对象的快速入门</h2>
 <p><strong>快速使用</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span>&#123;<br>    String name;<br>    <span class="hljs-type">int</span> age;<br>    String color;<br>&#125;<br><br><span class="hljs-comment">//使用</span><br>myCat = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>();<br></code></pre></td></tr></table></figure>
 <blockquote>
 <p>Java对象内存布局：</p>
 <ul>
-<li>
-<p><strong>真正的对象存放在堆当中</strong></p>
-</li>
-<li>
-<p>实例在栈空间中对应一个堆空间的地址，堆空间中对应存放了属性的值</p>
-</li>
-<li>
-<p>如果默认赋值，仍然是<strong>引用赋值</strong>（地址复制）</p>
-</li>
+<li><p><strong>真正的对象存放在堆当中</strong></p></li>
+<li><p>实例在栈空间中对应一个堆空间的地址，堆空间中对应存放了属性的值</p></li>
+<li><p>如果默认赋值，仍然是<strong>引用赋值</strong>（地址复制）</p></li>
 </ul>
 </blockquote>
 <p><strong>成员方法</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span>&#123;<br>    <span class="hljs-comment">//成员属性</span><br>    String name;<br>    <span class="hljs-type">int</span> age;<br>    <br>    <span class="hljs-comment">//成员方法</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">speak</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个好人&quot;</span>);<br>        System.out.println(n);<br>    &#125;<br>    <span class="hljs-comment">//public:访问修饰符（public、protected、private、默认）</span><br>    <span class="hljs-comment">//后面的与C++中类似</span><br>&#125;<br></code></pre></td></tr></table></figure>
 <blockquote>
 <p>方法调用方式：</p>
-<ol>
+<ol type="1">
 <li>当程序执行到方法时，就会开辟一个独立的栈空间</li>
 <li>当方法执行完毕，或执行到return语句时，就会返回</li>
 <li>返回到调用方法的地方</li>
@@ -417,29 +411,17 @@
 </blockquote>
 <p>注意事项：</p>
 <ul>
-<li>
-<p>可以重载（overload）【函数签名：函数名称+参数类型+参数个数】</p>
-</li>
-<li>
-<p>可变参数</p>
+<li><p>可以重载（overload）【函数签名：函数名称+参数类型+参数个数】</p></li>
+<li><p>可变参数</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">calculate</span><span class="hljs-params">(<span class="hljs-type">int</span>... nums)</span>&#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; nums.length; i++) &#123;<br>        res += nums[i];<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-comment">// 基本语法：访问修饰符 返回类型 方法名(数据类型...形参名)</span><br><span class="hljs-comment">// 可以接收多个参数</span><br><span class="hljs-comment">// 使用可变参数的时候，可以将nums看作一个数组来使用</span><br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>可变参数可以和普通类型的参数一起放在形参列表，但是必须保证可变参数在最后</p>
-</li>
-<li>
-<p>一个形参列表中只能有一个可变参数</p>
-</li>
+<li><p>可变参数可以和普通类型的参数一起放在形参列表，但是必须保证可变参数在最后</p></li>
+<li><p>一个形参列表中只能有一个可变参数</p></li>
+</ul></li>
+<li><p>作用域：全局变量有默认值、局部变量没有默认值、全局变量可以加修饰符、局部变量不可以加修饰符</p></li>
+<li><p>同样具有<code>this</code>关键字</p></li>
 </ul>
-</li>
-<li>
-<p>作用域：全局变量有默认值、局部变量没有默认值、全局变量可以加修饰符、局部变量不可以加修饰符</p>
-</li>
-<li>
-<p>同样具有<code>this</code>关键字</p>
-</li>
-</ul>
-<h2 id="3-构造方法（构造器）">3.构造方法（构造器）</h2>
+<h2 id="构造方法构造器">3.构造方法（构造器）</h2>
 <p>构造方法完成初始化</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">Person(my_name, my_age)&#123;<br>    <span class="hljs-built_in">this</span>.name = my_name;<br>    <span class="hljs-built_in">this</span>.age = my_age;<br>&#125;<br></code></pre></td></tr></table></figure>
 <ul>
@@ -452,28 +434,19 @@
 <li>在构造器方法中可以调用其他构造器方法，使用<code>this(参数列表)</code>
 <ul>
 <li>这个<code>this()</code><strong>必须在构造器中的第一行，所以最多只能有一个</strong></li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h2 id="4-访问修饰符">4.访问修饰符</h2>
+<h2 id="访问修饰符">4.访问修饰符</h2>
 <p>提供四种访问修饰符，用于控制方法和属性的访问权限（范围）</p>
 <ul>
-<li>
-<p><code>public</code>：对外公开</p>
-</li>
-<li>
-<p><code>protected</code>：对子类和同一个包中的类公开</p>
-</li>
-<li>
-<p><code>默认，无修饰符号</code>：对同一个包中的类公开（有时候子类可能也在同一个包中）</p>
-</li>
-<li>
-<p><code>private</code>：只有类本身可以访问，不对外公开</p>
-</li>
+<li><p><code>public</code>：对外公开</p></li>
+<li><p><code>protected</code>：对子类和同一个包中的类公开</p></li>
+<li><p><code>默认，无修饰符号</code>：对同一个包中的类公开（有时候子类可能也在同一个包中）</p></li>
+<li><p><code>private</code>：只有类本身可以访问，不对外公开</p></li>
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>修饰符</th>
 <th>本类</th>
 <th>同一个包</th>
@@ -482,28 +455,28 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>public</td>
 <td>√</td>
 <td>√</td>
 <td>√</td>
 <td>√</td>
 </tr>
-<tr>
+<tr class="even">
 <td>protected</td>
 <td>√</td>
 <td>√</td>
 <td>√</td>
 <td>×</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>默认</td>
 <td>√</td>
 <td>√</td>
 <td>×</td>
 <td>×</td>
 </tr>
-<tr>
+<tr class="even">
 <td>private</td>
 <td>√</td>
 <td>×</td>
@@ -514,43 +487,28 @@
 </table>
 <p>使用细节：</p>
 <ul>
-<li>
-<p>修饰符可以用来修饰类中的属性，成员方法以及类本身</p>
-</li>
-<li>
-<p>对于类本身来说，只能使用两种 默认和public，并且遵循上述访问权限的特点</p>
-</li>
+<li><p>修饰符可以用来修饰类中的属性，成员方法以及类本身</p></li>
+<li><p>对于类本身来说，只能使用两种
+默认和public，并且遵循上述访问权限的特点</p></li>
 </ul>
-<h2 id="5-静态变量和类方法">5.静态变量和类方法</h2>
-<h3 id="类变量（静态变量）">类变量（静态变量）</h3>
+<h2 id="静态变量和类方法">5.静态变量和类方法</h2>
+<h3 id="类变量静态变量">类变量（静态变量）</h3>
 <p>对于一个类来说，静态变量是所有类的实例所共享的，使用<code>static</code>来修饰</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Child</span>&#123;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> count;<span class="hljs-comment">//被Child的所有实例所共享</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<ol>
-<li>
-<p>访问修饰符的规则与前面相同</p>
-</li>
-<li>
-<p>实例和类名都可以对静态属性进行访问，建议使用类名来进行访问</p>
-</li>
-<li>
-<p>静态变量的初值</p>
+<ol type="1">
+<li><p>访问修饰符的规则与前面相同</p></li>
+<li><p>实例和类名都可以对静态属性进行访问，建议使用类名来进行访问</p></li>
+<li><p>静态变量的初值</p>
 <ul>
-<li>
-<p>可以在类中直接赋值</p>
-</li>
-<li>
-<p>可以使用static代码块进行初值定义</p>
-</li>
-<li>
-<p>如果都没有，则是默认值</p>
-</li>
+<li><p>可以在类中直接赋值</p></li>
+<li><p>可以使用static代码块进行初值定义</p></li>
+<li><p>如果都没有，则是默认值</p></li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> &#123;<br>    <span class="hljs-comment">//方法1，在类中直接赋值，id = 1</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <br>    <span class="hljs-comment">//方法2，在static代码块中赋初值，id = 2</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">static</span> &#123;<br>        id = <span class="hljs-number">1</span>;<br>    &#125;<br>    <br>    <span class="hljs-comment">//方法3，不写，为默认值 id = 0</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> id;<br>&#125;<br></code></pre></td></tr></table></figure>
-</li>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> &#123;<br>    <span class="hljs-comment">//方法1，在类中直接赋值，id = 1</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <br>    <span class="hljs-comment">//方法2，在static代码块中赋初值，id = 2</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">static</span> &#123;<br>        id = <span class="hljs-number">1</span>;<br>    &#125;<br>    <br>    <span class="hljs-comment">//方法3，不写，为默认值 id = 0</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> id;<br>&#125;<br></code></pre></td></tr></table></figure></li>
 </ol>
-<h3 id="类方法（静态方法）">类方法（静态方法）</h3>
+<h3 id="类方法静态方法">类方法（静态方法）</h3>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">访问修饰符 <span class="hljs-keyword">static</span> 数据返回类型 方法名()&#123;&#125;<br></code></pre></td></tr></table></figure>
-<ol>
+<ol type="1">
 <li>当方法中不涉及到任何和对象实例相关的成员，不生成实例也可以使用，则可以将方法设计成静态方法，提高开发效率</li>
 <li>在实际设计的时候，往往将一些通用方法设计成静态方法，例如打印数组，排序等方法（工具类）</li>
 <li>类方法和普通方法都是随着类的加载而加载，将结构信息存储在方法区</li>
@@ -564,30 +522,22 @@
 <p>main方法的形式：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;&#125;<br></code></pre></td></tr></table></figure>
 <p>理解：</p>
-<ol>
-<li>
-<p>main()方法是由Java虚拟机来进行调用的，所以该方法的访问权限必须<strong>pubilc</strong></p>
-</li>
-<li>
-<p>Java虚拟机在执行main方法的时候不需要创建对象，所以是类方法<strong>static</strong></p>
-</li>
-<li>
-<p>接收String类型的数组参数，该数组中保存执行Java命令的时候传递给所运行的类的参数</p>
-</li>
-<li>
-<p>在main方法中，我们可以直接调用main方法所在类的静态方法或静态属性；但是不能直接访问该类中的非静态成员，必须创建该类的一个实例对象之后才能通过这个对象去访问类中的非静态成员</p>
-</li>
+<ol type="1">
+<li><p>main()方法是由Java虚拟机来进行调用的，所以该方法的访问权限必须<strong>pubilc</strong></p></li>
+<li><p>Java虚拟机在执行main方法的时候不需要创建对象，所以是类方法<strong>static</strong></p></li>
+<li><p>接收String类型的数组参数，该数组中保存执行Java命令的时候传递给所运行的类的参数</p></li>
+<li><p>在main方法中，我们可以直接调用main方法所在类的静态方法或静态属性；但是不能直接访问该类中的非静态成员，必须创建该类的一个实例对象之后才能通过这个对象去访问类中的非静态成员</p></li>
 </ol>
 <blockquote>
 <p>IDEA main函数动态传值：Program arguments</p>
 </blockquote>
 <h3 id="工厂方法">工厂方法</h3>
 <p>静态方法的另外一种常见用途就是工厂方法，使用静态工厂方法来构造对象。构造对象可以通过构造器来完成，而工厂方法可以提供更多选择，更多类型的构造方式。</p>
-<h2 id="6-代码块">6.代码块</h2>
+<h2 id="代码块">6.代码块</h2>
 <p>代码块：又称为初始化块，是类的一部分，类似于方法但是没有方法名，没有返回也没有参数，只有方法体。代码块不需要通过对象和类显式调用，而是在加载类，或创建对象的时候隐式调用</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">[修饰符]&#123;代码块体&#125;;<br></code></pre></td></tr></table></figure>
 <p>细节：</p>
-<ol>
+<ol type="1">
 <li>修饰符可选，但是只能写static</li>
 <li>有static的为静态代码块、没有static的为普通代码块</li>
 <li>静态代码块只会在类加载的时候调用一次（<strong>对类进行初始化</strong>）</li>
@@ -599,7 +549,7 @@
 </ol>
 <blockquote>
 <p>类被加载的时机：</p>
-<ol>
+<ol type="1">
 <li>创建对象实例的时候（new）</li>
 <li>创建子类对象实例，父类也会被加载</li>
 <li>使用类的静态成员的时候</li>
@@ -607,7 +557,7 @@
 </blockquote>
 <blockquote>
 <p><strong>创建一个对象的时候，在一个类中的执行情况</strong>：</p>
-<ol>
+<ol type="1">
 <li>调用静态代码块和静态属性初始化（两种初始化调用的优先级相同，按照执行顺序调用）</li>
 <li>调用普通代码块和普通属性初始化（两种初始化调用的优先级相同，按照执行顺序调用）</li>
 <li>调用构造器</li>
@@ -616,7 +566,7 @@
 <blockquote>
 <p><strong>创建一个子类对象的时候，类中的执行情况：</strong></p>
 <p>（父类加载、子类加载、父类创建、子类创建）</p>
-<ol>
+<ol type="1">
 <li>父类的静态代码块和静态属性</li>
 <li>子类的静态代码块和静态属性</li>
 <li>父类的普通代码块和普通属性</li>
@@ -625,18 +575,18 @@
 <li>子类的构造方法</li>
 </ol>
 </blockquote>
-<h2 id="7-JAR文件">7.JAR文件</h2>
+<h2 id="jar文件">7.JAR文件</h2>
 <p>在将应用程序打包的时候，我们希望只向用户提供一个单独的文件，而不是一个包含大量类文件的目录结构。Java归档文件(JAR)就是为此目的而设计的。一个JAR文件可以包含类文件，也可以包含诸如图像、声音等其他类型的文件。JAR文件采用ZIP压缩格式。</p>
-<h1>面向对象特性</h1>
-<h2 id="1-封装">1.封装</h2>
+<h1 id="面向对象特性">面向对象特性</h1>
+<h2 id="封装">1.封装</h2>
 <p>封装（encapsulation）：黑盒，内部细节隐藏。对数据进行验证，保证安全合理</p>
 <p>封装实现的步骤：</p>
-<ol>
+<ol type="1">
 <li>将属性进行私有化private，不能直接修改属性</li>
 <li>提供一个公共的public的<strong>set</strong>方法，进行对属性的设置赋值</li>
 <li>提供一个公共的public的<strong>get</strong>方法，进行对属性的值获取</li>
 </ol>
-<h2 id="2-继承">2.继承</h2>
+<h2 id="继承">2.继承</h2>
 <p>继承（extends）的必要性：提高代码复用，扩展性</p>
 <p>继承的基本语法<code>extends</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">class 子类 extends 父类&#123;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -646,81 +596,79 @@
 <li>子类又可以叫做 派生类</li>
 </ul>
 <p>继承的细节：</p>
-<ol>
+<ol type="1">
 <li>子类继承了所有的属性和方法，但是私有属性和方法不能在子类中直接访问（可以通过间接方法public访问）</li>
 <li>子类必须调用父类的构造器，完成父类的初始化</li>
 <li>当创建子类对象的时候，不管使用子类的哪一个构造器，<strong>默认情况下都会先调用父类的无参构造器</strong>。
 <ul>
 <li>默认有一个<code>super()</code>，默认调用父类的无参构造器</li>
-</ul>
-</li>
+</ul></li>
 <li>如果父类没有提供无参构造器，则必须在子类的构造器中<strong>使用<code>super</code>关键字来指定使用父类的哪一个构造器</strong>来完成对父类的初始化，否则编译报错
 <ul>
 <li><code>super(参数列表)</code>即表示调用父类对应的构造器</li>
 <li>super在使用的时候，必须要放在构造器的第一行</li>
 <li><strong><code>super()</code>和<code>this()</code>都必须要放在构造器的第一行，所以这两个方法不能存在于同一个构造器内</strong></li>
-</ul>
-</li>
+</ul></li>
 <li>java所有类都是Object类的子类，Object类是所有类的基类</li>
 <li>父类构造器的调用（super）不限于直接父类，可以一直向上追溯直到Object类（顶级父类）</li>
 <li>子类最多只能继承一个父类（直接继承），即Java中是<strong>单继承</strong>的机制
 <ul>
 <li>如果想让A类继承B类和C类，构造继承链条<code>A-&gt;B-&gt;C</code></li>
-</ul>
-</li>
+</ul></li>
 <li>不能滥用继承，子类和父类之间应该要满足IsA的逻辑关系</li>
 </ol>
 <p><strong>继承的本质</strong>：</p>
 <p>当子类对象创建好了之后，其实在内存中会保存一种子类和父类之间的查找关系。子类对象创建的时候，首先会从Object加载开始加载该子类的所有父类信息，然后子类对应的堆内存中保存了自己所有父类的变量空间，即使父类之间存在相同属性，也不会进行空间的覆盖。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//继承关系：Son -&gt; Father -&gt; GrandPa</span><br><span class="hljs-keyword">public</span> GrandPa&#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;GrandPa&quot;</span>;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">hobby</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;traval&quot;</span>;<br>&#125;<br><span class="hljs-keyword">public</span> Father&#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Father&quot;</span>;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">age</span> <span class="hljs-operator">=</span> <span class="hljs-number">40</span>;<br>&#125;<br><span class="hljs-keyword">public</span> Son&#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Son&quot;</span>;<br>    <span class="hljs-type">double</span> <span class="hljs-variable">height</span> <span class="hljs-operator">=</span> <span class="hljs-number">1.70</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>使用<code>son.</code>来进行属性的访问过程：</p>
-<ol>
+<ol type="1">
 <li>首先看子类是否具有该属性</li>
 <li>如果子类具有该属性并且可以访问（访问修饰符的作用），那么就返回该信息，<strong>如果不能访问就直接报错而不会再往下面找</strong></li>
 <li>如果子类没有这个属性，就看父类有没有，按照规则逐级向上，直到找到一个或者哪里都找不到报错</li>
 </ol>
 <p><strong>super关键字</strong>：super代表父类的引用，可以用于访问父类的属性、方法和构造器</p>
-<p>基本语法：<code>super.属性</code> <code>super.方法</code> <code>super(参数列表)</code></p>
-<ol>
+<p>基本语法：<code>super.属性</code> <code>super.方法</code>
+<code>super(参数列表)</code></p>
+<ol type="1">
 <li>可以访问父类的属性和方法（受访问控制符限制）</li>
 <li>可以访问父类的构造器</li>
 </ol>
 <p>使用细节：</p>
-<ol>
+<ol type="1">
 <li>调用父类构造器的好处，达到分工明确的效果（父类属性父类初始化、子类属性子类初始化）</li>
 <li>当子类和父类存在同名的成员的时候，为了访问父类的成员必须使用<code>super</code>
 <ul>
 <li><strong>如果不存在同名，则super、this和直接访问是一样的效果</strong></li>
-</ul>
-</li>
+</ul></li>
 <li>super的访问不限于直接父类，如果爷爷类和本类中具有同名的成员，也可以使用super去访问爷爷类中的成员；如果多个父类（上级类）中都有同名的成员，使用super访问按照就近原则进行</li>
 </ol>
 <p>super和this的比较：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>区别点</th>
 <th>this</th>
 <th>super</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>访问属性</td>
 <td>访问本类中的属性，如果没有再从父类中进行查找</td>
 <td>直接访问父类中的属性</td>
 </tr>
-<tr>
+<tr class="even">
 <td>调用方法</td>
 <td>访问本类中的方法，如果没有再从父类中进行查找</td>
 <td>直接访问父类中的方法</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>调用构造器</td>
 <td>调用本类构造器，必须放在构造器的首行</td>
 <td>调用父类构造器，必须放在子类构造器的首行</td>
 </tr>
-<tr>
+<tr class="even">
 <td>特殊</td>
 <td>表示当前对象</td>
 <td>用于子类中访问父类对象</td>
@@ -729,12 +677,12 @@
 </table>
 <p><strong>方法重写/覆盖</strong>（override）：</p>
 <p>简单来说，方法重写就是子类有一个方法和父类的某个方法的名称、返回类型和参数等都一样，我们就说子类的这个方法覆盖了父类的那个方法（<strong>但是并不是完全覆盖，父类的方法并没有消失，通过super仍然可以访问到</strong>）</p>
-<ol>
+<ol type="1">
 <li>子类的方法的参数、方法名称要和父类的参数，方法名称完全一样</li>
 <li>子类的返回类型和父类的返回类型一样，或者是父类的返回类型的子类（eg：父类的返回类型是Object、子类的返回类型是String，这种情况也可以，即<strong>返回类型也要是子类</strong>）</li>
 <li>访问控制符不需要完全相同，但是<strong>子类方法不能缩小父类方法的访问权限</strong></li>
 </ol>
-<h2 id="3-多态">3.多态</h2>
+<h2 id="多态">3.多态</h2>
 <p>多态（polymorphic）：代码复用，代码维护</p>
 <ul>
 <li>方法或者对象具有多种形态，称之为多态。多态是建立在封装和继承的基础之上的</li>
@@ -742,11 +690,10 @@
 <ul>
 <li>方法的多态：重写和重载体现多态</li>
 <li>对象的多态：<strong>多态的核心</strong></li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>对象的多态：<strong>可以让父类的引用指向子类的对象</strong></p>
-<ol>
+<ol type="1">
 <li>一个对象的<strong>编译类型</strong>和<strong>运行类型</strong>可以不一致</li>
 <li>编译类型在定义对象的时候就去确定了，不能改变</li>
 <li>运行类型是可以变化的（体现多态）</li>
@@ -754,102 +701,72 @@
 </ol>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Animal</span> <span class="hljs-variable">animal</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Dog</span>();<span class="hljs-comment">//animal的编译类型是Animal，运行类型是Dog</span><br>animal = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>();<span class="hljs-comment">//animal的运行类型变成了Cat，但是编译类型仍然是Animal</span><br></code></pre></td></tr></table></figure>
 <p>多态的细节：</p>
-<ol>
-<li>
-<p>多态的前提是：<strong>两个类之间是存在继承关系的</strong></p>
-</li>
-<li>
-<p>多态的向上转型：</p>
+<ol type="1">
+<li><p>多态的前提是：<strong>两个类之间是存在继承关系的</strong></p></li>
+<li><p>多态的向上转型：</p>
 <ul>
-<li>
-<p>本质：父类的引用指向了子类的对象（子类向上转型成为父类，不限于直接父类）</p>
-</li>
-<li>
-<p>语法：<code>父类类型 引用名称 = new 子类类型();</code></p>
-</li>
-<li>
-<p>特点：</p>
+<li><p>本质：父类的引用指向了子类的对象（子类向上转型成为父类，不限于直接父类）</p></li>
+<li><p>语法：<code>父类类型 引用名称 = new 子类类型();</code></p></li>
+<li><p>特点：</p>
 <ul>
 <li>编译类型看左边，运行类型看右边</li>
 <li>可以调用父类中的所有成员（遵循访问权限）</li>
 <li>不能调用子类中的特有成员（在编译的时候能够调用哪些成员是看编译类型）</li>
 <li>最终执行效果以子类中（运行类型）的实现为主</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>多态的向下转型：</p>
+</ul></li>
+</ul></li>
+<li><p>多态的向下转型：</p>
 <ul>
-<li>
-<p>本质：当前对象向下转型成为与运行类型相同的类型</p>
-</li>
-<li>
-<p>语法：<code>子类类型 引用名称 = (子类类型) 父类引用名称;</code></p>
-</li>
-<li>
-<p>特点：只能强转父类的引用，不能强转父类的对象；</p>
-<p>​			要求父类的引用必须指向的是当前目标类型的对象；（运行类型和目标类型相同）</p>
-<p>​			可以调用子类类型中的所有成员；</p>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>直接调用属性的时候，看的是编译类型中的实现</strong></p>
-</li>
-<li>
-<p><code>instanceOf</code>操作符：用于判断对象的类型（运行类型）是否为某某类型或者某某类型的子类型</p>
+<li><p>本质：当前对象向下转型成为与运行类型相同的类型</p></li>
+<li><p>语法：<code>子类类型 引用名称 = (子类类型) 父类引用名称;</code></p></li>
+<li><p>特点：只能强转父类的引用，不能强转父类的对象；</p>
+<p>​
+要求父类的引用必须指向的是当前目标类型的对象；（运行类型和目标类型相同）</p>
+<p>​ 可以调用子类类型中的所有成员；</p></li>
+</ul></li>
+<li><p><strong>直接调用属性的时候，看的是编译类型中的实现</strong></p></li>
+<li><p><code>instanceOf</code>操作符：用于判断对象的类型（运行类型）是否为某某类型或者某某类型的子类型</p>
 <ul>
 <li>在将父类强制转换成子类之前，应该使用instancof进行检查</li>
-</ul>
-</li>
+</ul></li>
 </ol>
 <p><strong>动态绑定机制</strong></p>
 <ul>
-<li>
-<p>当调用<strong>对象方法</strong>的时候，<strong>具有动态绑定机制</strong>，该方法会和该对象的内存地址/运行类型绑定</p>
+<li><p>当调用<strong>对象方法</strong>的时候，<strong>具有动态绑定机制</strong>，该方法会和该对象的内存地址/运行类型绑定</p>
 <ul>
 <li>如果是private、static、final方法或者构造器，那么编译器将可以准确地知道应该调用哪个方法，这称为静态绑定</li>
+</ul></li>
+<li><p>当调用<strong>对象属性</strong>的时候，<strong>没有动态绑定机制</strong>，哪里声明，哪里使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getI</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> i;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">sum1</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> i + <span class="hljs-number">10</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">sum2</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> getI() + <span class="hljs-number">10</span>;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">A</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">20</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getI</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> i;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>如果使用b去调用sum1()方法，里面的i使用的是父类里的i</p></li>
+<li><p>如果使用b去调用sum2()方法，里面的getI()方法使用的是子类里面的getI()方法</p></li>
 </ul>
-</li>
-<li>
-<p>当调用<strong>对象属性</strong>的时候，<strong>没有动态绑定机制</strong>，哪里声明，哪里使用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getI</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> i;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">sum1</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> i + <span class="hljs-number">10</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">sum2</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> getI() + <span class="hljs-number">10</span>;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">A</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">20</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getI</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> i;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>如果使用b去调用sum1()方法，里面的i使用的是父类里的i</p>
-</li>
-<li>
-<p>如果使用b去调用sum2()方法，里面的getI()方法使用的是子类里面的getI()方法</p>
-</li>
-</ul>
-<h1>面向对象补充</h1>
-<h2 id="1-final关键字">1.final关键字</h2>
+<h1 id="面向对象补充">面向对象补充</h1>
+<h2 id="final关键字">1.final关键字</h2>
 <p>final：修饰关键字，可以用来修饰类、属性、方法和局部变量</p>
 <p>使用到final的一些情况：</p>
-<ol>
+<ol type="1">
 <li>当不希望类被继承的时候，使用final修饰</li>
 <li>当不希望父类的某个方法被子类覆盖或者重写（override）的时候，使用final修饰</li>
 <li>当不希望类的某个属性的值被修改，使用final修饰</li>
 <li>当不希望某个局部变量的值被修改，使用final修饰</li>
 </ol>
 <p>final使用细节：</p>
-<ol>
+<ol type="1">
 <li>final修饰的属性又称为常量，用大写+下划线来命名</li>
 <li>final修饰的属性在定义的时候必须赋初值，并且不能修改，赋初值的位置有
 <ul>
 <li>定义时</li>
 <li>在构造器中</li>
 <li>在代码块中</li>
-</ul>
-</li>
+</ul></li>
 <li>如果final修饰的属性是静态的，则赋初值的位置只能是定义时或者静态代码块中</li>
 <li>如果类已经被声明了final，其中的方法就没必要再用final了</li>
 <li>final不能修饰构造方法</li>
 <li>final和static往往搭配使用，效率更高，调用该属性的时候不会使得类加载。（底层编译器实现了优化）</li>
-<li>包装类（Boolean，Integer…）和String类都是final的</li>
+<li>包装类（Boolean，Integer...）和String类都是final的</li>
 </ol>
-<h2 id="2-抽象类">2.抽象类</h2>
+<h2 id="抽象类">2.抽象类</h2>
 <p>应用场景引出：当父类的某些方法需要声明但是又不确定该如何实现，可以将其声明为抽象方法，此时这个类就是抽象类</p>
 <p>抽象方法的声明：（抽象方法没有实现，即没有方法体，空的也不行）</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">xxx</span>&#123;<br>访问修饰符 <span class="hljs-keyword">abstract</span> 返回类型 方法名称();<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -857,77 +774,64 @@
 <li>使用了<code>abstract</code>声明了抽象方法，此时类也需要使用<code>abstract</code>来声明</li>
 </ul>
 <p>使用细节：</p>
-<ol>
-<li>
-<p>抽象类不能被实例化（new）</p>
-</li>
-<li>
-<p>可以定义一个抽象类的对象变量</p>
+<ol type="1">
+<li><p>抽象类不能被实例化（new）</p></li>
+<li><p>可以定义一个抽象类的对象变量</p>
 <blockquote>
 <p>举例来说，Person是一个抽象类，Student继承了Person并实现了其中的抽象方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(); <span class="hljs-comment">// 错误</span><br><span class="hljs-type">Person</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Student</span>(); <span class="hljs-comment">// 正确</span><br></code></pre></td></tr></table></figure>
-</blockquote>
-</li>
-<li>
-<p><strong>抽象类不一定要包含abstract方法</strong></p>
-</li>
-<li>
-<p><code>abstract</code>只能用来修饰类或者方法</p>
-</li>
-<li>
-<p>抽象类的本质还是类，可以拥有任何应有的成员</p>
-</li>
-<li>
-<p>如果一个类继承了抽象类，<strong>则必须实现抽象类中的所有抽象方法，或者自己也声明成abstract类</strong></p>
-</li>
-<li>
-<p><strong>抽象方法不能使用private、final和static来修饰，因为这些关键字都是和重写相违背的</strong></p>
-</li>
+</blockquote></li>
+<li><p><strong>抽象类不一定要包含abstract方法</strong></p></li>
+<li><p><code>abstract</code>只能用来修饰类或者方法</p></li>
+<li><p>抽象类的本质还是类，可以拥有任何应有的成员</p></li>
+<li><p>如果一个类继承了抽象类，<strong>则必须实现抽象类中的所有抽象方法，或者自己也声明成abstract类</strong></p></li>
+<li><p><strong>抽象方法不能使用private、final和static来修饰，因为这些关键字都是和重写相违背的</strong></p></li>
 </ol>
-<h2 id="3-Object类的详解">3.Object类的详解</h2>
+<h2 id="object类的详解">3.Object类的详解</h2>
 <p>Object类是Java中所有类的始祖，在Java中每个类都扩展了Object，但是不需要显式地写出。如果没有明确地指出父类，那么就认为Object是这个类的超类</p>
 <p>Object方法摘要：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法名</th>
 <th>方法说明</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>clone()</td>
 <td>创建并返回此对象的一个副本</td>
 </tr>
-<tr>
+<tr class="even">
 <td>equals()</td>
 <td>指示其他某个对象是否与此对象相等</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>finalize()</td>
 <td>当GC确定不存在对该对象的更多引用的时候，由对象的垃圾回收机制调用</td>
 </tr>
-<tr>
+<tr class="even">
 <td>getClass()</td>
 <td>返回此Object的运行时类</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>hashCode()</td>
 <td>返回该对象的哈希码</td>
 </tr>
-<tr>
+<tr class="even">
 <td>notify()</td>
 <td>唤醒在此对象监视器上等待的单个线程</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>notifyAll()</td>
 <td>唤醒在此对象监视器上等待的所有线程</td>
 </tr>
-<tr>
+<tr class="even">
 <td>toString()</td>
 <td>返回该对象的字符串表示</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>wait()</td>
 <td>线程等待</td>
 </tr>
@@ -938,16 +842,17 @@
 <blockquote>
 <p>==和equals的对比：</p>
 <p>==是一个比较运算符：</p>
-<ol>
+<ol type="1">
 <li>==既可以判断基本类型，又可以判断引用类型</li>
 <li>如果是判断基本类型，那么就比较<strong>值</strong>是否相等</li>
 <li>如果是判断引用类型，那么就判断<strong>地址</strong>的值是否相等，即判断是否是一个同一个对象</li>
 </ol>
 </blockquote>
 <p>Java语言规范要求equals方法具有下面的特性：</p>
-<ol>
+<ol type="1">
 <li>自反性：对于任何非空应用x，x.equals(x)应该返回true</li>
-<li>对称性：对于任何引用x和y，应该有y.equals(x) <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⇔</mo></mrow><annotation encoding="application/x-tex">\Leftrightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">⇔</span></span></span></span> x.equals(y)</li>
+<li>对称性：对于任何引用x和y，应该有y.equals(x) <span
+class="math inline">\(\Leftrightarrow\)</span> x.equals(y)</li>
 <li>传递性：对于任何引用x，y和z，如果x.equals(y)返回true，y.equals(z)返回true，那么x.equals(z)也要返回true</li>
 <li>一致性：如果x和y引用的对象没有发生变化，反复调用x.equal(y)应该返回相同的结果</li>
 <li>对于任意非空引用x，x.equals(null)应该返回false</li>
@@ -956,7 +861,7 @@
 <p>在重写Object中的equals方法的时候，一个常见的错误是定义的形参类型不是Object，这样的话是没有进行方法的重写，而是定义了一个完全无关的方法。因此在重写的时候可以增加注解<code>@Override</code>来进行检查</p>
 </blockquote>
 <p><code>hashCode</code>方法：返回该对象的哈希码</p>
-<ol>
+<ol type="1">
 <li>用于提高具有哈希结构的容器的效率</li>
 <li>两个引用，如果指向的是同一个对象，则哈希值肯定是一样的</li>
 <li>两个引用，如果指向的是不同对象，则哈希值是不一样的（不严谨，可能存在冲突）</li>
@@ -965,58 +870,59 @@
 <li>如果重写了equals方法，那么也需要重写hashCode方法</li>
 </ol>
 <p><code>toString</code>方法：返回该对象的字符串表示</p>
-<ol>
-<li>默认返回<code>全类名@哈希值的十六进制表示</code>（全类名 = 包名 + 类名）</li>
+<ol type="1">
+<li>默认返回<code>全类名@哈希值的十六进制表示</code>（全类名 = 包名 +
+类名）</li>
 <li>子类往往重写toString方法，用于返回对象的属性信息（一般情况下是这样，并且IDEA中有生成的快捷键）</li>
 <li>重写toString方法，打印对象或者拼接对象的时候，都会自动调用该对象的toString形式</li>
 <li>当直接输出一个对象的时候，toString方法会被默认调用</li>
 </ol>
 <p><code>finalize</code>方法：垃圾回收的时候会被调用（<em>已经被废弃</em>）</p>
-<ol>
+<ol type="1">
 <li>当对象被回收的时候，系统会自动调用该对象的finalize方法。</li>
 <li>子类可以重写该方法，做一些释放资源的操作</li>
 <li>当某个对象没有任何引用的时候，JVM就认为这个对象是垃圾对象，就会使用垃圾回收机制来销毁该对象。在销毁该对象之前，会调用该对象的finalize方法</li>
 <li>垃圾回收机制的调用是由系统来决定的，也可以通过<code>System.gc()</code>来主动触发垃圾回收机制（也不一定绝对成功）</li>
 </ol>
-<h2 id="4-包装类与自动装箱">4.包装类与自动装箱</h2>
+<h2 id="包装类与自动装箱">4.包装类与自动装箱</h2>
 <p>包装类（Wrapper）：所有的基本类型都有一个与之对应的类，这些类被成为包装器。这些包装器类是不可变的，一旦构造了包装器，就不允许更改其中的值。同时包装器类还是final，因此不能派生它们的子类</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>基本数据类型</th>
 <th>包装类</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>boolean</td>
 <td>Boolean</td>
 </tr>
-<tr>
+<tr class="even">
 <td>char</td>
 <td>Character</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>byte</td>
 <td>Byte</td>
 </tr>
-<tr>
+<tr class="even">
 <td>short</td>
 <td>Short</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>int</td>
 <td>Integer</td>
 </tr>
-<tr>
+<tr class="even">
 <td>long</td>
 <td>Long</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>float</td>
 <td>Float</td>
 </tr>
-<tr>
+<tr class="even">
 <td>double</td>
 <td>Double</td>
 </tr>
@@ -1049,55 +955,55 @@
 <p><strong>包装类的常用方法</strong>：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>方法名（部分为属性名）</th>
 <th>功能</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>MIN_VALUE</td>
 <td>返回最大值</td>
 </tr>
-<tr>
+<tr class="even">
 <td>MAX_VALUE</td>
 <td>返回最小值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>isDigt()</td>
 <td>判断是否是数字</td>
 </tr>
-<tr>
+<tr class="even">
 <td>isLetter()</td>
 <td>判断是否是字母</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>isUpperCase()</td>
 <td>判断是否是大写</td>
 </tr>
-<tr>
+<tr class="even">
 <td>isLowerCase()</td>
 <td>判断是否是小写</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>isWhitespace()</td>
 <td>判断是否是空格</td>
 </tr>
-<tr>
+<tr class="even">
 <td>toUpperCase()</td>
 <td>转成大写</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>toLowerCase()</td>
 <td>转成小写</td>
 </tr>
 </tbody>
 </table>
-<h2 id="5-枚举类">5.枚举类</h2>
+<h2 id="枚举类">5.枚举类</h2>
 <p>枚举（enumeration、enum）：枚举是一组常量的集合，枚举属于一种特殊的类，里面包含一组特定的有限的对象。实现枚举的两种方式有自定义枚举类实现，以及使用关键字<code>enum</code>。</p>
 <blockquote>
 <p>我们可以自定义实现一个类来达到枚举类的效果：</p>
-<ol>
+<ol type="1">
 <li>将构造器私有化，防止外部直接调用new</li>
 <li>删除set相关方法（防止属性被修改，保证只读）</li>
 <li>在类内部直接创建固定的对象（枚举变量名通常大写，遵循常量的命名规范）</li>
@@ -1106,12 +1012,12 @@
 </blockquote>
 <p>当然在Java中有枚举类的实现，使用<code>enum</code>关键字即可。枚举类的实例都事先定义了，如下面的枚举类只有四个实例。因此在比较两个枚举类的值的时候，并不需要调用equals，直接使用<code>==</code>即可。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">Season</span> &#123;<br>    SPRING(<span class="hljs-string">&quot;春天&quot;</span>),SUMMER(<span class="hljs-string">&quot;夏天&quot;</span>),AUTUMN(<span class="hljs-string">&quot;秋天&quot;</span>),WINATER(<span class="hljs-string">&quot;冬天&quot;</span>);<br>    <br>    <span class="hljs-keyword">private</span> String name;<br>    <br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">Season</span><span class="hljs-params">(String name)</span>&#123;<span class="hljs-built_in">this</span>.name = name;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<ol>
+<ol type="1">
 <li>使用关键字<code>enum</code>替代class</li>
 <li>使用<code>常量名(实参列表)</code>代替手动new的固定对象</li>
 </ol>
 <p>枚举类的注意事项：</p>
-<ol>
+<ol type="1">
 <li>当使用<code>enum</code>的时候开发枚举类的时候，<strong>会默认继承一个名称为Enum的类</strong>，而且枚举类是一个final类</li>
 <li>如果使用无参构造器，那么括号可以省略</li>
 <li>如果有多个常量对象，使用<code>,</code>间隔</li>
@@ -1122,92 +1028,90 @@
 </ol>
 <p>所有的枚举类型都是Enum类的子类，因此继承了这个类的许多方法。</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>成员函数</th>
 <th>函数说明</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>toString</td>
 <td>Enum类中已经重写了，返回当前对象名。子类可以重写该方法</td>
 </tr>
-<tr>
+<tr class="even">
 <td>name</td>
 <td>返回当前对象名（常量名），子类不能重写（final）</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>ordinal</td>
 <td>返回当前对象的位置号，默认从0开始</td>
 </tr>
-<tr>
+<tr class="even">
 <td>values</td>
 <td>返回当前枚举类中的所有常量（不是常量名）</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>valueOf</td>
 <td>将字符串转换成枚举对象，要求字符串必须为已有的常量名，否则报异常</td>
 </tr>
-<tr>
+<tr class="even">
 <td>compareTo</td>
-<td>比较两个枚举常量（实际比较的就是位置号，本身编号 - 传入对象的编号 ）</td>
+<td>比较两个枚举常量（实际比较的就是位置号，本身编号 - 传入对象的编号
+）</td>
 </tr>
 </tbody>
 </table>
-<h2 id="6-反射">6.反射</h2>
+<h2 id="反射">6.反射</h2>
 <h3 id="反射机制">反射机制</h3>
 <p>一个快速入门小demo：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// className = &quot;cat&quot;, methodName= &quot;hi&quot; 均为字符串类型</span><br><br><span class="hljs-comment">// 1.加载类，返回Class类型的对象</span><br><span class="hljs-type">Class</span> <span class="hljs-variable">cls</span> <span class="hljs-operator">=</span> Class.forName(className);<br><br><span class="hljs-comment">// 2.通过cls得到所加载的对象实例</span><br><span class="hljs-type">Object</span> <span class="hljs-variable">o</span> <span class="hljs-operator">=</span> cls.newInstance();<br><br><span class="hljs-comment">// 3.通过cls得到对应加载类的Method对象，即在反射中，可以把方法视为对象</span><br><span class="hljs-type">Method</span> <span class="hljs-variable">method1</span> <span class="hljs-operator">=</span> cls.getMethod(methodName);<br><br><span class="hljs-comment">// 4.通过method1来调用方法，通过方法对象来实现方法的调用</span><br><span class="hljs-comment">// 传统方法是 对象.方法() 在反射机制中是 方法.invoke(对象)</span><br>method1.invoke(o);<br><br><span class="hljs-comment">// 得到类中的字段</span><br><span class="hljs-type">Field</span> <span class="hljs-variable">nameField</span> <span class="hljs-operator">=</span> cls.getField(<span class="hljs-string">&quot;name&quot;</span>); <span class="hljs-comment">// 不能得到私有字段</span><br><span class="hljs-type">String</span> <span class="hljs-variable">nameValue</span> <span class="hljs-operator">=</span> nameField.get(o); <span class="hljs-comment">// 获得name字段的值</span><br></code></pre></td></tr></table></figure>
-<ol>
-<li>
-<p>反射机制允许程序在执行期间借助于Reflection API取得任何类的内部信息（比如成员变量，构造器，成员方法等），并能够操作对象的属性及方法。反射在设计模式和框架底层中都会用到</p>
-</li>
-<li>
-<p>加载完类之后，在堆中就产生了一个Class类型的对象（这是一个对象，这个对象的类型是Class，<strong>一个类只有一个Class对象</strong>）。这个对象中包含了类的完整结构信息，通过这个对象就能够的得到类的结构。这个Class对象就像一面镜子，透过这个镜子能够看到类的结构</p>
-</li>
-<li>
-<p>通过反射机制可以完成</p>
+<ol type="1">
+<li><p>反射机制允许程序在执行期间借助于Reflection
+API取得任何类的内部信息（比如成员变量，构造器，成员方法等），并能够操作对象的属性及方法。反射在设计模式和框架底层中都会用到</p></li>
+<li><p>加载完类之后，在堆中就产生了一个Class类型的对象（这是一个对象，这个对象的类型是Class，<strong>一个类只有一个Class对象</strong>）。这个对象中包含了类的完整结构信息，通过这个对象就能够的得到类的结构。这个Class对象就像一面镜子，透过这个镜子能够看到类的结构</p></li>
+<li><p>通过反射机制可以完成</p>
 <ul>
 <li>在运行时判断任意一个对象所属的类</li>
 <li>在运行时构造任意一个类的对象</li>
 <li>在运行时得到任意一个类所具有的成员变量和方法</li>
 <li>在运行时调用任意一个对象的成员变量和方法</li>
 <li>生成动态代理</li>
-</ul>
-</li>
+</ul></li>
 </ol>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>反射相关的主要类</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>java.lang.Class</td>
 <td>代表一个类，Class对象表示某个类加载后在堆中的对象</td>
 </tr>
-<tr>
+<tr class="even">
 <td>java.lang.reflect.Method</td>
 <td>代表类的方法，Method对象表示某个类的对象</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>java.lang.reflect.Field</td>
 <td>代表类的成员变量，Field对象表示某个类的成员变量</td>
 </tr>
-<tr>
+<tr class="even">
 <td>java.lang.reflect.Constructor</td>
 <td>代表类的构造方法，Constructor对象表示某个类的构造器</td>
 </tr>
 </tbody>
 </table>
-<h3 id="Class类">Class类</h3>
+<h3 id="class类">Class类</h3>
 <p>在程序运行期间，Java运行时系统始终为所有对象维护一个运行时类型标识。这个辛纳希会跟踪每个对象会跟踪每个对象所属的类，虚拟机利用运行时类型信息选择要执行的正确的方法。</p>
 <p>我们可以通过一个特殊的Java类来访问这些信息，即Class类。</p>
 <p><strong>基本介绍</strong>：</p>
-<ol>
+<ol type="1">
 <li>Class也是类，因此也继承Object类</li>
 <li>Class类对象不是new出来的，而是系统创建的</li>
 <li>对于某个类的Class类对象，在内存中只有一份，因为类只加载一次</li>
@@ -1216,70 +1120,69 @@
 <li>Class对象是存放在堆中的</li>
 </ol>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>Class类的常用方法</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>static Class forName(String name)</td>
 <td>返回指定类名name的Class对象</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Objecgt newInstance()</td>
 <td>调用缺省构造函数，返回该Class对象的一个实例</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>getName()</td>
-<td>返回此Class对象所对应的实体（Class、Field、Method…）名称</td>
+<td>返回此Class对象所对应的实体（Class、Field、Method...）名称</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Class getSuperClass()</td>
 <td>返回当前Class对象的父类的Class对象</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Class [] getInterfaces()</td>
 <td>获取当前Class对象的接口</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ClassLoader getClassLoader()</td>
 <td>返回该类的类加载器</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Class getSuperclass()</td>
 <td>返回表示此Class所表示的实体的超类的Class</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Constructor [] getConstructors()</td>
 <td>返回一个包含Constructor对象的数组</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Field [] getDeclaredFields()</td>
 <td>返回Field对象数组</td>
 </tr>
-<tr>
-<td>Method getMethod(String name, Class… paramTypes)</td>
+<tr class="even">
+<td>Method getMethod(String name, Class... paramTypes)</td>
 <td>返回一个Method对象，此对象的形参类型为paramType</td>
 </tr>
 </tbody>
 </table>
 <p>获取Class对象的方法：</p>
-<ol>
+<ol type="1">
 <li><code>Class.forName()</code>：已知一个类的全类名，可以通过Class类的静态方法forName获取
 <ul>
 <li>多用于配置文件加载类</li>
-</ul>
-</li>
+</ul></li>
 <li><code>类.class</code>：已知具体的类，通过该类的class获取。该方式最安全可靠，程序性能最高
 <ul>
 <li>多用于参数传递，比如通过反射得到对应的构造器对象</li>
-</ul>
-</li>
+</ul></li>
 <li><code>对象.getClass()</code>：在前面说的这是运行类型。已知对象实例，可以通过getClass方法获取</li>
 <li>从类加载器获得Class对象</li>
-<li>基本数据类型（int、double…）:<code>Class cls = int.class</code></li>
+<li>基本数据类型（int、double...）:<code>Class cls = int.class</code></li>
 <li>基本类型对应的包装类：<code>Class cls = 包装类.TYPE</code></li>
 </ol>
 <h3 id="反射应用">反射应用</h3>
@@ -1292,84 +1195,56 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; stuClass = Class.forName(<span class="hljs-string">&quot;Student&quot;</span>);<br><span class="hljs-type">Object</span> <span class="hljs-variable">o</span> <span class="hljs-operator">=</span> stuClass.newInstance();<br><br><span class="hljs-comment">// 使用反射得到pubilc属性对象</span><br><span class="hljs-type">Field</span> <span class="hljs-variable">age</span> <span class="hljs-operator">=</span> stuClass.getField(<span class="hljs-string">&quot;age&quot;</span>);<br>age.set(o, <span class="hljs-number">88</span>);<br><br><span class="hljs-comment">// 使用反射得到privare属性对象</span><br><span class="hljs-type">Field</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> stuClass.getDeclaredField(<span class="hljs-string">&quot;name&quot;</span>);<br>name.setAccessible(<span class="hljs-literal">true</span>);<br>name.set(o,<span class="hljs-string">&quot;hahaha&quot;</span>);<br></code></pre></td></tr></table></figure>
 <p>通过反射访问类中的方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; stuClass = Class.forName(<span class="hljs-string">&quot;Student&quot;</span>);<br><span class="hljs-type">Object</span> <span class="hljs-variable">o</span> <span class="hljs-operator">=</span> stuClass.newInstance();<br><br><span class="hljs-comment">// 调用pubilc的方法</span><br><span class="hljs-type">Method</span> <span class="hljs-variable">hi</span> <span class="hljs-operator">=</span> stuClass.getMethod(<span class="hljs-string">&quot;hi&quot;</span>, String.class);<br>hi.invoke(o, <span class="hljs-string">&quot;hahaha&quot;</span>);<br><br><span class="hljs-comment">// 调用private的方法</span><br><span class="hljs-type">Method</span> <span class="hljs-variable">say</span> <span class="hljs-operator">=</span> stuClass.getDeclaredMethod(<span class="hljs-string">&quot;say&quot;</span>, String.class);<br>say.setAccessible(<span class="hljs-literal">true</span>);<br>say.invoke(o, <span class="hljs-string">&quot;lalala&quot;</span>);<br><span class="hljs-comment">// 在反射中，如果方法有返回值，则统一返回Object，但运行类型与定义的返回类型一致</span><br></code></pre></td></tr></table></figure>
-<h1>面向对象高级</h1>
-<h2 id="1-接口">1.接口</h2>
+<h1 id="面向对象高级">面向对象高级</h1>
+<h2 id="接口">1.接口</h2>
 <p>一个快速入门的demo：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//接口</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">USB</span>&#123;<br>    <span class="hljs-comment">//规定接口的相关方法</span><br>    pubilc <span class="hljs-keyword">void</span> <span class="hljs-title function_">start</span><span class="hljs-params">()</span>;<br>    pubilc <span class="hljs-keyword">void</span> <span class="hljs-title function_">end</span><span class="hljs-params">()</span>;<br>&#125;<br><span class="hljs-comment">//类 实现 接口</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Phone</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">USB</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">start</span><span class="hljs-params">()</span>&#123;&#125;;<br>    <span class="hljs-meta">@override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">end</span><span class="hljs-params">()</span>&#123;&#125;;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Camara</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">USB</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">start</span><span class="hljs-params">()</span>&#123;&#125;;<br>    <span class="hljs-meta">@override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">end</span><span class="hljs-params">()</span>&#123;&#125;;<br>&#125;<br><span class="hljs-comment">//使用接口</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Computer</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">work</span><span class="hljs-params">(USB usb)</span>&#123;<br>        usb.start();<br>        usb.end();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>Phone类和Camara需要实现USB接口中的所有声明的方法</p>
-</li>
-<li>
-<p>在Computer中规定使用接口的相关方法</p>
-</li>
+<li><p>Phone类和Camara需要实现USB接口中的所有声明的方法</p></li>
+<li><p>在Computer中规定使用接口的相关方法</p></li>
 </ul>
 <p>接口（interface）：接口是用来指定规范的。接口就是给出一些没有实现的方法，将他们封装在一起，某个类要使用的时候，再根据情况把这些方法写出来。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java">interface 接口名&#123;<br>    <span class="hljs-comment">//接口属性</span><br>    <span class="hljs-comment">//接口方法</span><br>&#125;<br>class 类名 implements 接口&#123;<br>    <span class="hljs-comment">//自己的属性</span><br>    <span class="hljs-comment">//自己的方法</span><br>    <span class="hljs-comment">//必须实现的接口的抽象方法</span><br>&#125;<br></code></pre></td></tr></table></figure>
 <p>注意事项：</p>
-<ol>
+<ol type="1">
 <li>在JDK 7.0 之前，接口中的所有方法都没有方法体</li>
-<li>JDK 8.0 之后，接口类还可以有静态方法，默认方法（接口中可以有方法的具体实现）
+<li>JDK 8.0
+之后，接口类还可以有静态方法，默认方法（接口中可以有方法的具体实现）
 <ul>
 <li>默认方法需要使用<code>default</code>关键字</li>
 <li>静态方法需要使用<code>static</code>关键字</li>
 <li>其他的就是抽象方法</li>
-</ul>
-</li>
+</ul></li>
 <li>在接口中，abstract方法可以省略关键字</li>
 </ol>
 <p>接口的使用细节：</p>
-<ol>
-<li>
-<p>接口不能被实例化</p>
-</li>
-<li>
-<p><strong>接口中所有的方法默认是public方法</strong>，接口中的抽象方法可以不使用abstract来修饰</p>
-</li>
-<li>
-<p>接口方法声明的时候可以不指定为pubilc，默认是public。但是在实现接口的时候，必须把方法声明为pubilc</p>
-</li>
-<li>
-<p>一个普通类实现接口，就必须将接口的所有方法都实现</p>
-</li>
-<li>
-<p>抽象类实现接口，可以不用实现接口的方法</p>
-</li>
-<li>
-<p>一个类同时可以实现<strong>多个</strong>接口（implements多个）</p>
-</li>
-<li>
-<p>接口中的属性只能是<code>final</code>的，而且是<code>pubilc static final</code>，并且必须在定义的时候进行初始化</p>
+<ol type="1">
+<li><p>接口不能被实例化</p></li>
+<li><p><strong>接口中所有的方法默认是public方法</strong>，接口中的抽象方法可以不使用abstract来修饰</p></li>
+<li><p>接口方法声明的时候可以不指定为pubilc，默认是public。但是在实现接口的时候，必须把方法声明为pubilc</p></li>
+<li><p>一个普通类实现接口，就必须将接口的所有方法都实现</p></li>
+<li><p>抽象类实现接口，可以不用实现接口的方法</p></li>
+<li><p>一个类同时可以实现<strong>多个</strong>接口（implements多个）</p></li>
+<li><p>接口中的属性只能是<code>final</code>的，而且是<code>pubilc static final</code>，并且必须在定义的时候进行初始化</p>
 <ul>
 <li>在定义的时候可以只写<code>int a = 1</code>，但是等价于<code>public static final int a = 1</code></li>
 <li><strong>接口中的属性都是静态的</strong></li>
-</ul>
-</li>
-<li>
-<p>接口中属性的访问形式：<code>接口名称.属性名</code>（static）</p>
-</li>
-<li>
-<p>一个接口不能继承其他的类，但是可以继承<strong>多个</strong>别的接口（implements多个）</p>
-</li>
-<li>
-<p>接口的修饰符只能是public和默认，与类的修饰符相同</p>
-</li>
-<li>
-<p>接口是对Java单继承机制的一种补充</p>
+</ul></li>
+<li><p>接口中属性的访问形式：<code>接口名称.属性名</code>（static）</p></li>
+<li><p>一个接口不能继承其他的类，但是可以继承<strong>多个</strong>别的接口（implements多个）</p></li>
+<li><p>接口的修饰符只能是public和默认，与类的修饰符相同</p></li>
+<li><p>接口是对Java单继承机制的一种补充</p>
 <ul>
 <li><strong>当子类继承了父类，就自动拥有了父类的功能</strong></li>
 <li><strong>如果子类需要扩展功能，可以通过实现接口的方式来扩展</strong></li>
-</ul>
-</li>
-<li>
-<p>解决默认方法冲突（如果是抽象方法，则不存在冲突，因此一定需要实现）</p>
+</ul></li>
+<li><p>解决默认方法冲突（如果是抽象方法，则不存在冲突，因此一定需要实现）</p>
 <ul>
 <li>接口和父类冲突：父类优先</li>
 <li>接口之间冲突：由程序员在本类中实现，来消除二义性</li>
-</ul>
-</li>
+</ul></li>
 </ol>
-<h2 id="2-lambda表达式">2.lambda表达式</h2>
+<h2 id="lambda表达式">2.lambda表达式</h2>
 <p>lambda表达式是一个可传递的代码块，可以在以后执行一次或者多次。</p>
 <p>lambda表达式的语法如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">(params) -&gt; expression<br>(params) -&gt; statement<br>(params) -&gt; &#123; statements &#125;<br></code></pre></td></tr></table></figure>
@@ -1379,7 +1254,8 @@
 <li>如果只有一个参数，并且参数类型可以推导得出，那么可以省略小括号</li>
 <li>如果是使用{ }的代码块，则需要包含显式的return语句</li>
 </ul>
-<p>另一个概念是函数式接口（functional interface）。对于只有一个抽象方法的接口，当我们需要这种接口的对象时，就可以提供一个lambda表达式。这样的接口被称为函数式接口。</p>
+<p>另一个概念是函数式接口（functional
+interface）。对于只有一个抽象方法的接口，当我们需要这种接口的对象时，就可以提供一个lambda表达式。这样的接口被称为函数式接口。</p>
 <p>方法引用：</p>
 <p>有时候lambda表达式<strong>只涉及一个方法的调用</strong>，我们可以使用方法引用。方法引用指示编译器生成一个函数式接口的实例，覆盖这个接口的抽象方法，调用给定的方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">event -&gt; System.out.println(event)<br><span class="hljs-comment">// 变为方法引用</span><br>System.out::println<br></code></pre></td></tr></table></figure>
@@ -1390,7 +1266,7 @@
 <p>lambda表达式可以捕获外围作用域中变量的值，但是只能引用值不会改变的变量，不能在lambda表达式中改变外部变量。</p>
 <p>在Java中，lambda表达式就是闭包。</p>
 </blockquote>
-<h2 id="3-内部类">3.内部类</h2>
+<h2 id="内部类">3.内部类</h2>
 <p>内部类：一个类的内部又嵌套了另一个类结构。被嵌套的类称为内部类，嵌套其他类的类称为外部类。内部类是类的第五大成员（属性、方法、构造器、代码块）。内部类的最大特点就是可以直接访问私有属性，并且可以体现类与类之间的包含关系。</p>
 <p>基本语法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span>&#123;<span class="hljs-comment">//外部类</span><br>    <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span>&#123;<span class="hljs-comment">//内部类</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -1400,19 +1276,17 @@
 <ul>
 <li>局部内部类（有类名）</li>
 <li>匿名内部类（没有类名）</li>
-</ul>
-</li>
+</ul></li>
 <li>如果内部类定义在外部类的成员位置上
 <ul>
 <li>成员内部类（没有static修饰）</li>
 <li>静态内部类（有static修饰）</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p><strong>1.局部内部类</strong></p>
 <p>局部内部类：定义在外部类的局部位置，比如说方法、代码块中，并且有类名</p>
 <p>说明：</p>
-<ol>
+<ol type="1">
 <li>可以直接访问外部类的所有成员，包括私有成员</li>
 <li>局部内部类相当于一个局部变量。不能使用修饰符，但是可以使用<code>final</code>修饰</li>
 <li>作用域仅仅在定义它的方法或者代码块当中</li>
@@ -1422,53 +1296,26 @@
 <p><strong>2.匿名内部类</strong></p>
 <p>匿名内部类：定义在外部类的局部位置，比如说方法、代码块中，并且没有类名</p>
 <blockquote>
-<p>本质是类；是一个内部类；该类没有名字（没有用户命名，但是有系统命名 外部类$id）；同时还是一个对象</p>
+<p>本质是类；是一个内部类；该类没有名字（没有用户命名，但是有系统命名
+外部类$id）；同时还是一个对象</p>
 </blockquote>
 <p>说明：</p>
-<ol>
-<li>
-<p>匿名内部类的基本语法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">编译类型 xxx = <span class="hljs-keyword">new</span> 类或接口(参数列表)&#123;类体&#125;;<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>使用背景：针对那些只使用一次后面不再使用的类，使用匿名类来简化开发</p>
-</li>
-<li>
-<p><strong>这里的类或接口表示生成的匿名内部类扩展了类或者实现了接口</strong></p>
-</li>
-<li>
-<p>编译类型为对应的编译类型，运行类型为匿名内部类</p>
-</li>
-<li>
-<p>JDK底层在创建匿名内部类之后，立即就创建了实例，并且返回对应在栈中的地址</p>
-</li>
-<li>
-<p>匿名内部类不能有构造器，但是可以提供一个对象初始化块</p>
-</li>
-<li>
-<p>匿名内部类使用一次，就不再使用</p>
-</li>
-<li>
-<p>大括号里的类体是匿名内部类的全部定义</p>
-</li>
-<li>
-<p>参数列表中指定的是构造器所用的参数，正常的new中同样有参数列表</p>
-</li>
-<li>
-<p>匿名内部类，即有类的特征，又有对象的特征</p>
-</li>
-<li>
-<p>可以直接访问外部类的所有成员，包括私有成员</p>
-</li>
-<li>
-<p>局部内部类相当于一个局部变量。不能使用修饰符，但是可以使用<code>final</code>修饰</p>
-</li>
-<li>
-<p>作用域仅仅在定义它的方法或者代码块当中</p>
-</li>
-<li>
-<p>如果外部类和匿名内部类的成员重名的时候，默认遵循就近原则。如果想访问外部类的成员，可以使用<code>外部类名.this.成员</code>来进行访问</p>
-</li>
+<ol type="1">
+<li><p>匿名内部类的基本语法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">编译类型 xxx = <span class="hljs-keyword">new</span> 类或接口(参数列表)&#123;类体&#125;;<br></code></pre></td></tr></table></figure></li>
+<li><p>使用背景：针对那些只使用一次后面不再使用的类，使用匿名类来简化开发</p></li>
+<li><p><strong>这里的类或接口表示生成的匿名内部类扩展了类或者实现了接口</strong></p></li>
+<li><p>编译类型为对应的编译类型，运行类型为匿名内部类</p></li>
+<li><p>JDK底层在创建匿名内部类之后，立即就创建了实例，并且返回对应在栈中的地址</p></li>
+<li><p>匿名内部类不能有构造器，但是可以提供一个对象初始化块</p></li>
+<li><p>匿名内部类使用一次，就不再使用</p></li>
+<li><p>大括号里的类体是匿名内部类的全部定义</p></li>
+<li><p>参数列表中指定的是构造器所用的参数，正常的new中同样有参数列表</p></li>
+<li><p>匿名内部类，即有类的特征，又有对象的特征</p></li>
+<li><p>可以直接访问外部类的所有成员，包括私有成员</p></li>
+<li><p>局部内部类相当于一个局部变量。不能使用修饰符，但是可以使用<code>final</code>修饰</p></li>
+<li><p>作用域仅仅在定义它的方法或者代码块当中</p></li>
+<li><p>如果外部类和匿名内部类的成员重名的时候，默认遵循就近原则。如果想访问外部类的成员，可以使用<code>外部类名.this.成员</code>来进行访问</p></li>
 </ol>
 <blockquote>
 <p>经典使用场景：将匿名内部类直接当作实参进行传递</p>
@@ -1476,79 +1323,39 @@
 <p><strong>3.成员内部类</strong></p>
 <p>成员内部类：定义在外部类的成员位置，并且没有static修饰</p>
 <p>说明：</p>
-<ol>
-<li>
-<p>可以直接访问外部类的所有成员，包括私有的</p>
-</li>
-<li>
-<p>可以添加任意访问修饰符（public、protected、默认、private），它实际上也是一个成员</p>
-</li>
-<li>
-<p>作用域和外部类的其他成员一样，为整个类体</p>
-</li>
-<li>
-<p>成员内部类中不能定义static性质的成员属性和方法</p>
-</li>
-<li>
-<p>成员内部类访问外部类：直接访问</p>
-</li>
-<li>
-<p>外部类访问内部类：先创建对象，再访问</p>
-</li>
-<li>
-<p>其他外部类访问内部类：找到外部类，再找到内部类，创建对象再访问</p>
+<ol type="1">
+<li><p>可以直接访问外部类的所有成员，包括私有的</p></li>
+<li><p>可以添加任意访问修饰符（public、protected、默认、private），它实际上也是一个成员</p></li>
+<li><p>作用域和外部类的其他成员一样，为整个类体</p></li>
+<li><p>成员内部类中不能定义static性质的成员属性和方法</p></li>
+<li><p>成员内部类访问外部类：直接访问</p></li>
+<li><p>外部类访问内部类：先创建对象，再访问</p></li>
+<li><p>其他外部类访问内部类：找到外部类，再找到内部类，创建对象再访问</p>
 <ul>
-<li>
-<p>方式一：相当于<code>new Inner()</code>是Outer的一个成员</p>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">Outer</span>.<span class="hljs-keyword">Inner</span> x = <span class="hljs-keyword">Outer</span>.<span class="hljs-built_in">new</span> <span class="hljs-keyword">Inner</span>()<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>方式二：在Outer中编写一个方法返回内部类Inner</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li>
-<p>如果外部类和成员内部类的成员重名的时候，默认遵循就近原则。如果想访问外部类的成员，可以使用<code>外部类名.this.成员</code>来进行访问</p>
-</li>
+<li><p>方式一：相当于<code>new Inner()</code>是Outer的一个成员</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">Outer</span>.<span class="hljs-keyword">Inner</span> x = <span class="hljs-keyword">Outer</span>.<span class="hljs-built_in">new</span> <span class="hljs-keyword">Inner</span>()<br></code></pre></td></tr></table></figure></li>
+<li><p>方式二：在Outer中编写一个方法返回内部类Inner</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>();<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>如果外部类和成员内部类的成员重名的时候，默认遵循就近原则。如果想访问外部类的成员，可以使用<code>外部类名.this.成员</code>来进行访问</p></li>
 </ol>
 <p><strong>4.静态内部类</strong></p>
 <p>静态内部类：定义在外部类的成员位置，并且有static修饰</p>
 <p>说明：</p>
-<ol>
-<li>
-<p>可以直接访问外部类的所有静态成员，包括私有的。<strong>但是不能直接访问非静态成员</strong></p>
-</li>
-<li>
-<p>可以添加任意访问修饰符（public、protected、默认、private），它实际上也是一个成员</p>
-</li>
-<li>
-<p>作用域和外部类的其他成员一样，为整个类体</p>
-</li>
-<li>
-<p>静态内部类可以有静态字段和方法</p>
-</li>
-<li>
-<p>静态内部类访问外部类：直接访问</p>
-</li>
-<li>
-<p>外部类访问内部类：先创建对象，再访问</p>
-</li>
-<li>
-<p>其他外部类访问内部类：</p>
+<ol type="1">
+<li><p>可以直接访问外部类的所有静态成员，包括私有的。<strong>但是不能直接访问非静态成员</strong></p></li>
+<li><p>可以添加任意访问修饰符（public、protected、默认、private），它实际上也是一个成员</p></li>
+<li><p>作用域和外部类的其他成员一样，为整个类体</p></li>
+<li><p>静态内部类可以有静态字段和方法</p></li>
+<li><p>静态内部类访问外部类：直接访问</p></li>
+<li><p>外部类访问内部类：先创建对象，再访问</p></li>
+<li><p>其他外部类访问内部类：</p>
 <ul>
-<li>
-<p>方式一：可以通过类名直接访问得到</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Outer.<span class="hljs-type">Inner</span> <span class="hljs-variable">xxx</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>.Inner();<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>方式二：在Outer中编写一个方法返回内部类Inner</p>
-</li>
-</ul>
-</li>
-<li>
-<p>如果外部类和静态内部类的成员重名的时候，默认遵循就近原则。如果想访问外部类的成员，可以使用<code>外部类名.成员</code>来进行访问（这里不需要this，因为只能访问静态成员）</p>
-</li>
+<li><p>方式一：可以通过类名直接访问得到</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Outer.<span class="hljs-type">Inner</span> <span class="hljs-variable">xxx</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>.Inner();<br></code></pre></td></tr></table></figure></li>
+<li><p>方式二：在Outer中编写一个方法返回内部类Inner</p></li>
+</ul></li>
+<li><p>如果外部类和静态内部类的成员重名的时候，默认遵循就近原则。如果想访问外部类的成员，可以使用<code>外部类名.成员</code>来进行访问（这里不需要this，因为只能访问静态成员）</p></li>
 </ol>
 
                 

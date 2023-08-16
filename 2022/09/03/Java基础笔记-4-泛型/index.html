@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,22 +325,15 @@
             
               <div class="markdown-body">
                 
-                <h1>泛型基础</h1>
+                <h1 id="泛型基础">泛型基础</h1>
 <h2 id="泛型定义">泛型定义</h2>
-<ol>
-<li>
-<p>泛型又称为参数化类型，是在JDK 5之后出现的新特性，解决数据类型的安全性问题</p>
-</li>
-<li>
-<p>在类声明或实例化的时候只需要指定好需要的具体的类型即可</p>
-</li>
-<li>
-<p>Java泛型可以保证如果程序在编译的时候没有发出警告，运行时就不会产生ClassCastException异常。同时代码更加简洁、健壮</p>
-</li>
-<li>
-<p>泛型的作用是：可以在类声明的时候通过一个标识符表示类中某个属性的类型，或者某个方法返回值的类型，或者是参数类型（类似于模板）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span>&lt;T&gt; &#123;<br>    T s; <span class="hljs-comment">//对应中括号中的T</span><br>&#125;<br></code></pre></td></tr></table></figure>
-</li>
+<ol type="1">
+<li><p>泛型又称为参数化类型，是在JDK
+5之后出现的新特性，解决数据类型的安全性问题</p></li>
+<li><p>在类声明或实例化的时候只需要指定好需要的具体的类型即可</p></li>
+<li><p>Java泛型可以保证如果程序在编译的时候没有发出警告，运行时就不会产生ClassCastException异常。同时代码更加简洁、健壮</p></li>
+<li><p>泛型的作用是：可以在类声明的时候通过一个标识符表示类中某个属性的类型，或者某个方法返回值的类型，或者是参数类型（类似于模板）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span>&lt;T&gt; &#123;<br>    T s; <span class="hljs-comment">//对应中括号中的T</span><br>&#125;<br></code></pre></td></tr></table></figure></li>
 </ol>
 <h2 id="泛型的声明">泛型的声明</h2>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">interface 接口&lt;T&gt;&#123;&#125;;<br>class 类&lt;K,V&gt;&#123;&#125;;<br></code></pre></td></tr></table></figure>
@@ -350,25 +343,17 @@
 <li>Java库使用变量E来表示集合的元素类型；K和V分别表示键和值；T、S、U表示任意类型</li>
 </ul>
 <p>注意事项：</p>
-<ol>
-<li>
-<p>T，E只能是引用类型</p>
-</li>
-<li>
-<p>在指定泛型具体类型之后，可以传入该类型或其子类类型</p>
-</li>
-<li>
-<p>如果不给定泛型的具体类型，则默认泛型类型为Object</p>
-</li>
-<li>
-<p>在实际开发的时候可以简写，在new后面的可以简写</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">ArrayList&lt;Integer&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>List&lt;Integer&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br></code></pre></td></tr></table></figure>
-</li>
+<ol type="1">
+<li><p>T，E只能是引用类型</p></li>
+<li><p>在指定泛型具体类型之后，可以传入该类型或其子类类型</p></li>
+<li><p>如果不给定泛型的具体类型，则默认泛型类型为Object</p></li>
+<li><p>在实际开发的时候可以简写，在new后面的可以简写</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">ArrayList&lt;Integer&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>List&lt;Integer&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br></code></pre></td></tr></table></figure></li>
 </ol>
 <h2 id="自定义泛型">自定义泛型</h2>
 <p>自定义泛型类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">class 类名&lt;T,R,...&gt;&#123;&#125;;<br></code></pre></td></tr></table></figure>
-<ol>
+<ol type="1">
 <li>普通成员可以使用泛型（属性、方法）</li>
 <li>使用泛型的数组，不能初始化（因为在new的时候并不知道应该开多少空间）</li>
 <li>静态方法中不能使用类的泛型（因为静态的在类加载的时候就创建了，与对象无关）</li>
@@ -377,41 +362,27 @@
 </ol>
 <p>自定义泛型接口：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">interface 接口名&lt;T,R,...&gt;&#123;&#125;;<br></code></pre></td></tr></table></figure>
-<ol>
-<li>
-<p>接口中，静态成员也不能使用泛型（与泛型类的规定一样）（接口中的属性都是静态的）</p>
-</li>
-<li>
-<p>泛型接口的类型，在<strong>继承接口</strong>或者<strong>实现接口</strong>的时候确定</p>
-</li>
-<li>
-<p>没有指定类型，默认为Object</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">C</span> implenments I&#123;&#125;;<br>/ /等价于<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">C</span> implentments I&lt;Object, Object&gt;&#123;&#125;;<br><span class="hljs-comment">// 但是建议使用下面这种方式，更加规范</span><br></code></pre></td></tr></table></figure>
-</li>
+<ol type="1">
+<li><p>接口中，静态成员也不能使用泛型（与泛型类的规定一样）（接口中的属性都是静态的）</p></li>
+<li><p>泛型接口的类型，在<strong>继承接口</strong>或者<strong>实现接口</strong>的时候确定</p></li>
+<li><p>没有指定类型，默认为Object</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">C</span> implenments I&#123;&#125;;<br>/ /等价于<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">C</span> implentments I&lt;Object, Object&gt;&#123;&#125;;<br><span class="hljs-comment">// 但是建议使用下面这种方式，更加规范</span><br></code></pre></td></tr></table></figure></li>
 </ol>
 <p>自定义泛型方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">修饰符&lt;T,R,...&gt; 返回类型 方法名(参数列表)&#123;&#125;;<br><span class="hljs-keyword">public</span> &lt;T, R&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">fly</span><span class="hljs-params">(T t, R r)</span>&#123;&#125;;<span class="hljs-comment">//泛型方法</span><br><span class="hljs-comment">// 定义的泛型是提供给方法使用的</span><br><span class="hljs-comment">// 在调用方法的时候，会根据传入的参数自动确定对应的类型</span><br></code></pre></td></tr></table></figure>
-<ol>
+<ol type="1">
 <li>泛型方法，可以定义在普通类中，也可以定义在泛型类当中</li>
 <li>当泛型方法被调用的时候，会确定类型</li>
 <li><code>public void eat(E e)&#123;&#125;</code>，修饰符后面没有尖括号，这是使用了类声明的泛型，而不是泛型方法</li>
 <li>泛型方法可以使用类声明的泛型，也可以使用自己定义的泛型</li>
 </ol>
 <h2 id="泛型的继承和通配符">泛型的继承和通配符</h2>
-<ol>
-<li>
-<p>泛型不具备继承性</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;Object&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;String&gt;();<span class="hljs-comment">//这样书写是错误的</span><br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p><code>&lt;?&gt;</code>: 支持任意泛型类型</p>
-</li>
-<li>
-<p><code>&lt;? extends A&gt;</code>：支持A类以及A类的子类，规定了泛型的上限（实现接口的限制也是使用extends关键字）</p>
-</li>
-<li>
-<p><code>&lt;? super A&gt;</code>：支持A类以及A类的父类，不限于直接父类，规定了泛型的下限</p>
-</li>
+<ol type="1">
+<li><p>泛型不具备继承性</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;Object&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;String&gt;();<span class="hljs-comment">//这样书写是错误的</span><br></code></pre></td></tr></table></figure></li>
+<li><p><code>&lt;?&gt;</code>: 支持任意泛型类型</p></li>
+<li><p><code>&lt;? extends A&gt;</code>：支持A类以及A类的子类，规定了泛型的上限（实现接口的限制也是使用extends关键字）</p></li>
+<li><p><code>&lt;? super A&gt;</code>：支持A类以及A类的父类，不限于直接父类，规定了泛型的下限</p></li>
 </ol>
 <h2 id="泛型擦除">泛型擦除</h2>
 <p>泛型擦除：虚拟机并没有泛型类型对象，所有的对象都属于一个普通的类。无论何时定义一个泛型类型，都会自动提供一个相应的原始类型。类型变量会被擦除，被替换为限定类型（通配符的限制），或者无限定的变量替换为Object</p>
@@ -422,44 +393,28 @@
 <li>为保持类型安全性，必要时会插入强制类型转换</li>
 </ul>
 <h2 id="泛型的限制">泛型的限制</h2>
-<ol>
-<li>
-<p>不能使用基本数据类型实例化类型参数</p>
-</li>
-<li>
-<p>运行时类型查询只适用于原始类型，不能查询泛型类型</p>
-</li>
-<li>
-<p>不能创建参数化类型的数组</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">new</span> <span class="hljs-title class_">Pair</span>&lt;String&gt;[<span class="hljs-number">10</span>]; <span class="hljs-comment">// ERROR</span><br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>不能实例化类型变量</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">Pair</span><span class="hljs-params">()</span>&#123;<br>	first = <span class="hljs-keyword">new</span> <span class="hljs-title class_">T</span>();<br>	second = <span class="hljs-keyword">new</span> <span class="hljs-title class_">T</span>();<br>&#125;<span class="hljs-comment">// ERROR</span><br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>不能构造泛型数组</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">T[] mm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">T</span>[<span class="hljs-number">2</span>]; <span class="hljs-comment">// ERROR</span><br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>泛型类的静态上下文中类型变量无效</p>
+<ol type="1">
+<li><p>不能使用基本数据类型实例化类型参数</p></li>
+<li><p>运行时类型查询只适用于原始类型，不能查询泛型类型</p></li>
+<li><p>不能创建参数化类型的数组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">new</span> <span class="hljs-title class_">Pair</span>&lt;String&gt;[<span class="hljs-number">10</span>]; <span class="hljs-comment">// ERROR</span><br></code></pre></td></tr></table></figure></li>
+<li><p>不能实例化类型变量</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">Pair</span><span class="hljs-params">()</span>&#123;<br>	first = <span class="hljs-keyword">new</span> <span class="hljs-title class_">T</span>();<br>	second = <span class="hljs-keyword">new</span> <span class="hljs-title class_">T</span>();<br>&#125;<span class="hljs-comment">// ERROR</span><br></code></pre></td></tr></table></figure></li>
+<li><p>不能构造泛型数组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">T[] mm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">T</span>[<span class="hljs-number">2</span>]; <span class="hljs-comment">// ERROR</span><br></code></pre></td></tr></table></figure></li>
+<li><p>泛型类的静态上下文中类型变量无效</p>
 <ul>
 <li>不能在静态字段或方法中引用类型变量，即不能使用带有类型变量的静态字段和方法</li>
-</ul>
-</li>
-<li>
-<p>不能抛出或捕获泛型类的实例</p>
+</ul></li>
+<li><p>不能抛出或捕获泛型类的实例</p>
 <ul>
 <li>既不能抛出也不能捕获泛型类的对象</li>
 <li>泛型类扩展Throwable是不合法的</li>
 <li>catch子句中不能使用类型变量</li>
-</ul>
-</li>
-<li>
-<p>可以取消对检查型异常的检查</p>
+</ul></li>
+<li><p>可以取消对检查型异常的检查</p>
 <p>使用泛型类、擦除以及<code>@SuppressWarnings</code>注解</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="hljs-keyword">static</span> &lt;T <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Throwable</span>&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">throwAs</span><span class="hljs-params">(Throwable t)</span> <span class="hljs-keyword">throws</span> T&#123;<br>	<span class="hljs-keyword">throw</span> (T) t;<br>&#125;<br></code></pre></td></tr></table></figure>
-</li>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="hljs-keyword">static</span> &lt;T <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Throwable</span>&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">throwAs</span><span class="hljs-params">(Throwable t)</span> <span class="hljs-keyword">throws</span> T&#123;<br>	<span class="hljs-keyword">throw</span> (T) t;<br>&#125;<br></code></pre></td></tr></table></figure></li>
 </ol>
 
                 

@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -329,7 +329,7 @@
                 <h2 id="背景描述">背景描述</h2>
 <p>现在我们有两个文件，称为文件A和文件B，文件B更大，文件A更小。希望完成两个文件的Join操作，即使用文件A中的某个字段来替换B中的字段，Join依据为id相同。</p>
 <p>这个任务的重点在于如何完成Join操作，我们可以选择在Reduce阶段完成，也可以在Map阶段完成。</p>
-<h2 id="Reduce-Join">Reduce Join</h2>
+<h2 id="reduce-join">Reduce Join</h2>
 <p>在这种情况下，Map阶段的工作就是将两个文件都读入，处理成键值对的形式。连接字段作为key，其余内容作为值。并且我们需要打上标签，来表示后面的内容是来自哪一张表的。</p>
 <p>而在Reduce阶段，我们可以根据键值对中的标签来区分不同文件，之后再进行合并即可。</p>
 <blockquote>
@@ -338,18 +338,15 @@
 <p>由于不同文件会产生不同的数据分片，也就会分配给不同的Mapper，所以每个Mapper只需要执行上面的过程一次即可，可以选择将其放在Mapper的setup函数当中（重写setup函数）</p>
 </blockquote>
 <p>这种方案，合并的操作是在Reduce阶段完成的，Reduce阶段的处理压力太大，而Map阶段的运算负载很低，资源利用率不高，在Reduce阶段容易产生数据倾斜。</p>
-<h2 id="Map-Join">Map Join</h2>
-<p>Map join适用于一张表十分小，一张表很大的场景。具体思想就是在Map端缓存多张表，提前处理业务逻辑。增加Map端的业务，来减少Reduce端数据的压力，尽可能减少数据倾斜。</p>
+<h2 id="map-join">Map Join</h2>
+<p>Map
+join适用于一张表十分小，一张表很大的场景。具体思想就是在Map端缓存多张表，提前处理业务逻辑。增加Map端的业务，来减少Reduce端数据的压力，尽可能减少数据倾斜。</p>
 <p>使用<strong>DistributedCache</strong>，具体流程如下：</p>
-<ol>
-<li>
-<p>在Mapper的setup阶段，将文件读取到缓存集合当中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//通过缓存文件得到小表数据 pd.txt</span><br>URI[] cacheFiles = context.getCacheFiles();<br><span class="hljs-type">Path</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(cacheFiles[<span class="hljs-number">0</span>]);<br><span class="hljs-comment">//获取文件系统对象,并开流</span><br><span class="hljs-type">FileSystem</span> <span class="hljs-variable">fs</span> <span class="hljs-operator">=</span> FileSystem.get(context.getConfiguration());<br><span class="hljs-type">FSDataInputStream</span> <span class="hljs-variable">fis</span> <span class="hljs-operator">=</span> fs.open(path);<br><span class="hljs-comment">//通过包装流转换为 reader,方便按行读取</span><br><span class="hljs-type">BufferedReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(fis, <span class="hljs-string">&quot;UTF-8&quot;</span>));<br></code></pre></td></tr></table></figure>
-</li>
-<li>
-<p>在Driver驱动类中加载缓存</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//缓存普通文件到 Task 运行节点。</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;file:///e:/cache/pd.txt&quot;</span>));<br><span class="hljs-comment">//如果是集群运行,需要设置 HDFS 路径</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;hdfs://hadoop102:8020/cache/pd.txt&quot;</span>));<br></code></pre></td></tr></table></figure>
-</li>
+<ol type="1">
+<li><p>在Mapper的setup阶段，将文件读取到缓存集合当中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//通过缓存文件得到小表数据 pd.txt</span><br>URI[] cacheFiles = context.getCacheFiles();<br><span class="hljs-type">Path</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(cacheFiles[<span class="hljs-number">0</span>]);<br><span class="hljs-comment">//获取文件系统对象,并开流</span><br><span class="hljs-type">FileSystem</span> <span class="hljs-variable">fs</span> <span class="hljs-operator">=</span> FileSystem.get(context.getConfiguration());<br><span class="hljs-type">FSDataInputStream</span> <span class="hljs-variable">fis</span> <span class="hljs-operator">=</span> fs.open(path);<br><span class="hljs-comment">//通过包装流转换为 reader,方便按行读取</span><br><span class="hljs-type">BufferedReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(fis, <span class="hljs-string">&quot;UTF-8&quot;</span>));<br></code></pre></td></tr></table></figure></li>
+<li><p>在Driver驱动类中加载缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//缓存普通文件到 Task 运行节点。</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;file:///e:/cache/pd.txt&quot;</span>));<br><span class="hljs-comment">//如果是集群运行,需要设置 HDFS 路径</span><br>job.addCacheFile(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URI</span>(<span class="hljs-string">&quot;hdfs://hadoop102:8020/cache/pd.txt&quot;</span>));<br></code></pre></td></tr></table></figure></li>
 </ol>
 
                 

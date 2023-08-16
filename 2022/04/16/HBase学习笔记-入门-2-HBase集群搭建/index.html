@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -329,25 +329,27 @@
                 
                 <h2 id="前置条件">前置条件</h2>
 <p>搭建HBase集群之间，首先需要完成Hadoop集群的搭建，并且需要先安装和搭建好Zookeeper。安装详情可以参考对应文章，搭建的集群同样为<code>hadoop102</code>，<code>hadoop103</code>，<code>hadoop104</code>。</p>
-<p>这里需要注意Hadoop、Zookeeper以及HBase的版本适配问题，可以参考官方文档：<a target="_blank" rel="noopener" href="https://hbase.apache.org/book.html#basic.prerequisites">Apache HBase ™ Reference Guide</a></p>
+<p>这里需要注意Hadoop、Zookeeper以及HBase的版本适配问题，可以参考官方文档：<a
+target="_blank" rel="noopener" href="https://hbase.apache.org/book.html#basic.prerequisites">Apache
+HBase ™ Reference Guide</a></p>
 <p>此处选择的版本如下：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>软件</th>
 <th>版本</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Hadoop</td>
 <td>3.1.3</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Zookeeper</td>
 <td>3.7.0</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>HBase</td>
 <td>2.4.11</td>
 </tr>
@@ -360,16 +362,12 @@
 <p>首先需要修改<code>hbase-env.sh</code>文件，这其中配置了HBase运行时变量，如Java路径，RegionServer相关参数等。这里我们需要在其中配置Java环境，并且设置使用我们自己的Zookeeper：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">export</span> JAVA_HOME=/opt/module/jdk1.8.0_212/<br><span class="hljs-built_in">export</span> HBASE_MANAGES_ZK=<span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>第一行设置Java环境</p>
-</li>
-<li>
-<p>第二行设置使用我们自己的Zookeeper</p>
+<li><p>第一行设置Java环境</p></li>
+<li><p>第二行设置使用我们自己的Zookeeper</p>
 <blockquote>
 <p>如果该项设置为true，则表示使用Zookeeper作为HBase的一部分来管理启动，即Zookeeper随着HBase的启动而启动，随其关闭而关闭；</p>
 <p>如果设置为false，则表示Zookeeper作为独立的集群来运行，与HBase脱离关系。</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ul>
 <p>之后需要配置<code>hbase-site.xml</code>文件，其中可以添加HBase的相关配置，如分布式的模式，Zookeeper的配置等，配置如下内容：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- HBase数据在HDFS中的存放的路径 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.rootdir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>hdfs://hadoop102:8020/hbase<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- Hbase的运行模式。false是单机模式，true是分布式模式。若为false,Hbase和Zookeeper会运行在同一个JVM里面 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.cluster.distributed<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- ZooKeeper的地址 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>hadoop102,hadoop103,hadoop104<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- ZooKeeper快照的存储位置 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>/opt/module/zookeeper-3.7.0/zkData<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>phoenix.schema.isNamespaceMappingEnabled<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -385,9 +383,11 @@
 <p>命令如下：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 启动HBase</span><br><span class="hljs-variable">$HBASE_HOME</span>/bin/start-hbase.sh<br><span class="hljs-comment"># 关闭HBase</span><br><span class="hljs-variable">$HBASE_HOME</span>/bin/stop-hbase.sh<br></code></pre></td></tr></table></figure>
 <p>由于配置了环境变量，可以直接使用。</p>
-<p>启动集群之后，可以使用hbase shell进行测试。输入<code>hbase shell</code>进入命令行操作模式，输入status查看目前状态，出现以下内容则表示hbase已经安装配置成功了：</p>
+<p>启动集群之后，可以使用hbase
+shell进行测试。输入<code>hbase shell</code>进入命令行操作模式，输入status查看目前状态，出现以下内容则表示hbase已经安装配置成功了：</p>
 <img src="/2022/04/16/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-HBase%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/hbase-shell-status.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="hbase-shell-status">
-<p>同时可以通过网页端可视化查看HBase，访问NameNode的16010端口（<a target="_blank" rel="noopener" href="http://hadoop102:16010">http://hadoop102:16010</a> ）</p>
+<p>同时可以通过网页端可视化查看HBase，访问NameNode的16010端口（http://hadoop102:16010
+）</p>
 <p>通过jps查看目前运行的Java进程，可以在Master节点上查看到HMaster进程，Slave节点上查看到HRegionServer进程。如果使用的是HBase内置的Zookeeper，则节点上还能够查看到HQuorumPeer进程；如果使用的是用户的Zookeeper，则查看到的是QuorumPeerMain进程。</p>
 <blockquote>
 <p>HQuorumPeer表示hbase管理的zookeeper</p>
@@ -396,7 +396,7 @@
 <h2 id="高可用配置">高可用配置</h2>
 <p>HBase的高可用配置其实就是HMaster的高可用。在高可用情况下，如果HMaster进程由于某种原因不在了，会在备用节点中重新选举出新的Master</p>
 <p>配置HMaster的高可用步骤如下：</p>
-<ol>
+<ol type="1">
 <li>在<code>$HBASE_HOME/conf</code>中创建<code>backup-masters</code>文件</li>
 <li>在文件中写入作为备用Master节点的主机名称，例如hadoop103、hadoop104</li>
 <li>将修改后的文件进行分发</li>

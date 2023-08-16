@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,9 +328,12 @@
               <div class="markdown-body">
                 
                 <h2 id="系统架构">系统架构</h2>
-<p>HBase集群是一种主从架构的设计，其中有三类角色：Client、Master Server以及Region Server</p>
-<p>**Client：**客户端发出对HBase的操作请求，例如HBase Shell、编写的Java代码都属于客户端</p>
-<p><strong>Master Server：</strong> Master Server是所有Region Server的管理者，不负责管理用户数据表。</p>
+<p>HBase集群是一种主从架构的设计，其中有三类角色：Client、Master
+Server以及Region Server</p>
+<p><strong>Client：</strong>客户端发出对HBase的操作请求，例如HBase
+Shell、编写的Java代码都属于客户端</p>
+<p><strong>Master Server：</strong> Master Server是所有Region
+Server的管理者，不负责管理用户数据表。</p>
 <ul>
 <li>监控Region Server</li>
 <li>处理Region Server的故障转移</li>
@@ -347,32 +350,33 @@
 <li>执行压缩</li>
 <li>负责处理Region分片</li>
 </ul>
-<p>在Region Server中包含了许多组件，包括：WAL、StoreFile（HFile）、Store、MemStore、Region等。这些也是在HBase中重要的逻辑结构模型。</p>
+<p>在Region
+Server中包含了许多组件，包括：WAL、StoreFile（HFile）、Store、MemStore、Region等。这些也是在HBase中重要的逻辑结构模型。</p>
 <h2 id="逻辑结构模型">逻辑结构模型</h2>
-<p>HBase中用户数据存储在Region Server中，一个Region Server存放的内容可以表示如下：</p>
+<p>HBase中用户数据存储在Region Server中，一个Region
+Server存放的内容可以表示如下：</p>
 <img src="/2022/04/18/HBase%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E9%AB%98%E7%BA%A7-1-HBase%E7%9A%84%E6%9E%B6%E6%9E%84%E4%B8%8E%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B/HBase%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="HBase逻辑结构模型">
 <ul>
-<li><strong>Region</strong>：在HBase中，一张表会被划分成多个Region，并由Region Server提供存储服务
+<li><strong>Region</strong>：在HBase中，一张表会被划分成多个Region，并由Region
+Server提供存储服务
 <ul>
 <li>回应HBase的特点，原生支持分布式存储</li>
 <li>每个Region保存一定行键范围的数据，Region中的数据有序，按照行键的字典序来进行排列</li>
-</ul>
-</li>
+</ul></li>
 <li><strong>Store</strong>：每一个Region又会按照列族垂直划分成Store</li>
 <li><strong>MemStore</strong>：为Store提供的缓存区域
 <ul>
 <li>向HBase中写入数据时，都是先向MemStore中写入，提高读写速度</li>
 <li>当MemStore存储将要满的时候，整个线程写入到HDFS的HFile中，写入之前会按照行键排序</li>
 <li>每个列族有一个MemStore</li>
-</ul>
-</li>
+</ul></li>
 <li><strong>StoreFile</strong>： Store的存储文件
 <ul>
 <li>一个Store最终可能存储为多个StoreFile</li>
-<li>物理存储为HFile（概念上的对应 HDFS &lt;-&gt; HFile ，HBase &lt;-&gt; StoreFile）</li>
+<li>物理存储为HFile（概念上的对应 HDFS &lt;-&gt; HFile ，HBase &lt;-&gt;
+StoreFile）</li>
 <li>写入操作是连续写入的，写入的是按照行键排序的键值对数据，写入速度非常快</li>
-</ul>
-</li>
+</ul></li>
 <li><strong>WAL</strong>： Write Ahead Log， 预写日志，用于故障恢复
 <ul>
 <li>WAL是HBase中提供的一种高并发、持久化的日志保存与回放机制</li>
@@ -380,8 +384,7 @@
 <li>写入WAL之后，再去执行对应操作</li>
 <li>一旦服务器崩溃，可以通过回放WAL来实现恢复崩溃之前的数据</li>
 <li>物理上的存储是Hadoop的Sequence File</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>逻辑结构模型可以简单总结如下：</p>
 <p>对于一张表，会按照行键横向划分成多个Region，每个Region按照列族纵向划分成多个Store。每个Store，最终的存储形式为StoreFile，物理存储为HDFS中的HFile。在执行操作之前，会将操作记录在WAL中，用于故障恢复。之后执行写入操作，数据写入HBase之前，首先需要写入对应的MenStore，当快要写满之后再持久化到文件中。写入文件之前需要对数据按照行键进行排序，之后再写入。</p>

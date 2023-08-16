@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,12 +325,16 @@
             
               <div class="markdown-body">
                 
-                <h1>SpringBoot简介</h1>
-<p>Spring生态众多，它向我们提供了多方面的功能，包括Web开发、数据访问、安全控制、分布式、消息服务、移动开发、批处理等等。这些功能并不是通过某个框架直接提供的，而是由Spring生态中的不同框架提供。例如利用SpringMVC + Spring Framework我们可以完成基本的Web开发。</p>
+                <h1 id="springboot简介">SpringBoot简介</h1>
+<p>Spring生态众多，它向我们提供了多方面的功能，包括Web开发、数据访问、安全控制、分布式、消息服务、移动开发、批处理等等。这些功能并不是通过某个框架直接提供的，而是由Spring生态中的不同框架提供。例如利用SpringMVC
++ Spring Framework我们可以完成基本的Web开发。</p>
 <p>不过有之前SSM开发的的经验，我们可以知道在SSM中，需要编写众多的配置文件，被认为是“配置地狱”。而利用SpringBoot，就能帮助我们快速创建出生产级别的Spring的应用。</p>
-<p>SpringBoot的主要功能在于能够简化配置，整合一系列的技术栈。它的底层还是Spring Framework，但是利用一系列启动器starter，大大简化构建配置。利用SpringBoot，我们可以创建独立Spring应用，自动配置Spring以及第三方功能，同时提供生产级别的监控、健康检查以及外部配置等，并且在SpringBoot中内置了Web服务器，无需额外安装Web Server。总结来说，SpringBoot是整合Spring技术栈的一站式框架，是简化Spring技术栈开发的快速开发脚手架。</p>
-<p>SpringBoot的官方地址如下：<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-boot">Spring Boot</a></p>
-<h1>快速开始</h1>
+<p>SpringBoot的主要功能在于能够简化配置，整合一系列的技术栈。它的底层还是Spring
+Framework，但是利用一系列启动器starter，大大简化构建配置。利用SpringBoot，我们可以创建独立Spring应用，自动配置Spring以及第三方功能，同时提供生产级别的监控、健康检查以及外部配置等，并且在SpringBoot中内置了Web服务器，无需额外安装Web
+Server。总结来说，SpringBoot是整合Spring技术栈的一站式框架，是简化Spring技术栈开发的快速开发脚手架。</p>
+<p>SpringBoot的官方地址如下：<a
+target="_blank" rel="noopener" href="https://spring.io/projects/spring-boot">Spring Boot</a></p>
+<h1 id="快速开始">快速开始</h1>
 <h2 id="项目启动">项目启动</h2>
 <p>下面我们就快速开发一个SpringBoot项目。首先创建一个Maven工程，在其中引入如下依赖，包括父项目依赖<code>spring-boot-starter-parent</code>以及web开发的启动器<code>spring-boot-starter-web</code></p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">parent</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.7.5<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -340,19 +344,28 @@
 <p>之后我们可以编写业务逻辑，在控制层中创建Controller，这里的类位于主程序所在的包下的子包controller中：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br>    <span class="hljs-meta">@RequestMapping(&quot;/hello&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Hello, SpringBoot!&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这里控制层组件的书写方式与SpringMVC中相同，使用<code>@RequestMapping</code>来指定映射的url路径，而<code>@RestController</code>是<code>@Controller</code>和<code>@ResponseBody</code>的复合注解，表示该类是控制层的类，并且其中的所有方法的返回值都放在响应体中。</p>
-<p>接下来，我们就可以启动主程序<code>MainApplication</code>中的主方法，整个SpringBoot项目就会启动起来，并且我们访问<code>http://localhost:8080/hello</code>，可以发现浏览器中显示了返回值“Hello, SpringBoot!”。这已经说明我们的SpringBoot项目启动了，相比于SSM已经简单了很多。</p>
+<p>接下来，我们就可以启动主程序<code>MainApplication</code>中的主方法，整个SpringBoot项目就会启动起来，并且我们访问<code>http://localhost:8080/hello</code>，可以发现浏览器中显示了返回值“Hello,
+SpringBoot!”。这已经说明我们的SpringBoot项目启动了，相比于SSM已经简单了很多。</p>
 <blockquote>
-<p>我们可以在resources文件夹中创建<code>application.properties</code>文件，其中配置相关属性。例如我们可以在其中配置Tomcat的端口号，只需要在该配置文件中指定<code>server.port=8888</code>即可。事实上，针对SpringBoot所有相关属性都能在这个文件中进行配置，详细配置项地址为<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.3.7.RELEASE/reference/html/appendix-application-properties.html#common-application-properties-core">Common Application properties (spring.io)</a></p>
+<p>我们可以在resources文件夹中创建<code>application.properties</code>文件，其中配置相关属性。例如我们可以在其中配置Tomcat的端口号，只需要在该配置文件中指定<code>server.port=8888</code>即可。事实上，针对SpringBoot所有相关属性都能在这个文件中进行配置，详细配置项地址为<a
+target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.3.7.RELEASE/reference/html/appendix-application-properties.html#common-application-properties-core">Common
+Application properties (spring.io)</a></p>
 </blockquote>
-<p>可以发现，在之前的Java Web项目中，我们创建Web项目需要修改Maven的打包方式为war，但是通过SpringBoot，我们可以直接打包出一个可运行的jar包，之后在服务器上直接运行这个jar包就可以提供服务。不过需要在Maven配置文件中添加下面的插件，打包后直接运行<code>java -jar</code>即可。</p>
+<p>可以发现，在之前的Java
+Web项目中，我们创建Web项目需要修改Maven的打包方式为war，但是通过SpringBoot，我们可以直接打包出一个可运行的jar包，之后在服务器上直接运行这个jar包就可以提供服务。不过需要在Maven配置文件中添加下面的插件，打包后直接运行<code>java -jar</code>即可。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>这里可能在IDEA中报红，添加上版本号即可。</p>
-<h2 id="在IDEA中的项目启动">在IDEA中的项目启动</h2>
-<p>在IDEA中，<code>Build Project</code>能够帮助我们构建项目。它可以将项目中的代码编译成字节码文件，在生成的target目录下，会存在classes、generated-sources、generated-test-sources、test-classes等目录。首次点击Bulid Project 会编译整个项目，包括其中的测试类。之后第二次点击则只会编译修改过的文件。这是普通项目的构建方式。当然我们也可以直接使用main方法启动，默认会查看会进行编译。</p>
-<p>此外，在Maven项目中，我们还可以使用Maven 编译，即Maven complie。它也能够完成项目的编译，生成字节码文件。但是同时如果配置了pom中的插件，有对应的功能的话也会生效。不过不会生成jar包。Maven complie每次都是重新编译，而不是仅编译修改过的文件。在生成的target目录下，有classes、generated-sources、maven-status目录。在maven-status目录中，有createdFiles.lst和inputFiles，里面是全路径字节码文件和全路径类文件。</p>
-<p>而Maven package也会编译项目，同时会生成jar包。生成的target目录下，有classes、generated-sources、generated-test-sources、maven-archiver、maven-status、surefire-reports、test-classes、jar文件等。同时每次编译也是重新编译。我们配置的spring-boot-maven-plugin提供<code>spring-boot:run</code>启动方式，它会调用Maven的编译打包。</p>
+<h2 id="在idea中的项目启动">在IDEA中的项目启动</h2>
+<p>在IDEA中，<code>Build Project</code>能够帮助我们构建项目。它可以将项目中的代码编译成字节码文件，在生成的target目录下，会存在classes、generated-sources、generated-test-sources、test-classes等目录。首次点击Bulid
+Project
+会编译整个项目，包括其中的测试类。之后第二次点击则只会编译修改过的文件。这是普通项目的构建方式。当然我们也可以直接使用main方法启动，默认会查看会进行编译。</p>
+<p>此外，在Maven项目中，我们还可以使用Maven 编译，即Maven
+complie。它也能够完成项目的编译，生成字节码文件。但是同时如果配置了pom中的插件，有对应的功能的话也会生效。不过不会生成jar包。Maven
+complie每次都是重新编译，而不是仅编译修改过的文件。在生成的target目录下，有classes、generated-sources、maven-status目录。在maven-status目录中，有createdFiles.lst和inputFiles，里面是全路径字节码文件和全路径类文件。</p>
+<p>而Maven
+package也会编译项目，同时会生成jar包。生成的target目录下，有classes、generated-sources、generated-test-sources、maven-archiver、maven-status、surefire-reports、test-classes、jar文件等。同时每次编译也是重新编译。我们配置的spring-boot-maven-plugin提供<code>spring-boot:run</code>启动方式，它会调用Maven的编译打包。</p>
 <p>总结来说，如果是普通的项目，我们可以直接使用main方法启动，默认会进行编译操作。而在SpringBoot项目中，在pom.xml中配置了相关的插件，则建议使用maven来进行启动。可以直接使用<code>spring-boot:run</code>来运行，也可以每次使用<code>maven complie</code>之后运行main方法。</p>
-<h1>特性说明</h1>
+<h1 id="特性说明">特性说明</h1>
 <h2 id="依赖管理特性">依赖管理特性</h2>
 <p>在之前SSM项目的开发中，我们需要在Maven中手动引入非常多的依赖，并且自己管理相应的版本问题，不过在SpringBoot中，我们却不需要这样做。这是由于SpringBoot的依赖管理特性。我们引入了父项目：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">parent</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.7.5<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -361,27 +374,23 @@
 <p>在这个项目<code>spring-boot-dependencies</code>中，有<code>&lt;properties&gt;</code>标签，其中声明了众多属性，并且有对应的属性值，就是开发中常用的依赖版本号，规定了引入依赖的默认版本。因此我们在引入依赖的时候，如果在其中有默认版本号，就可以不写version。</p>
 <p>当然在一些场景下，我们需要特定版本的依赖。此时我们就可以利用Maven的就近原则，在项目的<code>pom.xml</code>中重写属性<code>&lt;properties&gt;</code>，将我们需要的版本在其中重新设置，对默认的版本进行覆盖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">mysql.version</span>&gt;</span>5.1.43<span class="hljs-tag">&lt;/<span class="hljs-name">mysql.version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<p>除了父项目之外，我们还引入了场景启动器<code>spring-boot-starter-web</code>，这表示SpringBoot就某种场景下的开发所描述的一组依赖，只要我们引入了对应的starter，在这个场景下的常规依赖都会自动引入。SpringBoot提供给我们的场景启动器有很多（<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.build-systems.starters">Developing with Spring Boot</a>），均以<code>spring-boot-starter-*</code>的形式命名。我们也可以自定构造场景启动器，或者使用第三方场景启动器，此时的推荐命名形式为<code>*-spring-boot-starter</code>。</p>
+<p>除了父项目之外，我们还引入了场景启动器<code>spring-boot-starter-web</code>，这表示SpringBoot就某种场景下的开发所描述的一组依赖，只要我们引入了对应的starter，在这个场景下的常规依赖都会自动引入。SpringBoot提供给我们的场景启动器有很多（<a
+target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.build-systems.starters">Developing
+with Spring
+Boot</a>），均以<code>spring-boot-starter-*</code>的形式命名。我们也可以自定构造场景启动器，或者使用第三方场景启动器，此时的推荐命名形式为<code>*-spring-boot-starter</code>。</p>
 <h2 id="自动配置特性">自动配置特性</h2>
 <p>在SSM项目的开发中，我们需要完成众多的配置，包括包扫描、Bean管理、Web配置等等。但是在SpringBoot项目中，已经帮助我们完成了一些基本的配置，例如：</p>
 <ul>
-<li>
-<p>Tomcat的配置：内嵌Web Server，引入Tomcat依赖，配置Tomcat。</p>
-</li>
-<li>
-<p>SpringMVC的配置：引入SpringMVC的全套组件，自动配置SpringMVC常用功能组件。</p>
-</li>
-<li>
-<p>Web常见功能的配置：自动配置Web的常见功能，例如字符编码问题等。</p>
-</li>
-<li>
-<p>组件扫描的配置：</p>
+<li><p>Tomcat的配置：内嵌Web
+Server，引入Tomcat依赖，配置Tomcat。</p></li>
+<li><p>SpringMVC的配置：引入SpringMVC的全套组件，自动配置SpringMVC常用功能组件。</p></li>
+<li><p>Web常见功能的配置：自动配置Web的常见功能，例如字符编码问题等。</p></li>
+<li><p>组件扫描的配置：</p>
 <ul>
 <li>按照默认的包结构进行组件扫描，默认情况下，从主程序所在的包开始，该包以及其所有子包中的组件都会被扫描，交由IOC容器管理。</li>
 <li>如果想要改变扫描路径，可以使用<code>@SpringBootApplication</code>注解中的<code>scanBasePackages</code>属性指定扫描路径</li>
 <li>也可以使用<code>@ComponentScan</code>来指定扫描路径，不过这个注解不能和<code>@SpringBootApplication</code>一起使用，因此<code>@SpringBootApplication</code>是一个复合注解，等同于<code>@SpringBootConfiguration</code>+<code>@EnableAutoConfiguration</code>+<code>@ComponentScan</code></li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>在上面也提到我们可以通过<code>application.properties</code>配置文件来添加配置。这里的各种配置都拥有默认值，并且配置的值最终会映射到某个类上，成为其中的属性值。这个类也会被Spring管理，我们可以从IOC容器中得到对应的类，然后访问对应的属性。</p>
 <p>在主程序类<code>MainApplication</code>中，我们调用了run方法开启项目。实际上这个方法是有返回值的，返回值是一个IOC容器，类型为<code>ConfigurableApplicationContext</code>。取到IOC容器后，我们可以查看其中管理的Bean对象，发现通过自动配置添加了很多。</p>
@@ -390,9 +399,10 @@
 <blockquote>
 <p>在开发SpringBoot项目的时候，我们首先需要引入场景依赖，之后可以查看SpringBoot自动配置了哪些组件。在配置文件中设置<code>debug=true</code>，可以开启自动配置报告。之后随着开发过程，判断是否需要修改SpringBoot自动配置的组件，修改的方式可以通过配置文件、也可以自定义替换组件。</p>
 </blockquote>
-<h1>底层注解</h1>
+<h1 id="底层注解">底层注解</h1>
 <p>SpringBoot在底层帮助我们自动进行了依赖配置，完成自动装配，配置的过程和原理依赖了许多注解。下面介绍一些SpringBoot底层常用的注解。</p>
-<h2 id="Configuration-配置类">@Configuration 配置类</h2>
+<h2 id="configuration-配置类"><span class="citation"
+data-cites="Configuration">@Configuration</span> 配置类</h2>
 <p>在Spring中，我们可以使用配置文件，基于XML来管理Bean对象。在SpringMVC中，我们也可以使用配置类来代替配置文件，在其中管理IOC容器中的Bean对象。</p>
 <p>我们可以创建自己的配置类，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration()</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyConfig</span> &#123;<br>    <br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Person <span class="hljs-title function_">person1</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">Person</span> <span class="hljs-variable">person</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;me&quot;</span>, <span class="hljs-number">18</span>);<br>        person.setPet(petCat()); <span class="hljs-comment">// Person组件依赖了Pet组件</span><br>        <span class="hljs-keyword">return</span> person;<br>    &#125;<br>    <br>    <span class="hljs-meta">@Bean(&quot;cat&quot;)</span><br>    <span class="hljs-keyword">public</span> Pet <span class="hljs-title function_">petCat</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Pet</span>(<span class="hljs-string">&quot;cat&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -402,16 +412,21 @@
 <blockquote>
 <p>在SpringBoot中，我们仍然可以使用<code>@Bean</code>、<code>@Component</code>、<code>@Controller</code>、<code>@Service</code>、<code>@Repository</code>等注解。这些是Spring的基本注解，在SpringBoot中也并未改变它们原来的功能。</p>
 </blockquote>
-<h2 id="Import-组件导入">@Import 组件导入</h2>
+<h2 id="import-组件导入"><span class="citation"
+data-cites="Import">@Import</span> 组件导入</h2>
 <p><code>@Import</code>注解也能够帮助我们完成组件导入。在其中我们需要给定对应类的Class对象，之后就会在容器中自动创建出对应类型的组件，组件的名称默认为全类名。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Import(&#123;Person.class, Pet.class&#125;)</span><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyConfig</span> &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="Conditional-条件装配">@Conditional 条件装配</h2>
+<h2 id="conditional-条件装配"><span class="citation"
+data-cites="Conditional">@Conditional</span> 条件装配</h2>
 <p>条件装配表示满足某个条件后才进行组件注入。条件装配的基础注解为<code>@Conditional</code>，其下有很多其他条件装配注解，代表不同的条件。例如其中<code>@ConditionalOnMissingBean</code>注解，在其中指定name属性为cat，表示当IOC容器中没有名称为cat的Bean，才能执行组件注入。</p>
 <p>条件装配的注解可以添加在方法上，则只对方法返回的Bean对象是否注解生效，也可以添加在类上，则对类中所有注入的Bean对象生效。</p>
-<h2 id="ImportResouce-配置文件导入">@ImportResouce 配置文件导入</h2>
+<h2 id="importresouce-配置文件导入"><span class="citation"
+data-cites="ImportResouce">@ImportResouce</span> 配置文件导入</h2>
 <p>在Spring中我们可以使用<code>.xml</code>文件来管理Bean对象，在SpringBoot中，我们仍然可以继续复用这些配置文件，只需要利用<code>@ImportResouce</code>注解进行声明，在其中指定对应配置文件的位置即可：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ImportResource(&quot;classpath:spring.xml&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyConfig</span> &#123;<br>...<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="ConfigurationProperties-配置绑定">@ConfigurationProperties 配置绑定</h2>
+<h2 id="configurationproperties-配置绑定"><span class="citation"
+data-cites="ConfigurationProperties">@ConfigurationProperties</span>
+配置绑定</h2>
 <p>在利用配置文件的时候，我们希望能够读取properties文件中的内容，并将其封装的JavaBean中，之后通过调用JavaBean的一些方法来获得其中的属性值。在SpringBoot中提供有配置绑定的功能，用于将配置文件中的值绑定到IOC中的Bean对象上。</p>
 <p>假设现在我们的<code>application.properties</code>中有如下两个属性：</p>
 <figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">mybook.name</span>=<span class="hljs-string">DeathNote</span><br><span class="hljs-attr">mybook.author</span>=<span class="hljs-string">huangmu</span><br></code></pre></td></tr></table></figure>

@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -327,7 +327,7 @@
             
               <div class="markdown-body">
                 
-                <h1>Filter</h1>
+                <h1 id="filter">Filter</h1>
 <h2 id="概述">概述</h2>
 <p>Filter，过滤器，或者称为拦截器，它可以将对资源的请求进行拦截，统一处理之后再放行，进行后续的请求。这使得Filter能够完成一些通用的操作，例如权限控制、统一编码处理、敏感字符处理等操作。</p>
 <p>Filter的使用也是接口的实现。首先需要定义类，实现Filter接口，重写其中的方法。其中重要的方法是<code>doFilter</code>，它表示当前过滤器需要执行的逻辑。之后利用注解来配置Filter拦截资源的路径。放行方法为<code>filterChain.doFilter(servletRequest, servletResponse)</code>，如果不执行，则表示当前访问被阻止，无法访问后续资源。</p>
@@ -344,57 +344,58 @@
 <li>拦截所有：<code>/*</code>，访问所有资源都会被拦截</li>
 </ul>
 <p>我们也可以连续使用多个拦截器，形成Filter的链。既然形成了链，就会有执行顺序的区分。默认情况下，会按照过滤器类名的字符串自然顺序进行排序，决定调用Filter的先后顺序。</p>
-<h1>Listener</h1>
+<h1 id="listener">Listener</h1>
 <p>Listener表示监听器，也是JavaWeb的三大组件之一。监听器会监听application、session以及request三个对象的创建、销毁、属性修改动作，在对应动作发生的时候，会触发响应的代码执行。</p>
 <blockquote>
 <p>request、session都可以代表一个域，而application则是ServletContext类型的对象，它代表整个Web应用。在服务器启动的时候，Tomcat会自动创建该对象，在服务器关闭的时候则会自动销毁该对象。</p>
 </blockquote>
 <p>JavaWeb中提供了8个监听器（接口），分别监听不同的层次对象的不同动作，在接口中会提供不同的方法，对应不同的动作。使用后还需要<code>@WebListener</code>进行配置。</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>监听器分类</th>
 <th>监听器名称</th>
 <th>作用</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>ServletContext监听</td>
 <td>ServletContextListener</td>
 <td>监听ServletContext对象的创建和销毁</td>
 </tr>
-<tr>
+<tr class="even">
 <td></td>
 <td>ServletContextAttributeListener</td>
 <td>监听ServletContext对象中属性的增删改</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Session监听</td>
 <td>HttpSessionListener</td>
 <td>监听Session对象的创建和销毁</td>
 </tr>
-<tr>
+<tr class="even">
 <td></td>
 <td>HttpSessionAttributeListener</td>
 <td>监听Session对象中属性的增删改</td>
 </tr>
-<tr>
+<tr class="odd">
 <td></td>
 <td>HttpSessionBindingListener</td>
 <td>监听对象与Session的绑定与解除</td>
 </tr>
-<tr>
+<tr class="even">
 <td></td>
 <td>HttpSessionActivationListener</td>
 <td>监听Session的激活</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Request监听</td>
 <td>ServletRequestListener</td>
 <td>监听Request对象的创建和销毁</td>
 </tr>
-<tr>
+<tr class="even">
 <td></td>
 <td>ServletRequestAttributeListener</td>
 <td>监听Request对象中属性的增删改</td>

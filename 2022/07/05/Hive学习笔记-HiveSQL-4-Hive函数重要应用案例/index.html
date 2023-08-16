@@ -89,7 +89,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -331,7 +331,7 @@
             
               <div class="markdown-body">
                 
-                <h1>Hive多字节分隔符</h1>
+                <h1 id="hive多字节分隔符">Hive多字节分隔符</h1>
 <p>前面我们提到，在Hive加载表的时候可以手动指定不同种类的分隔符，但是这有一个限制，就是只能使用单字节分隔符，即char类型的分隔符。如果我们的<strong>真实数据中分隔符超过单字节</strong>，而我们不做任何处理就直接套用之前的语法，得到的结果将不会符合我们的预期。还有一种情况是在数据的字段内容中包含了分隔符，原本的语法也无法解决这类问题。因此针对多字节分隔符以及分隔符出现在字段中的情况，我们应该进行特殊的处理</p>
 <p>第一种处理方法就是<strong>进行分隔符的替换</strong>。我们利用程序提前对原始数据进行处理，将其中的多字节分隔符替换为单字节分隔符，之后再利用之前的语法</p>
 <p>第二种处理方法是<strong>使用RegexSerDe进行正则加载</strong></p>
@@ -347,7 +347,7 @@
 <p>使用我们自定义的InputFormat需要首先将程序打包成jar包，然后添加到Hive的classpath中，使用<code>add jar</code>命令进行添加，之后在创建表的时候指定InputFormat为自定义的InputFormat，再进行数据加载即可</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs hive">create table table_name(<br>    col1 string,<br>    col2 string,<br>    col3 string<br>)<br>row format delimited fields terminated by &#x27;|&#x27;<br>--指定使用自定义的类来解析<br>stored as<br>inputformat &#x27;xxx.MyInputFormat&#x27;<br>outputformat &#x27;org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat&#x27;;<br></code></pre></td></tr></table></figure>
 <p>虽然以上三种方式都可以解决问题，但是角度各不同，开发成本也各有高低。整体上推荐使用正则加载的方式来实现对于特殊数据的处理</p>
-<h1>URL解析函数</h1>
+<h1 id="url解析函数">URL解析函数</h1>
 <p>Hive中的URL解析函数主要是<code>parse_url</code>和<code>parse_url_tuple</code></p>
 <p><strong>parse_url</strong>函数是Hive中提供的最基本的URL解析函数，可以根据指定的参数从URL中解析出对应的参数进行返回。这是普通的一进一出的UDF函数，因此如果要查询多个字段的话，则需要写多个parse_url函数</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">--语法<br>parse_url(url, key)<br>--可选的key有:host、path、query、ref、protocol、authority等<br></code></pre></td></tr></table></figure>
@@ -355,19 +355,24 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs hive">--语法<br>parse_url_tuple(url, key1, key2, ...)<br></code></pre></td></tr></table></figure>
 <p>虽然从表现上看，parse_url_tuple是一进一出，但是<strong>这是一个UDTF表生产函数</strong>。因此在使用的时候，可以配合侧视图进行使用，或者说将其当成简单的UDF函数使用是不行的</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs hive">--单个lateral view使用<br>select<br>	a.url as url,<br>    b.host as host,<br>    b.path as path,<br>    b.query as query<br>from table_url a <br>lateral view parse_url_tuple(url,&quot;HOST&quot;,&quot;PATH&quot;,&quot;QUERY&quot;) b as host,path,query;<br><br>--多个lateral view<br>select<br>	a.url as url,<br>    b.host as host,<br>    b.path as path,<br>    c.protocol as protocol,<br>    c.query as query<br>from table_url a<br>         lateral view parse_url_tuple(url,&quot;HOST&quot;,&quot;PATH&quot;) b as host,path<br>         lateral view parse_url_tuple(url,&quot;PROTOCOL&quot;,&quot;QUERY&quot;) c as protocol,query;<br></code></pre></td></tr></table></figure>
-<p>注意侧视图的底层类似于inner join，因此如果UDTF不产生数据时，侧视图与原表关联的结果将为空，但是如果加上outer关键字后，就会保留原表数据，类似于outer join</p>
+<p>注意侧视图的底层类似于inner
+join，因此如果UDTF不产生数据时，侧视图与原表关联的结果将为空，但是如果加上outer关键字后，就会保留原表数据，类似于outer
+join</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">select ...<br>from ...<br>lateral view outer UDTF(...) as col<br></code></pre></td></tr></table></figure>
-<h1>行列转换</h1>
+<h1 id="行列转换">行列转换</h1>
 <p>行列转化主要涉及到表形式的问题。在一些场景下，表形式的转换会更适合业务的要求。以下的情况中将表形式抽象为比较简单的模式，而不涉及具体的业务含义</p>
 <h2 id="多行转多列">多行转多列</h2>
 <p>多行转多列，情况如下：</p>
 <img src="/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-4-Hive%E5%87%BD%E6%95%B0%E9%87%8D%E8%A6%81%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/%E5%A4%9A%E8%A1%8C%E8%BD%AC%E5%A4%9A%E5%88%97.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="多行转多列">
-<p>这种类型我们可以使用case-when函数和group by来实现。首先对数据进行分组，然后通过查询构造不同的列，针对不同情况进行不同的查询（case-when函数也可以使用if函数代替）。注意由于这里使用了group by，因此在select之后需要使用聚合函数。</p>
+<p>这种类型我们可以使用case-when函数和group
+by来实现。首先对数据进行分组，然后通过查询构造不同的列，针对不同情况进行不同的查询（case-when函数也可以使用if函数代替）。注意由于这里使用了group
+by，因此在select之后需要使用聚合函数。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>	col1,<br>	max(case col2 when &#x27;c&#x27; then col3 else 0 end) as c,<br>	max(case col2 when &#x27;d&#x27; then col3 else 0 end) as d,<br>	max(case col2 when &#x27;e&#x27; then col3 else 0 end) as e,<br>from table_name<br>group by col1;<br></code></pre></td></tr></table></figure>
 <h2 id="多行转单列">多行转单列</h2>
 <p>多行转单列，情况如下：</p>
 <img src="/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-4-Hive%E5%87%BD%E6%95%B0%E9%87%8D%E8%A6%81%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/%E5%A4%9A%E8%A1%8C%E8%BD%AC%E5%8D%95%E5%88%97.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="多行转单列">
-<p>这种类型我们同样使用group by进行分组，之后使用聚合函数中的数据收集函数。当然这里可能涉及到数据类型的细节问题，具体分析即可</p>
+<p>这种类型我们同样使用group
+by进行分组，之后使用聚合函数中的数据收集函数。当然这里可能涉及到数据类型的细节问题，具体分析即可</p>
 <p>这里先列出可能会使用到的函数以及对应的简要说明：</p>
 <ul>
 <li>concat函数：实现字符串拼接，但是不可以指定分隔符（<strong>如果任意一个函数为null，结果为null</strong>）</li>
@@ -387,20 +392,21 @@
 <img src="/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-4-Hive%E5%87%BD%E6%95%B0%E9%87%8D%E8%A6%81%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B/%E5%8D%95%E5%88%97%E8%BD%AC%E5%A4%9A%E8%A1%8C.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="单列转多行">
 <p>这种类型主要就是需要使用到explode函数，它可以将一个复杂类型的字段进行元素展开。实现如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>	col1, col2, <br>	sone_name.col3 as col3<br>from table_name<br>lateral view explode(split(col3, &#x27;,&#x27;)) some_name as col3;<br></code></pre></td></tr></table></figure>
-<h1>json数据处理</h1>
+<h1 id="json数据处理">json数据处理</h1>
 <p>Hive中为了实现json格式的数据解析，提供了两种解析数据的方式</p>
-<ol>
+<ol type="1">
 <li>使用<code>get_json_object</code>和<code>json_tuple</code>函数，这两个函数都可以实现将json数据中的每个字段独立解析出来，构建成表</li>
 <li>使用<code>JsonSerde</code>类，在建表的时候指定Serde，加载json文件到表中。这会自动将文件解析为对应的表格式</li>
 </ol>
 <p><strong>get_json_object</strong>函数可以用于解析json，从json字符串中返回指定某个对象列的值。函数一共有两个参数，第一个参数是要解析的json字符串，第二个参数是指定要返回的字段，可以通过<code>$.columnName</code>的方式来指定path。不过这种方式每次只能返回json对象中一列的值，如果要获取多个字段只能重复使用函数</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs hive">--语法<br>get_json_object(json_txt, path)<br><br>--举例<br>select<br>	get_json_object(json, &#x27;$.key&#x27;) as key<br>from table_name;<br></code></pre></td></tr></table></figure>
-<p><strong>json_tuple</strong>函数也可以用于json的解析，并且支持指定多个参数从而返回多个列的值。返回的每一列都是字符串类型。这也是一个UDTF表生成函数，一般也是搭配lateral view使用，类似于上面说到的URL解析函数中的parse_url_tuple。</p>
+<p><strong>json_tuple</strong>函数也可以用于json的解析，并且支持指定多个参数从而返回多个列的值。返回的每一列都是字符串类型。这也是一个UDTF表生成函数，一般也是搭配lateral
+view使用，类似于上面说到的URL解析函数中的parse_url_tuple。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">json_tuple(jsonStr, path1, path2, ...)<br></code></pre></td></tr></table></figure>
 <p>上述解析json的过程是将数据作为一个字符串加载到表中，要使用的时候再通过json解析函数对字符串进行解析，灵活性较高。还可以在数据加载的时候就将json文件直接解析加载，使用的是专门用于解析json文件的Serde解析器。在创建表的时候，只要指定使用JSONSerde，之后加载数据的时候就会自动对Json文件中的每一列进行解析</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs hive">create table(<br>    key1 string,<br>    key2 string<br>)<br>row format serde &#x27;org.apache.hive.hcatalog.data.JsonSerDe&#x27;<br>stored as textfile;<br></code></pre></td></tr></table></figure>
 <p>两种解析json的方式不同，如果数据中每一行只有个别字段是json格式字符串，就可以使用json函数来实现处理，但是如果数据加载的文件整体就是json文件，每一行数据就是一个json数据，那么建议直接使用JsonSerde来实现处理最为方便。</p>
-<h1>拉链表的设计与实现</h1>
+<h1 id="拉链表的设计与实现">拉链表的设计与实现</h1>
 <p>Hive在实际工作中主要用于构建离线数仓，定期从各种数据源中同步采集数据到Hive中，然后经过分层转换提供数据应用。由于数据定期会更新，那么就存在新数据和老数据如何设计安排的问题。例如在用户状态场景下，可能一天后有些用户的状态发生改变，即出现了新数据，应该如何将新数据进行加载写入，又应该如何处理老数据。</p>
 <p>第一种方案就是在Hive中直接使用新数据覆盖老数据。这种方式实现起来最简单，但是没有历史状态。</p>
 <p>第二种方案是每次数据改变都进行记录，根据日期构建一份全量的快照表，每天一张表。这种方式虽然记录了所有的状态，但是会造成很严重的数据冗余问题，导致数据存储量过大。</p>

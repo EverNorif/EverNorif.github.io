@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,12 +326,16 @@
             
               <div class="markdown-body">
                 
-                <h1>sbt</h1>
+                <h1 id="sbt">sbt</h1>
 <h2 id="简介">简介</h2>
-<p>sbt是一个简单的项目构建工具，类似于Maven。SBT是Simple Build Tool的首字母缩写，而因为我们多用其来构建Scala项目，所以另一种说法是Scala Build Tool。在当前的情况下，Maven多用于Java项目的构建，而sbt则面向scala项目。</p>
-<p>sbt的官网为<a target="_blank" rel="noopener" href="https://www.scala-sbt.org/index.html">scala-sbt.org</a>，其中很容易找到下载的界面。在下载之前首先需要准备好Java环境。下载好压缩包，之后解压到对应的路径，并配置好相关的环境变量<code>$SBT/bin</code>即可。</p>
+<p>sbt是一个简单的项目构建工具，类似于Maven。SBT是Simple Build
+Tool的首字母缩写，而因为我们多用其来构建Scala项目，所以另一种说法是Scala
+Build
+Tool。在当前的情况下，Maven多用于Java项目的构建，而sbt则面向scala项目。</p>
+<p>sbt的官网为<a
+target="_blank" rel="noopener" href="https://www.scala-sbt.org/index.html">scala-sbt.org</a>，其中很容易找到下载的界面。在下载之前首先需要准备好Java环境。下载好压缩包，之后解压到对应的路径，并配置好相关的环境变量<code>$SBT/bin</code>即可。</p>
 <p>配置好环境变量之后，可以在命令行中输入<code>sbt --version</code>查看当前sbt的版本。</p>
-<h2 id="Getting-Started">Getting Started</h2>
+<h2 id="getting-started">Getting Started</h2>
 <p>安装好了sbt之后，我们就可以构建一个简单的scala项目。sbt构建项目同Maven一样对项目目录有一定的要求。sbt除了会检查在项目根目录下的文件之外，也与Maven一样，会检查以下路径中的文件：</p>
 <ul>
 <li><code>src/main/scala</code>或<code>src/main/java</code>中的源文件</li>
@@ -341,7 +345,8 @@
 </ul>
 <p>那么我们现在可以构建如下目录的项目，目录结构如下：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">sbt-test<br>	- src<br>		- main<br>			- scala<br>				- hello.scala<br></code></pre></td></tr></table></figure>
-<p>在源文件目录下的<code>hello.scala</code>中是一个简单的scala Object：</p>
+<p>在源文件目录下的<code>hello.scala</code>中是一个简单的scala
+Object：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Hello</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]) = &#123;<br>        println(<span class="hljs-string">&quot;Hello,sbt!&quot;</span>)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>在命令行中进入项目目录，执行<code>sbt</code>命令，就会进入到sbt的交互式命令行模式。然后执行<code>run</code>命令，sbt就会自动扫描找到对应的入口方法并执行，像上面的项目，执行的效果就是：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">sbt:sbt-test&gt; run<br>[info] running Hello <br>Hello,sbt!<br></code></pre></td></tr></table></figure>
@@ -349,64 +354,78 @@
 <h2 id="常用命令">常用命令</h2>
 <p>下面是一些常用的sbt命令：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>命令</th>
 <th>命令功能</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>clean</code></td>
 <td>删除所有生成的文件 （在 <code>target</code> 目录下）</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>compile</code></td>
-<td>编译源文件（在 <code>src/main/scala</code> 和 <code>src/main/java</code> 目录下）</td>
+<td>编译源文件（在 <code>src/main/scala</code> 和
+<code>src/main/java</code> 目录下）</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>test</code></td>
 <td>编译和运行所有测试</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>console</code></td>
-<td>进入到一个包含所有编译的文件和所有依赖的 classpath 的 Scala shell中</td>
+<td>进入到一个包含所有编译的文件和所有依赖的 classpath 的 Scala
+shell中</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>run &lt;参数&gt;*</code></td>
 <td>执行项目的 main class</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>package</code></td>
-<td>将 <code>src/main/resources</code> 下的文件和 <code>src/main/scala</code> 以及 <code>src/main/java</code> 中编译出来的 class 文件打包成一个 jar 文件</td>
+<td>将 <code>src/main/resources</code> 下的文件和
+<code>src/main/scala</code> 以及 <code>src/main/java</code> 中编译出来的
+class 文件打包成一个 jar 文件</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>help &lt;命令&gt;</code></td>
 <td>显示指定的命令的详细帮助信息。如果没有指定命令，会显示所有命令的简介</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>reload</code></td>
-<td>重新加载构建定义（<code>build.sbt</code>， <code>project/*.scala</code>， <code>project/*.sbt</code> 这些文件中定义的内容)。在修改了构建定义文件之后需要重新加载</td>
+<td>重新加载构建定义（<code>build.sbt</code>，
+<code>project/*.scala</code>， <code>project/*.sbt</code>
+这些文件中定义的内容)。在修改了构建定义文件之后需要重新加载</td>
 </tr>
 </tbody>
 </table>
 <h2 id="构建设置">构建设置</h2>
 <p>在Maven中，我们构建项目的配置会放在根目录的<code>pom.xml</code>文件中。而在sbt中，承担这一角色的是项目根目录下的<code>build.sbt</code>文件。<code>.sbt</code>后缀的文件使用的是兼容Scala的特殊语法。</p>
-<p>在项目的基础目录中存在 <code>build.sbt</code>。而其他的 sbt 文件在 <code>project</code> 子目录中。 <code>project</code> 目录中还可以包含 <code>.scala</code> 文件，这些文件最后会和 <code>.sbt</code> 文件合并共同构成完整的构建设置。</p>
+<p>在项目的基础目录中存在 <code>build.sbt</code>。而其他的 sbt 文件在
+<code>project</code> 子目录中。 <code>project</code> 目录中还可以包含
+<code>.scala</code> 文件，这些文件最后会和 <code>.sbt</code>
+文件合并共同构成完整的构建设置。</p>
 <p>每个工程实际上都可以对应到一个映射表，这个映射表是众多键值对的集合，这些键值对信息就可以用来描述这个工程。例如我们可以在根目录下的<code>build.sbt</code>文件中输入如下内容：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala">name := <span class="hljs-string">&quot;Hello Sbt Project&quot;</span>      <span class="hljs-comment">// 项目名称</span><br><br>organization := <span class="hljs-string">&quot;xxx.xxx.xxx&quot;</span>  <span class="hljs-comment">// 组织名称（包名前缀）</span><br><br>version := <span class="hljs-string">&quot;0.0.1&quot;</span>  <span class="hljs-comment">// 版本号</span><br><br>scalaVersion := <span class="hljs-string">&quot;2.12.1&quot;</span>   <span class="hljs-comment">// 使用的Scala版本号</span><br></code></pre></td></tr></table></figure>
 <p>这就是在settings中指定了项目的名称，版本号等。name和version属性会在项目打包时作为包名的一部分，而organization则会作为包名的前缀。再次进入sbt命令行，可以通过<code>show name</code>来查看当前项目的名称：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">sbt:Hello Sbt Project&gt; show name<br>[info] Hello Sbt Project<br></code></pre></td></tr></table></figure>
 <p>同时我们还可以在<code>build.sbt</code>中声明依赖。依赖分为第三方的依赖以及本地jar包的依赖。</p>
-<p>第三方的依赖通常都会提供对应的配置，我们同样可以在<a target="_blank" rel="noopener" href="https://mvnrepository.com/">Maven Repository</a>中找到对应的依赖配置，配置模式如下：</p>
+<p>第三方的依赖通常都会提供对应的配置，我们同样可以在<a
+target="_blank" rel="noopener" href="https://mvnrepository.com/">Maven
+Repository</a>中找到对应的依赖配置，配置模式如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// resolvers 表示 依赖下载来源</span><br>resolvers += <span class="hljs-string">&quot;xxx&quot;</span> at <span class="hljs-string">&quot;url&quot;</span><br><br>libraryDependencies += <span class="hljs-string">&quot;groupId&quot;</span> % <span class="hljs-string">&quot;artifactId&quot;</span> % <span class="hljs-string">&quot;version&quot;</span> % <span class="hljs-string">&quot;scope&quot;</span><br><br><span class="hljs-comment">// 例如</span><br><span class="hljs-comment">// https://mvnrepository.com/artifact/com.google.code.gson/gson</span><br>libraryDependencies += <span class="hljs-string">&quot;com.google.code.gson&quot;</span> % <span class="hljs-string">&quot;gson&quot;</span> % <span class="hljs-string">&quot;2.9.1&quot;</span><br></code></pre></td></tr></table></figure>
 <p>而本地的依赖我们可以统一将其管理在对应的目录下，例如项目根目录下的<code>/myLib</code>，对应的jar包都放在该目录下，之后在文件中增加如下配置，这里的<code>baseDirectory</code>指的就是项目根目录。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">unmanagedBase := baseDirectory.value / <span class="hljs-string">&quot;myLib&quot;</span><br></code></pre></td></tr></table></figure>
 <p>完成依赖配置之后，就可以运行<code>sbt update</code>命令来进行依赖的下载与配置。</p>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://www.scala-sbt.org/1.x/docs/zh-cn/index.html">Sbt-Docs</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Finley/p/6398446.html">Scala构建工具SBT</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://www.scala-sbt.org/1.x/docs/zh-cn/index.html">Sbt-Docs</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/Finley/p/6398446.html">Scala构建工具SBT</a></li>
 </ol>
 
                 

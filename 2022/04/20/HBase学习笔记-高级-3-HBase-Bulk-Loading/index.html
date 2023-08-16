@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,52 +326,57 @@
               <div class="markdown-body">
                 
                 <blockquote>
-<p>官方文档链接：<a target="_blank" rel="noopener" href="https://hbase.apache.org/book.html#arch.bulk.load">Apache HBase ™ Reference Guide-Bulk Loading</a></p>
+<p>官方文档链接：<a
+target="_blank" rel="noopener" href="https://hbase.apache.org/book.html#arch.bulk.load">Apache HBase ™
+Reference Guide-Bulk Loading</a></p>
 </blockquote>
-<h2 id="Bulk-Load的简介">Bulk Load的简介</h2>
-<p>HBase中提供了一些导入数据的方式，前面我们也提到了，包括使用HBase Shell中的put命令，使用HBase中提供的MapReduce程序，使用Java提供的操作HBase中Table的API等。这些方式都需要与HBase连接，然后再及进行操作，在涉及海量数据存储的情况下，这些方式会给HBase的存储，计算以及网络资源造成较大消耗，并不是一种高效的方式。</p>
-<p>Bulk Load就是可以用来解决上面提到的问题。Bulk Load的方式是使用一个MapReduce任务来将数据以HBase的内部结构StroeFile的形式直接输出到运行的集群上，之后再将这些文件与HBase建立联系。相比于与HBase直接连接的操作，Bulk Load可以绕过与HBase的交互，包括预写日志、写入MemStore以及溢写flush等操作，因此使用的CPU以及网络资源更少，效率更高，适合海量数据的加载。</p>
-<h2 id="Bulk-Load-步骤">Bulk Load 步骤</h2>
-<h3 id="MapReduce-Job完成数据准备">MapReduce Job完成数据准备</h3>
+<h2 id="bulk-load的简介">Bulk Load的简介</h2>
+<p>HBase中提供了一些导入数据的方式，前面我们也提到了，包括使用HBase
+Shell中的put命令，使用HBase中提供的MapReduce程序，使用Java提供的操作HBase中Table的API等。这些方式都需要与HBase连接，然后再及进行操作，在涉及海量数据存储的情况下，这些方式会给HBase的存储，计算以及网络资源造成较大消耗，并不是一种高效的方式。</p>
+<p>Bulk Load就是可以用来解决上面提到的问题。Bulk
+Load的方式是使用一个MapReduce任务来将数据以HBase的内部结构StroeFile的形式直接输出到运行的集群上，之后再将这些文件与HBase建立联系。相比于与HBase直接连接的操作，Bulk
+Load可以绕过与HBase的交互，包括预写日志、写入MemStore以及溢写flush等操作，因此使用的CPU以及网络资源更少，效率更高，适合海量数据的加载。</p>
+<h2 id="bulk-load-步骤">Bulk Load 步骤</h2>
+<h3 id="mapreduce-job完成数据准备">MapReduce Job完成数据准备</h3>
 <p>Bulk Load首先需要利用MapReduce Job将数据加载到HDFS文件系统中。</p>
 <p>依赖说明：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>依赖</th>
 <th>功能</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>hbase-client</td>
 <td>HBase客户端</td>
 </tr>
-<tr>
+<tr class="even">
 <td>hbase-mapreduce</td>
 <td>HBase对MapReduce的支持</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>hadoop-common</td>
 <td>Hadoop通用包</td>
 </tr>
-<tr>
+<tr class="even">
 <td>hadoop-mapreduce-client-jobclient</td>
 <td>Hadoop MapReduce任务客户端</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>hadoop-mapreduce-client-core</td>
 <td>MapReduce客户端核心库</td>
 </tr>
-<tr>
+<tr class="even">
 <td>hadoop-hdfs</td>
 <td>HDFS相关操作</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>hadoop-auth</td>
 <td>Hadoop权限认证</td>
 </tr>
-<tr>
+<tr class="even">
 <td>commons-io</td>
 <td>方便操作文件的Apache的工具类包</td>
 </tr>
@@ -380,16 +385,17 @@
 <p>由于该任务中只需要对数据进行读取并且输出，因此只需要Map阶段即可。</p>
 <p><strong>Mapper程序编写</strong>：</p>
 <p>在HBase中提供了两个类来专门对MapReduce支持：</p>
-<ol>
+<ol type="1">
 <li><code>ImmutableBytesWritable</code>：对应Row Key</li>
 <li><code>MapReduceExtendedCell</code>：对应key-value键值对</li>
 </ol>
 <p>在Mapper中，设置out_key为<code>ImmutableBytesWritable</code>，out_value为<code>MapReduceExtendedCell</code>，Mapper读取文件，之后经过操作逻辑之后转为输出键值对。需要使用KeyValue类来构建单元格，每个需要写入到表中的字段都需要构建出单元格。</p>
-<p>（下面的程序假设已经从输入键值对中获取到了Row Key以及需要写入的字段，均为String形式）</p>
+<p>（下面的程序假设已经从输入键值对中获取到了Row
+Key以及需要写入的字段，均为String形式）</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Mapper</span>&lt;LongWritable, Text, ImmutableBytesWritable, MapReduceExtendedCell&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">map</span><span class="hljs-params">(LongWritable key, Text value, Mapper&lt;LongWritable, Text, ImmutableBytesWritable, MapReduceExtendedCell&gt;.Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        <span class="hljs-comment">// 从in_key和in_value中获取到下面的内容，包括行键，列族名，列标识符，字段值</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">rowKeyString</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;00001&quot;</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">colFamilyString</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;C1&quot;</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">colQualifier1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;col1&quot;</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">colQualifier2</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;col2&quot;</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">value1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;value1&quot;</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">value2</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;value2&quot;</span>;<br><br>        <span class="hljs-comment">// 转化成bytes数组备用</span><br>        <span class="hljs-type">byte</span>[] rowKeyBytes = Bytes.toBytes(rowKeyString);<br>        <span class="hljs-type">byte</span>[] colFamilyBytes = Bytes.toBytes(colFamilyString);<br>        <span class="hljs-type">byte</span>[] colQualifier1Bytes = Bytes.toBytes(colQualifier1);<br>        <span class="hljs-type">byte</span>[] colQualifier2Bytes = Bytes.toBytes(colQualifier2);<br>        <span class="hljs-type">byte</span>[] value1Bytes = Bytes.toBytes(value1);<br>        <span class="hljs-type">byte</span>[] value2Bytes = Bytes.toBytes(value2);<br><br>        <span class="hljs-comment">// 利用行键构建构建out_key</span><br>        <span class="hljs-type">ImmutableBytesWritable</span> <span class="hljs-variable">out_key_rowKey</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ImmutableBytesWritable</span>(rowKeyBytes);<br><br>        <span class="hljs-comment">// 利用KeyValue类构建单元格，每个需要写入到表中的字段都需要构建单元格</span><br>        <span class="hljs-type">KeyValue</span> <span class="hljs-variable">keyValue1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">KeyValue</span>(rowKeyBytes, colFamilyBytes, colQualifier1Bytes, value1Bytes);<br>        <span class="hljs-type">KeyValue</span> <span class="hljs-variable">keyValue2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">KeyValue</span>(rowKeyBytes, colFamilyBytes, colQualifier2Bytes, value2Bytes);<br><br>        <span class="hljs-comment">// 利用键值对构建out_value</span><br>        context.write(out_key_rowKey, <span class="hljs-keyword">new</span> <span class="hljs-title class_">MapReduceExtendedCell</span>(keyValue1));<br>        context.write(out_key_rowKey, <span class="hljs-keyword">new</span> <span class="hljs-title class_">MapReduceExtendedCell</span>(keyValue2));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p><strong>驱动类编写</strong>：</p>
 <p>与一般MapReduce程序驱动类不同之处在于需要获取利用<code>HFileOutputFormat2</code>来配置HFile输出</p>
-<ol>
+<ol type="1">
 <li>加载配置文件</li>
 <li>创建HBase连接</li>
 <li>获取Table对象</li>
@@ -400,11 +406,12 @@
 <li>提交MapReduce任务</li>
 </ol>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyDriver</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException, ClassNotFoundException &#123;<br>        <span class="hljs-comment">// 1. 加载配置文件</span><br>        <span class="hljs-type">Configuration</span> <span class="hljs-variable">conf</span> <span class="hljs-operator">=</span> HBaseConfiguration.create();<br><br>        <span class="hljs-comment">// 2. 创建HBase连接</span><br>        <span class="hljs-type">Connection</span> <span class="hljs-variable">connection</span> <span class="hljs-operator">=</span> ConnectionFactory.createConnection(conf);<br><br>        <span class="hljs-comment">// 3. 获取Table对象</span><br>        <span class="hljs-type">TableName</span> <span class="hljs-variable">tableName</span> <span class="hljs-operator">=</span> TableName.valueOf(<span class="hljs-string">&quot;MY_TABLE&quot;</span>);<br>        <span class="hljs-type">Table</span> <span class="hljs-variable">my_table</span> <span class="hljs-operator">=</span> connection.getTable(tableName);<br><br>        <span class="hljs-comment">// 4. 构建MapReduce Job</span><br>        <span class="hljs-type">Job</span> <span class="hljs-variable">job</span> <span class="hljs-operator">=</span> Job.getInstance(conf);<br><br>        <span class="hljs-comment">// 5. MapReduce Job驱动类的固定配置</span><br>        job.setJarByClass(MyDriver.class);<br>        job.setMapperClass(MyMapper.class);<br>        job.setOutputKeyClass(ImmutableBytesWritable.class);<br>        job.setOutputValueClass(MapReduceExtendedCell.class);<br>        job.setMapOutputKeyClass(ImmutableBytesWritable.class);<br>        job.setMapOutputValueClass(MapReduceExtendedCell.class);<br><br>        FileInputFormat.setInputPaths(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(<span class="hljs-string">&quot;hdfs://hadoop102:8020/input&quot;</span>));<br>        FileOutputFormat.setOutputPath(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(<span class="hljs-string">&quot;hdfs://hadoop102:8020/output&quot;</span>));<br><br>        <span class="hljs-comment">// 6. 获取HBase Region的分布情况</span><br>        <span class="hljs-type">RegionLocator</span> <span class="hljs-variable">regionLocator</span> <span class="hljs-operator">=</span> connection.getRegionLocator(tableName);<br><br>        <span class="hljs-comment">// 7. 配置HFile输出</span><br>        HFileOutputFormat2.configureIncrementalLoad(job, my_table, regionLocator);<br>        <br>        <span class="hljs-comment">// 8. 提交MapReduce任务</span><br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> job.waitForCompletion(<span class="hljs-literal">true</span>);<br>        System.exit(result ? <span class="hljs-number">0</span> : <span class="hljs-number">1</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="数据加载到HBase">数据加载到HBase</h3>
+<h3 id="数据加载到hbase">数据加载到HBase</h3>
 <p>执行上面的MapReduce任务之后，就可以在集群中观察到上传的数据，之后需要将对应数据加载到HBase中，使用HBase中自带的工具即可</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hbase org.apache.hadoop.hbase.tool.LoadIncrementalHFiles /myData/output MY_NAMESPACE:MY_TABLE<br></code></pre></td></tr></table></figure>
 <ul>
-<li>后面的两个参数分别为数据在HDFS文件系统中的路径、需要加载到的表名（命名空间: 表名）</li>
+<li>后面的两个参数分别为数据在HDFS文件系统中的路径、需要加载到的表名（命名空间:
+表名）</li>
 </ul>
 
                 

@@ -87,7 +87,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -329,7 +329,7 @@
             
               <div class="markdown-body">
                 
-                <h1>拦截器</h1>
+                <h1 id="拦截器">拦截器</h1>
 <h2 id="介绍">介绍</h2>
 <p>在SpringMVC中，拦截器主要用来拦截控制器方法的执行。它可以在控制器方法执行前后等位置执行相关的代码。</p>
 <blockquote>
@@ -345,7 +345,7 @@
 <blockquote>
 <p>这里的<code>/**</code>表示匹配所有请求，而<code>/*</code>则表示仅匹配单层目录。</p>
 </blockquote>
-<h2 id="HandlerInterceptor">HandlerInterceptor</h2>
+<h2 id="handlerinterceptor">HandlerInterceptor</h2>
 <p>我们的拦截器需要实现<code>HandlerInterceptor</code>接口，其中的接口方法有一共有三个：</p>
 <ul>
 <li><code>public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)</code>：在控制器方法执行之前执行preHandle，返回值为一个布尔类型的值，表示是否放行。如果返回true，则表示放行该请求，如果返回false，则表示拦截该请求。</li>
@@ -353,12 +353,14 @@
 <li><code>public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</code>：在处理完视图和模型数据以及渲染视图完毕之后，执行afterCompletion方法。</li>
 </ul>
 <h2 id="拦截器的执行顺序">拦截器的执行顺序</h2>
-<p>单个拦截器的执行顺序为：preHandler() -&gt; postHandle() -&gt; 控制器方法 -&gt; afterCompletion()。而如果配置了多个拦截器，则拦截器的执行顺序与其在SpringMVC配置文件中的配置顺序有关。</p>
+<p>单个拦截器的执行顺序为：preHandler() -&gt; postHandle() -&gt;
+控制器方法 -&gt;
+afterCompletion()。而如果配置了多个拦截器，则拦截器的执行顺序与其在SpringMVC配置文件中的配置顺序有关。</p>
 <p>如果每个拦截器的preHandle()方法都返回true，那么每个拦截器的方法都会执行，preHandle()方法按照配置的顺序执行，而postHandle()和afterCompletion()方法会按照配置顺序的逆序执行。</p>
 <img src="/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/%E5%A4%9A%E4%B8%AA%E6%8B%A6%E6%88%AA%E5%99%A8%E9%A1%BA%E5%BA%8F1.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="多个拦截器顺序1">
 <p>如果其中有一个拦截器的preHandle()方法返回了false，则后续的所有拦截器方法都不会执行，控制器方法也不会执行。而对于前面的拦截器，它们的preHandle()方法仍然是顺序执行，postHandle()方法都不执行，但是afterCompletion()方法会逆序执行。</p>
 <img src="/2022/10/20/SpringMVC%E7%AC%94%E8%AE%B0-6-%E6%8B%A6%E6%88%AA%E5%99%A8-%E5%BC%82%E5%B8%B8%E8%A7%A3%E6%9E%90%E5%99%A8%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%B1%BB/%E5%A4%9A%E4%B8%AA%E6%8B%A6%E6%88%AA%E5%99%A8%E9%A1%BA%E5%BA%8F2.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="多个拦截器顺序2">
-<h1>异常处理器</h1>
+<h1 id="异常处理器">异常处理器</h1>
 <p>SpringMVC中的异常处理器用于处理控制器方法执行过程中所出现的异常，对应的接口为<code>HandlerExceptionResolver</code>。通过异常处理器，我们可以在出现异常的时候跳转到相应页面，提高用户体验。</p>
 <p>对于该接口，在SpringMVC中提供了两个实现类，分别是<code>DefaultHandlerExceptionResolver</code>以及<code>SimpleMappingExceptionResolver</code>，其中默认的异常处理器即SpringMVC中默认使用的，而<code>SimpleMapplingExceptionResolver</code>则是自定义的异常处理器，我们可以利用注解配置来使用。在SpringMVC配置文件中配置如下内容：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--配置异常处理器--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;org.springframework.web.servlet.handler.SimpleMappingExceptionResolver&quot;</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--指定不同异常相应的跳转页面--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;exceptionMappings&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">props</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">prop</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&quot;java.lang.ArithmeticException&quot;</span>&gt;</span>error<span class="hljs-tag">&lt;/<span class="hljs-name">prop</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">props</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--将异常信息在请求域中共享，对应键值对的key名称为这里value的值--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;exceptionAttribute&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;ex&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span> <br></code></pre></td></tr></table></figure>
@@ -366,9 +368,11 @@
 <p>我们也可以创建自己的类用作异常处理：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ControllerAdvice</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ErrorController</span> &#123;<br>    <span class="hljs-meta">@ExceptionHandler(ArithmeticException.class)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">handlerArithmeticException</span><span class="hljs-params">(Model model, Exception ex)</span> &#123;<br>        model.addAttribute(<span class="hljs-string">&quot;ex&quot;</span>, ex);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这里我们利用<code>@ControllerAdvice</code>注解将当前类标识为异常处理的组件，其中的方法用于处理不同的异常，并用<code>@ExceptionHandler</code>标识该方法需要处理的异常。在形参中，我们可以利用Exception类型来承接当前处理中出现的异常对象。</p>
-<h1>SpringMVC中的配置类</h1>
+<h1 id="springmvc中的配置类">SpringMVC中的配置类</h1>
 <p>在SpringMVC中，我们用到的配置文件有项目配置文件<code>web.xml</code>，SpringMVC的配置文件<code>springMVC.xml</code>，后续还可能会用到Spring的配置文件<code>spring.xml</code>。我们可以使用配置文件，也可以用配置类来代替这些配置文件。</p>
-<p>在Servlet 3.0环境中，容器会在类路径中查找实现了<code>javax.servlet.ServletContainerInitializer</code>接口的类，如果找到的话，就会利用这个类来配置Servlet容器。Spring中提供了这个接口的实现类，名称为<code>SpringServletContainerInitializer</code>。这个类会查找实现了<code>WebApplicationInitializer</code>的类，实际配置的任务交由它来完成。Spring 3.2中提供了该接口的一个基础实现，名称为<code>AbstractAnnotationConfigDispatcherServletInitializer</code>。因此，我们只需要实现自己的类来继承该类，容器会自动发现然后利用它来配置Servlet上下文。</p>
+<p>在Servlet
+3.0环境中，容器会在类路径中查找实现了<code>javax.servlet.ServletContainerInitializer</code>接口的类，如果找到的话，就会利用这个类来配置Servlet容器。Spring中提供了这个接口的实现类，名称为<code>SpringServletContainerInitializer</code>。这个类会查找实现了<code>WebApplicationInitializer</code>的类，实际配置的任务交由它来完成。Spring
+3.2中提供了该接口的一个基础实现，名称为<code>AbstractAnnotationConfigDispatcherServletInitializer</code>。因此，我们只需要实现自己的类来继承该类，容器会自动发现然后利用它来配置Servlet上下文。</p>
 <p>我们实现的类对应配置文件<code>web.xml</code>。在<code>web.xml</code>中，我们会配置Spring的相关信息，配置SpringMVC的相关信息，配置前端控制器DispatcherServlet的映射规则url-pattern以及过滤器。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WebInit</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractAnnotationConfigDispatcherServletInitializer</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 指定Spring的配置类</span><br>    <span class="hljs-keyword">protected</span> Class&lt;?&gt;[] getRootConfigClasses() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Class</span>[]&#123;SpringConfig.class&#125;;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 指定SpringMVC的配置类</span><br>    <span class="hljs-keyword">protected</span> Class&lt;?&gt;[] getServletConfigClasses() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Class</span>[]&#123;SpringMVCConfig.class&#125;;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 指定DispatcherServlet的映射规则，即url-pattern</span><br>    <span class="hljs-keyword">protected</span> String[] getServletMappings() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]&#123;<span class="hljs-string">&quot;/&quot;</span>&#125;;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 添加过滤器</span><br>    <span class="hljs-keyword">protected</span> Filter[] getServletFilters() &#123;<br>        <span class="hljs-type">CharacterEncodingFilter</span> <span class="hljs-variable">encodingFilter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CharacterEncodingFilter</span>();<br>        encodingFilter.setEncoding(<span class="hljs-string">&quot;UTF-8&quot;</span>);<br>        encodingFilter.setForceEncoding(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">HiddenHttpMethodFilter</span> <span class="hljs-variable">hiddenHttpMethodFilter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HiddenHttpMethodFilter</span>();<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Filter</span>[]&#123;encodingFilter, hiddenHttpMethodFilter&#125;;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>Spring的配置类SpringConfig对应Spring的配置文件。在SSM整合之后，Spring的配置信息书写在此类中。</p>

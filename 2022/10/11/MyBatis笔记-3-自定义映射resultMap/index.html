@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,12 +326,12 @@
             
               <div class="markdown-body">
                 
-                <h1>简介</h1>
+                <h1 id="简介">简介</h1>
 <p>在前面的select标签当中，我们提到一定要指定resultType或者resultMap。前面我们一直使用的都是resultType，接下来就来介绍resultMap的使用。</p>
 <p>无论是resultType还是resultMap，它们完成的工作都是确定如何将查询得到的一行数据与Java中的实体类完成映射。在前面的环境中，我们数据库中的users表有如下的表结构：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>id</th>
 <th>username</th>
 <th>password</th>
@@ -340,6 +340,8 @@
 <th>email</th>
 </tr>
 </thead>
+<tbody>
+</tbody>
 </table>
 <p>而我们的实体类User中的定义如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> id;<br>    <span class="hljs-keyword">private</span> String username;<br>    <span class="hljs-keyword">private</span> String password;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> age;<br>    <span class="hljs-keyword">private</span> String gender;<br>    <span class="hljs-keyword">private</span> String email;<br>    <br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 省略了构造方法、get set方法、toString方法等</span><br>&#125;<br></code></pre></td></tr></table></figure>
@@ -348,29 +350,29 @@
 <p>员工表<code>emp</code>中的字段如下，同时准备了一些测试数据：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>emp_id</th>
 <th>emp_name</th>
 <th>dept_id</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>甲</td>
 <td>1</td>
 </tr>
-<tr>
+<tr class="even">
 <td>2</td>
 <td>乙</td>
 <td>2</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>3</td>
 <td>丙</td>
 <td>2</td>
 </tr>
-<tr>
+<tr class="even">
 <td>4</td>
 <td>丁</td>
 <td>1</td>
@@ -380,23 +382,23 @@
 <p>部门表<code>dept</code>中的字段如下：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>dept_id</th>
 <th>dept_name</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>A</td>
 </tr>
-<tr>
+<tr class="even">
 <td>2</td>
 <td>B</td>
 </tr>
 </tbody>
 </table>
-<h1>resultMap使用</h1>
+<h1 id="resultmap使用">resultMap使用</h1>
 <h2 id="字段和属性映射">字段和属性映射</h2>
 <p>在Java中，我们一般遵循的是驼峰命名法，而在数据库中，我们一般使用下划线。这样就可能出现字段和属性无法对应的问题。</p>
 <p>例如现在我们需要查询员工中的数据，我们准备了一个员工的实体类如下，其中的命名遵循的是驼峰命名法。</p>
@@ -459,7 +461,7 @@
 <p>测试输出结果如下，发现可以正常得到结果。</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Dept&#123;<span class="hljs-attribute">deptId</span>=1, <span class="hljs-attribute">deptName</span>=<span class="hljs-string">&#x27;A&#x27;</span>, empList=[Emp&#123;<span class="hljs-attribute">empId</span>=1, <span class="hljs-attribute">empName</span>=<span class="hljs-string">&#x27;甲&#x27;</span>, <span class="hljs-attribute">dept</span>=<span class="hljs-literal">null</span>&#125;, Emp&#123;<span class="hljs-attribute">empId</span>=4, <span class="hljs-attribute">empName</span>=<span class="hljs-string">&#x27;丁&#x27;</span>, <span class="hljs-attribute">dept</span>=<span class="hljs-literal">null</span>&#125;]&#125;<br></code></pre></td></tr></table></figure>
 <p>其中每个Emp的部门显示为null也是因为我们没有在collection中指定对应关系。</p>
-<h3 id="分步查询-2">分步查询</h3>
+<h3 id="分步查询-1">分步查询</h3>
 <p>第二种方式是分步查询。这个问题也可以拆分成两个步骤，第一步查询出部门的相关信息，得到部门id；第二步根据部门id来查询员工信息。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resultMap</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;deptMapStep&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;com.syh.bean.Dept&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;deptName&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_name&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">collection</span> <span class="hljs-attr">property</span>=<span class="hljs-string">&quot;empList&quot;</span> <span class="hljs-attr">select</span>=<span class="hljs-string">&quot;com.syh.mapper.EmpMapper.getEmpByDeptId&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;dept_id&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resultMap</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Dept getDeptEmpByIdStep(@Param(&quot;id&quot;) int dept_id)--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getDeptEmpByIdStep&quot;</span> <span class="hljs-attr">resultMap</span>=<span class="hljs-string">&quot;deptMapStep&quot;</span>&gt;</span><br>    select *<br>    from dept<br>    where dept_id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>这里在collection标签中，同样需要指定<code>select</code>表示下一步的操作，<code>column</code>表示传递过去的参数。下一步是根据部门id来查询员工信息，则可以用下面的操作来完成：</p>

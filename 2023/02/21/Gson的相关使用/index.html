@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,7 +325,7 @@
             
               <div class="markdown-body">
                 
-                <h1>Gson</h1>
+                <h1 id="gson">Gson</h1>
 <h2 id="简述">简述</h2>
 <p>Gson是Google提供的一个Java库，它可以用来在Java对象以及Json数据之间进行转换，即可以Java对象转化成一个json的表示形式，也可以将json字符串转化为对应等效的Java对象。</p>
 <h2 id="相关使用">相关使用</h2>
@@ -335,16 +335,16 @@
 <p>有了Gson对象之后，我们就可以调用其中的核心方法，分别是将对象转化为字符串的<code>toJson()</code>以及将字符串转化为对象的<code>fromJson()</code>。下面是简单的使用举例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Gson</span> <span class="hljs-variable">gson</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Gson</span>();<br><span class="hljs-type">String</span> <span class="hljs-variable">json</span> <span class="hljs-operator">=</span> gson.toJson(<span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>(<span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-number">18</span>));<br>System.out.println(json); <span class="hljs-comment">// &#123;&quot;name&quot;:&quot;xxx&quot;,&quot;age&quot;:18&#125;</span><br><br><span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> gson.fromJson(<span class="hljs-string">&quot;&#123;\&quot;name\&quot;:\&quot;xxx\&quot;,\&quot;age\&quot;:18&#125;&quot;</span>, User.class);<br>System.out.println(user.getName()); <span class="hljs-comment">// xxx</span><br>System.out.println(user.getAge()); <span class="hljs-comment">// 18</span><br></code></pre></td></tr></table></figure>
 <p>对于这里转换的类与对象，官方文档中有如下的几点提示：</p>
-<ol>
+<ol type="1">
 <li>在类中允许使用<code>private</code>的属性，这也是推荐使用的方式</li>
-<li>不需要使用注解来指示包含或者不包含哪些字段，默认会包含当前类以及所有super class中的所有字段</li>
+<li>不需要使用注解来指示包含或者不包含哪些字段，默认会包含当前类以及所有super
+class中的所有字段</li>
 <li><code>transient</code>修饰的字段不会被json序列化或者反序列化</li>
 <li>空值的处理逻辑分为<code>toJson</code>和<code>fromJson</code>，默认如下：
 <ul>
 <li><code>toJson</code>：空值跳过，不输出</li>
 <li><code>fromJson</code>：空值处理为类中的null</li>
-</ul>
-</li>
+</ul></li>
 <li>编译器创建的字段不会被序列化或者反序列化，这类字段一般是是带<code>$</code>符号的</li>
 </ol>
 <p>数组和集合则可以使用如下的操作：</p>
@@ -361,10 +361,13 @@
 <blockquote>
 <p>在Scala中也可以使用Gson，不过在Scala中我们可以直接利用classof来获取对应的类型，包括泛型。</p>
 </blockquote>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangmx1993328/article/details/84385548">Google Gson API 介绍与使用</a></li>
-<li><a target="_blank" rel="noopener" href="https://sites.google.com/site/gson/gson-user-guide">Gson User Guide</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/wangmx1993328/article/details/84385548">Google
+Gson API 介绍与使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://sites.google.com/site/gson/gson-user-guide">Gson
+User Guide</a></li>
 </ol>
 
                 

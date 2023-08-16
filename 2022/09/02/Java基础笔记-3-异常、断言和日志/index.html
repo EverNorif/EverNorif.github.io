@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -327,12 +327,12 @@
             
               <div class="markdown-body">
                 
-                <h1>异常</h1>
+                <h1 id="异常">异常</h1>
 <h2 id="异常介绍">异常介绍</h2>
 <p>Java中异常整体的架构图如下：</p>
 <img src="/2022/09/02/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-3-%E5%BC%82%E5%B8%B8%E3%80%81%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97/Java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Java异常体系">
 <p>在Java中，异常对象都是派生于Throwable类的一个类实例。当然用户也可以创建自己的异常类。所有异常都是由Throwable继承而来，然后分解为两个分支：</p>
-<ol>
+<ol type="1">
 <li>Error（错误）：Java虚拟机无法解决的严重问题，例如JVM系统内部错误，资源耗尽等</li>
 <li>Exception（异常）：其他因编程错误或偶然的外在因素导致的一般性问题，可以使用针对性的代码来进行处理，例如空指针访问等</li>
 </ol>
@@ -362,33 +362,29 @@
 <blockquote>
 <p>throws和throw的对比：</p>
 <ul>
-<li>
-<p>throws：用来声明一个方法可能产生的所有异常</p>
-</li>
-<li>
-<p>throw：用来抛出一个具体的异常对象</p>
-</li>
+<li><p>throws：用来声明一个方法可能产生的所有异常</p></li>
+<li><p>throw：用来抛出一个具体的异常对象</p></li>
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>throws</th>
 <th>throw</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>意义</td>
 <td>异常处理的一种方式</td>
 <td>手动生成异常对象的关键字</td>
 </tr>
-<tr>
+<tr class="even">
 <td>位置</td>
 <td>方法声明处</td>
 <td>方法体中</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>后面带的东西</td>
 <td>异常类型</td>
 <td>异常对象</td>
@@ -409,7 +405,8 @@
 <li>不应该在finally代码块中包含return语句，否则返回值会进行覆盖，甚至会吞掉可能的异常</li>
 </ul>
 <blockquote>
-<p>堆栈轨迹（Stack Trace）是程序执行过程中某个特定点上所有挂起方法调用的一个列表。</p>
+<p>堆栈轨迹（Stack
+Trace）是程序执行过程中某个特定点上所有挂起方法调用的一个列表。</p>
 <p>可以调用Throwable类的printStackTrace方法访问堆栈轨迹的文本描述信息</p>
 </blockquote>
 <h2 id="try-with-resources">try-with-resources</h2>
@@ -421,7 +418,7 @@
 <li>try-with-resources语句本身也可以有catch子句和finally子句</li>
 <li>如果try块抛出异常，close方法也抛出异常，那么原来的异常会重新抛出，而close方法抛出的异常会被抑制。这些异常会被自动捕获，并由addSuppreseed方法增加到原来的异常。调用getSuppressed方法，可以生成从close方法抛出并抑制的异常数组</li>
 </ul>
-<h1>断言</h1>
+<h1 id="断言">断言</h1>
 <p>断言机制允许在测试期间向代码中插入一些检查，而在生产代码中会自动删除这些检查。断言对应的关键字是<code>assert</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">assert</span> condition;<br><br><span class="hljs-keyword">assert</span> condition: expression;<br></code></pre></td></tr></table></figure>
 <p>上面两个语句都会计算条件，如果结果为false，则抛出一个AssertionError异常。在第二种形式中，表达式expression将传入AssertionError对象的构造器，转化成一个消息字符串。</p>
@@ -435,7 +432,7 @@
 <li>断言检查只是在开发和测试阶段才会打开</li>
 </ul>
 <p>我们不应该使用断言向程序的其他部分通知错误，不应该利用断言与程序用户沟通问题。断言只应该用于在测试阶段确定程序内部错误的位置。</p>
-<h1>日志</h1>
+<h1 id="日志">日志</h1>
 <h2 id="日志优点">日志优点</h2>
 <p>在一些简单的场景下，我们会使用<code>System.out.println</code>来进行一些输出，观察程序的行为。但是这个输出语句毕竟不是专门用来解决日志问题，日志API相比于它，会有更多的优点：</p>
 <ul>
@@ -447,7 +444,7 @@
 <li>应用程序可以使用多个日志记录器</li>
 <li>日志系统的配置由配置文件控制</li>
 </ul>
-<h2 id="标准Java日志框架">标准Java日志框架</h2>
+<h2 id="标准java日志框架">标准Java日志框架</h2>
 <p>标准Java日志框架需要引入的包为<code>java.util.logging</code></p>
 <p>下面是一个基本的日志使用方式。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 获取全局日志记录器，调用info方法记录日志 </span><br>Logger.getGlobal().info(<span class="hljs-string">&quot;something...&quot;</span>);<br><br><span class="hljs-comment">// 取消日志记录</span><br>Logger.getGlobal().setLevel(Level.OFF);<br></code></pre></td></tr></table></figure>

@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -331,16 +331,10 @@
 <p>在Scala中同样使用<code>try-catch-finally</code>的方式来获取，其中只有一个catch代码块，在里面通过case进行异常的判定</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">try</span>&#123;<br>    <span class="hljs-keyword">val</span> n = <span class="hljs-number">10</span> / <span class="hljs-number">0</span><br>&#125; <span class="hljs-keyword">catch</span> &#123;<br>    <span class="hljs-keyword">case</span> e: <span class="hljs-type">ArithmeticException</span> =&gt; &#123;<br>        println(<span class="hljs-string">&quot;发生算术异常&quot;</span>)<br>    &#125;<br>    <span class="hljs-keyword">case</span> e: <span class="hljs-type">Exception</span> =&gt; &#123;<br>        println(<span class="hljs-string">&quot;发生一般异常&quot;</span>)<br>    &#125;<br>&#125; <span class="hljs-keyword">finally</span> &#123;<br>    println(<span class="hljs-string">&quot;处理结束&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
 <ul>
-<li>
-<p>Scala的异常工作机制与Java一样，但是没有编译时异常，所有的异常都是运行时处理</p>
-</li>
-<li>
-<p>Scala中也是用<code>throw</code>关键字抛出异常，所有异常都是<code>Throwable</code>的子类，<code>throw</code>表达式是有类型的，就是<code>Nothing</code>。<code>Nothing</code>主要用在一个函数总是不能正常工作，总是抛出异常的时候用作返回值类型。</p>
-</li>
-<li>
-<p>Java中提供了throws关键字来声明方法可能引发的异常，在Scala中可以使用throws注解来声明异常</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">NumberFormatException</span>])<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f11</span></span>()=&#123;<br> <span class="hljs-string">&quot;abc&quot;</span>.toInt<br>&#125;<br></code></pre></td></tr></table></figure>
-</li>
+<li><p>Scala的异常工作机制与Java一样，但是没有编译时异常，所有的异常都是运行时处理</p></li>
+<li><p>Scala中也是用<code>throw</code>关键字抛出异常，所有异常都是<code>Throwable</code>的子类，<code>throw</code>表达式是有类型的，就是<code>Nothing</code>。<code>Nothing</code>主要用在一个函数总是不能正常工作，总是抛出异常的时候用作返回值类型。</p></li>
+<li><p>Java中提供了throws关键字来声明方法可能引发的异常，在Scala中可以使用throws注解来声明异常</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">NumberFormatException</span>])<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f11</span></span>()=&#123;<br> <span class="hljs-string">&quot;abc&quot;</span>.toInt<br>&#125;<br></code></pre></td></tr></table></figure></li>
 </ul>
 <h2 id="隐式转换">隐式转换</h2>
 <p>总结来说，在Scala中，当编译器第一次编译失败的时候，会在当前的环境中查找能够让代码编译通过的方法，用于将类型进行转换，实现二次编译。当编译错误的时候，编译器会尝试在当前作用域范围内查找能够调用对应功能的转换规则，这个过程由编译器完成，称之为隐式转换或者自动转换。（隐式转换能够在不修改类代码的情况下扩充类的功能）</p>
@@ -375,18 +369,10 @@
 <p>如上所示，如果参数列表中只有一个隐式参数，那么无论这个隐式参数是否提供默认参数，需要使用隐式参数的话，在调用的时候需要将括号一起省略掉。（如同上面的<code>hello</code>）</p>
 <p>如果调用的时候，又想要括号，则可以在函数定义的时候，在隐式参数列表之前添加一个空参数列表<code>()</code>，那么会出现以下情况</p>
 <ul>
-<li>
-<p><code>func</code>：调用隐式参数</p>
-</li>
-<li>
-<p><code>func()</code>：调用隐式参数</p>
-</li>
-<li>
-<p><code>func()()</code>：使用默认参数</p>
-</li>
-<li>
-<p><code>func()(arg)</code>：使用传入参数</p>
-</li>
+<li><p><code>func</code>：调用隐式参数</p></li>
+<li><p><code>func()</code>：调用隐式参数</p></li>
+<li><p><code>func()()</code>：使用默认参数</p></li>
+<li><p><code>func()(arg)</code>：使用传入参数</p></li>
 </ul>
 <p>示例代码如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 指定隐式参数</span><br><span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> str: <span class="hljs-type">String</span> = <span class="hljs-string">&quot;hello world&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hello</span></span>()(<span class="hljs-keyword">implicit</span> arg: <span class="hljs-type">String</span> = <span class="hljs-string">&quot;goodbye world&quot;</span>) = &#123;<br>    println(arg)<br>&#125;<br><br>hello <span class="hljs-comment">// hello world</span><br>hello() <span class="hljs-comment">// hello world</span><br>hello()() <span class="hljs-comment">// goodbye world</span><br>hello()(<span class="hljs-string">&quot;wow&quot;</span>) <span class="hljs-comment">// wow</span><br></code></pre></td></tr></table></figure>
@@ -430,7 +416,7 @@
 <li><code>def f[A : B](a: A) = println(a)</code>等同于<code>def f[A](a: A)(implicit arg: B[A])</code></li>
 <li>是将泛型和隐式转换结合的产物，使用上下文限定（前者）后，方法内无法使用隐式参数名调用隐式参数，需要通过<code>implicitly[Ordering[A]]</code>获取隐式变量。</li>
 </ul>
-<p>（待补充…）</p>
+<p>（待补充...）</p>
 
                 
               </div>

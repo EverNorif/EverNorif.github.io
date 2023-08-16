@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,7 +328,7 @@
             
               <div class="markdown-body">
                 
-                <h1>注解介绍</h1>
+                <h1 id="注解介绍">注解介绍</h1>
 <p>之前我们介绍了基于XML配置文件来管理Bean，在Spring中，还可以通过注解来完成Bean的管理。注解本身并不能执行，它只是完成标记功能，框架在检测到注解标记的位置之后，针对不同的注解来执行具体的操作。Spring为了指导程序员在哪些地方进行了标注，则需要通过扫描的方式来进行检测，然后根据注解进行后续操作。</p>
 <p>Spring中提供有四种相关的注解：</p>
 <ul>
@@ -346,7 +346,7 @@
 <p>通过注解配置的Bean对象，默认的id为类名的小驼峰形式，当然我们也可以在注解的value指定，这样对应的id就会使用我们指定的id：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component(&quot;shopBean&quot;)</span><br></code></pre></td></tr></table></figure>
 </blockquote>
-<h1>注解扫描</h1>
+<h1 id="注解扫描">注解扫描</h1>
 <p>在配置文件中进行开启注解扫描需要使用到<code>component-scan</code>标签，最基本的扫描方式就是指定基础的包名。除此之外，我们还可以指定要排除哪些组件或者只扫描哪些组件。</p>
 <p>首先是指定要排除的组件。使用<code>exclude-filter</code>标签来指定排除规则，其中的type属性可以指定排除规则的类型，express属性指定对应全类名，在express中，也可以使用逗号来分隔多个内容。</p>
 <ul>
@@ -361,7 +361,7 @@
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">context:component-scan</span> <span class="hljs-attr">base-package</span>=<span class="hljs-string">&quot;com.syh.spring.bean&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">context:include-filter</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;annotation&quot;</span> <span class="hljs-attr">expression</span>=<span class="hljs-string">&quot;org.springframework.stereotype.Component&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">context:include-filter</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;assignable&quot;</span> <span class="hljs-attr">expression</span>=<span class="hljs-string">&quot;com.syh.spring.bean.Shop&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">context:component-scan</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>上面的两类标签可以多次使用，但是不能同时使用。即可以有多个排除，或者多个包含，但是不能既使用排除、又使用包含。虽然语法上没有问题，但是无法达到我们所需的效果。</p>
-<h1>基于注解的自动装配</h1>
+<h1 id="基于注解的自动装配">基于注解的自动装配</h1>
 <p>基于注解管理Bean的方式中，也提供自动装配的功能。对应注解为<code>@Autowired</code>，使用该注解即可完成自动装配。该注解能够标识的位置有以下三种：</p>
 <ul>
 <li>标识在成员变量上，此时不需要设置成员变量的set方法</li>
@@ -373,7 +373,7 @@
 <p><code>@Qualifier</code>注解是提供匹配id的一个注解，我们可以在其中设置属性名希望匹配的id名称。</p>
 <p>首先根据所需要组件的类型到IOC容器中进行查找，如果能够找到唯一的Bean，就直接进行装配；如果完全找不到对应的类型，则装配失败。如果匹配到的Bean不止一个，则根据id进行匹配。如果配置了<code>@Qualifier</code>注解，则匹配的id为注解中的名称，如果没有配置，则按照属性名称进行匹配。如果能够匹配到，则执行装配，否则，则装配失败。</p>
 <blockquote>
-<p>基于注解的自动装配，如果装配失败，都会报错<code>NoSuchBeanDefinitionException </code>。而基于XML的自动装配，如果装配失败，则使用的是默认值。</p>
+<p>基于注解的自动装配，如果装配失败，都会报错<code>NoSuchBeanDefinitionException</code>。而基于XML的自动装配，如果装配失败，则使用的是默认值。</p>
 <p>实际上该行为是由<code>@Autowired</code>中的属性<code>required</code>来指定的，它的默认值为true，表示自动装配无法找到对应的Bean的时候会装配失败，抛出错误。如果将该值设置为false的时候，如果装配失败，则使用默认值。</p>
 </blockquote>
 

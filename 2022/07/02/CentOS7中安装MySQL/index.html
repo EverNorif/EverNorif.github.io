@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,7 +325,7 @@
             
               <div class="markdown-body">
                 
-                <h1>安装流程</h1>
+                <h1 id="安装流程">安装流程</h1>
 <p>（在下面的流程中可能会涉及到需要root权限的地方，使用sudo执行命令即可）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">检查当前系统是否安装过MySQL</span><br>[syh@hadoop102 ~]$ rpm -qa | grep mariadb<br>mariadb-libs-5.5.56-2.el7.x86_64<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">如果安装过则进行卸载</span><br>sudo rpm -e --nodeps mariadb-libs<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">在/opt/software上创建mysql文件夹，作为后续安装的目录</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">将MySQL安装包上传到该目录下</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">解压MySQL安装包</span><br>tar -xvf mysql-5.7.29-1.el7.x86_64.rpm-bundle.tar<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">在安装目录下执行rpm安装</span><br>sudo rpm -ivh mysql-community-common-5.7.29-1.el7.x86_64.rpm mysql-community-libs-5.7.29-1.el7.x86_64.rpm mysql-community-client-5.7.29-1.el7.x86_64.rpm mysql-community-server-5.7.29-1.el7.x86_64.rpm<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">如果是最小化安装的话可能会报错，需要先安装缺少的依赖</span><br>yum -y install libaio<br></code></pre></td></tr></table></figure>
 <p>这样MySQL已经安装好了，下面进行MySQL服务相关的操作</p>

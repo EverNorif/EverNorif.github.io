@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,7 +325,7 @@
             
               <div class="markdown-body">
                 
-                <h1>数据库场景</h1>
+                <h1 id="数据库场景">数据库场景</h1>
 <p>在Web开发过程中，经常会使用到数据库，因此需要引入相关依赖。SpringBoot官方提供了一个启动器，对应数据库场景。我们引入下面的启动器，就可以引入数据库相关依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-data-jdbc<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>不过在导入的依赖中，没有导入数据库的驱动。这也能够理解，SpringBoot并不能预见到我们会使用哪种数据库驱动，因此将导入的主动权交给用户。所以接下来我们需要引入数据库驱动，例如MySQL驱动：</p>
@@ -353,9 +353,12 @@
 <p>第二种方式，使用场景启动器。只需要直接引入相关starter即可：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>druid-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.1.17<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 </blockquote>
-<h1>MyBatis整合</h1>
+<h1 id="mybatis整合">MyBatis整合</h1>
 <h2 id="配置使用">配置使用</h2>
-<p>在SSM中，DAO层我们使用的是MyBatis框架。我们同样可以在SpringBoot中整合MyBatis。由于MyBaits为我们提供了SpringBoot的场景启动器（<a target="_blank" rel="noopener" href="https://github.com/mybatis/spring-boot-starter">GitHub - mybatis/spring-boot-starter: MyBatis integration with Spring Boot</a>），因此我们直接在项目中引入即可：</p>
+<p>在SSM中，DAO层我们使用的是MyBatis框架。我们同样可以在SpringBoot中整合MyBatis。由于MyBaits为我们提供了SpringBoot的场景启动器（<a
+target="_blank" rel="noopener" href="https://github.com/mybatis/spring-boot-starter">GitHub -
+mybatis/spring-boot-starter: MyBatis integration with Spring
+Boot</a>），因此我们直接在项目中引入即可：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.mybatis.spring.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mybatis-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>引入启动器之后，SpringBoot会帮助我们完成自动配置。包括全局配置文件、SqlSessionFactory、SqlSession等。</p>
 <p>之后，我们需要在<code>application.yaml</code>配置文件中指定相关配置，除了上面的数据库连接配置之外，还需要配置mybatis规则，包括全局配置文件的位置，mapper配置文件的位置：</p>
@@ -373,7 +376,7 @@
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># MyBatis规则</span><br><span class="hljs-attr">mybatis:</span><br>  <span class="hljs-attr">mapper-locations:</span> <span class="hljs-string">classpath:mybatis/mapper/*.xml</span> <span class="hljs-comment"># mapper配置文件</span><br>  <span class="hljs-attr">configuration:</span><br>    <span class="hljs-attr">map-underscore-to-camel-case:</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
 <p>默认没有开启驼峰转换，这里我们使用配置的方式进行开启。</p>
 <p>总结来说，在SpringBoot中使用MyBatis，我们需要经过下面的步骤：</p>
-<ol>
+<ol type="1">
 <li>导入MyBatis官方提供的启动器starter</li>
 <li>编写Mapper接口，使用<code>@Mapper</code>注解</li>
 <li>编写Mapper配置文件并绑定对应的Mapper接口</li>
@@ -384,7 +387,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Mapper</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">EmpMapper</span> &#123;<br>    <span class="hljs-meta">@Select(&quot;select * from emp where emp_id=#&#123;id&#125;&quot;)</span><br>    Emp <span class="hljs-title function_">getEmp</span><span class="hljs-params">(Integer id)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这是提供的一种简化方式，当然也可以利用注解和配置文件结合。简单的操作方法就直接写在注解上，如果复杂的就写在配置文件中。</p>
 <blockquote>
-<p>我们的Mapper接口都需要使用<code>@Mapper</code>注解进行标识，不过我们也可以在启动类上使用<code>@MapperScan(&quot;com.syh.springboot.mapper&quot;)</code>注解，指明对应Mapper所在的包路径，之后对应包下的Mapper接口就可以不标注<code>@Mapper</code>注解了。</p>
+<p>我们的Mapper接口都需要使用<code>@Mapper</code>注解进行标识，不过我们也可以在启动类上使用<code>@MapperScan("com.syh.springboot.mapper")</code>注解，指明对应Mapper所在的包路径，之后对应包下的Mapper接口就可以不标注<code>@Mapper</code>注解了。</p>
 </blockquote>
 
                 

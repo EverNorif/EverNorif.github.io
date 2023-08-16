@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,20 +328,24 @@
             
               <div class="markdown-body">
                 
-                <h1>Tomcat</h1>
+                <h1 id="tomcat">Tomcat</h1>
 <h2 id="简介">简介</h2>
 <p>在介绍Tomcat之前，我们需要先了解Web服务器的概念。Web服务器是一个应用程序，它对HTTP协议的操作进行了封装，使得程序员无需直接对协议进行操作，从而让Web开发更加便捷。Web服务器软件被安装在服务器端，后续我们可以将自己写的Web项目部署到服务器软件中，当Web服务器软件启动后，就可以直接通过浏览器来访问对应的页面。Tomcat就是一种服务器软件，当然它也只是其中的一种，还有很多其他的服务器软件，而这里我们先学习的是Tomcat。</p>
 <p>Tomcat是Apache软件基金会的一个核心项目，是一个开源的轻量级Web服务器，支持Servlet，JSP等少量JavaEE规范。Tomcat又被称为Web容器、Servlet容器，Servlet需要依赖Tomcat才能够运行。</p>
 <blockquote>
-<p>JavaEE规范：JavaEE，Java Enterprise Edition，Java企业版，指的是Java企业级开发的技术规范总和，包含了13项技术规范，JDBC、JNDI、EJB、RMI、JSP、Servlet、XML、JMS、Java IDL、JTS、JTA、JavaMail、JAF。</p>
+<p>JavaEE规范：JavaEE，Java Enterprise
+Edition，Java企业版，指的是Java企业级开发的技术规范总和，包含了13项技术规范，JDBC、JNDI、EJB、RMI、JSP、Servlet、XML、JMS、Java
+IDL、JTS、JTA、JavaMail、JAF。</p>
 </blockquote>
 <h2 id="基本使用">基本使用</h2>
 <p>那么接下来先了解Tomcat的基本使用。</p>
-<p>首先是下载与安装。Tomcat的下载可以从官网<a target="_blank" rel="noopener" href="https://tomcat.apache.org/">Apache Tomcat® - Welcome!</a>直接进行，根据实际情况选择对应的版本，下载完成后得到压缩包，解压到对应目录即可。</p>
+<p>首先是下载与安装。Tomcat的下载可以从官网<a
+target="_blank" rel="noopener" href="https://tomcat.apache.org/">Apache Tomcat® -
+Welcome!</a>直接进行，根据实际情况选择对应的版本，下载完成后得到压缩包，解压到对应目录即可。</p>
 <p>下载完成之后可以启动服务，服务启动只需要执行对应命令即可，命令位置为<code>bin/startup</code>。启动成功之后会弹出新的黑窗口，我们可以访问localhost:8080，就可以看到Tomcat默认的内容。关闭Tomcat服务可以通过<code>bin\shutdown</code>命令来进行正常关闭。</p>
 <p>Tomcat的相关配置文件在<code>conf</code>目录下，其中启动端口号默认为8080，配置信息在<code>conf/server.xml</code>下。</p>
 <p>利用Tomcat进行项目部署也非常简单，只需要将我们的项目放置到<code>webapps</code>目录下即可。但是随着项目的增大，项目的资源越来越多，项目的拷贝过程也会比较长，因此我们一般情况是使用war包的形式来进行项目传输。我们一般会将JavaWeb项目打包成<code>war</code>包的形式，然后将其放置到<code>webapps</code>目录下，Tomcat会自动进行<code>war</code>包的解压。</p>
-<h2 id="利用IDEA进行开发">利用IDEA进行开发</h2>
+<h2 id="利用idea进行开发">利用IDEA进行开发</h2>
 <p>我们首先了解一下Web项目的结构，可以分成开发中的项目以及可以部署的项目，这两种项目的结构有所差别。</p>
 <p>开发中的项目，其结构如下：</p>
 <ul>
@@ -357,15 +361,11 @@
 <li><code>WEB-INF</code>：Web项目核心目录，不允许修改名称
 <ul>
 <li><code>web.xml</code>：Web项目配置文件</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
+</ul></li>
+</ul></li>
+</ul></li>
 <li><code>test</code>：测试目录</li>
-</ul>
-</li>
+</ul></li>
 <li><code>pom.xml</code>：maven依赖配置</li>
 </ul>
 <p>开发完成可以部署的项目，其结构如下：</p>
@@ -376,18 +376,22 @@
 <li><code>classes</code>：Java字节码文件</li>
 <li><code>lib</code>：项目所需的jar包</li>
 <li><code>web.xml</code>：Web项目配置文件</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>我们可以通过maven的package打包命令将项目进行打包，编译后的Java字节码文件和resource的资源文件，会被放到<code>WEB-INF</code>下的<code>classes</code>目录下，<code>pom.xml</code>中依赖的jar包会被放入<code>WEB-INF</code>下的lib目录中。</p>
 <p>接下来我们需要在IDEA中创建一个Maven Web项目，步骤如下：</p>
-<ol>
+<ol type="1">
 <li>正常创建Maven项目</li>
 <li>修改<code>pom.xml</code>中的项目打包方式为war，该项完整格式为<code>&lt;packaging&gt;war&lt;/packaging&gt;</code></li>
-<li>补齐Maven Web项目中缺少的webapp目录结构，可以手动补齐，也可以通过IDEA的提示进行补齐（<code>File</code> -&gt; <code>Project Structure</code> -&gt; <code>Facets</code>，选择项目后增加<code>webapp</code>以及<code>web.xml</code>）</li>
+<li>补齐Maven
+Web项目中缺少的webapp目录结构，可以手动补齐，也可以通过IDEA的提示进行补齐（<code>File</code>
+-&gt; <code>Project Structure</code> -&gt;
+<code>Facets</code>，选择项目后增加<code>webapp</code>以及<code>web.xml</code>）</li>
 </ol>
-<p>一般情况下，我们在IDEA中完成项目部署后，可以通过普通方法来完成项目部署。即利用maven将项目打包成war包的形式，然后放置到Tomcat的对应webapps目录下就可以完成部署。但是这种方式在进行项目调试的时候比较麻烦，我们可以将Tomcat集成到IDEA中，方便我们进行开发。在IDEA中集成使用Tomcat有两种方式，第一种是集成本地Tomcat，另一种是使用Tomcat Maven插件。</p>
-<p>第一种方式，集成本地Tomcat，需要修改启动配置，即<code>Run/Debug Configurations</code>，在其中找到Tomcat Server，然后指定本地的Tomcat具体路径<code>Application server</code>，然后将我们的项目添加到Tomcat中，在<code>Deployment</code>中进行添加，选择<code>Artifact</code>并找到我们的项目即可。后续就可以直接运行了。</p>
+<p>一般情况下，我们在IDEA中完成项目部署后，可以通过普通方法来完成项目部署。即利用maven将项目打包成war包的形式，然后放置到Tomcat的对应webapps目录下就可以完成部署。但是这种方式在进行项目调试的时候比较麻烦，我们可以将Tomcat集成到IDEA中，方便我们进行开发。在IDEA中集成使用Tomcat有两种方式，第一种是集成本地Tomcat，另一种是使用Tomcat
+Maven插件。</p>
+<p>第一种方式，集成本地Tomcat，需要修改启动配置，即<code>Run/Debug Configurations</code>，在其中找到Tomcat
+Server，然后指定本地的Tomcat具体路径<code>Application server</code>，然后将我们的项目添加到Tomcat中，在<code>Deployment</code>中进行添加，选择<code>Artifact</code>并找到我们的项目即可。后续就可以直接运行了。</p>
 <blockquote>
 <p>我们可以通过测试页面来查看是否部署成功。在webapp下写一个简单的html页面。在webapp下的html会按照目录层次映射到路由层次，例如存在html文件<code>webapp/haha/test.html</code>，那么在项目部署完成之后，就可以通过<code>localhost:8080/项目名称/haha/test.html</code>访问到对应的内容。</p>
 </blockquote>
@@ -395,7 +399,11 @@
 <img src="/2022/10/05/JavaWeb%E7%AC%94%E8%AE%B0-2-Tomcat%E7%9A%84%E4%BD%BF%E7%94%A8/%E6%AD%A5%E9%AA%A41.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="步骤1">
 <p>项目添加：</p>
 <img src="/2022/10/05/JavaWeb%E7%AC%94%E8%AE%B0-2-Tomcat%E7%9A%84%E4%BD%BF%E7%94%A8/%E6%AD%A5%E9%AA%A42.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="步骤2">
-<p>第二种方式，采用Tomcat Maven插件。它使用Maven中的Tomcat插件来进行项目部署，首先需要在pom.xml中添加Tomcat插件，然后使用Maven Helper插件快速启动项目，右键 -&gt; <code>Run Maven</code> -&gt; <code>tomcat7:run</code>即可启动项目。（这种方式下，Tomcat Maven插件的版本会受到限制）</p>
+<p>第二种方式，采用Tomcat
+Maven插件。它使用Maven中的Tomcat插件来进行项目部署，首先需要在pom.xml中添加Tomcat插件，然后使用Maven
+Helper插件快速启动项目，右键 -&gt; <code>Run Maven</code> -&gt;
+<code>tomcat7:run</code>即可启动项目。（这种方式下，Tomcat
+Maven插件的版本会受到限制）</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>    	<span class="hljs-comment">&lt;!--Tomcat插件 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.tomcat.maven<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>tomcat7-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
                 

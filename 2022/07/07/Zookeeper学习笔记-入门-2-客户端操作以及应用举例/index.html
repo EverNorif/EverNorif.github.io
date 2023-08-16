@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,46 +328,47 @@
             
               <div class="markdown-body">
                 
-                <h1>客户端命令行操作</h1>
+                <h1 id="客户端命令行操作">客户端命令行操作</h1>
 <h2 id="命令列表">命令列表</h2>
 <p>Zookeeper中对数据的操作就是对ZNode的操作，主要包括ZNode的增删改查等操作。并且前面我们也提到，ZNode分为持久节点和非持久节点，并且节点也可以指定序列属性。</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>命令</th>
 <th>功能描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>help</td>
 <td>显示所有操作命令</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ls [path]</td>
 <td>使用ls命令来查看当前ZNode的子节点<br />-w：监听子节点变化<br />-s：附加次级信息</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>create [path] [data]</td>
 <td>创建节点并指定节点数据<br />-s：设置节点序列属性<br />-e：创建临时节点</td>
 </tr>
-<tr>
+<tr class="even">
 <td>get [path]</td>
 <td>获得节点的值<br />-w：监听节点内容变化<br />-s：附加次级信息</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>set [path] [data]</td>
 <td>设置节点的具体值</td>
 </tr>
-<tr>
+<tr class="even">
 <td>stat [path]</td>
 <td>查看节点状态</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>delete [path]</td>
 <td>删除节点</td>
 </tr>
-<tr>
+<tr class="even">
 <td>deleteall [path]</td>
 <td>递归删除节点</td>
 </tr>
@@ -385,7 +386,8 @@
 <li>cversion：ZNode子节点变化号，ZNode子节点修改次数</li>
 <li>dataversion：ZNode数据变化号</li>
 <li>aclVersion：ZNode访问控制列表的变化号</li>
-<li>ephemeralOwner：如果是临时节点，则为ZNode拥有者的Session ID，否则为0</li>
+<li>ephemeralOwner：如果是临时节点，则为ZNode拥有者的Session
+ID，否则为0</li>
 <li>dataLength：ZNode的数据长度</li>
 <li>numChildren：ZNode子节点数量</li>
 </ul>
@@ -393,7 +395,7 @@
 <p>客户端连接到Zookeeper之后，可以在客户端上注册监听它关心的目录节点，当目录节点发生变化（数据改变、节点删除、子目录节点增减）时，Zookeeper就会通知客户端。监听机制保证了Zookeeper上保存的任何数据的任何改变都能快速地响应，提示监听了该节点的应用程序，常见的监听包括监听节点数据的变化和监听子节点的增减：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 监听节点数据的变化</span><br>get -w [path]<br><br><span class="hljs-comment"># 监听子节点增减的变化</span><br><span class="hljs-built_in">ls</span> -w [path]<br></code></pre></td></tr></table></figure>
 <p>监听器实现原理如下：</p>
-<ol>
+<ol type="1">
 <li>首先在客户端上有一个main线程</li>
 <li>在main线程中创建Zookeeper客户端，这时候就会创建两个线程，一个负责网络连接通信（connect），另一个负责监听（listener）</li>
 <li>通过connect线程将注册的监听事件发送给Zookeeper</li>
@@ -403,10 +405,10 @@
 </ol>
 <p>但是特别需要注意的是，<strong>Zookeeper中监听器注册一次只能监听一次变化，想要再次监听，则需要再次注册</strong>。</p>
 <img src="/2022/07/07/Zookeeper%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%93%8D%E4%BD%9C%E4%BB%A5%E5%8F%8A%E5%BA%94%E7%94%A8%E4%B8%BE%E4%BE%8B/%E7%9B%91%E5%90%AC%E5%99%A8%E5%8E%9F%E7%90%86.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="监听器原理">
-<h1>Java API操作</h1>
-<h2 id="API举例">API举例</h2>
+<h1 id="java-api操作">Java API操作</h1>
+<h2 id="api举例">API举例</h2>
 <h2 id="数据写入流程">数据写入流程</h2>
-<h1>应用案例</h1>
+<h1 id="应用案例">应用案例</h1>
 <h2 id="服务器动态上下线">服务器动态上下线</h2>
 <h2 id="分布式锁">分布式锁</h2>
 

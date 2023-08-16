@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -350,7 +350,7 @@
 </ul>
 </blockquote>
 <p>注意事项：</p>
-<ol>
+<ol type="1">
 <li>Scala语言可以在任何的语法结构中声明任何的语法</li>
 <li>Scala中函数可以嵌套定义，在Java中方法中不能再写方法</li>
 <li>函数式编程语言中，函数是一等公民，可以像对象一样赋值，作为参数返回值等，可以在任何代码块中定义函数</li>
@@ -373,7 +373,7 @@
 <li><strong>在Scala中有默认参数以及具名参数，但是在Java中没有类似的用法</strong></li>
 </ul>
 <h3 id="函数至简原则">函数至简原则</h3>
-<ol>
+<ol type="1">
 <li>return可以省略、Scala会使用函数体的最后一行代码作为返回值</li>
 <li>如果函数体只有一行代码，可以省略花括号</li>
 <li>如果返回值类型能够推断出来，则可以省略</li>
@@ -439,11 +439,14 @@
 <p>运行结果如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala">--------<br>sum被执行<br>res = <span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
 <h2 id="函数应用举例">函数应用举例</h2>
-<h3 id="模拟Map映射、Filter过滤和Reduce聚合">模拟Map映射、Filter过滤和Reduce聚合</h3>
+<h3
+id="模拟map映射filter过滤和reduce聚合">模拟Map映射、Filter过滤和Reduce聚合</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// map，将列表中的每个值映射为另外一个值</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(array: <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>], op: <span class="hljs-type">Int</span> =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>] = &#123;<br>    <span class="hljs-keyword">for</span> (element &lt;- array) <span class="hljs-keyword">yield</span> op(element)<br>&#125;<br><br><span class="hljs-comment">// filter， 查看每个值是否能够加入列表</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">filter</span></span>(array: <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>], op: <span class="hljs-type">Int</span> =&gt; <span class="hljs-type">Boolean</span>): <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>] = &#123;<br>    <span class="hljs-keyword">for</span> (element &lt;- array <span class="hljs-keyword">if</span> op(element)) <span class="hljs-keyword">yield</span> element<br>&#125;<br><br><span class="hljs-comment">// reduce，将列表中的所有值进行两两规约</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(array: <span class="hljs-type">Array</span>[<span class="hljs-type">Int</span>], op: (<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    <span class="hljs-keyword">var</span> res: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> (element &lt;- array) res = op(res, element)<br>    res<br>&#125;<br><br><span class="hljs-comment">// 调用上面的函数，将列表中所有的值执行+1操作，去除其中的偶数，最后将它们全部相加</span><br><span class="hljs-keyword">val</span> array = <span class="hljs-type">Array</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)<br>println(map(array, (x: <span class="hljs-type">Int</span>) =&gt; &#123;<br>    x + <span class="hljs-number">1</span><br>&#125;).mkString(<span class="hljs-string">&quot;Array(&quot;</span>, <span class="hljs-string">&quot;, &quot;</span>, <span class="hljs-string">&quot;)&quot;</span>))<br>println(filter(array, (x: <span class="hljs-type">Int</span>) =&gt; &#123;<br>    x % <span class="hljs-number">2</span> == <span class="hljs-number">1</span><br>&#125;).mkString(<span class="hljs-string">&quot;Array(&quot;</span>, <span class="hljs-string">&quot;, &quot;</span>, <span class="hljs-string">&quot;)&quot;</span>))<br>println(reduce(array, &#123;<br>    _ + _<br>&#125;))<br></code></pre></td></tr></table></figure>
-<h3 id="利用同一个函数实现在整数上的四则运算">利用同一个函数实现在整数上的四则运算</h3>
+<h3
+id="利用同一个函数实现在整数上的四则运算">利用同一个函数实现在整数上的四则运算</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">intCalculate</span></span>(a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>, op: (<span class="hljs-type">Int</span>, <span class="hljs-type">Int</span>) =&gt; <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = &#123;<br>    println(op(a, b))<br>    op(a, b)<br>&#125;<br><span class="hljs-comment">//实现加减乘除</span><br>intCalculate(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, (a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>) =&gt; &#123;<br>    a + b<br>&#125;)<br>intCalculate(<span class="hljs-number">3</span>, <span class="hljs-number">1</span>, (a, b) =&gt; &#123;<br>    a - b<br>&#125;)<br>intCalculate(<span class="hljs-number">4</span>, <span class="hljs-number">2</span>, &#123;<br>    _ * _<br>&#125;)<br>intCalculate(<span class="hljs-number">6</span>, <span class="hljs-number">3</span>, &#123;<br>    _ / _<br>&#125;)<br></code></pre></td></tr></table></figure>
-<h3 id="利用名传递实现while关键字的功能">利用名传递实现while关键字的功能</h3>
+<h3
+id="利用名传递实现while关键字的功能">利用名传递实现while关键字的功能</h3>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 内置的while</span><br><span class="hljs-keyword">var</span> n = <span class="hljs-number">10</span><br><span class="hljs-keyword">while</span> (n &gt;= <span class="hljs-number">1</span>) &#123;<br>    print(n + <span class="hljs-string">&quot; &quot;</span>)<br>    n -= <span class="hljs-number">1</span><br>&#125;<br><br><span class="hljs-comment">// 自己实现while</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myWhile</span></span>(condition: =&gt; <span class="hljs-type">Boolean</span>)(op: =&gt; <span class="hljs-type">Unit</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">if</span> (condition) &#123;<br>        op<br>        myWhile(condition)(op)<br>    &#125;<br>&#125;<br><br>n = <span class="hljs-number">10</span><br>myWhile(n &gt;= <span class="hljs-number">1</span>) &#123;<br>    print(n + <span class="hljs-string">&quot; &quot;</span>)<br>    n -= <span class="hljs-number">1</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
                 

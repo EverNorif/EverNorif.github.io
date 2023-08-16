@@ -87,7 +87,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -329,100 +329,65 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Yarn概述">Yarn概述</h2>
+                <h2 id="yarn概述">Yarn概述</h2>
 <p>Yarn是一个资源调度平台，负责为运算程序提供服务器运算资源，相当于一个分布式的操作系统平台，而MapReduce等运算程序就相当于运行在操作系统上的应用程序。</p>
-<h3 id="1-基础架构">1. 基础架构</h3>
+<h3 id="基础架构">1. 基础架构</h3>
 <p>Yarn的主要组件有：ResouceManager、NodeManager、ApplicationMaster和Container等组件构成。</p>
 <ul>
 <li>ResouceManager：Yarn的老大，负责整个系统的资源管理和分配
-<ol>
+<ol type="1">
 <li>处理客户端请求</li>
 <li>监控其余的NodeManager</li>
 <li>启动或监控ApplicationMaster</li>
 <li>资源的分配和调度</li>
-</ol>
-</li>
+</ol></li>
 <li>NodeManager：Yarn的小弟，管理Yarn集群中每个节点上的资源和任务
-<ol>
+<ol type="1">
 <li>管理单个节点上的资源</li>
 <li>处理来自ResourceManager的命令</li>
 <li>处理来自ApplicationMaster的命令</li>
-</ol>
-</li>
+</ol></li>
 <li>ApplicationMaster：管理在Yarn内运行的应用程序实例（客户端提交的单个任务）
-<ol>
+<ol type="1">
 <li>为应用程序申请资源并分配给内部的任务</li>
 <li>任务的监控与容错</li>
 <li>一个任务的各个部分可能会在不同的NodeManager上运行</li>
-</ol>
-</li>
+</ol></li>
 <li>Container：Yarn中的资源抽象
-<ol>
+<ol type="1">
 <li>封装了某个节点上的多维度资源，如内存、CPU、磁盘，网络等</li>
-</ol>
-</li>
+</ol></li>
 </ul>
-<h3 id="2-工作机制">2. 工作机制</h3>
+<h3 id="工作机制">2. 工作机制</h3>
 <p>回顾前面的阶段，Job提交阶段中，完成了对输入文件的切片，得到了切片规划文件、集群配置文件以及jar包，然后向Yarn提交任务。</p>
 <blockquote>
 <p>需要运行任务，运行资源的时候，都需要向老大ResouceManager进行申请</p>
 </blockquote>
-<ol>
-<li>
-<p>MapReduce程序提交到客户端所在的节点</p>
-</li>
-<li>
-<p>YarnRunner向ResourceManager申请一个Application，这个Application用于管理这个MapReduce程序，对应一个作业id</p>
-</li>
-<li>
-<p>ResourceManager返回该应用程序的资源路径</p>
-</li>
-<li>
-<p>YarnRunner接收到返回结果，让MapRedeuce提交运行所需要的资源</p>
+<ol type="1">
+<li>MapReduce程序提交到客户端所在的节点</li>
+<li>YarnRunner向ResourceManager申请一个Application，这个Application用于管理这个MapReduce程序，对应一个作业id</li>
+<li>ResourceManager返回该应用程序的资源路径</li>
+<li>YarnRunner接收到返回结果，让MapRedeuce提交运行所需要的资源
 <ul>
-<li>运行所需要的资源包括<code>Job.split</code> 切片规划文件，<code>Job.xml</code>集群配置信息以及<code>xxx.jar</code>程序对应的jar包</li>
-</ul>
-</li>
-<li>
-<p>程序资源提交完毕之后，申请运行MRAppMaster</p>
-</li>
-<li>
-<p>ResourceManager会将用户的请求初始化成为一个Task</p>
-</li>
-<li>
-<p>ResourceManager管理的所有Task会形成队列，以调度算法决定执行哪一个Task</p>
-</li>
-<li>
-<p>之后其中一个NodeManger领取到这个Task任务</p>
-</li>
-<li>
-<p>这个NodeManger创建容器Container，并产生MRAppmaster，管理任务的执行</p>
-</li>
-<li>
-<p>Container从HDFS上拷贝资源到本地</p>
-</li>
-<li>
-<p>MapReduce程序中需要运行MapTask，则MRAppmaster向ResouceManager申请对应的运行资源</p>
-</li>
-<li>
-<p>ResouceManager进行任务分配，则对应的NodeManger会领取任务并创建容器</p>
-</li>
-<li>
-<p>MRAppmaster向对应的NodeManger发送启动脚本，并等待所有的MapTask运行完成</p>
-</li>
-<li>
-<p>运行完成之后，MRAppmaster再向ResouceManager申请资源运行ReduceTask</p>
-</li>
-<li>
-<p>ReduceTask向MapTask获取相应分区的数据</p>
-</li>
-<li>
-<p>程序运行完成之后，MRAppmaster向ResouceManager申请注销自己</p>
-</li>
+<li>运行所需要的资源包括<code>Job.split</code>
+切片规划文件，<code>Job.xml</code>集群配置信息以及<code>xxx.jar</code>程序对应的jar包</li>
+</ul></li>
+<li>程序资源提交完毕之后，申请运行MRAppMaster</li>
+<li>ResourceManager会将用户的请求初始化成为一个Task</li>
+<li>ResourceManager管理的所有Task会形成队列，以调度算法决定执行哪一个Task</li>
+<li>之后其中一个NodeManger领取到这个Task任务</li>
+<li>这个NodeManger创建容器Container，并产生MRAppmaster，管理任务的执行</li>
+<li>Container从HDFS上拷贝资源到本地</li>
+<li>MapReduce程序中需要运行MapTask，则MRAppmaster向ResouceManager申请对应的运行资源</li>
+<li>ResouceManager进行任务分配，则对应的NodeManger会领取任务并创建容器</li>
+<li>MRAppmaster向对应的NodeManger发送启动脚本，并等待所有的MapTask运行完成</li>
+<li>运行完成之后，MRAppmaster再向ResouceManager申请资源运行ReduceTask</li>
+<li>ReduceTask向MapTask获取相应分区的数据</li>
+<li>程序运行完成之后，MRAppmaster向ResouceManager申请注销自己</li>
 </ol>
-<h3 id="3-作业提交流程">3. 作业提交流程</h3>
+<h3 id="作业提交流程">3. 作业提交流程</h3>
 <p>1）<strong>作业提交</strong></p>
-<ol>
+<ol type="1">
 <li>Client调用job.waitForCompletion方法，向整个集群提交MapReduce作业</li>
 <li>Client向ResourceManager申请一个作业id</li>
 <li>ResourceManager返回job资源的提交路径和作业id</li>
@@ -430,63 +395,56 @@
 <li>Client资源提交完毕，向ResouceManager申请运行MRAppMaster</li>
 </ol>
 <p>2）<strong>作业初始化</strong></p>
-<ol>
+<ol type="1">
 <li>ResourceManager收到申请之后，将该job添加到容量调度器当中</li>
 <li>某个空闲的NodeManager领取该job</li>
 <li>该NodeManager创建Container，并产生MRAppMaster</li>
 <li>从HDFS上下载Client提交的资源到本地</li>
 </ol>
 <p>3）<strong>任务分配</strong></p>
-<ol>
+<ol type="1">
 <li>MRAppMaster向ResourceManager申请运行多个MapTask的任务资源</li>
 <li>ResourceManager将运行MapTask任务分配给另外的NodeManager，对应的NodeManager领取任务并创建容器</li>
 </ol>
 <p>4）<strong>任务运行</strong></p>
-<ol>
+<ol type="1">
 <li>MRAppMaster向接收到任务的NodeManager发送程序启动脚本，启动对应的任务</li>
 <li>MRAppMaster等待所有MapTask运行完毕之后，向ResourceManager申请资源运行ReduceTask</li>
 <li>ReduceTask从MapTask获取相应分区的数据</li>
 <li>程序运行完毕之后，MRAppMaster向ResourceManager申请注销自己</li>
 </ol>
 <p>5）<strong>进度和任务状态更新</strong></p>
-<ol>
-<li>
-<p>Yarn中的任务将其进度和状态返回给应用管理器，客户端每秒向应用管理器请求进度更新，展示给用户</p>
+<ol type="1">
+<li><p>Yarn中的任务将其进度和状态返回给应用管理器，客户端每秒向应用管理器请求进度更新，展示给用户</p>
 <blockquote>
 <p>请求时间可以通过<code>mapreduce.client.progressmonitor.pollinterval</code>进行设置</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ol>
 <p>6）<strong>作业完成</strong></p>
-<ol>
-<li>
-<p>除了向应用管理器请求作业进度外，客户端每5秒都会通过调用waitForCompletion()来检查作业是否完成。作业完成之后，应用管理器和Container会清理工作状态。作业的信息会被历史服务器存储下来，以备后续的用户核查</p>
+<ol type="1">
+<li><p>除了向应用管理器请求作业进度外，客户端每5秒都会通过调用waitForCompletion()来检查作业是否完成。作业完成之后，应用管理器和Container会清理工作状态。作业的信息会被历史服务器存储下来，以备后续的用户核查</p>
 <blockquote>
 <p>检查时间间隔可以通过<code>mapreduce.client.completion.pollinterval</code>进行设置</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ol>
 <blockquote>
 <p>在其中会涉及到HDFS读写文件，MapReduce工作流程和Yarn工作流程，对应三张流程图。</p>
 </blockquote>
-<h2 id="Yarn调度器和调度算法">Yarn调度器和调度算法</h2>
+<h2 id="yarn调度器和调度算法">Yarn调度器和调度算法</h2>
 <p>在Yarn调度任务的过程中存在调度器和调度算法的概念。目前，在Hadoop作业调度器主要有三种：FIFO调度器、容量调度器和公平调度器。</p>
 <ul>
 <li>在Apache Hadoop3.1.3默认的资源调度器是容量调度器</li>
 <li>CDH框架默认是公平调度器</li>
 </ul>
 <p>在Hadoop中的<code>yarn-default.xml</code>文件中可以查看具体配置，字段为<code>yarn.resourcemanager.scheduler.class</code></p>
-<h3 id="1-先进先出调度器（FIFO）">1.先进先出调度器（FIFO）</h3>
+<h3 id="先进先出调度器fifo">1.先进先出调度器（FIFO）</h3>
 <p>FIFO调度器：指的是单队列的，根据提交作业的先后顺序进行服务。在FIFO调度器中可以存在同时执行的任务，分配资源的原则是，<strong>将资源分配给最先来的任务，后续的任务在有资源空余的情况下才能够执行。</strong></p>
 <ul>
-<li>
-<p>优点：简单易懂</p>
-</li>
-<li>
-<p>缺点：不支持多队列，在生产环境下很少使用</p>
-</li>
+<li><p>优点：简单易懂</p></li>
+<li><p>缺点：不支持多队列，在生产环境下很少使用</p></li>
 </ul>
-<h3 id="2-容量调度器（Capacity-Scheduler）">2.容量调度器（Capacity Scheduler）</h3>
+<h3 id="容量调度器capacity-scheduler">2.容量调度器（Capacity
+Scheduler）</h3>
 <p>容量调度器是Yahoo开发的多用户调度器，它的特点如下：</p>
 <ul>
 <li><strong>支持多队列</strong>：可以配置多个队列，一个队列可以配置一定的资源量，同时在队列内部可以采用相应的调度策略（默认在队列内部使用FIFO调度算法）</li>
@@ -497,52 +455,44 @@
 <p>容量调度器的资源分配机制：</p>
 <img src="/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/%E5%AE%B9%E9%87%8F%E8%B0%83%E5%BA%A6%E5%99%A8.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="容量调度器">
 <p>容量调度器从root开始进行资源的分配：</p>
-<ol>
-<li>
-<p><strong>队列资源分配</strong>：在初始设置的时候，可以为每个队列设置资源的占有比例。从root开始，使用深度优先算法，优先选择<strong>队列资源使用率</strong>最低的的队列分配资源。</p>
+<ol type="1">
+<li><p><strong>队列资源分配</strong>：在初始设置的时候，可以为每个队列设置资源的占有比例。从root开始，使用深度优先算法，优先选择<strong>队列资源使用率</strong>最低的的队列分配资源。</p>
 <blockquote>
 <p>队列资源使用率：已经使用的资源量 / 队列的最小资源容量</p>
 <p>（其中队列的最小资源容量由管理员配置）</p>
-</blockquote>
-</li>
-<li>
-<p><strong>作业资源分配</strong>：在一个队列中会存在多个任务，默认按照提交作业的优先级和提交时间顺序进行资源分配</p>
-</li>
-<li>
-<p><strong>容器资源分配</strong>：在一个作业中涉及到多个Container，这些Container可能是多样化的，涉及不同的优先级、节点、资源量和数量。该如何为容器分配资源呢？按照容器的优先级进行分配，先为优先级高的Container分配资源。对于同一优先级，按照数据本地性原则进行分配，优先选择满足本地的Container，再依次满足其余的Container</p>
+</blockquote></li>
+<li><p><strong>作业资源分配</strong>：在一个队列中会存在多个任务，默认按照提交作业的优先级和提交时间顺序进行资源分配</p></li>
+<li><p><strong>容器资源分配</strong>：在一个作业中涉及到多个Container，这些Container可能是多样化的，涉及不同的优先级、节点、资源量和数量。该如何为容器分配资源呢？按照容器的优先级进行分配，先为优先级高的Container分配资源。对于同一优先级，按照数据本地性原则进行分配，优先选择满足本地的Container，再依次满足其余的Container</p>
 <blockquote>
 <p>数据本地原则：</p>
-<ol>
+<ol type="1">
 <li>任务和数据在同一节点</li>
 <li>任务和数据在同一机架</li>
 <li>任务和数据不在同一节点也不在同一机架</li>
 </ol>
-</blockquote>
-</li>
+</blockquote></li>
 </ol>
-<h3 id="3-公平调度器（Fair-Scheduler）">3.公平调度器（Fair Scheduler）</h3>
+<h3 id="公平调度器fair-scheduler">3.公平调度器（Fair Scheduler）</h3>
 <p>公平调度器是Fackbook开发的多用户调度器，它和容量调度器存在相同点和不同点：</p>
 <p><strong>与容量调度器的相同点</strong>：</p>
-<ol>
+<ol type="1">
 <li><strong>支持多队列</strong>：支持多队列多作业</li>
 <li><strong>具有容量保证</strong>：每个队列同样具有资源的最低保证和资源的使用上限</li>
 <li><strong>灵活性</strong>：资源能够共享，同时本队列对自己的资源具有最高使用优先权</li>
 <li><strong>多租户</strong>：多用户集群共享，多应用程序共同运行，同时对同一用户提交的作业所占的最大资源量进行限制</li>
 </ol>
 <p><strong>与容量调度器的不同点</strong>：</p>
-<ol>
+<ol type="1">
 <li>核心调度策略不同
 <ul>
 <li>容量调度器：优先选择资源使用率低的队列</li>
 <li>公平调度器：优先选择对资源缺额比例大的</li>
-</ul>
-</li>
+</ul></li>
 <li>每个队列可以单独设置资源分配方式
 <ul>
 <li>容量调度器：FIFO、DRF</li>
 <li>公平调度器：FIFO、FAIR、DRF</li>
-</ul>
-</li>
+</ul></li>
 </ol>
 <blockquote>
 <p>公平分配器如其名，为了实现公平。但是何为公平？这里的公平是通过权重来体现的，而我们默认的公平就对应了权重全为1。</p>
@@ -550,23 +500,17 @@
 <p>公平调度器的资源分配机制：</p>
 <p>在每个队列中设置的资源分配方式</p>
 <ul>
-<li>
-<p>FIFO策略：公平调度器每个队列资源分配采用FIFO的话，则此时公平调度器相当于上面讲过的容量调度器</p>
-</li>
-<li>
-<p>FAIR策略：FAIR策略是一种最大最小公平算法，它的思想是最大化系统中每个用户收到的最小分配资源。</p>
+<li><p>FIFO策略：公平调度器每个队列资源分配采用FIFO的话，则此时公平调度器相当于上面讲过的容量调度器</p></li>
+<li><p>FAIR策略：FAIR策略是一种最大最小公平算法，它的思想是最大化系统中每个用户收到的最小分配资源。</p>
 <blockquote>
 <p>假设每个用户都有足够的请求，即资源无法空余，则这种策略会给每个用户一份均等资源。而广义上的最大最小公平算法包括权重的概念，用户可以获得与它的权重成正比的一份资源，也即我们前面所说的公平的定义。</p>
 <p>当然如果分配给用户的资源有溢出，则空闲部分可以再分给其余任务。</p>
-</blockquote>
-</li>
-<li>
-<p>DRF策略：DRF基于最大最小公平算法改进而来，不同的是最大最小算法只支持某一种单一资源的分配，而DRF支持多种资源的分配，并且最大化每个任务的主资源的最小分配资源</p>
+</blockquote></li>
+<li><p>DRF策略：DRF基于最大最小公平算法改进而来，不同的是最大最小算法只支持某一种单一资源的分配，而DRF支持多种资源的分配，并且最大化每个任务的主资源的最小分配资源</p>
 <blockquote>
 <p>DRF首先会计算任务是CPU密集型资源还是内存密集型资源，具体来说就是利用任务需要的资源除以系统的总资源得到两个比例，哪个比例大则这个任务的主资源就是对应的资源。</p>
 <p>之后，每次迭代都要选择一个任务进行资源分配，选择方法是选择当前主资源占总资源占比最小的那个任务</p>
-</blockquote>
-</li>
+</blockquote></li>
 </ul>
 <p>FAIR分配举例：</p>
 <img src="/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/FAIR%E5%88%86%E9%85%8D.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="FAIR分配">
@@ -575,9 +519,12 @@
 <li>不加权的情况是加权的特殊情况，即所有权重都相同</li>
 </ul>
 <h2 id="参考文章">参考文章</h2>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://www.itdaan.com/blog/2016/06/05/975b7220a309.html#/">Yarn公平调度器之DRF算法 - 开发者知识库 (itdaan.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/zc19921215/article/details/102961730#/">Yarn的CapacityScheduler与DRF了解_淡定一生2333的博客-CSDN博客</a></li>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://www.itdaan.com/blog/2016/06/05/975b7220a309.html#/">Yarn公平调度器之DRF算法
+- 开发者知识库 (itdaan.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/zc19921215/article/details/102961730#/">Yarn的CapacityScheduler与DRF了解_淡定一生2333的博客-CSDN博客</a></li>
 </ol>
 
                 

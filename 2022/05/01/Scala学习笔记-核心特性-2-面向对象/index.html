@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -362,7 +362,7 @@
 <p>所有的scala源文件默认导入以下的包：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> java.lang._<br><span class="hljs-keyword">import</span> scala._<br><span class="hljs-keyword">import</span> scala.<span class="hljs-type">Predef</span>._<br></code></pre></td></tr></table></figure>
 <h2 id="面向对象">面向对象</h2>
-<h3 id="类、属性以及方法">类、属性以及方法</h3>
+<h3 id="类属性以及方法">类、属性以及方法</h3>
 <p>回顾Java中的类定义，一个java源文件中只能有一个public的类，并且需要和文件同名。而在Scala中，一个scala源文件可以写多个类，并且没有public的类（scala中没有<code>public</code>关键字，后续会提到其中的权限控制细节）</p>
 <p>Scala中的类定义基本语法如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala">[访问修饰符] <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">类名</span> </span>&#123;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -386,12 +386,8 @@
 </blockquote>
 <p><strong>方法</strong>也是类的一部分，注意事项如下：</p>
 <ul>
-<li>
-<p>基本设置方法与函数定义一致</p>
-</li>
-<li>
-<p>可以设置访问修饰符，放在def的前面</p>
-</li>
+<li><p>基本设置方法与函数定义一致</p></li>
+<li><p>可以设置访问修饰符，放在def的前面</p></li>
 </ul>
 <p>完成类的定义之后，可以使用new来创建对象，语法相对简单。需要注意的是，如果使用了自动推导变量，则无法完成多态。使用多态需要显式声明。</p>
 <h3 id="访问权限">访问权限</h3>
@@ -416,7 +412,7 @@
 </ul>
 <p><strong>辅助构造器</strong>：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">类名</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">this</span></span>(形参列表)&#123;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>辅助构造器的名称固定为this，可以有多个，编译器通过参数的个数和类型来进行区分。**辅助构造器方法不能直接构建对象，必须直接或者间接调用主构造方法。**构造器之间可以相互调用，但是被调用的构造器必须定义在前面。</p>
+<p>辅助构造器的名称固定为this，可以有多个，编译器通过参数的个数和类型来进行区分。<strong>辅助构造器方法不能直接构建对象，必须直接或者间接调用主构造方法。</strong>构造器之间可以相互调用，但是被调用的构造器必须定义在前面。</p>
 <p>注意事项：</p>
 <ul>
 <li>主构造器写在类定义上，一定是构造时最先被调用的构造器，方法体就是类定义</li>
@@ -453,21 +449,11 @@
 </ul>
 <p>注意事项：</p>
 <ul>
-<li>
-<p>如果父类为抽象类，那么子类需要将抽象的属性和方法实现，否则子类也需要声明为抽象类</p>
-</li>
-<li>
-<p>抽象类中可以有一般的方法和属性</p>
-</li>
-<li>
-<p>需要区别<strong>实现</strong>和<strong>重写</strong>，实现抽象类的抽象方法不需要使用override关键字，重写非抽象方法需要使用override（当然可以都使用override关键字）</p>
-</li>
-<li>
-<p>被实现的抽象属性可以是<code>val</code>也可以是<code>var</code>，被重写的一般属性只能是<code>var</code></p>
-</li>
-<li>
-<p>子类中调用父类的方法需要使用<code>super</code>关键字</p>
-</li>
+<li><p>如果父类为抽象类，那么子类需要将抽象的属性和方法实现，否则子类也需要声明为抽象类</p></li>
+<li><p>抽象类中可以有一般的方法和属性</p></li>
+<li><p>需要区别<strong>实现</strong>和<strong>重写</strong>，实现抽象类的抽象方法不需要使用override关键字，重写非抽象方法需要使用override（当然可以都使用override关键字）</p></li>
+<li><p>被实现的抽象属性可以是<code>val</code>也可以是<code>var</code>，被重写的一般属性只能是<code>var</code></p></li>
+<li><p>子类中调用父类的方法需要使用<code>super</code>关键字</p></li>
 </ul>
 <h3 id="匿名子类">匿名子类</h3>
 <p>与Java中的一致，可以通过包含带有定义或者重写的代码块方式来创建一个匿名的子类，举例如下：</p>
@@ -486,7 +472,7 @@
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">TestApp</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>    println(<span class="hljs-string">&quot;hello,world!&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
 <h3 id="密封类">密封类</h3>
 <p>在定义类的时候使用<code>sealed</code>进行修饰，这样这个类的子类必须和该类定义在同一个文件中</p>
-<h2 id="特征（Trait）">特征（Trait）</h2>
+<h2 id="特征trait">特征（Trait）</h2>
 <p>在Scala中，采用特征（Trait）来代替接口的概念。</p>
 <p>Scala中的Trait可以有抽象属性和方法，也可以有具体的属性和方法，一个类可以混入（mixin）多个特征。Scala中引入特质，一可以代替Java中的接口，第二也是对单继承机制的一种补充</p>
 <h3 id="特征声明与基本语法">特征声明与基本语法</h3>
@@ -496,21 +482,11 @@
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 没有父类</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">类名</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">特征1</span> <span class="hljs-keyword">with</span> <span class="hljs-title">特征2</span> <span class="hljs-keyword">with</span> <span class="hljs-title">特征3</span></span><br><br><span class="hljs-comment">// 有父类</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">类名</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">父类</span> <span class="hljs-keyword">with</span> <span class="hljs-title">特征1</span> <span class="hljs-keyword">with</span> <span class="hljs-title">特征2</span> <span class="hljs-keyword">with</span> <span class="hljs-title">特征3</span></span><br></code></pre></td></tr></table></figure>
 <p>注意事项：</p>
 <ul>
-<li>
-<p>父类和特征是同等地位</p>
-</li>
-<li>
-<p>在特征中可以声明抽象属性、抽象方法、一般属性、一般方法</p>
-</li>
-<li>
-<p>所有的Java接口都可以当作Scala的特征使用</p>
-</li>
-<li>
-<p>匿名子类也可以引入特征</p>
-</li>
-<li>
-<p>特征和基类或者多个特征中存在重名的属性或者方法，则需要在子类中进行覆写来进行冲突解决</p>
-</li>
+<li><p>父类和特征是同等地位</p></li>
+<li><p>在特征中可以声明抽象属性、抽象方法、一般属性、一般方法</p></li>
+<li><p>所有的Java接口都可以当作Scala的特征使用</p></li>
+<li><p>匿名子类也可以引入特征</p></li>
+<li><p>特征和基类或者多个特征中存在重名的属性或者方法，则需要在子类中进行覆写来进行冲突解决</p></li>
 </ul>
 <blockquote>
 <p>特征和抽象类的区别：</p>
@@ -541,7 +517,7 @@
 <p>当然我们可以在Sub中实现自己的逻辑，那么就正常按照逻辑输出。这里我们考虑的是在使用super的默认场景，我们得到的输出如下</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">I am TraitC<br>I am TraitA<br>I am TraitB<br></code></pre></td></tr></table></figure>
 <p>看起来是都运行了，并且顺序也有所讲究。实际上，Scala中对这种情况的处理采用了特征叠加的策略，当一个类混入多个特征的时候，Scala会对其所有的特征以及其父特征按照一定的顺序进行排序，按照举例代码来说，排序规则如下：</p>
-<ol>
+<ol type="1">
 <li>列出混入的第一个特征的继承关系，作为临时叠加顺序：<code>TraitA -&gt; TraitC</code></li>
 <li>列出混入的第二个特征的继承关系，并将该顺序叠加到上一步顺序的前面，其中已经出现的特征将不再重复：<code>TraitB -&gt; TraitA -&gt; TraitC</code></li>
 <li>之后将子类放在临时叠加顺序的最后一个，得到最终的叠加顺序：<code>Sub -&gt; TraitB -&gt; TraitA -&gt; TraitC</code></li>
@@ -557,7 +533,8 @@
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span>(<span class="hljs-params">val name: <span class="hljs-type">String</span>, val password: <span class="hljs-type">String</span></span>)</span><br><br><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">UserDao</span> </span>&#123;<br>  _: <span class="hljs-type">User</span> =&gt;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">insert</span></span>() = &#123;<br>    println(<span class="hljs-string">s&quot;insert into db: <span class="hljs-subst">$&#123;name&#125;</span> <span class="hljs-subst">$&#123;password&#125;</span>&quot;</span>)<br>  &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RegisterUser</span>(<span class="hljs-params">name:<span class="hljs-type">String</span>, password:<span class="hljs-type">String</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">User</span>(<span class="hljs-params">name, password</span>) <span class="hljs-keyword">with</span> <span class="hljs-title">UserDao</span></span><br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Test</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">val</span> user = <span class="hljs-keyword">new</span> <span class="hljs-type">RegisterUser</span>(<span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-string">&quot;123456&quot;</span>)<br>    user.insert()<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>输出如下</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">insert into db: xxx 123456<br></code></pre></td></tr></table></figure>
-<p>由于特征UserDao中指定的特征自身类型为User，因此它可以访问其中的成员变量。但是在extends的时候，不能单独extends UserDao特征，还需要一个User对象才是合法操作</p>
+<p>由于特征UserDao中指定的特征自身类型为User，因此它可以访问其中的成员变量。但是在extends的时候，不能单独extends
+UserDao特征，还需要一个User对象才是合法操作</p>
 <h2 id="扩展">扩展</h2>
 <h3 id="类型检查和转换">类型检查和转换</h3>
 <ul>

@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -281,7 +281,7 @@
         
         
           <!-- compatible with older versions-->
-          108 分钟
+          107 分钟
         
       </span>
     
@@ -328,32 +328,37 @@
             
               <div class="markdown-body">
                 
-                <h1>OpenAPI</h1>
+                <h1 id="openapi">OpenAPI</h1>
 <h2 id="简介">简介</h2>
 <p>在日常的项目开发工作中，经常需要完成API的设计，实现和应用等工作。一个好的习惯是在实际进行代码开发之前就将API的相关信息设计好，否则在开发过程中进行API的返工，将会牵连到各方，造成较大的麻烦。这也就是API优先的设计，指的是API先于实现。因此，我们需要使用一个语言无关的方式来描述API的设计。利用API优先的设计，我们可以避免不必要的API改动，提升开发效率。</p>
-<p>OpenAPI就是这样一种规范，它定义一种标准的，与具体编程语言无关的RESTful API的规范。在这种规范下，人类和计算机都能在不借助其他源代码和文档的前提下，理解同一个API的作用。同时由于API文档遵循标准的规范，也会有很多相关的工具来辅助进行工作，例如代码生成工具，文档展示工具等。</p>
-<p>OpenAPI的项目地址为：<a target="_blank" rel="noopener" href="https://github.com/OAI/OpenAPI-Specification">OpenAPI-Github</a></p>
+<p>OpenAPI就是这样一种规范，它定义一种标准的，与具体编程语言无关的RESTful
+API的规范。在这种规范下，人类和计算机都能在不借助其他源代码和文档的前提下，理解同一个API的作用。同时由于API文档遵循标准的规范，也会有很多相关的工具来辅助进行工作，例如代码生成工具，文档展示工具等。</p>
+<p>OpenAPI的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/OAI/OpenAPI-Specification">OpenAPI-Github</a></p>
 <h2 id="文档规范">文档规范</h2>
 <p>设计API的过程实际上就是编写OpenAPI文档的过程，最终结果是一个被各方认可的OpenAPI文档。OpenAPI的文档是一个json或者yaml格式的文件，它遵循一定标准的数据结构，其中描述了API的详细信息。一份OpenAPI文档可以是单个文件也可以被拆分为多个文件，可以使用<code>ref</code>来相互使用。推荐将根OpenAPI文档命名为<code>openapi.json</code>或者<code>openapi.yaml</code>。</p>
 <p>下面将介绍在一个OpenAPI文档中存在的所有数据结构。一个对象中可以包含多个字段，每个字段的值可能是某个字面量，也可能是另一个对象，或者对象列表。</p>
-<h3 id="OpenAPI-对象">OpenAPI 对象</h3>
+<h3 id="openapi-对象">OpenAPI 对象</h3>
 <ul>
 <li>OpenAPI 对象：是OpenAPI 文档的根对象
 <ul>
-<li><code>openapi</code>：string类型，必选。标识当前使用的Open API 版本号</li>
+<li><code>openapi</code>：string类型，必选。标识当前使用的Open API
+版本号</li>
 <li><code>info</code>：Info对象，必选。提供API相关的元数据</li>
 <li><code>servers</code>：Server对象数组，提供到服务器的连接信息。默认值为<code>url</code>为<code>/</code>的Server对象</li>
 <li><code>paths</code>：Paths对象，必选。描述API的路径和操作</li>
 <li><code>components</code>：Components对象，其中包含多种结构</li>
-<li><code>security</code>：Secutiry Requirement对象数组，声明API使用的安全机制</li>
+<li><code>security</code>：Secutiry
+Requirement对象数组，声明API使用的安全机制</li>
 <li><code>tags</code>：Tag对象数组，提供一系列标签</li>
-<li><code>externalDocs</code>：External Documentation对象，是附加的文档</li>
+<li><code>externalDocs</code>：External
+Documentation对象，是附加的文档</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Info-对象">Info 对象</h3>
+<h3 id="info-对象">Info 对象</h3>
 <ul>
-<li>Info 对象：提供API的元数据，这些元数据可能会被呈现在编辑工具或者文档生成工具中
+<li>Info
+对象：提供API的元数据，这些元数据可能会被呈现在编辑工具或者文档生成工具中
 <ul>
 <li><code>title</code>：stirng类型，必选。标识应用的名称</li>
 <li><code>description</code>：string类型。对应用的简单描述</li>
@@ -361,98 +366,106 @@
 <li><code>contact</code>：Contact对象，标识对应的联系人信息</li>
 <li><code>license</code>：License对象，标识对应的证书信息</li>
 <li><code>version</code>：string类型，必选。标识API的版本信息</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Contact-对象">Contact 对象</h3>
+<h3 id="contact-对象">Contact 对象</h3>
 <ul>
 <li>Contact 对象：联系人信息
 <ul>
 <li><code>name</code>：string类型，联系人名称</li>
 <li><code>url</code>：string类型，联系人信息的URL地址</li>
 <li><code>email</code>：string类型，联系人的email地址</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="License-对象">License 对象</h3>
+<h3 id="license-对象">License 对象</h3>
 <ul>
 <li>License 对象：证书信息
 <ul>
 <li><code>name</code>：string类型，必选。证书名称</li>
 <li><code>url</code>：string类型，证书的URL地址</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Server-对象">Server 对象</h3>
+<h3 id="server-对象">Server 对象</h3>
 <ul>
 <li>Server 对象：标识一个服务器对象
 <ul>
 <li><code>url</code>：string类型，必选。指向目标主机的URL地址，可以使用模版变量<code>&#123;xxx&#125;</code></li>
 <li><code>description</code>：string类型，简单描述</li>
-<li><code>variables</code>：Map类型，KV分别为string和Server Variable对象。这些值可以用来替换服务器URL地址内的模板参数</li>
+<li><code>variables</code>：Map类型，KV分别为string和Server
+Variable对象。这些值可以用来替换服务器URL地址内的模板参数</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Server-Variable对象">Server Variable对象</h3>
+<h3 id="server-variable对象">Server Variable对象</h3>
 <ul>
 <li>Server Variable 对象：Server中URL地址模板变量替换的对象
 <ul>
 <li><code>enum</code>：string数组类型，一组可以枚举的字符串值，表示允许的可替换选项</li>
 <li><code>default</code>：string类型，必选。在没有指定可替换值时的默认值</li>
 <li><code>description</code>：对变量的简单描述</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Paths-对象">Paths 对象</h3>
+<h3 id="paths-对象">Paths 对象</h3>
 <ul>
-<li>Paths 对象：定义各个API的相对路径以及操作，与Server对象中的URL地址组成完整的URL地址
+<li>Paths
+对象：定义各个API的相对路径以及操作，与Server对象中的URL地址组成完整的URL地址
 <ul>
-<li><code>/&#123;path&#125;</code>：Path Item对象。这里的字段名表示相对路径，值表示对应API的相关信息</li>
+<li><code>/&#123;path&#125;</code>：Path
+Item对象。这里的字段名表示相对路径，值表示对应API的相关信息</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Path-Item-对象">Path Item 对象</h3>
+<h3 id="path-item-对象">Path Item 对象</h3>
 <ul>
 <li>Path Item 对象：描述对一个路径可执行的有效操作
 <ul>
-<li><code>$ref</code>：string类型。指定对此路径定义的外部引用。引用的格式也需要满足Path Item的格式</li>
+<li><code>$ref</code>：string类型。指定对此路径定义的外部引用。引用的格式也需要满足Path
+Item的格式</li>
 <li><code>summary</code>：string类型。对该API的简要总结，描述此路径内包含的所有操作</li>
 <li><code>description</code>：string类型。对该API的详细说明字符串</li>
 <li><code>get</code>：Operation 对象。定义适用于此路径的GET操作</li>
 <li><code>put</code>：Operation 对象。定义适用于此路径的PUT操作</li>
 <li><code>post</code>：Operation 对象。定义适用于此路径的POST操作</li>
-<li><code>delete</code>：Operation 对象。定义适用于此路径的DELETE操作</li>
-<li><code>options</code>：Operation 对象。定义适用于此路径的OPTIONS操作</li>
+<li><code>delete</code>：Operation
+对象。定义适用于此路径的DELETE操作</li>
+<li><code>options</code>：Operation
+对象。定义适用于此路径的OPTIONS操作</li>
 <li><code>head</code>：Operation 对象。定义适用于此路径的HEAD操作</li>
 <li><code>patch</code>：Operation 对象。定义适用于此路径的PATCH操作</li>
 <li><code>trace</code>：Operation 对象。定义适用于此路径的TRACE操作</li>
-<li><code>servers</code>：Server 对象数组。此处的server也可使用此路径的所有操作</li>
-<li><code>parameters</code>：Parameter 对象。可用于此路径下所有操作的参数列表</li>
+<li><code>servers</code>：Server
+对象数组。此处的server也可使用此路径的所有操作</li>
+<li><code>parameters</code>：Parameter
+对象。可用于此路径下所有操作的参数列表</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Operation-对象">Operation 对象</h3>
+<h3 id="operation-对象">Operation 对象</h3>
 <ul>
 <li>Operation 对象：描述对路径的某个操作
 <ul>
 <li><code>tags</code>：string数组。控制API文档的标签列表，用于逻辑上的分组</li>
 <li><code>summary</code>：string类型，对该操作行为进行简单描述</li>
 <li><code>description</code>：string类型，对该操作行为的详细解释</li>
-<li><code>externalDocs</code>：External Documentation对象。表示附加的外部文档</li>
+<li><code>externalDocs</code>：External
+Documentation对象。表示附加的外部文档</li>
 <li><code>operationId</code>：string类型。用于表示此操作的唯一字符串，推荐在命名时符合一般的编程命名习惯</li>
-<li><code>parameters</code>：Parameter 对象数组。定义可用于此操作的参数列表</li>
-<li><code>requestBody</code>：Request Body对象。可用于此操作的请求体</li>
-<li><code>responses</code>：Responses 对象，必选。定义执行此操作后可能的响应值列表</li>
-<li><code>callbacks</code>：Map[string, Callback对象]。定义可能出现的回调映射</li>
+<li><code>parameters</code>：Parameter
+对象数组。定义可用于此操作的参数列表</li>
+<li><code>requestBody</code>：Request
+Body对象。可用于此操作的请求体</li>
+<li><code>responses</code>：Responses
+对象，必选。定义执行此操作后可能的响应值列表</li>
+<li><code>callbacks</code>：Map[string,
+Callback对象]。定义可能出现的回调映射</li>
 <li><code>deprecated</code>：boolean类型。标识此操作是否已经被废弃</li>
-<li><code>security</code>：Security Requirement对象数组。声明可用于此操作的安全机制</li>
-<li><code>servers</code>：Server对象数组。定义可以用于此操作的额外的Server 数组</li>
+<li><code>security</code>：Security
+Requirement对象数组。声明可用于此操作的安全机制</li>
+<li><code>servers</code>：Server对象数组。定义可以用于此操作的额外的Server
+数组</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Parameter-对象">Parameter 对象</h3>
+<h3 id="parameter-对象">Parameter 对象</h3>
 <ul>
-<li>Parameter 对象：描述一个操作参数。一个参数的唯一性由name和location的组合来确定
+<li>Parameter
+对象：描述一个操作参数。一个参数的唯一性由name和location的组合来确定
 <ul>
 <li><code>name</code>：string类型，必选。参数的名称，区分大小写。</li>
 <li><code>in</code>：string类型，必选。表示参数的位置，可选的值有<code>[query, header, path, cookie]</code></li>
@@ -465,97 +478,104 @@
 <li><code>allowReserved</code>：boolean类型，表示是否不允许使用<code>%</code>编码保留字符</li>
 <li><code>schema</code>：Schema对象，定义适用于此参数的类型结构</li>
 <li><code>example</code>：Any。不同媒体类型的示例</li>
-<li><code>examples</code>：Map[string, Example对象]。不同媒体类型的示例</li>
+<li><code>examples</code>：Map[string,
+Example对象]。不同媒体类型的示例</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Components-对象">Components 对象</h3>
+<h3 id="components-对象">Components 对象</h3>
 <ul>
-<li>Components 对象：描述各种文档中的可重用对象。此处定义的组件只有在被其他对象引用后才会产生效果。下面所有Map中value都可以是Reference对象，表示对外部的引用
+<li>Components
+对象：描述各种文档中的可重用对象。此处定义的组件只有在被其他对象引用后才会产生效果。下面所有Map中value都可以是Reference对象，表示对外部的引用
 <ul>
-<li><code>schemas</code>：Map[string, Schema]类型。定义可重用的Schema对象</li>
-<li><code>responses</code>：Map[string, Response]类型。定义可重用的Response对象</li>
-<li><code>parameters</code>：Map[string, Parameter]类型。定义可重用的Parameter对象</li>
-<li><code>examples</code>：Map[string, Example]类型。定义可重用的Example对象</li>
-<li><code>requestBodies</code>：Map[string, Request Body]类型。定义可重用的Request Body对象</li>
-<li><code>headers</code>：Map[string, Header]类型。定义可重用的Header对象</li>
-<li><code>securitySchemes</code>：Map[string, Security Scheme]类型。定义可重用的Security Scheme对象</li>
+<li><code>schemas</code>：Map[string,
+Schema]类型。定义可重用的Schema对象</li>
+<li><code>responses</code>：Map[string,
+Response]类型。定义可重用的Response对象</li>
+<li><code>parameters</code>：Map[string,
+Parameter]类型。定义可重用的Parameter对象</li>
+<li><code>examples</code>：Map[string,
+Example]类型。定义可重用的Example对象</li>
+<li><code>requestBodies</code>：Map[string, Request
+Body]类型。定义可重用的Request Body对象</li>
+<li><code>headers</code>：Map[string,
+Header]类型。定义可重用的Header对象</li>
+<li><code>securitySchemes</code>：Map[string, Security
+Scheme]类型。定义可重用的Security Scheme对象</li>
 <li><code>links</code>：Map[string, Link]类型。定义可重用的Link对象</li>
-<li><code>callbacks</code>：Map[string, Callback]类型。定义可重用的Callback对象</li>
+<li><code>callbacks</code>：Map[string,
+Callback]类型。定义可重用的Callback对象</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="External-Documentation-对象">External Documentation 对象</h3>
+<h3 id="external-documentation-对象">External Documentation 对象</h3>
 <ul>
 <li>External Documentation 对象：外部资源文档
 <ul>
 <li><code>description</code>：对引用外部文档的简短描述</li>
 <li><code>url</code>：string类型，必选。表示外部文档的URL地址</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Request-Body-对象">Request Body 对象</h3>
+<h3 id="request-body-对象">Request Body 对象</h3>
 <ul>
 <li>Request Body 对象：定义请求体
 <ul>
 <li><code>description</code>：string类型，对请求体的简要描述</li>
-<li><code>content</code>：Map[string, Media Type对象]，必选。表示请求体的内容。key是一个媒体类型，值是对应的示例数据</li>
+<li><code>content</code>：Map[string, Media
+Type对象]，必选。表示请求体的内容。key是一个媒体类型，值是对应的示例数据</li>
 <li><code>required</code>：boolean类型。表示请求体是否应该被包含在请求中，默认值为false</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Media-Type-对象">Media Type 对象</h3>
+<h3 id="media-type-对象">Media Type 对象</h3>
 <ul>
 <li>Media Type 对象：每种媒体类型对象都有相应的结构和示例来进行描述
 <ul>
 <li><code>schema</code>：Schema对象。定义此媒体类型的结构</li>
 <li><code>example</code>：Any。媒体类型的示例</li>
 <li><code>examples</code>：Map[string, Example对象]。媒体类型的示例</li>
-<li><code>encoding</code>：Map[string, Encoding对象]。属性名与编码信息的映射</li>
+<li><code>encoding</code>：Map[string,
+Encoding对象]。属性名与编码信息的映射</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Encoding-对象">Encoding 对象</h3>
+<h3 id="encoding-对象">Encoding 对象</h3>
 <ul>
 <li>Encoding 对象：编码定义。一个编码定义仅适用于一个结构属性
 <ul>
 <li><code>contentType</code>：string类型。描述对具体属性的Content-Type编码</li>
-<li><code>headers</code>：Map[string, Header对象]。提供附加信息的请求头键值对映射</li>
+<li><code>headers</code>：Map[string,
+Header对象]。提供附加信息的请求头键值对映射</li>
 <li><code>style</code>：string类型。描述一个属性根据它的类型将会被如何序列化</li>
 <li><code>explode</code>：boolean类型。表示是否对数组内的值或者对象的键值对生成带分隔符的参数值</li>
 <li><code>allowReserved</code>：boolean类型，表示是否不允许使用<code>%</code>编码保留字符</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Responses-对象">Responses 对象</h3>
+<h3 id="responses-对象">Responses 对象</h3>
 <ul>
 <li>Responses 对象：描述一个操作可能发生的响应的响应码与对应的响应体
 <ul>
 <li><code>defalut</code>：Response对象。用于描述未被明确声明的HTTP响应码的对应响应</li>
 <li><code>HTTP status Code</code>：Response对象。这里的字段名为HTTP状态码，值为对应的响应</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Response-对象">Response 对象</h3>
+<h3 id="response-对象">Response 对象</h3>
 <ul>
 <li>Response 对象：描述单个响应
 <ul>
 <li><code>description</code>：string类型，必选。对响应的简短描述</li>
-<li><code>headers</code>：Map[string, Header对象]。HTTP头名称和定义的映射</li>
-<li><code>content</code>：Map[string, Media Type对象]。描述预期的响应content</li>
+<li><code>headers</code>：Map[string,
+Header对象]。HTTP头名称和定义的映射</li>
+<li><code>content</code>：Map[string, Media
+Type对象]。描述预期的响应content</li>
 <li><code>links</code>：Map[string, Link对象]</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Callback-对象">Callback 对象</h3>
+<h3 id="callback-对象">Callback 对象</h3>
 <ul>
 <li>Callback 对象：描述回调对象
 <ul>
-<li><code>&#123;expression&#125;</code>：Path Item对象。用于定义回调请求和响应</li>
+<li><code>&#123;expression&#125;</code>：Path
+Item对象。用于定义回调请求和响应</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Example-对象">Example 对象</h3>
+<h3 id="example-对象">Example 对象</h3>
 <ul>
 <li>Example 对象：示例对象
 <ul>
@@ -563,37 +583,33 @@
 <li><code>description</code>：string类型。该示例的详细描述</li>
 <li><code>value</code>：Any。</li>
 <li><code>externalValue</code>：string类型</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Header-对象">Header 对象</h3>
+<h3 id="header-对象">Header 对象</h3>
 <ul>
 <li>Header 对象：Header对象与Paramter 对象基本一致。但是有一定的限制
 <ul>
 <li>name不能被指定</li>
 <li>in不能被指定</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Tag-对象">Tag 对象</h3>
+<h3 id="tag-对象">Tag 对象</h3>
 <ul>
 <li>Tag 对象：
 <ul>
 <li><code>name</code>：string类型，必选。Tag的名称</li>
 <li><code>description</code>：string类型。Tag的简短描述</li>
 <li><code>externalDocs</code>：ExternalDocumentation对象。外部文档</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Reference-对象">Reference 对象</h3>
+<h3 id="reference-对象">Reference 对象</h3>
 <ul>
 <li>Reference 对象：用于引用规范内部或者外部的对象
 <ul>
 <li><code>$ref</code>：string类型，必选。用于找到引用的对象位置</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Schema-对象">Schema 对象</h3>
+<h3 id="schema-对象">Schema 对象</h3>
 <ul>
 <li>Schema 对象：用于定义输入和输出的数据类型
 <ul>
@@ -605,19 +621,18 @@
 <li><code>externalDocs</code>：External Documentation对象。外部文档</li>
 <li><code>example</code>：Any。示例</li>
 <li><code>deprecated</code>：boolean类型。是否废弃</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Discriminator-对象">Discriminator 对象</h3>
+<h3 id="discriminator-对象">Discriminator 对象</h3>
 <ul>
 <li>Discriminator 对象：用于辅助序列化，反序列化和校验
 <ul>
 <li><code>propertyName</code>：string类型，必选。在payload中表示discriminator值属性的名称</li>
-<li><code>mapping</code>：Map[string, string]。在payload中值与schema名称的映射</li>
+<li><code>mapping</code>：Map[string,
+string]。在payload中值与schema名称的映射</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="XML-对象">XML 对象</h3>
+<h3 id="xml-对象">XML 对象</h3>
 <ul>
 <li>XML 对象：为XML模型定义的元数据对象
 <ul>
@@ -626,81 +641,103 @@
 <li><code>prefix</code>：string类型。name前缀</li>
 <li><code>attribute</code>：boolean类型。</li>
 <li><code>wrapped</code>：boolean类型。</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Security-Scheme-对象">Security Scheme 对象</h3>
+<h3 id="security-scheme-对象">Security Scheme 对象</h3>
 <ul>
 <li>Security Scheme 对象：用于Operation的Security Scheme
 <ul>
 <li><code>type</code>：string类型，必选。有效值包括<code>[apiKey, http, oauth2, openIdConnect]</code></li>
 <li><code>description</code>：string类型。简单描述</li>
 <li><code>name</code>：string类型，必选。用于header，query或者cookie的参数名称</li>
-<li><code>in</code>：string类型，必选。API key的位置。有效值包括<code>[query, header, cookie]</code></li>
-<li><code>scheme</code>：string类型，必选。用于HTTP Auahorization scheme的名称</li>
-<li><code>bearerFormat</code>：string类型。用于提示客户端所使用的bearer token的格式</li>
-<li><code>flows</code>：OAuth Flows对象，必选。包含所支持的Flow Types的配置信息</li>
+<li><code>in</code>：string类型，必选。API
+key的位置。有效值包括<code>[query, header, cookie]</code></li>
+<li><code>scheme</code>：string类型，必选。用于HTTP Auahorization
+scheme的名称</li>
+<li><code>bearerFormat</code>：string类型。用于提示客户端所使用的bearer
+token的格式</li>
+<li><code>flows</code>：OAuth Flows对象，必选。包含所支持的Flow
+Types的配置信息</li>
 <li><code>openIdConnectUrl</code>：string类型，必选。用于发现OAuth2的配置值</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="OAuth-Flows-对象">OAuth Flows 对象</h3>
+<h3 id="oauth-flows-对象">OAuth Flows 对象</h3>
 <ul>
 <li>OAuth Flows 对象：配置支持的OAuth Flow
 <ul>
-<li><code>implicit</code>：OAuth Flow对象。OAuth Implicit flow的配置</li>
-<li><code>password</code>：OAuth Flow对象。OAuth Resource Owner Password flow的配置</li>
-<li><code>clientCredentials</code>：OAuth Flow对象。OAuth Client Credentials flow的配置</li>
-<li><code>authorizationCode</code>：OAuth Authroization Code flow的配置</li>
+<li><code>implicit</code>：OAuth Flow对象。OAuth Implicit
+flow的配置</li>
+<li><code>password</code>：OAuth Flow对象。OAuth Resource Owner Password
+flow的配置</li>
+<li><code>clientCredentials</code>：OAuth Flow对象。OAuth Client
+Credentials flow的配置</li>
+<li><code>authorizationCode</code>：OAuth Authroization Code
+flow的配置</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="OAuth-Flow-对象">OAuth Flow 对象</h3>
+<h3 id="oauth-flow-对象">OAuth Flow 对象</h3>
 <ul>
 <li>OAuth Flow 对象：OAuth Flow的配置详情
 <ul>
-<li><code>authorizationUrl</code>：string类型，必选。用于此流程的Authorization URL</li>
+<li><code>authorizationUrl</code>：string类型，必选。用于此流程的Authorization
+URL</li>
 <li><code>tokenUrl</code>：string类型，必选。用于此流程的Toke URL</li>
-<li><code>refereshUrl</code>：string类型。用于获取refresh tokens的URL</li>
-<li><code>scopes</code>：Map[string, string]，必选。用于OAuth2 Security Scheme的scope</li>
+<li><code>refereshUrl</code>：string类型。用于获取refresh
+tokens的URL</li>
+<li><code>scopes</code>：Map[string, string]，必选。用于OAuth2 Security
+Scheme的scope</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Security-Requirement-对象">Security Requirement 对象</h3>
+<h3 id="security-requirement-对象">Security Requirement 对象</h3>
 <ul>
 <li>Security Requirement 对象：列出执行Operation所需的Security Schemes
 <ul>
 <li><code>&#123;name&#125;</code>：string数组。</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>上面列举的是OpenAPI文档中允许存在的所有数据结构，在实际编写过程中，通常并不会全部都有。同时纯手工根据规范编写文档是一件比较耗费力气的事情，事实上也有很多可视化的工具能够帮助我们方便地编写API信息，然后导出成对应的<code>json</code>或<code>yaml</code>文档。下面将会介绍相关的工具。</p>
 <h2 id="相关工具">相关工具</h2>
-<p>与OpenAPI相关的工具有很多，涉及到API开发的各个生命周期。在<a target="_blank" rel="noopener" href="https://openapi.tools">OpenAPI.tools</a>网站中可以看到相关的工具，我们通常使用的有以下几类工具：</p>
+<p>与OpenAPI相关的工具有很多，涉及到API开发的各个生命周期。在<a
+target="_blank" rel="noopener" href="https://openapi.tools">OpenAPI.tools</a>网站中可以看到相关的工具，我们通常使用的有以下几类工具：</p>
 <ul>
-<li>OpenAPI的文本编辑器：例如<a target="_blank" rel="noopener" href="https://stoplight.io/studio">Stoplight</a>，它提供一个网页的编辑器帮助我们快速创建OpenAPI文档</li>
+<li>OpenAPI的文本编辑器：例如<a
+target="_blank" rel="noopener" href="https://stoplight.io/studio">Stoplight</a>，它提供一个网页的编辑器帮助我们快速创建OpenAPI文档</li>
 <li>Mock服务器：例如Prism。这是一个Mock服务器，由于使用相同的规范，因此API的消费者无需等待后台实现，而是可以使用随机的数据来进行前端的测试</li>
-<li>代码生成工具：例如<a target="_blank" rel="noopener" href="https://openapi-generator.tech">openapi-generator</a>。由于API使用的是OpenAPI规范，所以可以据此进行代码生成。API的提供者可以用工具来快速生成代码的骨架</li>
-<li>文档生成工具：例如<a target="_blank" rel="noopener" href="https://editor.swagger.io">swagger UI</a>，它可以将我们的文档展示为对应的网页形式，可读性更高</li>
+<li>代码生成工具：例如<a
+target="_blank" rel="noopener" href="https://openapi-generator.tech">openapi-generator</a>。由于API使用的是OpenAPI规范，所以可以据此进行代码生成。API的提供者可以用工具来快速生成代码的骨架</li>
+<li>文档生成工具：例如<a target="_blank" rel="noopener" href="https://editor.swagger.io">swagger
+UI</a>，它可以将我们的文档展示为对应的网页形式，可读性更高</li>
 </ul>
 <p>还有其他相关的工具，包括OpenAPI文档的验证，文档解析，测试等，在需要使用时可以参考上面提到的工具网站。</p>
-<h1>Swagger</h1>
-<h2 id="简介-2">简介</h2>
-<p>Swagger本身是一个API文档的维护组织，后来成为了OpenAPI标准的主要定义者。OpenAPI就是由这个组织定义并贡献开源的。当然除此之外，Swagger也发布过其他标准，例如Swagger 2，Swagger3等，而OpenAPI的版本直接从3.0开始。Swagger2的包名为<code>io.swagger</code>，Swagger3的包名为<code>io.swagger.core.v3</code>。</p>
+<h1 id="swagger">Swagger</h1>
+<h2 id="简介-1">简介</h2>
+<p>Swagger本身是一个API文档的维护组织，后来成为了OpenAPI标准的主要定义者。OpenAPI就是由这个组织定义并贡献开源的。当然除此之外，Swagger也发布过其他标准，例如Swagger
+2，Swagger3等，而OpenAPI的版本直接从3.0开始。Swagger2的包名为<code>io.swagger</code>，Swagger3的包名为<code>io.swagger.core.v3</code>。</p>
 <p>除此以外，Swagger还提供了一系列工具，用于生成，描述，调用和可视化RESTful风格的Web服务。这些工具用来帮助实现OpenAPI规范，在API生命周期的不同阶段使用。例如有：</p>
 <ul>
-<li>Swagger Editor：用于在浏览器中编辑OpenAPI规范，并实时预览文档。当然Swagger编辑器除了能够支持OpenAPI规范，还支持其他规范，如Swagger 2.0等</li>
-<li>Swagger UI：从符合OpenAPI规范的描述文件中生成可视化的文档，使用html进行展示，界面优美，效果直观</li>
+<li>Swagger
+Editor：用于在浏览器中编辑OpenAPI规范，并实时预览文档。当然Swagger编辑器除了能够支持OpenAPI规范，还支持其他规范，如Swagger
+2.0等</li>
+<li>Swagger
+UI：从符合OpenAPI规范的描述文件中生成可视化的文档，使用html进行展示，界面优美，效果直观</li>
 <li>Swagger Codegen：从符合OpenAPI规范的描述文件中生成API客户端代码</li>
 </ul>
 <p>除了使用这些工具之外，在日常的工作中，我们主要也会将Swagge集成到项目中进行使用，例如集成到SpringBoot项目中。所以下面就将介绍Swagger相关工具的使用，以及如何在SpringBoot项目中使用Swagger的相关工具。</p>
-<h2 id="SpringDoc">SpringDoc</h2>
+<h2 id="springdoc">SpringDoc</h2>
 <h3 id="概念辨析">概念辨析</h3>
 <p>这里首先需要厘清一些相关概念，Swagger提供了相关工具使我们在API开发的各个阶段更加便捷，但是它本身还是单独分离的工具，是不能直接应用在SpringBoot项目当中的。而SpringFox和SpingDoc就是两个项目，帮助我们在SpringBoot项目中集成Swagger服务。</p>
-<p>SpringFox（<a target="_blank" rel="noopener" href="https://springfox.github.io/springfox/">SpringFox by springfox</a>）是 spring 社区维护的一个项目（非官方），它能够帮助使用者将 swagger2 集成到 Spring 中。常常用于 Spring 中帮助开发者生成文档，并可以轻松的在SpringBoot中使用。它支持多种规范，包括Swagger2，Swagger3，OpenAPI3等。但是该项目目前基本已经停止更新了。</p>
-<p>SpringDoc（<a target="_blank" rel="noopener" href="https://springdoc.org/">OpenAPI 3 Library for spring-boot (springdoc.org)</a>）也是 spring 社区维护的一个项目（非官方），帮助使用者将Swagger3 集成到 Spring 中。同样也可以用来在 Spring 中帮助开发者生成文档，并可以轻松的在SpringBoot中使用。相比于SpringFox，SpringDoc虽然只支持OpenAPI3，但是SpringDoc项目目前更加活跃，文档也更加全面。因此这里我们直接使用SpringDoc来集成OpenAPI的支持到SpringBoot项目中。</p>
+<p>SpringFox（<a target="_blank" rel="noopener" href="https://springfox.github.io/springfox/">SpringFox
+by springfox</a>）是 spring
+社区维护的一个项目（非官方），它能够帮助使用者将 swagger2 集成到 Spring
+中。常常用于 Spring
+中帮助开发者生成文档，并可以轻松的在SpringBoot中使用。它支持多种规范，包括Swagger2，Swagger3，OpenAPI3等。但是该项目目前基本已经停止更新了。</p>
+<p>SpringDoc（<a target="_blank" rel="noopener" href="https://springdoc.org/">OpenAPI 3 Library for
+spring-boot (springdoc.org)</a>）也是 spring
+社区维护的一个项目（非官方），帮助使用者将Swagger3 集成到 Spring
+中。同样也可以用来在 Spring
+中帮助开发者生成文档，并可以轻松的在SpringBoot中使用。相比于SpringFox，SpringDoc虽然只支持OpenAPI3，但是SpringDoc项目目前更加活跃，文档也更加全面。因此这里我们直接使用SpringDoc来集成OpenAPI的支持到SpringBoot项目中。</p>
 <p>SpringDoc完成的功能是通过我们的API代码来生成对应的API文档。我们的API是通过类和方法来实现的。在类和方法上标注对应的注解之后，SpringDoc就可以借助扫描对应的注解来生成API文档，当然使用的是OpenAPI的规范。</p>
-<h3 id="Getting-Started">Getting Started</h3>
+<h3 id="getting-started">Getting Started</h3>
 <p>首先在SpringBoot项目的<code>pom.xml</code>文件中增加SpringDoc的依赖如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springdoc<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>springdoc-openapi-ui<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.6.14<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>之后可以写一个简单的API接口，如下所示。可以看到在下面的接口中完成了两个方法，分别提供get和post请求的接口，以及对应的参数内容。</p>
@@ -719,28 +756,32 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OpenAPIConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> OpenAPI <span class="hljs-title function_">openApi</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenAPI</span>().info(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Info</span>()<br>                .title(<span class="hljs-string">&quot;openapi test title&quot;</span>)<br>                .description(<span class="hljs-string">&quot;test description&quot;</span>)<br>                .version(<span class="hljs-string">&quot;1.0.1&quot;</span>)<br>        );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>接下来是常用注解的介绍。通过在API实现的不同位置上标注对应注解，我们可以为这个API接口提供相关信息，以生成更加详细的接口文档。</p>
 <ul>
-<li><code>@Tag(name=&quot;接口类描述&quot;)</code>：标注在Controller类上，表明这是一个Controller</li>
-<li><code>@Operation(summary=&quot;接口方法描述&quot;)</code>：标注在Controller方法上，表明这是一个API</li>
+<li><code>@Tag(name="接口类描述")</code>：标注在Controller类上，表明这是一个Controller</li>
+<li><code>@Operation(summary="接口方法描述")</code>：标注在Controller方法上，表明这是一个API</li>
 <li><code>@Parameters(value=&#123;...&#125;)</code>：标注在Controller方法上，用于注明多个参数信息。
 <ul>
 <li>其中value的值是一个注解数组，每个元素是<code>@Parameter</code>注解</li>
-</ul>
-</li>
-<li><code>@Parameter(description=&quot;参数描述&quot;)</code>：可以用在上面的<code>@Parameters</code>的value中，也可以直接标注在Controller方法的参数上</li>
+</ul></li>
+<li><code>@Parameter(description="参数描述")</code>：可以用在上面的<code>@Parameters</code>的value中，也可以直接标注在Controller方法的参数上</li>
 <li><code>@Schema</code>：可以标注在实体类或者实体类的属性上。如果这个实体类被用作请求的返回类型，则会在生成的文档中进行描述</li>
 </ul>
 <p>下面用常用注解来对之前的简单Controller方法进行描述，用作示例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@Tag(name = &quot;I am a Hello Controller&quot;, description = &quot;Hello, description&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br>    <span class="hljs-meta">@Operation(summary = &quot;controller function: get Hello&quot;)</span><br>    <span class="hljs-meta">@Parameters(value = &#123;</span><br><span class="hljs-meta">            @Parameter(name = &quot;p-name&quot;)</span><br><span class="hljs-meta">    &#125;)</span><br>    <span class="hljs-meta">@GetMapping(&quot;/getHello/&#123;name&#125;&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getHello</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> String name)</span> &#123;<br>        <span class="hljs-keyword">return</span> String.format(<span class="hljs-string">&quot;Get Hello %s&quot;</span>, name);<br>    &#125;<br><br>    <span class="hljs-meta">@Operation(summary = &quot;controller function: post hello&quot;)</span><br>    <span class="hljs-meta">@PostMapping(&quot;/postHello/&#123;id&#125;&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">postHello</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> <span class="hljs-meta">@Parameter(name = &quot;p-id&quot;)</span> Integer id)</span> &#123;<br>        <span class="hljs-keyword">return</span> String.format(<span class="hljs-string">&quot;Post Hello %d&quot;</span>, id);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="Spring-Swagger-CodeGen">Spring Swagger-CodeGen</h2>
-<p>上面我们已经展示了在项目中集成SpringDoc，让其为我们生成对应的API文档以及UI展示。不过一篇详细的文档，它需要我们利用众多的注解来标识，提供足够的注解信息才能生成。这些注解虽然并不是很复杂，但还是比较繁琐。于是，另一种利用Swagger的思想就是先得到一篇API文档，然后通过这个文档直接辅助生成对应的代码。也就是Swagger提供的Swagger Codegen服务。</p>
-<p>我们可以将Swagger Codegen服务集成到SpringBoot项目中，这需要使用swagger-codegen-maven-plugin插件。插件的官方地址为<a target="_blank" rel="noopener" href="https://github.com/swagger-api/swagger-codegen">swagger-api/swagger-codegen(github.com)</a>，其中详细描述了各种配置产生。下面开始介绍插件的相关使用。</p>
+<h2 id="spring-swagger-codegen">Spring Swagger-CodeGen</h2>
+<p>上面我们已经展示了在项目中集成SpringDoc，让其为我们生成对应的API文档以及UI展示。不过一篇详细的文档，它需要我们利用众多的注解来标识，提供足够的注解信息才能生成。这些注解虽然并不是很复杂，但还是比较繁琐。于是，另一种利用Swagger的思想就是先得到一篇API文档，然后通过这个文档直接辅助生成对应的代码。也就是Swagger提供的Swagger
+Codegen服务。</p>
+<p>我们可以将Swagger
+Codegen服务集成到SpringBoot项目中，这需要使用swagger-codegen-maven-plugin插件。插件的官方地址为<a
+target="_blank" rel="noopener" href="https://github.com/swagger-api/swagger-codegen">swagger-api/swagger-codegen(github.com)</a>，其中详细描述了各种配置产生。下面开始介绍插件的相关使用。</p>
 <p>为了使用插件，我们在在<code>pom.xml</code>文件中加入如下内容：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>io.swagger.codegen.v3<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>swagger-codegen-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.0.36<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">executions</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">execution</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">goals</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">goal</span>&gt;</span>generate<span class="hljs-tag">&lt;/<span class="hljs-name">goal</span>&gt;</span><br>                    <span class="hljs-tag">&lt;/<span class="hljs-name">goals</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">inputSpec</span>&gt;</span>$&#123;project.basedir&#125;/src/main/resources/api.yaml<span class="hljs-tag">&lt;/<span class="hljs-name">inputSpec</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">language</span>&gt;</span>java<span class="hljs-tag">&lt;/<span class="hljs-name">language</span>&gt;</span><br>                        <span class="hljs-tag">&lt;<span class="hljs-name">configOptions</span>&gt;</span><br>                            <span class="hljs-tag">&lt;<span class="hljs-name">sourceFolder</span>&gt;</span>src/gen/java/main<span class="hljs-tag">&lt;/<span class="hljs-name">sourceFolder</span>&gt;</span><br>                        <span class="hljs-tag">&lt;/<span class="hljs-name">configOptions</span>&gt;</span><br>                    <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">execution</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">executions</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>这就引入的对应的插件。然后执行<code>mvm clean complie</code>，Maven就会执行对应的生命周期，上面的插件对应的生成功能也会在过程中执行。执行完毕之后，就会生成对应的代码。但是需要注意的是，这里只会生成对应的代码，并不会引入相关的依赖。在代码中会使用到其他相关的依赖，还需要我们自己手动引入。</p>
-<h1>参考文章</h1>
-<ol>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
 <li><a target="_blank" rel="noopener" href="https://openapi.apifox.cn">OpenAPI规范-中文版</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42759726/article/details/111850907">Spring Boot整合Swagger3(OpenAPI3)生成接口文档</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42759726/article/details/111850907">Spring
+Boot整合Swagger3(OpenAPI3)生成接口文档</a></li>
 </ol>
 
                 

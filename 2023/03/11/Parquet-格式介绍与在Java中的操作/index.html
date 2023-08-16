@@ -87,7 +87,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -329,20 +329,25 @@
             
               <div class="markdown-body">
                 
-                <h1>Parquet</h1>
+                <h1 id="parquet">Parquet</h1>
 <h2 id="简介">简介</h2>
-<p>Apache Parquet 是由Twitter和Cloudera合作开发的列式存储项目，也是Google在2010年发表的Dermel论文中描述的内部列式存储格式的开源实现。与传统的列式存储相比，Parquet最大的特点就是支持嵌套格式数据的列式存储。对于大规模的嵌套格式数据来说，Parquet的原生支持能够减少规则化嵌套数据的开销，提升处理大规模数据的效率。</p>
-<p>Parquet是一种存储格式，它与语言和平台无关，不需要与任何一种数据处理框架绑定。Parquet在大数据处理框架中十分常用，如果说 HDFS 是大数据时代文件系统的事实标准的话，Parquet 就是大数据时代存储格式的事实标准，有许多组件都支持Parquet存储格式，包括下面的组件：</p>
+<p>Apache Parquet
+是由Twitter和Cloudera合作开发的列式存储项目，也是Google在2010年发表的Dermel论文中描述的内部列式存储格式的开源实现。与传统的列式存储相比，Parquet最大的特点就是支持嵌套格式数据的列式存储。对于大规模的嵌套格式数据来说，Parquet的原生支持能够减少规则化嵌套数据的开销，提升处理大规模数据的效率。</p>
+<p>Parquet是一种存储格式，它与语言和平台无关，不需要与任何一种数据处理框架绑定。Parquet在大数据处理框架中十分常用，如果说
+HDFS 是大数据时代文件系统的事实标准的话，Parquet
+就是大数据时代存储格式的事实标准，有许多组件都支持Parquet存储格式，包括下面的组件：</p>
 <ul>
-<li>查询引擎：Hive、Impala、Pig、Presto、Drill、Tajo、HAWQ、IBM Big SQL</li>
+<li>查询引擎：Hive、Impala、Pig、Presto、Drill、Tajo、HAWQ、IBM Big
+SQL</li>
 <li>计算框架：MapReduce、Spark、Cascading、Crunch、Scalding、Kite</li>
 <li>数据模型：Avro、Thrift、Protocol Buffers、POJOs</li>
 </ul>
 <p>parqeut文件默认是无法直接查看的，不过我们可以通过一些工具进行查看。其中一个是<code>parquet-tools</code>,该工具可以利用pip进行下载，下载之后就可以在命令行中查看parquet文件。（还有一种parquet-tools是以jar包形式存在的，但是目前在官方的github项目地址中似乎已经找不到了。）</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install parquet-tools -i https://pypi.tuna.tsinghua.edu.cn/simple<br></code></pre></td></tr></table></figure>
-<p>当然我们也可以在JetBrains中下载Plugin Big Data Tools，该插件提供了大数据生态的相关工具，其中之一就包含对parquet文件的查看支持。</p>
+<p>当然我们也可以在JetBrains中下载Plugin Big Data
+Tools，该插件提供了大数据生态的相关工具，其中之一就包含对parquet文件的查看支持。</p>
 <h2 id="数据模型">数据模型</h2>
-<h3 id="Schema">Schema</h3>
+<h3 id="schema">Schema</h3>
 <p>要理解Parquet的存储格式，首先需要了解它的数据模型。</p>
 <p>Parquet支持嵌套的数据模型，数据模型可以利用Schema来描述。在Parquet中，一个数据模型的Schema最上层是<code>message</code>，其中可以包含一系列字段。每个字段具有三个属性，分别是重复性（Repetition）、类型（Type）以及名称（Name）。其中字段的类型可以是原子类型，例如int、boolean、string等，也可以是一个group，这就表示这个字段是一个嵌套字段。字段的重复性则可以有下面三种情况：</p>
 <ul>
@@ -371,8 +376,9 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs data">--Data 1:<br>DocId: 10<br>Links:<br>	Forward: 20<br>	Forward: 40<br>	Forward: 60<br>Name:<br>	Language:<br>		Code: &#x27;en-us&#x27;<br>		Conutry: &#x27;us&#x27;<br>    Language:<br>        Code: &#x27;en&#x27;<br> 	Url: &#x27;http://A&#x27;<br>Name:<br>	Url: &#x27;http://B&#x27;<br>Name:<br>	Language:<br>		Code: &#x27;en-gb&#x27;<br>		Country: &#x27;gb&#x27;<br><br>--Data 2:<br>DocId: 20<br>Links:<br>	Backward: 10<br>	Backward: 30<br>	Forward: 80<br>Name:<br>	Url: &#x27;http://C&#x27;<br></code></pre></td></tr></table></figure>
 <p>如果将这样的数据按行存储成关系型表，我们应该会得到如下的表结果：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>DocId</th>
 <th>Links.Backward</th>
 <th>Links.Forward</th>
@@ -382,147 +388,163 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>10</td>
 <td></td>
 <td>20</td>
-<td>‘en-us’</td>
-<td>‘us’</td>
-<td>‘<a target="_blank" rel="noopener" href="http://A">http://A</a>’</td>
+<td>'en-us'</td>
+<td>'us'</td>
+<td>'http://A'</td>
 </tr>
-<tr>
+<tr class="even">
 <td>10</td>
 <td></td>
 <td>20</td>
-<td>‘en’</td>
+<td>'en'</td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://A">http://A</a>’</td>
+<td>'http://A'</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>10</td>
 <td></td>
 <td>20</td>
 <td></td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://B">http://B</a>’</td>
+<td>'http://B'</td>
 </tr>
-<tr>
+<tr class="even">
 <td>10</td>
 <td></td>
 <td>20</td>
-<td>‘en-gb’</td>
-<td>‘gb’</td>
+<td>'en-gb'</td>
+<td>'gb'</td>
 <td></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>10</td>
 <td></td>
 <td>40</td>
-<td>‘en-us’</td>
-<td>‘us’</td>
-<td>‘<a target="_blank" rel="noopener" href="http://A">http://A</a>’</td>
+<td>'en-us'</td>
+<td>'us'</td>
+<td>'http://A'</td>
 </tr>
-<tr>
+<tr class="even">
 <td>10</td>
 <td></td>
 <td>40</td>
-<td>‘en’</td>
+<td>'en'</td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://A">http://A</a>’</td>
+<td>'http://A'</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>10</td>
 <td></td>
 <td>40</td>
 <td></td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://B">http://B</a>’</td>
+<td>'http://B'</td>
 </tr>
-<tr>
+<tr class="even">
 <td>10</td>
 <td></td>
 <td>40</td>
-<td>‘en-gb’</td>
-<td>‘gb’</td>
+<td>'en-gb'</td>
+<td>'gb'</td>
 <td></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>10</td>
 <td></td>
 <td>60</td>
-<td>‘en-us’</td>
-<td>‘us’</td>
-<td>‘<a target="_blank" rel="noopener" href="http://A">http://A</a>’</td>
+<td>'en-us'</td>
+<td>'us'</td>
+<td>'http://A'</td>
 </tr>
-<tr>
+<tr class="even">
 <td>10</td>
 <td></td>
 <td>60</td>
-<td>‘en’</td>
+<td>'en'</td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://A">http://A</a>’</td>
+<td>'http://A'</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>10</td>
 <td></td>
 <td>60</td>
 <td></td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://B">http://B</a>’</td>
+<td>'http://B'</td>
 </tr>
-<tr>
+<tr class="even">
 <td>10</td>
 <td></td>
 <td>60</td>
-<td>‘en-gb’</td>
-<td>‘gb’</td>
+<td>'en-gb'</td>
+<td>'gb'</td>
 <td></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>20</td>
 <td>10</td>
 <td></td>
 <td></td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://C">http://C</a>’</td>
+<td>'http://C'</td>
 </tr>
-<tr>
+<tr class="even">
 <td>20</td>
 <td>30</td>
 <td></td>
 <td></td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://C">http://C</a>’</td>
+<td>'http://C'</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>20</td>
 <td></td>
 <td>80</td>
 <td></td>
 <td></td>
-<td>‘<a target="_blank" rel="noopener" href="http://C">http://C</a>’</td>
+<td>'http://C'</td>
 </tr>
 </tbody>
 </table>
 <p>可以看到，为了表示这种嵌套结构，按行存储的关系表必须将所有的嵌套都进行扁平化，因此这张表一共得到了六列六个字段。但是这会导致相关字段的重复存储，造成冗余，同时会有大量字段为空。而Parquet是按列进行存储的，它仅需要存储对应的最小粒度的原子类型字段即可。对应到Schema的树结构，则仅需要在叶子结点上进行存储即可。下面给出Parquet列式存储模型的示意图：</p>
 <img src="/2023/03/11/Parquet-%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9C%A8Java%E4%B8%AD%E7%9A%84%E6%93%8D%E4%BD%9C/%E5%88%97%E5%BC%8F%E5%AD%98%E5%82%A8%E7%A4%BA%E6%84%8F%E5%9B%BE.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="列式存储示意图">
-<h3 id="Striping-Assembly算法">Striping/Assembly算法</h3>
+<h3 id="stripingassembly算法">Striping/Assembly算法</h3>
 <p>按照上面Parquet列式存储的示意图，我们进行存储的时候仅存储Value是不够的，因为仅存储Value，我们无法将其还原成原始的嵌套结构。例如在上面的例子中，观察<code>Name.Language.Code</code>中的三个值，两两比较。如果仅存放Value，我们无法确定这两个Code是属于同一个Name的不同Language，还是属于不同Name的不同Language。</p>
-<p>而为了能够在列式存储的同时完整地保留嵌套结构信息，Parquet使用Striping/Assembly算法。具体来说，在进行列式存储的时候，除了存储每一个具体的value，还同时存储其他信息以供嵌套结构的还原。这些其他信息包括两个数据，Repetition Level和Definition Level</p>
-<h4 id="Repetiton-Level">Repetiton Level</h4>
-<p>对于每个Value，它都有对应的一个Repetition Level。该值表示在该字段路径上哪个节点进行了重复。考虑Schema的树状结构，从根节点出发到达该字段有一条路径。对于当前值和前一个值来说，分别可以得到两条路径，这两条路径的最后一个公共节点所处的层级数，就是当前值对应的repetition levels，则这个值就是对应的层数。简短一些说，就是当前值所在节点和前一个值所在节点的最近的公共父节点所处的层级。</p>
-<p>考虑上面例子中存储的Forward属性，将所有的Forwad Value映射到树形结构中，可以得到如下的路径：</p>
+<p>而为了能够在列式存储的同时完整地保留嵌套结构信息，Parquet使用Striping/Assembly算法。具体来说，在进行列式存储的时候，除了存储每一个具体的value，还同时存储其他信息以供嵌套结构的还原。这些其他信息包括两个数据，Repetition
+Level和Definition Level</p>
+<h4 id="repetiton-level">Repetiton Level</h4>
+<p>对于每个Value，它都有对应的一个Repetition
+Level。该值表示在该字段路径上哪个节点进行了重复。考虑Schema的树状结构，从根节点出发到达该字段有一条路径。对于当前值和前一个值来说，分别可以得到两条路径，这两条路径的最后一个公共节点所处的层级数，就是当前值对应的repetition
+levels，则这个值就是对应的层数。简短一些说，就是当前值所在节点和前一个值所在节点的最近的公共父节点所处的层级。</p>
+<p>考虑上面例子中存储的Forward属性，将所有的Forwad
+Value映射到树形结构中，可以得到如下的路径：</p>
 
-<p>由于这个例子的树形结构最多只有4层，因此Repetition Level的范围对应第一到第三层，值的范围就是0~2。因此对于第一个20，它没有前一个值，所以Repetition Level为0。对于40来说，它和第一个值20，最近公共父节点是Links，所在树的层级是1，因此Repetition Level为1。对于60来说也是同样的分析。而对于80来说， 它与60的最近公共父节点是Document，因此Repetition Level为0。</p>
-<h4 id="Definition-Level">Definition Level</h4>
-<p>但是仅有Repetition Level是不够的，因为repeated和optional类型的存在，它还无法完全保留嵌套结构信息。因为有可能一条记录中的某一列是没有值的，假设我们不记录这样的值，则会导致本该属于下一条记录的值被当作当前记录的值，从而造成数据结构错误。因此对于这种情况我们需要填充一个占位符来表示。</p>
-<p>Definition Level值的含义表示当前字段路径上有多少个optional或repeated的字段实际进行了定义。这个值只对填充的空值有意义。因为如果是非空值，则表示该值路径上的所有可选字段都已经进行了定义，那么这个值总是等于该路径上所有的Option字段总数。</p>
-<p>考虑上面的<code>Name.Language.Code</code>字段，按照顺序以此在一棵树上列出所有的值路径，同时注意填充空值，因此我们可以得到如下的表示。其中有实际值的字段，Definition Level值均为2，这表示前面的Name和Language字段都出现了。而为空的字段，两者路径上的Name都是有定义的，但是Language没有，因此Definition Level的值为1。</p>
+<p>由于这个例子的树形结构最多只有4层，因此Repetition
+Level的范围对应第一到第三层，值的范围就是0~2。因此对于第一个20，它没有前一个值，所以Repetition
+Level为0。对于40来说，它和第一个值20，最近公共父节点是Links，所在树的层级是1，因此Repetition
+Level为1。对于60来说也是同样的分析。而对于80来说，
+它与60的最近公共父节点是Document，因此Repetition Level为0。</p>
+<h4 id="definition-level">Definition Level</h4>
+<p>但是仅有Repetition
+Level是不够的，因为repeated和optional类型的存在，它还无法完全保留嵌套结构信息。因为有可能一条记录中的某一列是没有值的，假设我们不记录这样的值，则会导致本该属于下一条记录的值被当作当前记录的值，从而造成数据结构错误。因此对于这种情况我们需要填充一个占位符来表示。</p>
+<p>Definition
+Level值的含义表示当前字段路径上有多少个optional或repeated的字段实际进行了定义。这个值只对填充的空值有意义。因为如果是非空值，则表示该值路径上的所有可选字段都已经进行了定义，那么这个值总是等于该路径上所有的Option字段总数。</p>
+<p>考虑上面的<code>Name.Language.Code</code>字段，按照顺序以此在一棵树上列出所有的值路径，同时注意填充空值，因此我们可以得到如下的表示。其中有实际值的字段，Definition
+Level值均为2，这表示前面的Name和Language字段都出现了。而为空的字段，两者路径上的Name都是有定义的，但是Language没有，因此Definition
+Level的值为1。</p>
 <blockquote>
-<p>这里需要注意的是，实际上空值是不需要存储的，因为按照Definition Level的特性，只要该值小于路径上Definition Level的最大值，则表示当前值就是一个空值</p>
+<p>这里需要注意的是，实际上空值是不需要存储的，因为按照Definition
+Level的特性，只要该值小于路径上Definition
+Level的最大值，则表示当前值就是一个空值</p>
 </blockquote>
 
-<p>总结来说，为了得到实际的列式存储模型，对于每个字段，我们需要得到对应值的路径，同时需要注意空值的填充。之后按照定义计算Repetition Level与Definition Level。最终，我们可以得到上面例子的最终列式存储模型，如下图所示：</p>
+<p>总结来说，为了得到实际的列式存储模型，对于每个字段，我们需要得到对应值的路径，同时需要注意空值的填充。之后按照定义计算Repetition
+Level与Definition
+Level。最终，我们可以得到上面例子的最终列式存储模型，如下图所示：</p>
 <img src="/2023/03/11/Parquet-%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9C%A8Java%E4%B8%AD%E7%9A%84%E6%93%8D%E4%BD%9C/%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84%E7%A4%BA%E4%BE%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="存储结构示例">
 <h2 id="存储格式">存储格式</h2>
 <p>上面介绍了Parquet使用的数据模型，接下来介绍Parquet的存储格式。Parquet文件是以二进制方式存储，不可以直接读取。在Parquet文件中包含该文件的数据和元数据，即文件是自解析的。</p>
@@ -530,8 +552,10 @@
 <ul>
 <li>HDFS块(Block)：它是HDFS上的最小的副本单位，HDFS会把一个Block存储在本地的一个文件并且维护分散在不同的机器上的多个副本，通常情况下一个Block的大小为256M、512M等。</li>
 <li>HDFS文件(File)：一个HDFS的文件，包括数据和元数据，数据分散存储在多个Block中。</li>
-<li>行组(Row Group)：按照行将数据物理上划分为多个单元，每一个行组包含一定的行数，在一个HDFS文件中至少存储一个行组，Parquet读写的时候会将整个行组缓存在内存中，所以如果每一个行组的大小是由内存的大小决定的，例如记录占用空间比较小的Schema可以在每一个行组中存储更多的行。</li>
-<li>列块(Column Chunk)：在一个行组中每一列保存在一个列块中，行组中的所有列连续的存储在这个行组文件中。一个列块中的值都是相同类型的，不同的列块可能使用不同的算法进行压缩。</li>
+<li>行组(Row
+Group)：按照行将数据物理上划分为多个单元，每一个行组包含一定的行数，在一个HDFS文件中至少存储一个行组，Parquet读写的时候会将整个行组缓存在内存中，所以如果每一个行组的大小是由内存的大小决定的，例如记录占用空间比较小的Schema可以在每一个行组中存储更多的行。</li>
+<li>列块(Column
+Chunk)：在一个行组中每一列保存在一个列块中，行组中的所有列连续的存储在这个行组文件中。一个列块中的值都是相同类型的，不同的列块可能使用不同的算法进行压缩。</li>
 <li>页(Page)：每一个列块划分为多个页，一个页是最小的编码的单位，在同一个列块的不同页可能使用不同的编码方式。</li>
 </ul>
 <blockquote>
@@ -544,9 +568,22 @@
 </blockquote>
 <p>下图展示了Parquet的文件格式：</p>
 <img src="/2023/03/11/Parquet-%E6%A0%BC%E5%BC%8F%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9C%A8Java%E4%B8%AD%E7%9A%84%E6%93%8D%E4%BD%9C/Parquet%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Parquet文件格式">
-<p>一个文件中可以存储多个行组，文件的首位都是该文件的Magic Code，用于校验它是否是一个Parquet文件，Parquet 文件格式是自解析的，采用 thrift 格式定义的文件 schema 以及其他元数据信息一起存储在文件的末尾。文件的元数据中包括每一个行组的元数据信息和该文件存储数据的Schema信息。读取的时候首先从文件末尾读取文件元数据信息，再在其中找到感兴趣的 Column Chunk 信息，并依次读取。文件元数据信息放在文件最后是为了方便数据依序一次性写入。</p>
-<p>Parquet 总共有3种类型的元数据：文件元数据、列（块）元数据和 page header 元数据。所有元数据都采用 thrift 协议存储。每一页的开始都会存储该页的元数据 ，在Parquet中，有三种类型的页：数据页、字典页和索引页。数据页用于存储当前行组中该列的值，其中就存储了上面我们在数据模型中介绍过的Value、Repetition Level和Definition Level。字典页存储该列值的编码字典，每一个列块中最多包含一个字典页，索引页用来存储当前行组下该列的索引。</p>
-<p>在数据类型方面。Parquet 只保留了最精简的部分数据类型，以方便存储和读写。对于其他数据类型，可以使用逻辑类型（Logical Types）进行扩展，比如：逻辑类型 strings 就映射为带有 UTF8 标识的二进制 byte arrays 进行存储。下面是Parquet中的基本数据类型：</p>
+<p>一个文件中可以存储多个行组，文件的首位都是该文件的Magic
+Code，用于校验它是否是一个Parquet文件，Parquet 文件格式是自解析的，采用
+thrift 格式定义的文件 schema
+以及其他元数据信息一起存储在文件的末尾。文件的元数据中包括每一个行组的元数据信息和该文件存储数据的Schema信息。读取的时候首先从文件末尾读取文件元数据信息，再在其中找到感兴趣的
+Column Chunk
+信息，并依次读取。文件元数据信息放在文件最后是为了方便数据依序一次性写入。</p>
+<p>Parquet 总共有3种类型的元数据：文件元数据、列（块）元数据和 page
+header 元数据。所有元数据都采用 thrift
+协议存储。每一页的开始都会存储该页的元数据
+，在Parquet中，有三种类型的页：数据页、字典页和索引页。数据页用于存储当前行组中该列的值，其中就存储了上面我们在数据模型中介绍过的Value、Repetition
+Level和Definition
+Level。字典页存储该列值的编码字典，每一个列块中最多包含一个字典页，索引页用来存储当前行组下该列的索引。</p>
+<p>在数据类型方面。Parquet
+只保留了最精简的部分数据类型，以方便存储和读写。对于其他数据类型，可以使用逻辑类型（Logical
+Types）进行扩展，比如：逻辑类型 strings 就映射为带有 UTF8 标识的二进制
+byte arrays 进行存储。下面是Parquet中的基本数据类型：</p>
 <ul>
 <li><code>BOOLEAN</code>: 1 bit boolean</li>
 <li><code>INT32</code>: 32 bit signed ints</li>
@@ -556,14 +593,18 @@
 <li><code>DOUBLE</code>: IEEE 64-bit floating point values</li>
 <li><code>BYTE_ARRAY</code>: arbitrarily long byte arrays</li>
 </ul>
-<p>总结来说，Parquet存储格式关键点有这几个，首先是Schema信息或者说是元信息存放在文件的尾部；其次是对于数据，会首先按照行进行划分成为多个行组<code>Raw Group</code>，每个行组又包含多个Column Chunk，每一列的数据都存放在<code>Column Chunk</code>中。而每个Column Chunk中又包含多个Page，每个Page存放一个Value，以及对应的Repetition Level以及Definition Level。</p>
-<h2 id="Java读写parquet文件">Java读写parquet文件</h2>
+<p>总结来说，Parquet存储格式关键点有这几个，首先是Schema信息或者说是元信息存放在文件的尾部；其次是对于数据，会首先按照行进行划分成为多个行组<code>Raw Group</code>，每个行组又包含多个Column
+Chunk，每一列的数据都存放在<code>Column Chunk</code>中。而每个Column
+Chunk中又包含多个Page，每个Page存放一个Value，以及对应的Repetition
+Level以及Definition Level。</p>
+<h2 id="java读写parquet文件">Java读写parquet文件</h2>
 <h3 id="写文件">写文件</h3>
 <p>为了在Java中完成parquet文件的读写，我们需要引入如下依赖，当然这里的版本可以根据需要进行调整。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.hadoop<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hadoop-client<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.2.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.parquet<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>parquet-hadoop<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.12.3<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>我们首先介绍parquet文件的写入。首先我们需要创建相关的实体类，这里就以上面的Document为例，创建相关的实体类如下，相关get，set，toString，构造方法等没有列出，仅是展示了相关的属性：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Document</span> &#123;<br>    <span class="hljs-keyword">private</span> Long docId;<br>    <span class="hljs-keyword">private</span> Link link;<br>    <span class="hljs-keyword">private</span> Name name;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Link</span> &#123;<br>    <span class="hljs-keyword">private</span> Long backward;<br>    <span class="hljs-keyword">private</span> Long forward;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Name</span> &#123;<br>    <span class="hljs-keyword">private</span> String url;<br>    <span class="hljs-keyword">private</span> Language language;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Language</span> &#123;<br>    <span class="hljs-keyword">private</span> String code;<br>    <span class="hljs-keyword">private</span> String country;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>需要注意的一点是这里我们在parquet schema中指定了int64，对应的是Long类型。如果类型不对，后续会出现解析错误的报错。</p>
+<p>需要注意的一点是这里我们在parquet
+schema中指定了int64，对应的是Long类型。如果类型不对，后续会出现解析错误的报错。</p>
 <p>之后就开始学习如何写入parquet文件。为了写入文件，首先我们需要定义parquet的schema。下面的方法调用相关API进行schema的定义：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> MessageType <span class="hljs-title function_">getDocumentSchema</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 注意定义的层级顺序</span><br>    Types.GroupBuilder&lt;GroupType&gt; linksSchemaBuilder = Types.buildGroup(Type.Repetition.OPTIONAL);<br>    linksSchemaBuilder.repeated(PrimitiveType.PrimitiveTypeName.INT64).named(<span class="hljs-string">&quot;backward&quot;</span>)<br>            .repeated(PrimitiveType.PrimitiveTypeName.INT64).named(<span class="hljs-string">&quot;forward&quot;</span>);<br>    <span class="hljs-type">GroupType</span> <span class="hljs-variable">linksSchema</span> <span class="hljs-operator">=</span> linksSchemaBuilder.named(<span class="hljs-string">&quot;links&quot;</span>);<br><br>    Types.GroupBuilder&lt;GroupType&gt; languageSchemaBuilder = Types.buildGroup(Type.Repetition.REPEATED);<br>    languageSchemaBuilder<br>            .required(PrimitiveType.PrimitiveTypeName.BINARY).as(LogicalTypeAnnotation.stringType()).named(<span class="hljs-string">&quot;code&quot;</span>)<br>            .optional(PrimitiveType.PrimitiveTypeName.BINARY).as(LogicalTypeAnnotation.stringType()).named(<span class="hljs-string">&quot;country&quot;</span>);<br>    <span class="hljs-type">GroupType</span> <span class="hljs-variable">languageSchema</span> <span class="hljs-operator">=</span> languageSchemaBuilder.named(<span class="hljs-string">&quot;language&quot;</span>);<br><br>    Types.GroupBuilder&lt;GroupType&gt; nameSchemaBuilder = Types.buildGroup(Type.Repetition.REPEATED);<br>    nameSchemaBuilder.optional(PrimitiveType.PrimitiveTypeName.BINARY).as(LogicalTypeAnnotation.stringType()).named(<span class="hljs-string">&quot;url&quot;</span>);<br>    nameSchemaBuilder.addField(languageSchema);<br>    <span class="hljs-type">GroupType</span> <span class="hljs-variable">nameSchema</span> <span class="hljs-operator">=</span> nameSchemaBuilder.named(<span class="hljs-string">&quot;name&quot;</span>);<br><br>    Types.<span class="hljs-type">MessageTypeBuilder</span> <span class="hljs-variable">documentSchemaBuilder</span> <span class="hljs-operator">=</span> Types.buildMessage();<br>    documentSchemaBuilder.required(PrimitiveType.PrimitiveTypeName.INT64).named(<span class="hljs-string">&quot;docId&quot;</span>);<br>    documentSchemaBuilder.addFields(linksSchema, nameSchema);<br>    <span class="hljs-keyword">return</span> documentSchemaBuilder.named(<span class="hljs-string">&quot;document&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>对于Schema定义来说，我们最终需要得到的是一个<code>MessageType</code>类型的对象。可以看到上面有我们属性的方法，例如option，repeated，group等，分别用于构造不同类型的字段。需要注意上面方法中如何对嵌套的Schema进行定义。对上面的方法得到的对象进行输出，我们可以得到如下的结果，可以看到与我们之前的介绍是一致的。</p>
@@ -583,19 +624,26 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testRead</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">MyParquetReader</span> <span class="hljs-variable">myParquetReader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyParquetReader</span>();<br><br>    <span class="hljs-type">String</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getClass().getClassLoader().getResource(<span class="hljs-string">&quot;document.parquet&quot;</span>).getPath();<br>    myParquetReader.read(path);<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>输出如下，同样可以看到是正确读出了其中的内容。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">docId: 10<br>links.backward: 20<br>links.forward: 30<br>name.url: http://A<br>name.language.code: en<br>name.language.country: us<br></code></pre></td></tr></table></figure>
-<h3 id="读取Schema">读取Schema</h3>
+<h3 id="读取schema">读取Schema</h3>
 <p>我们同样可以读取parquet中处于文件末尾的元信息，然后解析出相关的schema，代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">readSchema</span><span class="hljs-params">(String path)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">Path</span> <span class="hljs-variable">file</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(path);<br>    <span class="hljs-type">ParquetMetadata</span> <span class="hljs-variable">metadata</span> <span class="hljs-operator">=</span> ParquetFileReader.readFooter(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Configuration</span>(), file);<br>    <span class="hljs-type">MessageType</span> <span class="hljs-variable">schema</span> <span class="hljs-operator">=</span> metadata.getFileMetaData().getSchema();<br><br>    <span class="hljs-comment">//遍历字段</span><br>    <span class="hljs-keyword">for</span> (Type field : schema.getFields()) &#123;<br>        printField(field);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printField</span><span class="hljs-params">(Type field)</span> &#123;<br>    <span class="hljs-keyword">if</span> (field.isPrimitive()) &#123;<br>        <span class="hljs-comment">//获取基本类型字段名称</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">typeName</span> <span class="hljs-operator">=</span> field.asPrimitiveType().getPrimitiveTypeName().name();<br>        <span class="hljs-type">OriginalType</span> <span class="hljs-variable">originalType</span> <span class="hljs-operator">=</span> field.asPrimitiveType().getOriginalType();<br>        <span class="hljs-type">String</span> <span class="hljs-variable">originalName</span> <span class="hljs-operator">=</span> originalType != <span class="hljs-literal">null</span> ? originalType.name() : <span class="hljs-string">&quot;&quot;</span>;<br>        System.out.println(field.getName() + <span class="hljs-string">&quot;:&quot;</span> + typeName + <span class="hljs-string">&quot;:&quot;</span> + originalName);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// groupType</span><br>        <span class="hljs-type">GroupType</span> <span class="hljs-variable">groupType</span> <span class="hljs-operator">=</span> field.asGroupType();<br>        <span class="hljs-keyword">for</span> (Type groupTypeField : groupType.getFields()) &#123;<br>            printField(groupTypeField);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>需要注意的是，只有当字段Field是基本字段，我们才能得到相关的基本类型信息，否则需要进一步进行字段的获取。因此这里我们使用了一个递归函数进行字段信息的获取。同样借助刚才生成的<code>document.parquet</code>进行测试，可以得到如下的结果输出：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">docId:INT64:<br>backward:INT64:<br>forward:INT64:<br>url:BINARY:UTF8<br>code:BINARY:UTF8<br>country:BINARY:UTF8<br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://helloyoubeautifulthing.net/blog/2021/01/03/parquet-format/">一文讲透大数据列存标准格式 - Parquet | Liam’s Blog</a></li>
-<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1757868">Parquet文件存储格式详细解析 </a></li>
-<li><a target="_blank" rel="noopener" href="https://parquet.apache.org/docs/overview/">Overview | Apache Parquet</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/baidu_32377671/article/details/117253718">Java方式对Parquet文件进行文件生成和解析</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42532968/article/details/128957062">parquet-tools工具使用</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/lk2015/article/details/115448391">java解析parquet文件</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://helloyoubeautifulthing.net/blog/2021/01/03/parquet-format/">一文讲透大数据列存标准格式
+- Parquet | Liam's Blog</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1757868">Parquet文件存储格式详细解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://parquet.apache.org/docs/overview/">Overview |
+Apache Parquet</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/baidu_32377671/article/details/117253718">Java方式对Parquet文件进行文件生成和解析</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42532968/article/details/128957062">parquet-tools工具使用</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/lk2015/article/details/115448391">java解析parquet文件</a></li>
 </ol>
 
                 

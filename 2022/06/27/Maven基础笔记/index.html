@@ -88,7 +88,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -330,26 +330,20 @@
             
               <div class="markdown-body">
                 
-                <h1>Maven基础</h1>
-<h2 id="一-简介">一. 简介</h2>
+                <h1 id="maven基础">Maven基础</h1>
+<h2 id="一.-简介">一. 简介</h2>
 <p>Maven的作用：</p>
-<ol>
-<li>
-<p>项目构建：提供标准的、跨平台的自动化项目构建方式</p>
-</li>
-<li>
-<p>依赖管理：方便快捷的管理项目依赖资源（jar包），避免资源之间的版本冲突问题</p>
-</li>
-<li>
-<p>统一开发结构：提供标准的、统一的项目结构</p>
-<img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/maven%E7%AE%80%E4%BB%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="maven简介">
-</li>
+<ol type="1">
+<li><p>项目构建：提供标准的、跨平台的自动化项目构建方式</p></li>
+<li><p>依赖管理：方便快捷的管理项目依赖资源（jar包），避免资源之间的版本冲突问题</p></li>
+<li><p>统一开发结构：提供标准的、统一的项目结构</p>
+<img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/maven%E7%AE%80%E4%BB%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="maven简介"></li>
 </ol>
 <blockquote>
 <p>每一个项目都对应一个项目对象模型（POM），一个项目对象模型通过一份pom.xml文件进行管理，同时依赖管理可以管理项目中需要的依赖。本身这个项目也可以作为一个资源供其他项目作为依赖使用。</p>
 </blockquote>
-<h2 id="二-基础概念">二.基础概念</h2>
-<h3 id="1-仓库">1. 仓库</h3>
+<h2 id="二.基础概念">二.基础概念</h2>
+<h3 id="仓库">1. 仓库</h3>
 <p>仓库：用于存储资源，包含各种jar包</p>
 <p>仓库的分类：</p>
 <ul>
@@ -358,15 +352,14 @@
 <ul>
 <li>中央仓库：Maven团队维护的，存储所有资源的仓库</li>
 <li>私服：部门或公司范围内部存储资源的仓库，从中央仓库获取资源</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>私服的作用：</p>
-<ol>
+<ol type="1">
 <li>保存具有版权的资源，包含购买或自主研发的jar包</li>
 <li>一定范围内共享资源，仅对内部开放，不对外共享</li>
 </ol>
-<h3 id="2-坐标">2. 坐标</h3>
+<h3 id="坐标">2. 坐标</h3>
 <p>坐标：Maven中的坐标用于描述仓库中资源的位置</p>
 <p>主要组成：</p>
 <ul>
@@ -375,14 +368,15 @@
 <li>version：当前项目版本号</li>
 <li>packaging：当前该项目的打包方式</li>
 </ul>
-<p>搜索:<a target="_blank" rel="noopener" href="https://mvnrepository.com/#/">Maven Repository: Search/Browse/Explore (mvnrepository.com)</a></p>
+<p>搜索:<a target="_blank" rel="noopener" href="https://mvnrepository.com/#/">Maven Repository:
+Search/Browse/Explore (mvnrepository.com)</a></p>
 <p>作用：使用唯一标识来定位资源的位置，通过该表示可以将资源的识别与下载工作交由机器来完成</p>
 <blockquote>
 <p>本地仓库的配置，在conf里面的setting中配置</p>
 <p>阿里云maven:</p>
- <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>aliyunmaven<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>*<span class="hljs-tag">&lt;/<span class="hljs-name">mirrorOf</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>阿里云公共仓库<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>https://maven.aliyun.com/repository/public<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>aliyunmaven<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>*<span class="hljs-tag">&lt;/<span class="hljs-name">mirrorOf</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>阿里云公共仓库<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>https://maven.aliyun.com/repository/public<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure></p>
 </blockquote>
-<h2 id="三-手工制作Maven项目">三.手工制作Maven项目</h2>
+<h2 id="三.手工制作maven项目">三.手工制作Maven项目</h2>
 <p>Maven工程目录结构：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">- java-project<br>	- src<br>		- main<br>			- java<br>			- resources<br>        - test<br>        	- java<br>        	- resources<br>    - pom.xml<br></code></pre></td></tr></table></figure>
 <ul>
@@ -392,9 +386,9 @@
 <p>Maven项目构建命令：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">首先进入对应的java-project文件夹</span><br>mvn compile		# 编译<br>mvn clean		# 清理编译后的文件<br>mvn test		# 测试<br>mvn package		# 打包，包括了编译和测试<br>mvn install		# 安装到本地仓库<br></code></pre></td></tr></table></figure>
 <p>可以插件创建Maven项目</p>
-<h2 id="四-IDEA生成Maven项目">四.IDEA生成Maven项目</h2>
+<h2 id="四.idea生成maven项目">四.IDEA生成Maven项目</h2>
 <p>通过配置在IDEA中的设置进行Maven项目的生成</p>
-<h2 id="五-依赖管理">五.依赖管理</h2>
+<h2 id="五.依赖管理">五.依赖管理</h2>
 <p><strong>1.依赖配置</strong></p>
 <p>依赖配置：配置当前项目需要的jar包，一个项目可以设置多个依赖</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- 设置当前项目所依赖的所有jar--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>	&lt;!—设置举例的依赖 --&gt;<br>	<span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>		&lt;!—依赖所属群组id--&gt;<br>		<span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>		&lt;!—依赖所属项目id--&gt;<br>		<span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>		&lt;!—依赖版本号--&gt;<br>		<span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.12<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -405,7 +399,7 @@
 <li>间接依赖：被依赖的资源如果依赖其他资源，那么当前项目间接依赖其他资源</li>
 </ul>
 <p>依赖冲突三原则（决定使用哪一个依赖）</p>
-<ol>
+<ol type="1">
 <li><strong>路径优先</strong>：当依赖中出现了相同资源的时候，层级越深，优先级越低，层级越浅，优先级越高</li>
 <li><strong>声明优先</strong>：当资源在相同层级的时候，配置顺序靠前的覆盖配置顺序靠后的</li>
 <li><strong>特殊优先</strong>：当同一配置文件中了相同资源的不同版本，后配置的覆盖先配置的</li>
@@ -429,7 +423,7 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>scope</th>
 <th>主代码</th>
 <th>测试代码</th>
@@ -437,25 +431,25 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>compile（默认）</td>
 <td>√</td>
 <td>√</td>
 <td>√</td>
 </tr>
-<tr>
+<tr class="even">
 <td>test</td>
 <td></td>
 <td>√</td>
 <td></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>provide</td>
 <td>√</td>
 <td>√</td>
 <td></td>
 </tr>
-<tr>
+<tr class="even">
 <td>runtime</td>
 <td></td>
 <td></td>
@@ -472,7 +466,7 @@
 <li><code>runtime</code>：在运行、测试时有效，在编译时无效。例如JDBC驱动实现，项目代码编译仅需要JDBC接口，只有在测试或者运行项目的时候才需要实现接口的具体驱动</li>
 <li><code>test</code>：只在测试时有效</li>
 </ul>
-<h2 id="六-生命周期与插件">六.生命周期与插件</h2>
+<h2 id="六.生命周期与插件">六.生命周期与插件</h2>
 <p>项目构建生命周期：Maven构建生命周期描述的是一次构建过程中经历了多少个事件。Maven对项目构建的生命周期划分为3套</p>
 <ul>
 <li>clean：清理工作</li>

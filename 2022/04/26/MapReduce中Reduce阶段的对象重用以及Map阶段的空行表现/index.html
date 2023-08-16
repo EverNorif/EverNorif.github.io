@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,14 +325,16 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Hadoop中迭代器的对象重用">Hadoop中迭代器的对象重用</h2>
+                <h2 id="hadoop中迭代器的对象重用">Hadoop中迭代器的对象重用</h2>
 <p>在书写MapReduce程序的时候，我们会自定义实现一个Reduce类，其中需要重写reduce函数，而reduce函数的格式如下（类型使用Text进行举例）：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">reduce</span><span class="hljs-params">(Text key, Iterable&lt;Text&gt; values, Reducer&lt;Text, Text, Text, Text&gt;.Context context)</span><br></code></pre></td></tr></table></figure>
 <p>可以看到values的类型是一个迭代器，使用增强for可以进行迭代。但是在实际过程中，每次迭代其实是对当前的对象进行一次重新的赋值，也就是说在整个过程中，堆空间中只有一个对象的空间。举例来说，对于如下的代码，我们想实现的功能是将每个value都加入到list列表当中：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">ArrayList&lt;Text&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><span class="hljs-keyword">for</span> (Text value : values) &#123;<br>	list.add(value);<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>假设values中的值为[“1”, “2”, “3”]，实际执行这个代码之后，会发现list中的值是[“3”, “3”, “3”]。这是因为每次add的实际上是同一个对象引用，而在迭代过程中每次会对这个对象重新赋值。最后一次迭代将对象赋值为3，而list中每个元素其实都是指向了同一个对象，因此list中的值全部为3。</p>
+<p>假设values中的值为["1", "2",
+"3"]，实际执行这个代码之后，会发现list中的值是["3", "3",
+"3"]。这是因为每次add的实际上是同一个对象引用，而在迭代过程中每次会对这个对象重新赋值。最后一次迭代将对象赋值为3，而list中每个元素其实都是指向了同一个对象，因此list中的值全部为3。</p>
 <p>为了解决这个问题，需要在每次迭代的时候重新new一个对象，然后将value的值赋值给这个对象，这样就可以保证每次迭代得到不同的对象引用。</p>
-<h2 id="Map阶段的空行表现">Map阶段的空行表现</h2>
+<h2 id="map阶段的空行表现">Map阶段的空行表现</h2>
 <p>第二个问题是探究Map阶段的空行表现。</p>
 <p>首先需要考虑<code>\n</code>和<code>\r</code>这两个字符：</p>
 <ul>
@@ -346,7 +348,8 @@
 <li>在Mac系统中，敲入enter键，在文件中会输入<code>\n</code></li>
 </ul>
 <p>并且不同的编辑软件对于行数的显示方式也有所不同，在Vim中，文件中有多少个<code>\n</code>，就认为文件有多少行。而在Windows的编辑器中，一般显示的行数会比实际的<code>\n</code>数目要更多。</p>
-<p>在MapReduce程序中，默认输入的键值对类型是&lt;LongWritable, Text&gt;，表示文件偏移量以及一行的内容。默认按照<code>\n</code>，<code>\r</code>或者<code>\r\n</code>进行切分。</p>
+<p>在MapReduce程序中，默认输入的键值对类型是&lt;LongWritable,
+Text&gt;，表示文件偏移量以及一行的内容。默认按照<code>\n</code>，<code>\r</code>或者<code>\r\n</code>进行切分。</p>
 <blockquote>
 <p>可以在程序中指定自定义的行终止符，参数为<code>textinputformat.record.delimiter</code></p>
 </blockquote>

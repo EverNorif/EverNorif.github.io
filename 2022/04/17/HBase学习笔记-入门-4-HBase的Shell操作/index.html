@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,65 +325,75 @@
             
               <div class="markdown-body">
                 
-                <h2 id="HBase-Shell">HBase Shell</h2>
-<p>HBase数据库默认的客户端程序是HBase Shell，这是一个命令行工具，类似于MySQL客户端启动后出现的命令行Shell。在启动HBase集群之后（同时配置了环境变量），在命令行中输入<code>hbase shell</code>即可进入。</p>
-<p>HBase Shell是一个封装了Java客户端API的JRuby应用软件，其中提供的命令可以理解成为是Ruby函数的调用，每个命令都是一个Ruby脚本，后面跟着的参数为传入的参数，具体格式在后续进行说明。在下面链接中列出了在HBase Shell中可用的所有脚本：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/apache/hbase/tree/master/hbase-shell/src/main/ruby/shell/commands">hbase/hbase-shell/src/main/ruby/shell/commands at master · apache/hbase (github.com)</a></p>
-<p>在 Shell 中输入<code>help</code>可以获取可用命令列表，输入<code>help commandname</code>可获取特定命令的帮助，还可以输入各种命令查看集群、数据库和数据的各项详情。</p>
+                <h2 id="hbase-shell">HBase Shell</h2>
+<p>HBase数据库默认的客户端程序是HBase
+Shell，这是一个命令行工具，类似于MySQL客户端启动后出现的命令行Shell。在启动HBase集群之后（同时配置了环境变量），在命令行中输入<code>hbase shell</code>即可进入。</p>
+<p>HBase
+Shell是一个封装了Java客户端API的JRuby应用软件，其中提供的命令可以理解成为是Ruby函数的调用，每个命令都是一个Ruby脚本，后面跟着的参数为传入的参数，具体格式在后续进行说明。在下面链接中列出了在HBase
+Shell中可用的所有脚本：</p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/apache/hbase/tree/master/hbase-shell/src/main/ruby/shell/commands">hbase/hbase-shell/src/main/ruby/shell/commands
+at master · apache/hbase (github.com)</a></p>
+<p>在 Shell
+中输入<code>help</code>可以获取可用命令列表，输入<code>help commandname</code>可获取特定命令的帮助，还可以输入各种命令查看集群、数据库和数据的各项详情。</p>
 <ul>
 <li>使用<code>status</code>命令查看当前集群各节点的状态</li>
 <li>使用<code>version</code>命令查看当前 HBase 的版本号</li>
-<li>使用命令<code>exit</code>或<code>quit</code>即可退出 HBase Shell</li>
+<li>使用命令<code>exit</code>或<code>quit</code>即可退出 HBase
+Shell</li>
 <li>使用<code>whoami</code>命令显示当前用户</li>
 </ul>
-<p>HBase Shell提供的命令可以大致分为两类，一类是对数据表的管理命令，包括对表的创建，禁用，删除等操作；另一类是对表中数据的增删改查命令。</p>
+<p>HBase
+Shell提供的命令可以大致分为两类，一类是对数据表的管理命令，包括对表的创建，禁用，删除等操作；另一类是对表中数据的增删改查命令。</p>
 <h2 id="数据表管理命令">数据表管理命令</h2>
 <p>常用命令汇总：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>命令</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>create</td>
 <td>创建指定模式的新表</td>
 </tr>
-<tr>
+<tr class="even">
 <td>alter</td>
 <td>修改表的结构，如添加新的列族等</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>describe</td>
 <td>展示表结构信息，包括列族的数量与属性等</td>
 </tr>
-<tr>
+<tr class="even">
 <td>list</td>
 <td>列出HBase中已有的表</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>exists</td>
 <td>判断某个表是否存在</td>
 </tr>
-<tr>
+<tr class="even">
 <td>disable / enable</td>
-<td>禁用 / 解禁一个表。<strong>在删除和更改表之前，需要禁用这个表</strong></td>
+<td>禁用 /
+解禁一个表。<strong>在删除和更改表之前，需要禁用这个表</strong></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>disable_all</td>
 <td>禁用所有的表，可以使用正则表达式匹配</td>
 </tr>
-<tr>
+<tr class="even">
 <td>is_disable</td>
 <td>判断一个表是否被禁用</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>drop</td>
 <td>删除表</td>
 </tr>
-<tr>
+<tr class="even">
 <td>truncate</td>
 <td>删除表中数据。truncate可以禁用表、删除表并自动重建表结构</td>
 </tr>
@@ -392,39 +402,40 @@
 <p>命令使用：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">创建表: 使用create命令，需要指明表名，列族名</span><br>create &quot;MY_TABLE&quot;, &quot;C1&quot;, &quot;C2&quot;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">修改表: 使用alter命令，指定表名以及需要做什么样的修改</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">改变列族C1的版本保存数目</span><br>alter &quot;MY_TABLE&quot;, &#123;NAME =&gt; &quot;C1&quot;, VERSION =&gt; 6&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">增加列族C3</span><br>alter &quot;MY_TABLE&quot;, &quot;C3&quot;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除列族C3,下面两种方式都可以（HBase表中至少要包含一个列族，当表中只有一个列族的时候，无法将其删除）</span><br>alter &quot;MY_TABLE&quot;, &quot;delete&quot; =&gt; &quot;C3&quot;<br>alter &quot;MY_TABLE&quot;, &#123;NAME =&gt; &quot;C3&quot;, METHOD =&gt; &quot;delete&quot;&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除表: 首先需要禁用表，然后才能删除</span><br>disable &quot;MY_TABLE&quot;<br>drop &quot;MY_TABLE&quot;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">清空表中的数据，相当于禁用表，删除表，按照原结构重建表</span><br>truncate &quot;MY_TABLE&quot;<br></code></pre></td></tr></table></figure>
 <blockquote>
-<p>前面提到HBase Shell命令都是Ruby脚本，可以理解为对Ruby函数的调用，不同的函数传入参数的形式不同。传入引号包裹的字符串就是传入字符串；传入<code>&#123;&#125;</code>包裹的参数，表示传入一个类似Map的结构，其中Map的每一个键值对有<code>key =&gt; value</code>的格式，key一般是给定的参数，不使用引号标识；传入<code>[]</code>包裹的参数，表示传入一个类似数组的结构</p>
+<p>前面提到HBase
+Shell命令都是Ruby脚本，可以理解为对Ruby函数的调用，不同的函数传入参数的形式不同。传入引号包裹的字符串就是传入字符串；传入<code>&#123;&#125;</code>包裹的参数，表示传入一个类似Map的结构，其中Map的每一个键值对有<code>key =&gt; value</code>的格式，key一般是给定的参数，不使用引号标识；传入<code>[]</code>包裹的参数，表示传入一个类似数组的结构</p>
 </blockquote>
 <h2 id="增删改查命令">增删改查命令</h2>
 <p>常用命令汇总：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>命令</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>put</td>
 <td>添加一个值到指定单元格中</td>
 </tr>
-<tr>
+<tr class="even">
 <td>get</td>
 <td>通过表名、行键等参数获取行或者单元格的数据</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>scan</td>
 <td>遍历表并输出满足指定条件的行记录</td>
 </tr>
-<tr>
+<tr class="even">
 <td>count</td>
 <td>计算表中的逻辑行数（会遍历所有的存储数据，谨慎使用）</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>delete</td>
 <td>删除表中列族或者列的数据</td>
 </tr>
-<tr>
+<tr class="even">
 <td>deleteall</td>
 <td>删除逻辑行</td>
 </tr>
@@ -435,8 +446,10 @@
 <blockquote>
 <p>需要注意的是，delete操作并不会马上删除数据，只会将对应的数据打上删除标记，在空闲合并数据的时候，数据才会被删除。同时delete删除的是最新版本的数据。</p>
 </blockquote>
-<h2 id="HBase过滤器">HBase过滤器</h2>
-<p>在HBase中，get和scan操作可以使用过滤器来设置输出的范围，增加查询的条件，类似于SQL里面的where条件。在HBase Shell中使用<code>show_filter</code>命令可以查看当前HBase支持的过滤器类型。过滤器的实现使用的是Java，HBase Shell命令相当于封装了一层进行API的调用。</p>
+<h2 id="hbase过滤器">HBase过滤器</h2>
+<p>在HBase中，get和scan操作可以使用过滤器来设置输出的范围，增加查询的条件，类似于SQL里面的where条件。在HBase
+Shell中使用<code>show_filter</code>命令可以查看当前HBase支持的过滤器类型。过滤器的实现使用的是Java，HBase
+Shell命令相当于封装了一层进行API的调用。</p>
 <p>过滤器的语法格式如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">scan &quot;表名&quot;, &#123;FILTER =&gt; &quot;过滤器(比较运算符, &#x27;比较器表达式&#x27;)&quot;&#125;<br></code></pre></td></tr></table></figure>
 <ul>
@@ -444,44 +457,47 @@
 <li>比较运算符即表示判断逻辑，如等于，大于，小于等</li>
 <li>比较器表达式表示进行比较的值，如匹配完整字节数组，匹配子字符串等</li>
 </ul>
-<p>过滤器可以在官方API中找到  <a target="_blank" rel="noopener" href="https://hbase.apache.org/devapidocs/index.html">org.apache.hadoop.hbase.filter (Apache HBase 3.0.0-alpha-3-SNAPSHOT API)</a>  。所在包为<code>package org.apache.hadoop.hbase.filter</code></p>
+<p>过滤器可以在官方API中找到 <a
+target="_blank" rel="noopener" href="https://hbase.apache.org/devapidocs/index.html">org.apache.hadoop.hbase.filter
+(Apache HBase 3.0.0-alpha-3-SNAPSHOT API)</a>
+。所在包为<code>package org.apache.hadoop.hbase.filter</code></p>
 <p>比较运算符：<code>=</code>、<code>&gt;</code>、<code>&lt;</code>、<code>&gt;=</code>、<code>&lt;=</code>、<code>!=</code></p>
 <p>比较器：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>比较器</th>
 <th>表达式语言缩写</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>BinaryComparator</td>
 <td>binary:value</td>
 <td>匹配完整字节数组</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BinaryPrefixComparator</td>
 <td>binaryprefix:value</td>
 <td>匹配字节数组前缀</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BitComparator</td>
 <td>bit:value</td>
 <td>匹配比特位</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NullComparator</td>
 <td>null</td>
 <td>匹配空值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>RegexStringComparator</td>
 <td>regexstring:正则表达式</td>
 <td>匹配正则表达式</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SubstringComparator</td>
 <td>substring:value</td>
 <td>匹配子字符串</td>
@@ -490,7 +506,8 @@
 </table>
 <p>并且如果需要使用多个过滤器共同来实现查询，可以使用<code>AND</code>或者<code>OR</code>来组合多个过滤器来完成查询</p>
 <blockquote>
-<p>但是需要注意的是，在HBase Shell中默认都是字符串比较，如果比较数值类型，可能会出现不准确的情况。</p>
+<p>但是需要注意的是，在HBase
+Shell中默认都是字符串比较，如果比较数值类型，可能会出现不准确的情况。</p>
 </blockquote>
 <p>下面介绍一些常用的过滤器以及对应的使用方法。</p>
 <h3 id="行键过滤器">行键过滤器</h3>
@@ -499,25 +516,25 @@
 <p>其他行键过滤器描述：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>行键过滤器</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>PrefixFilter</td>
 <td>行键前缀比较器</td>
 </tr>
-<tr>
+<tr class="even">
 <td>KeyOnlyFilter</td>
 <td>只显示单元格的键（列族名：列标识符），不显示值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FirstKeyOnlyFilter</td>
 <td>对于每一行，只显示第一个单元格</td>
 </tr>
-<tr>
+<tr class="even">
 <td>InclusiveStopFilter</td>
 <td>指定终止条件行</td>
 </tr>
@@ -529,26 +546,27 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">匹配所有列族为C1的单元格</span><br>scan &quot;MY_TABLE&quot;, &#123;FILTER =&gt; &quot;FamilyFilter(=, &#x27;binary:C1&#x27;)&quot;&#125;<br></code></pre></td></tr></table></figure>
 <p>其他列过滤器描述：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>列过滤器</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>QualifierFilter</td>
 <td>列标识符过滤器，根据列标识符进行过滤</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ColumnPrefixFilter</td>
 <td>对列标识符前缀进行过滤</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>MultipleColumnPrefixFilter</td>
 <td>可以指定多个前缀对列标识符进行过滤</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ColumnRangeFilter</td>
 <td>过滤列标识符名称的范围，指定区间，同时可以指定区间开闭</td>
 </tr>
@@ -558,22 +576,23 @@
 <h3 id="值过滤器">值过滤器</h3>
 <p>值过滤器按照单元格的值进行匹配和过滤。</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>值过滤器</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>ValueFilter</td>
 <td>值过滤器，根据单元格中的值找到符合条件的键值对</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SingleColumnValueFilter</td>
 <td>指定对应列族和列，按照定位到的值进行比较</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SingleColumnValueExcludeFilter</td>
 <td>排除匹配成功的值，与上一个过滤器的扫描结果相反</td>
 </tr>
@@ -582,39 +601,43 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">ValueFilter,匹配所有值为haha的单元格</span><br>scan &quot;MY_TABLE&quot;, &#123;FILTER =&gt; &quot;ValueFilter(=, &#x27;binary:haha&#x27;)&quot;&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">SingleColumnValueFilter,指定列族，列标识符，比较运算符，比较器</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">匹配所有C1:Name项值为haha的单元格</span><br>scan &quot;MY_TABLE&quot;, &#123;FILTER =&gt; &quot;SingleColumnValueFilter(&#x27;C1&#x27;, &#x27;Name&#x27;, =, &#x27;binary:haha&#x27;)&quot;&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">SingleColumnValueExcludeFilter</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">SingleColumnValueFilter的反向匹配</span><br>scan &quot;MY_TABLE&quot;, &#123;FILTER =&gt; &quot;SingleColumnValueExcludeFilter(&#x27;C1&#x27;, &#x27;Name&#x27;, =, &#x27;binary:haha&#x27;)&quot;&#125;<br></code></pre></td></tr></table></figure>
 <h3 id="其他过滤器">其他过滤器</h3>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>过滤器</th>
 <th>描述</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>ColumnCountGetFilter</td>
 <td>限制每个逻辑行中返回键值对的个数</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TimestampsFilter</td>
 <td>根据时间戳进行过滤，可以同时设置多个时间戳</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>InclusiveStopFilter</td>
 <td>设置停止行，扫描到对应行就停止扫描</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PageFilter</td>
 <td>对显示结果按行进行分页显示</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>ColumnPaginationFilter</td>
-<td>对一个逻辑行内的所有列进行分页，返回[offset, offset+limit]范围内的列</td>
+<td>对一个逻辑行内的所有列进行分页，返回[offset,
+offset+limit]范围内的列</td>
 </tr>
 </tbody>
 </table>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">ColumnCountGetFilter</span> <br>get &quot;MY_TABLE&quot;, &#123;FILTER =&gt; &quot;ColumnCountGetFilter(3)&quot;&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">TimestampsFilter</span><br>scan &quot;MY_TABLE&quot;, &#123;FILTER =&gt; &quot;TimestampsFilter(1, 3)&quot;&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">InclusiveStopFilter</span><br>scan &quot;MY_TABLE&quot;, &#123;STARTROW =&gt; &#x27;0001&#x27;, ENDROW =&gt; &#x27;0005&#x27;, FILTER =&gt; &quot;InclusiveStopFilter(&#x27;0003&#x27;)&quot;&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">PageFilter</span><br>scan &quot;MY_TABLE&quot;, &#123;STARTROW =&gt; &#x27;0001&#x27;, ENDROW =&gt; &#x27;0005&#x27;, FILTER =&gt; &quot;PageFilter(3)&quot;&#125;<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">ColumnPaginationFilter</span><br>scan &quot;MY_TABLE&quot;, &#123;STARTROW =&gt; &#x27;0001&#x27;, ENDROW =&gt; &#x27;0005&#x27;, FILTER =&gt; &quot;ColumnPaginationFilter(2, 1)&quot;&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="其他操作">其他操作</h2>
 <h3 id="数据上传与导出">数据上传与导出</h3>
-<p>我们可以通过一个txt文件来完成数据的上传，在这个txt文件中每一行都是一条能够在HBase Shell中执行的命令。我们可以在HBase Shell之外，在Linux命令行中执行下面的命令，将txt文件中的命令一次全部执行。这一过程类似于MySQL中对<code>.sql</code>文件的<code>source</code>操作</p>
+<p>我们可以通过一个txt文件来完成数据的上传，在这个txt文件中每一行都是一条能够在HBase
+Shell中执行的命令。我们可以在HBase
+Shell之外，在Linux命令行中执行下面的命令，将txt文件中的命令一次全部执行。这一过程类似于MySQL中对<code>.sql</code>文件的<code>source</code>操作</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hbase shell [txt文件在Linux文件系统中的位置]<br></code></pre></td></tr></table></figure>
 <p>还可以使用提供的MapReduce程序进行数据上传，在HBase中提供了一个用于Import的MapReduce作业，专门用来将数据文件导入到HBase中，用法如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hbase org.apache.hadoop.hbase.mapreduce.Import 表名 HDFS数据文件路径<br></code></pre></td></tr></table></figure>
@@ -629,8 +652,9 @@
 <p>如果某一列需要实现计数功能，必须使用incr来创建对应的列，使用put创建的列是不能实现累加功能的。</p>
 <p>对于incr创建的列，需要使用get_counter来访问，格式与get命令类似。</p>
 <h2 id="参考文章">参考文章</h2>
-<ol>
-<li><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/6522.html">HBase过滤器入门教程</a></li>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="http://c.biancheng.net/view/6522.html">HBase过滤器入门教程</a></li>
 </ol>
 
                 

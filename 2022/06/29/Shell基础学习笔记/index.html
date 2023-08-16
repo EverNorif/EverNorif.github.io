@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -333,21 +333,17 @@
 <li>bash和sh即为一个链接的关系，sh -&gt; bash</li>
 <li>CentOS默认的解析器是bash</li>
 </ul>
-<h1>基础语法</h1>
+<h1 id="基础语法">基础语法</h1>
 <h2 id="入门知识">入门知识</h2>
 <ul>
-<li>
-<p>脚本以<code>#!/bin/bash</code>开头，用以指定解析器</p>
-</li>
-<li>
-<p>脚本的常用执行方式</p>
+<li><p>脚本以<code>#!/bin/bash</code>开头，用以指定解析器</p></li>
+<li><p>脚本的常用执行方式</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 方法1</span><br><span class="hljs-comment"># 使用bash或者sh的相对路径或者绝对路径，不需要赋予脚本+x的权限</span><br>bash ./helloworld.sh<br><br><span class="hljs-comment"># 方法2</span><br><span class="hljs-comment"># 直接输入脚本的绝对路径或者相对路径，需要赋予脚本+x的权限</span><br><span class="hljs-built_in">chmod</span> +x helloworld.sh<br><span class="hljs-comment"># 如果直接在脚本文件所在目录里调用，则相对路径格式是./</span><br>./helloworld.sh<br><br><span class="hljs-comment"># 方法3</span><br><span class="hljs-comment"># 在脚本的路径前加上. 或者 source</span><br></code></pre></td></tr></table></figure>
 <ul>
 <li>方法1和方法2，是在当前Shell中打开一个子Shell来执行脚本内容，当脚本内容结束，则子Shell关闭，回到父Shell中</li>
 <li>方法3，可以使得脚本内容在当前Shell里执行，无需打开子Shell</li>
 <li>是否打开子Shell的区别就在于环境变量的继承关系，例如子Shell中设置的当前变量，父Shell是不可见的</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <h2 id="变量">变量</h2>
 <p>变量包括系统预定义变量、自定义变量和特殊变量；根据变量的作用范围，可以分为全局的变量和局部的变量。全局指的是对所有的子Shell有效，局部指的是只对自己的Shell有效，对子Shell无效</p>
@@ -362,8 +358,7 @@
 <li>在bash中，变量的默认类型都是字符串类型，无法直接进行数值运算
 <ul>
 <li>如果想要进行运算，需要使用到后续的运算符</li>
-</ul>
-</li>
+</ul></li>
 <li>变量的值如果有空格，需要使用引号扩起来</li>
 <li>默认是局部变量，可以使用<code>export 变量名</code>将其提升为全局变量</li>
 <li>对于全局变量的更改，只在当前的Shell中有效，无法影响到父Shell的变量值</li>
@@ -380,16 +375,14 @@
 <ul>
 <li>其中n表示数字，如果数字超过9，则需要使用大括号进行包裹，如<code>$&#123;10&#125;</code></li>
 <li><code>$0</code>，表示该脚本的名称，根据调用方式的不同而不同</li>
-</ul>
-</li>
+</ul></li>
 <li><code>$#</code>：获取所有的输入参数个数，常用于循环中的判断，判断参数的个数是否正确</li>
 <li><code>$*</code>：表示命令行中所有参数，将所有参数看作一个整体</li>
 <li><code>$@</code>：表示命令行中的所有参数，但是不是一个整体，可以看作是一个参数集合</li>
 <li><code>$?</code>：相当于返回值，为最后一次执行命令的返回状态
 <ul>
 <li>如果值为0，证明上一个命令正确执行；非0则表示不正确</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <h2 id="运算符">运算符</h2>
 <p>前面提到了变量默认都是字符串类型，计算需要使用运算符。</p>
@@ -423,7 +416,8 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">-e 文件存在<br>-f 文件存在并且是一个常规的文件<br>-d 文件存在并且是一个目录<br><br>[ -e /root/file]<br></code></pre></td></tr></table></figure>
 <p><strong>多条件判断</strong>：与<code>&amp;&amp;</code>和或<code>||</code></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">同样具有短路操作的特性，可以用来实现类似?:三元操作符的效果</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">&amp;&amp;表示前一条命令执行成功后才执行下一条命令</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">||表示前一条命令执行失败后才执行下一条命令</span><br>[ 条件 ] &amp;&amp; echo yes || echo no<br></code></pre></td></tr></table></figure>
-<p>如果在一个中括号中进行多条件判断，可以使用<code>-a</code>或者<code>-o</code>（and or）</p>
+<p>如果在一个中括号中进行多条件判断，可以使用<code>-a</code>或者<code>-o</code>（and
+or）</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">[ <span class="hljs-variable">$b</span> -gt 18 -a <span class="hljs-variable">$b</span> -lt 35]<br>[ <span class="hljs-variable">$b</span> -gt 18 -o <span class="hljs-variable">$b</span> -lt 35]<br></code></pre></td></tr></table></figure>
 <h2 id="流程控制">流程控制</h2>
 <h3 id="if判断">if判断</h3>
@@ -457,13 +451,11 @@
 <ul>
 <li>-p：指定读取值时的提示符</li>
 <li>-t：指定读取值时等待的时间（单位为秒），如果不加-t则一直等待</li>
-</ul>
-</li>
+</ul></li>
 <li>参数：
 <ul>
 <li>变量：指定存放值的变量名</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">read</span> -t 7 -p <span class="hljs-string">&quot;Enter your name in 7 seconds :&quot;</span> name<br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$name</span><br></code></pre></td></tr></table></figure>
 <h2 id="函数">函数</h2>
@@ -489,7 +481,7 @@
 <li>一种方法可以绕过返回值的限制，在函数中进行echo，然后用命令替换<code>$()</code>进行捕获</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">sum</span></span>()<br>&#123;<br>	s=0<br>	s=$[<span class="hljs-variable">$1</span>+<span class="hljs-variable">$2</span>]<br>	<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$s</span>&quot;</span><br>&#125;<br><br>res=$(<span class="hljs-built_in">sum</span> 255 255)<br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$res</span><br></code></pre></td></tr></table></figure>
-<h1>应用举例</h1>
+<h1 id="应用举例">应用举例</h1>
 <p><code>helloworld.sh</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;helloworld!&quot;</span><br></code></pre></td></tr></table></figure>
 <p><code>acc.sh</code></p>

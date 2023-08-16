@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,23 +328,23 @@
             
               <div class="markdown-body">
                 
-                <h1>线程池概述</h1>
+                <h1 id="线程池概述">线程池概述</h1>
 <p>线程池指的是一种容纳多个线程的容器。线程池中的线程可以重复使用，省去了频繁创建和销毁对象的操作。线程池的核心思想在于线程的复用，一个线程可以被重复使用，用来处理多个任务。线程池有以下的作用：</p>
-<ol>
+<ol type="1">
 <li>降低资源消耗。减少了创建和销毁线程的次数，使得创建出来的工作线程得到重复利用</li>
 <li>提高系统的响应速度。当有任务来临的时候，可以直接使用线程池中的线程，而不用等待线程的创建</li>
 <li>提高线程的可管理性。使用线程池可以对线程进行统一的分配，管理和监控</li>
 </ol>
 <p>Java中的线程池，基本的继承关系如下，其中的不同部分会在后续进行说明</p>
 <img src="/2022/09/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-5-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E4%BD%BF%E7%94%A8/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="线程池继承关系">
-<h1>ThreadPoolExecutor</h1>
+<h1 id="threadpoolexecutor">ThreadPoolExecutor</h1>
 <p>ThreadPoolExecutor是Java中提供的线程池类，通过这个类我们可以很容易地创建出一个线程池。</p>
 <h2 id="线程池创建">线程池创建</h2>
 <h3 id="构造方法">构造方法</h3>
 <p>ThreadPoolExecutor中完整的构造方法如下所示，其中一共有7个参数：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">ThreadPoolExecutor</span><span class="hljs-params">(<span class="hljs-type">int</span> corePoolSize,</span><br><span class="hljs-params">                          <span class="hljs-type">int</span> maximumPoolSize,</span><br><span class="hljs-params">                          <span class="hljs-type">long</span> keepAliveTime,</span><br><span class="hljs-params">                          TimeUnit unit,</span><br><span class="hljs-params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="hljs-params">                          ThreadFactory threadFactory,</span><br><span class="hljs-params">                          RejectedExecutionHandler handler)</span><br></code></pre></td></tr></table></figure>
 <p>不同参数对应线程池工作流程中的不同过程，我们首先描述线程池的工作流程。</p>
-<ol>
+<ol type="1">
 <li>线程池中刚开始没有线程，当一个任务提交给线程池之后，线程池会创建一个新线程来执行任务</li>
 <li>当一个线程完成任务之后，会从队列中取得下一个任务来执行</li>
 <li>当线程数达到<code>corePoolSize</code>并且没有线程空闲，这时候再加入任务，新增加的任务会被加入阻塞队列<code>workQueue</code>中排队，直到有空闲的线程</li>
@@ -364,13 +364,16 @@
 <h3 id="阻塞队列">阻塞队列</h3>
 <p>阻塞队列与普通队列的不同点在于阻塞队列中提供了阻塞添加以及阻塞删除方法，并且能够保证线程安全</p>
 <ul>
-<li>阻塞添加 put()：当阻塞队列元素已满时，添加队列元素的线程会被阻塞，直到队列元素不满时才重新唤醒线程执行</li>
-<li>阻塞删除 take()：在队列元素为空时，删除队列元素的线程将被阻塞，直到队列不为空再执行删除操作（一般会返回被删除的元素)</li>
+<li>阻塞添加
+put()：当阻塞队列元素已满时，添加队列元素的线程会被阻塞，直到队列元素不满时才重新唤醒线程执行</li>
+<li>阻塞删除
+take()：在队列元素为空时，删除队列元素的线程将被阻塞，直到队列不为空再执行删除操作（一般会返回被删除的元素)</li>
 </ul>
 <p>核心方法如下：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法类型</th>
 <th>抛出异常</th>
 <th>特殊值</th>
@@ -379,21 +382,21 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>插入（尾部）</td>
 <td>add(e)</td>
 <td>offer(e)</td>
 <td>put(e)</td>
 <td>offer(e,time,unit)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>移除（头部）</td>
 <td>remove()</td>
 <td>poll()</td>
 <td>take()</td>
 <td>poll(time,unit)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>检查（队首元素）</td>
 <td>element()</td>
 <td>peek()</td>
@@ -407,20 +410,19 @@
 <ul>
 <li>当阻塞队列满时，往队列中 add 插入元素会抛出异常</li>
 <li>当阻塞队列空时，从队列中 remove 移除元素会抛出异常</li>
-</ul>
-</li>
+</ul></li>
 <li>特殊值组：
 <ul>
 <li>插入方法：返回是否插入成功，成功插入返回true，否则false</li>
 <li>移除方法：如果成功则返回出队列元素，队列没有就返回 null</li>
-</ul>
-</li>
+</ul></li>
 <li>阻塞组：
 <ul>
-<li>当阻塞队列满时，生产者继续往队列里 put 元素，队列会一直阻塞生产线程直到队列有空间 put 数据或响应中断退出</li>
-<li>当阻塞队列空时，消费者线程试图从队列里 take 元素，队列会一直阻塞消费者线程直到队列中有可用元素</li>
-</ul>
-</li>
+<li>当阻塞队列满时，生产者继续往队列里 put
+元素，队列会一直阻塞生产线程直到队列有空间 put 数据或响应中断退出</li>
+<li>当阻塞队列空时，消费者线程试图从队列里 take
+元素，队列会一直阻塞消费者线程直到队列中有可用元素</li>
+</ul></li>
 <li>超时退出：插入和移除不满足条件时，会等待一定时间</li>
 </ul>
 <p>阻塞队列又可以分为有界队列和无界队列：</p>
@@ -432,10 +434,12 @@
 <p>java.util.concurrent.BlockingQueue 接口有以下阻塞队列的实现：</p>
 <ul>
 <li>ArrayBlockQueue：由数组结构组成的有界阻塞队列</li>
-<li>LinkedBlockingQueue：由链表结构组成的无界（默认大小 Integer.MAX_VALUE）的阻塞队列，当然也支持指定大小成为有界队列</li>
+<li>LinkedBlockingQueue：由链表结构组成的无界（默认大小
+Integer.MAX_VALUE）的阻塞队列，当然也支持指定大小成为有界队列</li>
 <li>PriorityBlockQueue：支持优先级排序的无界阻塞队列</li>
 <li>DelayedWorkQueue：使用优先级队列实现的延迟无界阻塞队列</li>
-<li>SynchronousQueue：不存储元素的阻塞队列，每一个生产线程会阻塞到有一个 put 的线程放入元素为止</li>
+<li>SynchronousQueue：不存储元素的阻塞队列，每一个生产线程会阻塞到有一个
+put 的线程放入元素为止</li>
 <li>LinkedTransferQueue：由链表结构组成的无界阻塞队列</li>
 <li>LinkedBlockingDeque：由链表结构组成的双向阻塞队列</li>
 </ul>
@@ -450,7 +454,7 @@
 <li><code>DiscardPolicy</code>：放弃本次任务的执行</li>
 <li><code>DiscardOldestPolicy</code>：放弃队列中最早的任务，把当前任务加入队列中尝试再次提交当前任务</li>
 </ul>
-<h3 id="Executors工具类">Executors工具类</h3>
+<h3 id="executors工具类">Executors工具类</h3>
 <p>在Executors工具类中，给我们提供了许多模式的线程池创建方式。当然实际上只是对ThreadPoolExecutor类的创建方法进行了一层封装。常见的线程池有下面三种：</p>
 <p><code>newFixedThreadPool</code>：固定线程数目的线程池</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ExecutorService <span class="hljs-title function_">newFixedThreadPool</span><span class="hljs-params">(<span class="hljs-type">int</span> nThreads)</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadPoolExecutor</span>(nThreads, nThreads,<br>                                  <span class="hljs-number">0L</span>, TimeUnit.MILLISECONDS,<br>                                  <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedBlockingQueue</span>&lt;Runnable&gt;());<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -481,10 +485,13 @@
 <li>单线程可以保证串行执行任务，但是如果任务执行失败则没有任何补救措施</li>
 <li><code>SingleThreadExecutor</code>则会新建一个线程，保证线程池的正常工作</li>
 </ul>
-<p><code>newSingleThreadExecutor()</code> 对比 <code>newFiexdThreadPool(1)</code>：</p>
+<p><code>newSingleThreadExecutor()</code> 对比
+<code>newFiexdThreadPool(1)</code>：</p>
 <ul>
-<li><code>newSingleThreadExecutor()</code> 线程个数始终为1，不能修改。这是因为它的方法中使用了<code>FinalizableDelegatedExecutorService</code>进行包装，对外只暴露了<code>ExecutorService</code>接口</li>
-<li><code>newFiexdThreadPool(1)</code> 初始创建线程池中线程个数为1，但是可以进行修改。因为它的方法中暴露的是<code>ThreadPoolExecutor</code>对象，其中提供了<code>setCorePoolSize</code>方法</li>
+<li><code>newSingleThreadExecutor()</code>
+线程个数始终为1，不能修改。这是因为它的方法中使用了<code>FinalizableDelegatedExecutorService</code>进行包装，对外只暴露了<code>ExecutorService</code>接口</li>
+<li><code>newFiexdThreadPool(1)</code>
+初始创建线程池中线程个数为1，但是可以进行修改。因为它的方法中暴露的是<code>ThreadPoolExecutor</code>对象，其中提供了<code>setCorePoolSize</code>方法</li>
 </ul>
 </blockquote>
 <h2 id="线程池使用">线程池使用</h2>
@@ -492,36 +499,42 @@
 <p>线程任务可以是Runnable或者Callable，二者的区别在于Runnable没有返回值，不能抛出异常；而Callable支持返回值和泛型，可以抛出异常。</p>
 <p>线程池中任务提交相关的API如下所示：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>void execute(Runnable command)</td>
 <td>执行Runnable类型任务</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Future&lt;?&gt; submit(Runnable task)</td>
 <td>提交任务 task</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Future submit(Callable<T> task)</td>
 <td>提交任务 task，用返回值 Future 获得任务执行结果</td>
 </tr>
-<tr>
-<td>List&lt;Future<T>&gt; invokeAll(Collection&lt;? extends Callable<T>&gt; tasks)</td>
-<td>提交 tasks任务列表中的所有任务，返回任务执行结果Future组成的列表</td>
+<tr class="even">
+<td>List&lt;Future<T>&gt; invokeAll(Collection&lt;? extends
+Callable<T>&gt; tasks)</td>
+<td>提交
+tasks任务列表中的所有任务，返回任务执行结果Future组成的列表</td>
 </tr>
-<tr>
-<td>List&lt;Future<T>&gt; invokeAll(Collection&lt;? extends Callable<T>&gt; tasks, long timeout, TimeUnit unit)</td>
-<td>提交 tasks 中所有任务，返回任务执行结果Future组成的列表。<br />可以设置超时时间。超时会取消提交列表中没有执行完的任务，并抛出超时异常</td>
+<tr class="odd">
+<td>List&lt;Future<T>&gt; invokeAll(Collection&lt;? extends
+Callable<T>&gt; tasks, long timeout, TimeUnit unit)</td>
+<td>提交 tasks
+中所有任务，返回任务执行结果Future组成的列表。<br />可以设置超时时间。超时会取消提交列表中没有执行完的任务，并抛出超时异常</td>
 </tr>
-<tr>
+<tr class="even">
 <td>T invokeAny(Collection&lt;? extends Callable<T>&gt; tasks)</td>
-<td>提交 tasks 中所有任务，哪个任务先成功执行完毕，返回此任务执行结果，其它任务取消</td>
+<td>提交 tasks
+中所有任务，哪个任务先成功执行完毕，返回此任务执行结果，其它任务取消</td>
 </tr>
 </tbody>
 </table>
@@ -535,32 +548,37 @@
 </blockquote>
 <h3 id="线程池关闭">线程池关闭</h3>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>方法</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>void shutdown()</td>
-<td>将线程池状态变为 SHUTDOWN，等待任务执行完后关闭线程池，不会接收新任务，但已提交任务会执行完。<br />调用该方法的线程不会被阻塞</td>
+<td>将线程池状态变为
+SHUTDOWN，等待任务执行完后关闭线程池，不会接收新任务，但已提交任务会执行完。<br />调用该方法的线程不会被阻塞</td>
 </tr>
-<tr>
+<tr class="even">
 <td>List<Runnable> shutdownNow()</td>
-<td>将线程池状态变为 STOP，用 interrupt 中断正在执行的任务，直接关闭线程池，并将队列中的任务返回</td>
+<td>将线程池状态变为 STOP，用 interrupt
+中断正在执行的任务，直接关闭线程池，并将队列中的任务返回</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>boolean isShutdown()</td>
 <td>判断线程池的状态，如果是SHUTDOWN则返回 true</td>
 </tr>
-<tr>
+<tr class="even">
 <td>boolean isTerminated()</td>
 <td>判断线程池的状态，如果是TERMINATED则返回true</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>boolean awaitTermination(long timeout, TimeUnit unit)</td>
-<td>调用 shutdown 后，调用线程不会阻塞等待所有任务运行结束<br />如果它想在线程池 TERMINATED 后做些事情，可以利用此方法等待</td>
+<td>调用 shutdown
+后，调用线程不会阻塞等待所有任务运行结束<br />如果它想在线程池
+TERMINATED 后做些事情，可以利用此方法等待</td>
 </tr>
 </tbody>
 </table>
@@ -572,8 +590,9 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">AtomicInteger</span> <span class="hljs-variable">ctl</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicInteger</span>(ctlOf(RUNNING, <span class="hljs-number">0</span>));<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">COUNT_BITS</span> <span class="hljs-operator">=</span> Integer.SIZE - <span class="hljs-number">3</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">CAPACITY</span>   <span class="hljs-operator">=</span> (<span class="hljs-number">1</span> &lt;&lt; COUNT_BITS) - <span class="hljs-number">1</span>;<br><br><span class="hljs-comment">// runState is stored in the high-order bits</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">RUNNING</span>    <span class="hljs-operator">=</span> -<span class="hljs-number">1</span> &lt;&lt; COUNT_BITS;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">SHUTDOWN</span>   <span class="hljs-operator">=</span>  <span class="hljs-number">0</span> &lt;&lt; COUNT_BITS;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">STOP</span>       <span class="hljs-operator">=</span>  <span class="hljs-number">1</span> &lt;&lt; COUNT_BITS;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">TIDYING</span>    <span class="hljs-operator">=</span>  <span class="hljs-number">2</span> &lt;&lt; COUNT_BITS;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">TERMINATED</span> <span class="hljs-operator">=</span>  <span class="hljs-number">3</span> &lt;&lt; COUNT_BITS;<br></code></pre></td></tr></table></figure>
 <p>这些状态说明如下：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>状态</th>
 <th>高3位</th>
 <th>接收新任务</th>
@@ -582,35 +601,35 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>RUNNING</td>
 <td>111</td>
 <td>Y</td>
 <td>Y</td>
 <td></td>
 </tr>
-<tr>
+<tr class="even">
 <td>SHUTDOWN</td>
 <td>000</td>
 <td>N</td>
 <td>Y</td>
 <td>不接收新任务，但处理阻塞队列剩余任务</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>STOP</td>
 <td>001</td>
 <td>N</td>
 <td>N</td>
 <td>中断正在执行的任务，并抛弃阻塞队列中的任务</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TIDYING</td>
 <td>010</td>
 <td>-</td>
 <td>-</td>
 <td>任务全执行完毕，活动线程为 0 即将进入终结</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TERMINATED</td>
 <td>011</td>
 <td>-</td>
@@ -622,7 +641,7 @@
 <h2 id="注意事项">注意事项</h2>
 <h3 id="使用注意">使用注意</h3>
 <p>在线程池的使用方面，阿里巴巴Java开发手册中有如下两点相关要求：</p>
-<ol>
+<ol type="1">
 <li>线程资源必须通过线程池来提供，不允许在应用中自行显式创建线程</li>
 <li>线程池不允许使用Executors工具类去创建，而应该通过ThreadPoolExecutor来创建，明确指定线程池的运行规则，规避资源耗尽的风险</li>
 </ol>
@@ -631,9 +650,10 @@
 <h3 id="线程数目设置">线程数目设置</h3>
 <p>如果线程池线程数量太小，有大量请求需要处理的时候，系统的响应就会很慢，甚至可能出现任务队列大量堆积任务导致内存溢出的情况；如果线程池线程数量太多，大量线程争取CPU资源，导致大量的上下文切换，影响效率</p>
 <p>对于CPU密集型任务来说，一般设置为N+1。N为CPU核数。多出来的一个线程可以在某些线程阻塞的时候顶上，充分利用空闲时间；对于IO密集型任务来说，一般设置为2N。频繁出现IO阻塞的话，可以多配置一些线程来利用CPU</p>
-<h1>ScheduledThreadPoolExecutor</h1>
+<h1 id="scheduledthreadpoolexecutor">ScheduledThreadPoolExecutor</h1>
 <h2 id="任务调度">任务调度</h2>
-<p>我们程序的一种需求是能够定时执行，定时执行可以通过一些脚本来实现，但是Java中也提供了一些类有对应的功能。ScheduledThreadPoolExecutor就是其中一种。在介绍调度线程池之前，我们可以简单了解一下在它出现之前，Java中用来定时执行任务的类 Timer</p>
+<p>我们程序的一种需求是能够定时执行，定时执行可以通过一些脚本来实现，但是Java中也提供了一些类有对应的功能。ScheduledThreadPoolExecutor就是其中一种。在介绍调度线程池之前，我们可以简单了解一下在它出现之前，Java中用来定时执行任务的类
+Timer</p>
 <p>Timer可以实现定时功能，它简单易用，但是由于所有的任务都是通过同一个线程来调度，因此所有的任务都是串行执行的，同一时间只能有一个任务在执行，前一个任务的延迟或异常都将会影响之后的任务。（加入Timer执行的任务需要封装成TimerTask）</p>
 <p>如下面的代码所示</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Timer</span> <span class="hljs-variable">timer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Timer</span>();<br><span class="hljs-type">TimerTask</span> <span class="hljs-variable">task1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TimerTask</span>() &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        log.debug(<span class="hljs-string">&quot;task1&quot;</span>);<br>    &#125;<br>&#125;;<br><span class="hljs-type">TimerTask</span> <span class="hljs-variable">task2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TimerTask</span>() &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        log.debug(<span class="hljs-string">&quot;task2&quot;</span>);<br>    &#125;<br>&#125;;<br>timer.schedule(task1, <span class="hljs-number">1000</span>);<br>timer.schedule(task2, <span class="hljs-number">1000</span>);<br></code></pre></td></tr></table></figure>
@@ -675,7 +695,7 @@
 <li>后者的间隔时间和执行耗时是先后计算的，执行完毕之后再计算间隔，间隔之后再执行下一个周期</li>
 </ul>
 </blockquote>
-<h1>Fork-Join 线程池</h1>
+<h1 id="fork-join-线程池">Fork-Join 线程池</h1>
 <h2 id="概述">概述</h2>
 <p>Fork-Join是JDK1.7加入的新的线程池的实现，它体现的是一种分治思想，适用于能够进行任务拆分的CPU密集型运算。所谓的任务拆分，就是将一个大任务拆分成算法上相同的小任务，直至不能拆分，可以直接求解。与递归相关的一些计算，如归并排序，斐波那契数列等，都可以用分治思想进行求解。</p>
 <p>Fork-Join在分治的基础上加入了多线程，可以把每个任务的分解和合并交给不同的线程来完成，进一步提升了运算效率。</p>
@@ -689,7 +709,8 @@
 <p>输出如下：其中，每次新建的MyTask相当于加入线程池中的任务，可能由线程池中任一线程来执行</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">32.889</span> <span class="hljs-selector-attr">[ForkJoinPool-1-worker-1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - compute from <span class="hljs-number">1</span> to <span class="hljs-number">5</span><br><span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">32.889</span> <span class="hljs-selector-attr">[ForkJoinPool-1-worker-1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - compute from <span class="hljs-number">1</span> to <span class="hljs-number">3</span><br><span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">32.889</span> <span class="hljs-selector-attr">[ForkJoinPool-1-worker-1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - compute from <span class="hljs-number">1</span> to <span class="hljs-number">2</span><br><span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">32.889</span> <span class="hljs-selector-attr">[ForkJoinPool-1-worker-3]</span> c<span class="hljs-selector-class">.ThreadTest</span> - compute from <span class="hljs-number">4</span> to <span class="hljs-number">5</span><br><span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">32.889</span> <span class="hljs-selector-attr">[ForkJoinPool-1-worker-2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - compute from <span class="hljs-number">3</span> to <span class="hljs-number">3</span><br><span class="hljs-number">21</span>:<span class="hljs-number">29</span>:<span class="hljs-number">32.889</span> <span class="hljs-selector-attr">[main]</span> c<span class="hljs-selector-class">.ThreadTest</span> - result: <span class="hljs-number">15</span><br></code></pre></td></tr></table></figure>
 <blockquote>
-<p>由于这种方式需要用户自定义实现分治和合并操作，仍然有一定的门槛，后续Java提供了Stream API，其中的并行流也可以达到类似的效果</p>
+<p>由于这种方式需要用户自定义实现分治和合并操作，仍然有一定的门槛，后续Java提供了Stream
+API，其中的并行流也可以达到类似的效果</p>
 </blockquote>
 
                 

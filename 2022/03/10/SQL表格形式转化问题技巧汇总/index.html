@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -267,7 +267,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          6.1k 字
+          6.6k 字
         
       </span>
     
@@ -279,7 +279,7 @@
         
         
           <!-- compatible with older versions-->
-          52 分钟
+          56 分钟
         
       </span>
     
@@ -329,7 +329,7 @@
                 <h2 id="表格转化">表格转化</h2>
 <p>表格转化大体上可以分分为两类，一种是原始表格的转化问题，另一种是设计序列构建新表格的问题。而在原始表格转化问题中，又可以分成行转列和列转行；在设计序列构建新表格的问题中，又可以分成数列构建和字符串构建。</p>
 <h2 id="原始表格转化">原始表格转化</h2>
-<h3 id="1-行转列">1. 行转列</h3>
+<h3 id="行转列">1. 行转列</h3>
 <p>第一种情况：原表格有基准id</p>
 <blockquote>
 <p><strong>group by + sum / max / min + case / if / where</strong></p>
@@ -339,59 +339,62 @@
 <p>表：Products</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Column Name</th>
 <th>Type</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>product_id</td>
 <td>int</td>
 </tr>
-<tr>
+<tr class="even">
 <td>store</td>
 <td>enum</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>price</td>
 <td>int</td>
 </tr>
 </tbody>
 </table>
-<p>(product_id,store) 是这个表的主键。store 字段是枚举类型，它的取值为以下三种 (‘store1’, ‘store2’, ‘store3’) 。price 是该商品在这家商店中的价格。写出一个 SQL 查询语句，查找每种产品在各个商店中的价格。可以以 任何顺序 输出结果。</p>
+<p>(product_id,store) 是这个表的主键。store
+字段是枚举类型，它的取值为以下三种 ('store1', 'store2', 'store3')
+。price 是该商品在这家商店中的价格。写出一个 SQL
+查询语句，查找每种产品在各个商店中的价格。可以以 任何顺序 输出结果。</p>
 <p>查询结果格式如下例所示：</p>
 <p>Products 表：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>product_id</th>
 <th>store</th>
 <th>price</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>0</td>
 <td>store1</td>
 <td>95</td>
 </tr>
-<tr>
+<tr class="even">
 <td>0</td>
 <td>store3</td>
 <td>105</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>0</td>
 <td>store2</td>
 <td>100</td>
 </tr>
-<tr>
+<tr class="even">
 <td>1</td>
 <td>store1</td>
 <td>70</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>store3</td>
 <td>80</td>
@@ -401,7 +404,7 @@
 <p>Result 表：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>product_id</th>
 <th>store1</th>
 <th>store2</th>
@@ -409,13 +412,13 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>0</td>
 <td>95</td>
 <td>100</td>
 <td>105</td>
 </tr>
-<tr>
+<tr class="even">
 <td>1</td>
 <td>70</td>
 <td>null</td>
@@ -423,7 +426,9 @@
 </tr>
 </tbody>
 </table>
-<p>产品 0 的价格在商店 1 为 95 ，商店 2 为 100 ，商店 3 为 105 。产品 1 的价格在商店 1 为 70 ，商店 3 的产品 1 价格为 80 ，但在商店 2 中没有销售。</p>
+<p>产品 0 的价格在商店 1 为 95 ，商店 2 为 100 ，商店 3 为 105 。产品 1
+的价格在商店 1 为 70 ，商店 3 的产品 1 价格为 80 ，但在商店 2
+中没有销售。</p>
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    product_id, <br>    max(if(store=&#x27;store1&#x27;, price, NULL)) as store1,<br>    max(if(store=&#x27;store2&#x27;, price, NULL)) as store2,<br>    max(if(store=&#x27;store3&#x27;, price, NULL)) as store3<br>from Products<br>group by product_id<br></code></pre></td></tr></table></figure>
@@ -432,54 +437,57 @@
 </ul>
 <p>第二种情况：原表格没有基准id，需要我们自己构造</p>
 <blockquote>
-<p><strong>row_number() + group by + sum / max / min + case / if / where</strong></p>
+<p><strong>row_number() + group by + sum / max / min + case / if /
+where</strong></p>
 </blockquote>
 <p>eg.618.学生地理信息报告</p>
 <blockquote>
-<p>一所美国大学有来自亚洲、欧洲和美洲的学生，他们的地理信息存放在如下 student 表中。</p>
+<p>一所美国大学有来自亚洲、欧洲和美洲的学生，他们的地理信息存放在如下
+student 表中。</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>name</th>
 <th>continent</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Jack</td>
 <td>America</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Pascal</td>
 <td>Europe</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Xi</td>
 <td>Asia</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Jane</td>
 <td>America</td>
 </tr>
 </tbody>
 </table>
-<p>写一个查询语句实现对大洲（continent）列的 透视表 操作，使得每个学生按照姓名的字母顺序依次排列在对应的大洲下面。输出的标题应依次为美洲（America）、亚洲（Asia）和欧洲（Europe）。</p>
+<p>写一个查询语句实现对大洲（continent）列的 透视表
+操作，使得每个学生按照姓名的字母顺序依次排列在对应的大洲下面。输出的标题应依次为美洲（America）、亚洲（Asia）和欧洲（Europe）。</p>
 <p>对于样例输入，它的对应输出是：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>America</th>
 <th>Asia</th>
 <th>Europe</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Jack</td>
 <td>Xi</td>
 <td>Pascal</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Jane</td>
 <td></td>
 <td></td>
@@ -498,91 +506,24 @@
 <li>观察题中是否有基准id,若题中无基准id，需要先使用row_number()进行构造</li>
 <li>使用的聚合函数sum/max/min是根据列中的数据格式决定的</li>
 </ul>
-<h3 id="2-列转行">2. 列转行</h3>
+<h3 id="列转行">2. 列转行</h3>
 <p>列转行通用技巧是使用<strong>union all</strong></p>
 <p>eg.1435.制作会话柱状图</p>
 <blockquote>
-<p>表：Sessions</p>
-<table>
-<thead>
-<tr>
-<th>Column Name</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>session_id</td>
-<td>int</td>
-</tr>
-<tr>
-<td>duration</td>
-<td>int</td>
-</tr>
-</tbody>
-</table>
+<p>表：Sessions | Column Name | Type | | ----------- | ---- | |
+session_id | int | | duration | int |</p>
 <p>session_id 是该表主键，duration 是用户访问应用的时间, 以秒为单位</p>
-<p>你想知道用户在你的 app 上的访问时长情况。因此决定统计访问时长区间分别为 “[0-5&gt;”, “[5-10&gt;”, “[10-15&gt;” 和 “15 or more” （单位：分钟）的会话数量，并以此绘制柱状图。写一个SQL查询来报告（访问时长区间，会话总数）。结果可用任何顺序呈现。</p>
+<p>你想知道用户在你的 app
+上的访问时长情况。因此决定统计访问时长区间分别为 "[0-5&gt;",
+"[5-10&gt;", "[10-15&gt;" 和 "15 or more"
+（单位：分钟）的会话数量，并以此绘制柱状图。写一个SQL查询来报告（访问时长区间，会话总数）。结果可用任何顺序呈现。</p>
 <p>下方为查询的输出格式：</p>
-<p>Sessions 表：</p>
-<table>
-<thead>
-<tr>
-<th>session_id</th>
-<th>duration</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>30</td>
-</tr>
-<tr>
-<td>2</td>
-<td>199</td>
-</tr>
-<tr>
-<td>3</td>
-<td>299</td>
-</tr>
-<tr>
-<td>4</td>
-<td>580</td>
-</tr>
-<tr>
-<td>5</td>
-<td>1000</td>
-</tr>
-</tbody>
-</table>
-<p>Result 表：</p>
-<table>
-<thead>
-<tr>
-<th>bin</th>
-<th>total</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>[0-5&gt;</td>
-<td>3</td>
-</tr>
-<tr>
-<td>[5-10&gt;</td>
-<td>1</td>
-</tr>
-<tr>
-<td>[10-15&gt;</td>
-<td>0</td>
-</tr>
-<tr>
-<td>15 or more</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-<p>对于 session_id 1，2 和 3 ，它们的访问时间大于等于 0 分钟且小于 5 分钟。</p>
+<p>Sessions 表： | session_id | duration | | ---------- | -------- | | 1
+| 30 | | 2 | 199 | | 3 | 299 | | 4 | 580 | | 5 | 1000 |</p>
+<p>Result 表： | bin | total | | ---- | ----- | | [0-5&gt; | 3 | |
+[5-10&gt; | 1 | | [10-15&gt; | 0 | | 15 or more | 1 |</p>
+<p>对于 session_id 1，2 和 3 ，它们的访问时间大于等于 0 分钟且小于 5
+分钟。</p>
 <p>对于 session_id 4，它的访问时间大于等于 5 分钟且小于 10 分钟.</p>
 <p>没有会话的访问时间大于等于 10 分钟且小于 15 分钟。</p>
 <p>对于 session_id 5, 它的访问时间大于等于 15 分钟。</p>
@@ -593,337 +534,90 @@
 <li>利用union all完成不同情况下行的拼接</li>
 </ul>
 <h2 id="设计序列构建新表格">设计序列构建新表格</h2>
-<h3 id="1-数列构建">1. 数列构建</h3>
+<h3 id="数列构建">1. 数列构建</h3>
 <p>result中出现了一个无中生有的列，且列中的数据为一个逐渐递增的数列，考虑使用with的递归方法构建</p>
 <blockquote>
 <p><strong>with recursive + left join</strong></p>
 </blockquote>
 <p>eg.1336.每次访问的交易次数</p>
 <blockquote>
-<p>表: Visits</p>
-<table>
-<thead>
-<tr>
-<th>Column Name</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>user_id</td>
-<td>int</td>
-</tr>
-<tr>
-<td>visit_date</td>
-<td>date</td>
-</tr>
-</tbody>
-</table>
-<p>(user_id, visit_date) 是该表的主键，该表的每行表示 user_id 在 visit_date 访问了银行</p>
-<p>表: Transactions</p>
-<table>
-<thead>
-<tr>
-<th>Column Name</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>user_id</td>
-<td>int</td>
-</tr>
-<tr>
-<td>transaction_date</td>
-<td>date</td>
-</tr>
-<tr>
-<td>amount</td>
-<td>int</td>
-</tr>
-</tbody>
-</table>
-<p>该表没有主键，所以可能有重复行。该表的每一行表示 user_id 在 transaction_date 完成了一笔 amount 数额的交易，可以保证用户 (user) 在 transaction_date 访问了银行 (也就是说 Visits 表包含 (user_id, transaction_date) 行)，银行想要得到银行客户在一次访问时的交易次数和相应的在一次访问时该交易次数的客户数量的图表。</p>
-<p>写一条 SQL 查询多少客户访问了银行但没有进行任何交易，多少客户访问了银行进行了一次交易等等</p>
+<p>表: Visits | Column Name | Type | | ----------- | ---- | | user_id |
+int | | visit_date | date |</p>
+<p>(user_id, visit_date) 是该表的主键，该表的每行表示 user_id 在
+visit_date 访问了银行</p>
+<p>表: Transactions | Column Name | Type | | ----------- | ---- | |
+user_id | int | | transaction_date | date | | amount | int |</p>
+<p>该表没有主键，所以可能有重复行。该表的每一行表示 user_id 在
+transaction_date 完成了一笔 amount 数额的交易，可以保证用户 (user) 在
+transaction_date 访问了银行 (也就是说 Visits 表包含 (user_id,
+transaction_date)
+行)，银行想要得到银行客户在一次访问时的交易次数和相应的在一次访问时该交易次数的客户数量的图表。</p>
+<p>写一条 SQL
+查询多少客户访问了银行但没有进行任何交易，多少客户访问了银行进行了一次交易等等</p>
 <p>结果包含两列：</p>
 <p>transactions_count： 客户在一次访问中的交易次数</p>
-<p>visits_count： 在 transactions_count 交易次数下相应的一次访问时的客户数量transactions_count 的值从 0 到所有用户一次访问中的max(transactions_count) 按 transactions_count 排序</p>
+<p>visits_count： 在 transactions_count
+交易次数下相应的一次访问时的客户数量transactions_count 的值从 0
+到所有用户一次访问中的max(transactions_count) 按 transactions_count
+排序</p>
 <p>下面是查询结果格式的例子：</p>
-<p>Visits 表:</p>
-<table>
-<thead>
-<tr>
-<th>user_id</th>
-<th>visit_date</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>2020-01-01</td>
-</tr>
-<tr>
-<td>2</td>
-<td>2020-01-02</td>
-</tr>
-<tr>
-<td>12</td>
-<td>2020-01-01</td>
-</tr>
-<tr>
-<td>19</td>
-<td>2020-01-03</td>
-</tr>
-<tr>
-<td>1</td>
-<td>2020-01-02</td>
-</tr>
-<tr>
-<td>2</td>
-<td>2020-01-03</td>
-</tr>
-<tr>
-<td>1</td>
-<td>2020-01-04</td>
-</tr>
-<tr>
-<td>7</td>
-<td>2020-01-11</td>
-</tr>
-<tr>
-<td>9</td>
-<td>2020-01-25</td>
-</tr>
-<tr>
-<td>8</td>
-<td>2020-01-28</td>
-</tr>
-</tbody>
-</table>
-<p>Transactions 表:</p>
-<table>
-<thead>
-<tr>
-<th>user_id</th>
-<th>transaction_date</th>
-<th>amount</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>2020-01-02</td>
-<td>120</td>
-</tr>
-<tr>
-<td>2</td>
-<td>2020-01-03</td>
-<td>22</td>
-</tr>
-<tr>
-<td>7</td>
-<td>2020-01-11</td>
-<td>232</td>
-</tr>
-<tr>
-<td>1</td>
-<td>2020-01-04</td>
-<td>7</td>
-</tr>
-<tr>
-<td>9</td>
-<td>2020-01-25</td>
-<td>33</td>
-</tr>
-<tr>
-<td>9</td>
-<td>2020-01-25</td>
-<td>66</td>
-</tr>
-<tr>
-<td>8</td>
-<td>2020-01-28</td>
-<td>1</td>
-</tr>
-<tr>
-<td>9</td>
-<td>2020-01-25</td>
-<td>99</td>
-</tr>
-</tbody>
-</table>
-<p>结果表:</p>
-<table>
-<thead>
-<tr>
-<th>transactions_count</th>
-<th>visits_count</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>4</td>
-</tr>
-<tr>
-<td>1</td>
-<td>5</td>
-</tr>
-<tr>
-<td>2</td>
-<td>0</td>
-</tr>
-<tr>
-<td>3</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
+<p>Visits 表: | user_id | visit_date | | ------- | ---------- | | 1 |
+2020-01-01 | | 2 | 2020-01-02 | | 12 | 2020-01-01 | | 19 | 2020-01-03 |
+| 1 | 2020-01-02 | | 2 | 2020-01-03 | | 1 | 2020-01-04 | | 7 |
+2020-01-11 | | 9 | 2020-01-25 | | 8 | 2020-01-28 |</p>
+<p>Transactions 表: | user_id | transaction_date | amount | | ------- |
+---------------- | ------ | | 1 | 2020-01-02 | 120 | | 2 | 2020-01-03 |
+22 | | 7 | 2020-01-11 | 232 | | 1 | 2020-01-04 | 7 | | 9 | 2020-01-25 |
+33 | | 9 | 2020-01-25 | 66 | | 8 | 2020-01-28 | 1 | | 9 | 2020-01-25 |
+99 |</p>
+<p>结果表: | transactions_count | visits_count | | ------------------ |
+------------ | | 0 | 4 | | 1 | 5 | | 2 | 0 | | 3 | 1 |</p>
 <ul>
-<li>对于 transactions_count = 0, visits 中 (1, “2020-01-01”), (2, “2020-01-02”), (12, “2020-01-01”) 和 (19, “2020-01-03”) 没有进行交易，所以 visits_count = 4 。</li>
-<li>对于 transactions_count = 1, visits 中 (2, “2020-01-03”), (7, “2020-01-11”), (8, “2020-01-28”), (1, “2020-01-02”) 和 (1, “2020-01-04”) 进行了一次交易，所以 visits_count = 5 。</li>
-<li>对于 transactions_count = 2, 没有客户访问银行进行了两次交易，所以 visits_count = 0 。</li>
-<li>对于 transactions_count = 3, visits 中 (9, “2020-01-25”) 进行了三次交易，所以 visits_count = 1 。</li>
-<li>对于 transactions_count &gt;= 4, 没有客户访问银行进行了超过3次交易，所以我们停止在 transactions_count = 3 。</li>
+<li>对于 transactions_count = 0, visits 中 (1, "2020-01-01"), (2,
+"2020-01-02"), (12, "2020-01-01") 和 (19, "2020-01-03")
+没有进行交易，所以 visits_count = 4 。</li>
+<li>对于 transactions_count = 1, visits 中 (2, "2020-01-03"), (7,
+"2020-01-11"), (8, "2020-01-28"), (1, "2020-01-02") 和 (1, "2020-01-04")
+进行了一次交易，所以 visits_count = 5 。</li>
+<li>对于 transactions_count = 2, 没有客户访问银行进行了两次交易，所以
+visits_count = 0 。</li>
+<li>对于 transactions_count = 3, visits 中 (9, "2020-01-25")
+进行了三次交易，所以 visits_count = 1 。</li>
+<li>对于 transactions_count &gt;= 4,
+没有客户访问银行进行了超过3次交易，所以我们停止在 transactions_count = 3
+。</li>
 </ul>
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(transactions_count) as<br>(<br>    select 0<br>    union all<br>    select transactions_count+1 <br>    from temp<br>    where transactions_count&lt;(<br>        select max(num) as max_num<br>        from(<br>            select<br>                count(*) over(partition by transaction_date, user_id) as num<br>            from transactions<br>        ) as temp<br>    )<br>) # 利用with recursive构造出结果表中的第一列<br># 后续使用temp表进行left连接<br>select t.transactions_count, count(t1.id) as visits_count<br>from temp as t<br>left join (<br>    select v.user_id as id, v.visit_date, count(t.amount) as times<br>    from Visits as v<br>    left join Transactions as t<br>    on v.user_id = t.user_id and v.visit_date = t.transaction_date<br>    group by v.user_id, v.visit_date<br>) as t1<br>on t.transactions_count = t1.times<br>group by t.transactions_count<br></code></pre></td></tr></table></figure>
-<h3 id="2-字符串构建">2. 字符串构建</h3>
-<p>result中出现了一个无中生有的列，且列中的数据为未曾出现过的字符串，考虑使用<strong>union all</strong>方法直接构造</p>
+<h3 id="字符串构建">2. 字符串构建</h3>
+<p>result中出现了一个无中生有的列，且列中的数据为未曾出现过的字符串，考虑使用<strong>union
+all</strong>方法直接构造</p>
 <p>eg.1127.用户购买平台</p>
 <blockquote>
-<p>支出表: Spending</p>
-<table>
-<thead>
-<tr>
-<th>Column Name</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>user_id</td>
-<td>int</td>
-</tr>
-<tr>
-<td>spend_date</td>
-<td>date</td>
-</tr>
-<tr>
-<td>platform</td>
-<td>enum</td>
-</tr>
-<tr>
-<td>amount</td>
-<td>int</td>
-</tr>
-</tbody>
-</table>
-<p>这张表记录了用户在一个在线购物网站的支出历史，该在线购物平台同时拥有桌面端（‘desktop’）和手机端（‘mobile’）的应用程序。</p>
-<p>这张表的主键是 (user_id, spend_date, platform)。平台列 platform 是一种 ENUM ，类型为（‘desktop’, ‘mobile’）。</p>
-<p>写一段 SQL 来查找每天 仅 使用手机端用户、仅使用桌面端用户和 同时 使用桌面端和手机端的用户人数和总支出金额。</p>
+<p>支出表: Spending | Column Name | Type | | ----------- | ---- | |
+user_id | int | | spend_date | date | | platform | enum | | amount | int
+|</p>
+<p>这张表记录了用户在一个在线购物网站的支出历史，该在线购物平台同时拥有桌面端（'desktop'）和手机端（'mobile'）的应用程序。</p>
+<p>这张表的主键是 (user_id, spend_date, platform)。平台列 platform
+是一种 ENUM ，类型为（'desktop', 'mobile'）。</p>
+<p>写一段 SQL 来查找每天 仅 使用手机端用户、仅使用桌面端用户和 同时
+使用桌面端和手机端的用户人数和总支出金额。</p>
 <p>查询结果格式如下例所示：</p>
-<p>Spending table:</p>
-<table>
-<thead>
-<tr>
-<th>user_id</th>
-<th>spend_date</th>
-<th>platform</th>
-<th>amount</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>2019-07-01</td>
-<td>mobile</td>
-<td>100</td>
-</tr>
-<tr>
-<td>1</td>
-<td>2019-07-01</td>
-<td>desktop</td>
-<td>100</td>
-</tr>
-<tr>
-<td>2</td>
-<td>2019-07-01</td>
-<td>mobile</td>
-<td>100</td>
-</tr>
-<tr>
-<td>2</td>
-<td>2019-07-02</td>
-<td>mobile</td>
-<td>100</td>
-</tr>
-<tr>
-<td>3</td>
-<td>2019-07-01</td>
-<td>desktop</td>
-<td>100</td>
-</tr>
-<tr>
-<td>3</td>
-<td>2019-07-02</td>
-<td>desktop</td>
-<td>100</td>
-</tr>
-</tbody>
-</table>
-<p>Result table:</p>
-<table>
-<thead>
-<tr>
-<th>spend_date</th>
-<th>platform</th>
-<th>total_amount</th>
-<th>total_users</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>2019-07-01</td>
-<td>desktop</td>
-<td>100</td>
-<td>1</td>
-</tr>
-<tr>
-<td>2019-07-01</td>
-<td>mobile</td>
-<td>100</td>
-<td>1</td>
-</tr>
-<tr>
-<td>2019-07-01</td>
-<td>both</td>
-<td>200</td>
-<td>1</td>
-</tr>
-<tr>
-<td>2019-07-02</td>
-<td>desktop</td>
-<td>100</td>
-<td>1</td>
-</tr>
-<tr>
-<td>2019-07-02</td>
-<td>mobile</td>
-<td>100</td>
-<td>1</td>
-</tr>
-<tr>
-<td>2019-07-02</td>
-<td>both</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</tbody>
-</table>
-<p>在 2019-07-01, 用户1 同时 使用桌面端和手机端购买, 用户2 仅 使用了手机端购买，而用户3 仅 使用了桌面端购买。</p>
-<p>在 2019-07-02, 用户2 仅 使用了手机端购买, 用户3 仅 使用了桌面端购买，且没有用户 同时 使用桌面端和手机端购买。</p>
+<p>Spending table: | user_id | spend_date | platform | amount | |
+------- | ---------- | -------- | ------ | | 1 | 2019-07-01 | mobile |
+100 | | 1 | 2019-07-01 | desktop | 100 | | 2 | 2019-07-01 | mobile | 100
+| | 2 | 2019-07-02 | mobile | 100 | | 3 | 2019-07-01 | desktop | 100 | |
+3 | 2019-07-02 | desktop | 100 |</p>
+<p>Result table: | spend_date | platform | total_amount | total_users |
+| ---------- | -------- | ------------ | ----------- | | 2019-07-01 |
+desktop | 100 | 1 | | 2019-07-01 | mobile | 100 | 1 | | 2019-07-01 |
+both | 200 | 1 | | 2019-07-02 | desktop | 100 | 1 | | 2019-07-02 |
+mobile | 100 | 1 | | 2019-07-02 | both | 0 | 0 |</p>
+<p>在 2019-07-01, 用户1 同时 使用桌面端和手机端购买, 用户2 仅
+使用了手机端购买，而用户3 仅 使用了桌面端购买。</p>
+<p>在 2019-07-02, 用户2 仅 使用了手机端购买, 用户3 仅
+使用了桌面端购买，且没有用户 同时 使用桌面端和手机端购买。</p>
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    temp2.spend_date,<br>    temp1.platform,<br>    sum(if(temp1.platform = temp2.platform, amount, 0)) as total_amount,<br>    count(if(temp1.platform = temp2.platform, 1, null)) as total_users<br>from (<br>    select &#x27;mobile&#x27; as platform<br>    union<br>    select &#x27;desktop&#x27; as platform<br>    union<br>    select &#x27;both&#x27; as platform<br>) as temp1 # 字符串构建<br>join (<br>    select<br>        user_id, spend_date,<br>        any_value(if(count(platform) = 2, &#x27;both&#x27;, platform)) as platform,<br>        sum(amount) as amount<br>    from Spending<br>    group by user_id, spend_date<br>) as temp2<br>group by temp2.spend_date, temp1.platform<br></code></pre></td></tr></table></figure>
@@ -931,8 +625,9 @@
 <p>with recursive语法</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(n) as<br>(<br>    select 0 #初始条件<br>    union all<br>    select n+1 # 每次递归的操作<br>    from temp # 调用递归<br>    where n&lt;7 # 递归停止条件<br>)<br></code></pre></td></tr></table></figure>
 <h2 id="参考文章">参考文章</h2>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/students-report-by-geography/solution/zong-jie-ge-lei-biao-ge-ge-shi-hua-wen-t-tl4e/">pipideveloper-总结各类表格格式化问题-leetcode</a></li>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/students-report-by-geography/solution/zong-jie-ge-lei-biao-ge-ge-shi-hua-wen-t-tl4e/">pipideveloper-总结各类表格格式化问题-leetcode</a></li>
 </ol>
 
                 

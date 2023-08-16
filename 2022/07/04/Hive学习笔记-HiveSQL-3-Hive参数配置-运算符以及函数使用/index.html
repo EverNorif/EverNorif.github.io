@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -327,36 +327,45 @@
             
               <div class="markdown-body">
                 
-                <h1>Hive 客户端与属性配置</h1>
-<h2 id="CLIs客户端和命令">CLIs客户端和命令</h2>
+                <h1 id="hive-客户端与属性配置">Hive 客户端与属性配置</h1>
+<h2 id="clis客户端和命令">CLIs客户端和命令</h2>
 <p>Hive中的命令行客户端主要分为两种，第一代客户端hive和第二代客户端beeline。</p>
 <p>第一代客户端<code>$HIVE_HOME/bin/hive</code>，主要功能是交互式或批处理执行Hive查询，以及启动hive相关的服务，如Metastore服务和HiveServer2服务。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">hive # 无参数表示直接进入交互式客户端<br>-e &lt;quoted-query-string&gt; # 执行指定的sql语句，运行完后退出<br>-f &lt;filename&gt; # 执行指定的sql文件，运行完后退出<br>--H,--help # 查看帮助信息<br>-S,--silent # 静默模式<br>-v,-verbose # 详细模式，将执行sql回显<br>-service service_name # 启动hive的相关服务<br>-i # 进入交互模式之前运行初始化脚本<br></code></pre></td></tr></table></figure>
-<p>第二代客户端<code>$HIVE_HOEM/bin/beeline</code>，通过thrift连接到单独的HiveServer2服务上，再连接到Metastore服务。beeline支持的参数可以通过官方文档进行查询：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-Beeline%E2%80%93NewCommandLineShell">HiveServer2 Clients - Apache Hive - Apache Software Foundation</a></p>
-<h2 id="Configuration-Properties属性配置">Configuration Properties属性配置</h2>
+<p>第二代客户端<code>$HIVE_HOEM/bin/beeline</code>，通过thrift连接到单独的HiveServer2服务上，再连接到Metastore服务。beeline支持的参数可以通过官方文档进行查询：<a
+target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-Beeline–NewCommandLineShell">HiveServer2
+Clients - Apache Hive - Apache Software Foundation</a></p>
+<h2 id="configuration-properties属性配置">Configuration
+Properties属性配置</h2>
 <p>Hivev除了默认的属性配置之外，还支持用户使用时修改配置。修改配置的时候，我们应该关注有哪些属性支持修改，属性的功能和作用，支持何种方式进行修改，修改后的作用时间和作用范围。</p>
-<p>Hive的配置属性再HiveConf.java类中进行管理，详细的配置参数可以参考：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/Configuration+Properties">Configuration Properties - Apache Hive - Apache Software Foundation</a></p>
+<p>Hive的配置属性再HiveConf.java类中进行管理，详细的配置参数可以参考：<a
+target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/Configuration+Properties">Configuration
+Properties - Apache Hive - Apache Software Foundation</a></p>
 <p>配置属性的方法一共有4种，分别如下：</p>
 <p><strong>方式1：hive-site.xml</strong></p>
 <p>在<code>$HIVE_HOME/conf</code>路径下可以添加hive-site.xml文件，可以定义配置属性。该配置文件会全局生效</p>
-<p><strong>方式2：–hiveconf命令行参数</strong></p>
+<p><strong>方式2：--hiveconf命令行参数</strong></p>
 <p>hiveconf是一个命令行参数，在启动hive或者beeline命令行客户端的时候可以进行指定。该配置在整个会话session过程中有效，会话结束之后即失效</p>
 <p><strong>方式3：set命令</strong></p>
 <p>在会话中使用set命令进行配置，该配置对该会话中，set命令之后所有SQL语句生效</p>
 <p><strong>方式4：服务特定配置文件</strong></p>
 <p>服务特定配置文件主要包括<code>hivemetastore-site.xml</code>和<code>hiveserver2-site.xml</code>，分别表示对应服务特定的配置文件。</p>
 <ul>
-<li>Hive Metastore会加载可用的<code>hive-site.xml</code>以及<code>hivemetastore-site.xml</code>配置文件</li>
+<li>Hive
+Metastore会加载可用的<code>hive-site.xml</code>以及<code>hivemetastore-site.xml</code>配置文件</li>
 <li>HiveServer2会加载可用的<code>hive-site.xml</code>以及<code>hiveserver2-site.xml</code></li>
 </ul>
 <p>如果HiveServer2以嵌入式模式使用元存储，则还将加载<code>hivemetastore-site.xml</code></p>
 <p>总结来说：</p>
-<ol>
-<li>配置优先级：set设置 &gt; hiveconf参数 &gt; hive-site.xml配置文件</li>
+<ol type="1">
+<li>配置优先级：set设置 &gt; hiveconf参数 &gt;
+hive-site.xml配置文件</li>
 <li>Hive也会读入Hadoop配置，Hive的配置会覆盖Hadoop的配置进行生效</li>
 </ol>
-<h1>Hive 内置运算符</h1>
-<p>整体上，Hive支持的运算符可以主要可以分为五个种类，关系运算、算术运算和逻辑运算，还有字符串运算符以及复杂类型操作符，官方参考文档地址为：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF">Language Manual UDF - Apache Hive - Apache Software Foundation</a></p>
+<h1 id="hive-内置运算符">Hive 内置运算符</h1>
+<p>整体上，Hive支持的运算符可以主要可以分为五个种类，关系运算、算术运算和逻辑运算，还有字符串运算符以及复杂类型操作符，官方参考文档地址为：<a
+target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF">Language
+Manual UDF - Apache Hive - Apache Software Foundation</a></p>
 <p>可以通过以下命令查看运算符的使用方式：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs hive">--显示所有的函数和运算符<br>show functions;<br><br>--查看运算符或者函数的使用说明<br>describe function count;<br><br>--使用extended查看更加详细的使用说明<br>describe function extended count;<br></code></pre></td></tr></table></figure>
 <p>下面对常见的运算符进行列举，基本都可以见名知义，只有一些特殊地方会注释说明</p>
@@ -370,10 +379,11 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">|| --字符串拼接<br></code></pre></td></tr></table></figure>
 <p>复杂类型运算符：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs hive">--复杂类型构造<br>map(key1, value1, ...)<br>struct(val1, val2, ...)<br>named_struct(name1, val1, ...)<br>array(val1, val2, ...)<br>create_union(tag, val1, val2, ...)<br><br>--应用举例<br>select `array`(1, 2, 3) <br>from test<br><br>--复杂类型取值<br>A[n] --array取值<br>M[key] --map取值<br>S.x --struct取值<br></code></pre></td></tr></table></figure>
-<h1>Hive 函数基础</h1>
+<h1 id="hive-函数基础">Hive 函数基础</h1>
 <p>Hive中内置了很多函数，用于满足用户的不同需求。我们可以通过<code>show functions</code>来查看当前可用的所有函数，通过<code>describe function extended func_name</code>来查看函数的使用方式</p>
-<p>Hive中的函数分为两大类：内置函数（Built-in Functions）和用户定义函数UDF（User-Defined Functions）</p>
-<h2 id="Hive-内置函数">Hive 内置函数</h2>
+<p>Hive中的函数分为两大类：内置函数（Built-in
+Functions）和用户定义函数UDF（User-Defined Functions）</p>
+<h2 id="hive-内置函数">Hive 内置函数</h2>
 <p>内置函数根据应用整体可以分为：字符串函数、日期函数、数学函数、集合函数、条件函数、类型转换函数、数据脱敏函数、其他杂项函数。这里只分别介绍常用的函数</p>
 <p>字符串函数：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs hive">--字符串拼接<br>select concat(&quot;a&quot;,&quot;b&quot;);<br><br>--带分隔符字符串连接函数：concat_ws(separator, [string | array(string)]+)<br>select concat_ws(&#x27;.&#x27;, &#x27;www&#x27;, array(&#x27;a&#x27;, &#x27;cn&#x27;));<br><br>--字符串截取函数：substr(str, pos[, len]) 或者  substring(str, pos[, len])<br>select substr(&quot;hahaha&quot;,-2); --pos是从1开始的索引，可以为负数<br>select substr(&quot;hahaha&quot;,2,2);<br><br>--正则表达式替换函数：regexp_replace(str, regexp, rep)<br>select regexp_replace(&#x27;100-200&#x27;, &#x27;(\\d+)&#x27;, &#x27;num&#x27;);<br><br>--正则表达式解析函数：regexp_extract(str, regexp[, idx]) 提取正则匹配到的指定组内容<br>select regexp_extract(&#x27;100-200&#x27;, &#x27;(\\d+)-(\\d+)&#x27;, 2);<br><br>--URL解析函数：parse_url 注意要想一次解析出多个 可以使用parse_url_tuple这个UDTF函数<br>select parse_url(&#x27;http://www.hahaha.cn/path/p1.php?query=1&#x27;, &#x27;HOST&#x27;);<br><br>--分割字符串函数: split(str, regex)<br>select split(&#x27;apache hive&#x27;, &#x27;\\s+&#x27;);<br><br>--json解析函数：get_json_object(json_txt, path)<br>--path用于指定获取该json对象中的哪一部分，$表示json对象<br>select get_json_object(&#x27;[&#123;&quot;key1&quot;:&quot;value1&quot;,&quot;key2&quot;:&quot;value2&quot;&#125;,&#123;&quot;key1&quot;:&quot;value3&quot;,&quot;key2&quot;:&quot;value4&quot;&#125;]&#x27;, &#x27;$.[1].key1&#x27;);<br><br>--字符串长度函数：length(str | binary)<br>select length(&quot;hahaha&quot;);<br><br>--字符串反转函数：reverse<br>select reverse(&quot;hahaha&quot;);<br><br>--字符串转大写函数：upper,ucase<br>select upper(&quot;hahaha&quot;);<br>select ucase(&quot;hahaha&quot;);<br><br>--字符串转小写函数：lower,lcase<br>select lower(&quot;HAHAHA&quot;);<br>select lcase(&quot;HAHAHA&quot;);<br><br>--去空格函数：trim 去除左右两边的空格<br>select trim(&quot; hahaha &quot;);<br>--左边去空格函数：ltrim<br>select ltrim(&quot; hahaha &quot;);<br>--右边去空格函数：rtrim<br>select rtrim(&quot; hahaha &quot;);<br><br>--空格字符串函数：space(n) 返回指定个数空格<br>select space(4);<br><br>--重复字符串函数：repeat(str, n) 重复str字符串n次<br>select repeat(&quot;hahaha&quot;,2);<br><br>--首字符ascii函数：ascii<br>select ascii(&quot;hahaha&quot;);  --返回首字符h啊ascii码<br><br>--左补足函数：lpad<br>select lpad(&#x27;hi&#x27;, 5, &#x27;??&#x27;);  --???hi<br>select lpad(&#x27;hi&#x27;, 1, &#x27;??&#x27;);  --h<br><br>--右补足函数：rpad<br>select rpad(&#x27;hi&#x27;, 5, &#x27;??&#x27;);<br><br>--集合查找函数: find_in_set(str,str_array)<br>select find_in_set(&#x27;a&#x27;,&#x27;abc,b,ab,c,def&#x27;);<br></code></pre></td></tr></table></figure>
@@ -391,19 +401,21 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs hive">--mask<br>--将查询回的数据，默认大写字母转换为X，小写字母转换为x，数字转换为n。<br>select mask(&quot;abc123DEF&quot;);<br>select mask(&quot;abc123DEF&quot;,&#x27;-&#x27;,&#x27;.&#x27;,&#x27;^&#x27;); --自定义替换的字母<br><br>--mask_first_n(string str[, int n])<br>--对前n个进行脱敏替换<br>select mask_first_n(&quot;abc123DEF&quot;,4);<br>--mask_last_n(string str[, int n])<br>--对后n个进行脱敏替换<br>select mask_last_n(&quot;abc123DEF&quot;,4);<br><br>--mask_show_first_n(string str[, int n])<br>--除了前n个字符，其余进行掩码处理<br>select mask_show_first_n(&quot;abc123DEF&quot;,4);<br>--mask_show_last_n(string str[, int n])<br>select mask_show_last_n(&quot;abc123DEF&quot;,4);<br><br>--mask_hash(string|char|varchar str)<br>--返回字符串的hash编码。<br>select mask_hash(&quot;abc123DEF&quot;);<br></code></pre></td></tr></table></figure>
 <p>其他杂项函数：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs hive">--如果你要调用的java方法所在的jar包不是hive自带的 可以通过使用add jar命令进行添加<br>--hive调用java方法: java_method(class, method[, arg1[, arg2..]])<br>select java_method(&quot;java.lang.Math&quot;,&quot;max&quot;,11,22);<br>--反射函数: reflect(class, method[, arg1[, arg2..]])<br>select reflect(&quot;java.lang.Math&quot;,&quot;max&quot;,11,22);<br><br>--取哈希值函数:hash<br>select hash(&quot;allen&quot;);<br><br>--current_user()、logged_in_user()、current_database()、version()<br><br>--SHA-1加密: sha1(string/binary)<br>select sha1(&quot;allen&quot;);<br>--SHA-2家族算法加密：sha2(string/binary, int)  (SHA-224, SHA-256, SHA-384, SHA-512)<br>select sha2(&quot;allen&quot;,224);<br>select sha2(&quot;allen&quot;,512);<br>--crc32加密:<br>select crc32(&quot;allen&quot;);<br>--MD5加密: md5(string/binary)<br>select md5(&quot;allen&quot;);<br></code></pre></td></tr></table></figure>
-<h2 id="Hive-自定义函数">Hive 自定义函数</h2>
+<h2 id="hive-自定义函数">Hive 自定义函数</h2>
 <p>用户定义函数则可以根据输入输出的行数来分为3类：UDF、UDAF、UDTF</p>
 <ul>
 <li>UDF（User-Defined Function）：普通函数，一进一出</li>
-<li>UDAF（User-Defined <strong>Aggregation</strong> Function）：聚合函数，多进一出</li>
-<li>UDTF（User-Defined <strong>Table-Generating</strong> Function）：表生成函数，一进多出</li>
+<li>UDAF（User-Defined <strong>Aggregation</strong>
+Function）：聚合函数，多进一出</li>
+<li>UDTF（User-Defined <strong>Table-Generating</strong>
+Function）：表生成函数，一进多出</li>
 </ul>
 <blockquote>
 <p>UDF分类标准扩大化：</p>
 <p>UDF分类标准本来针对的是用户自己编写开发实现的函数，但是现在可以扩大到Hive的所有函数中，包括内置函数和用户自定义函数。因为内置函数也可以满足根据输入输出划分的要求</p>
 </blockquote>
 <p>自定义UDF函数实现步骤：</p>
-<ol>
+<ol type="1">
 <li>自己写一个Java类，<strong>继承UDF，并重载evaluate方法</strong>，方法中实现函数的业务逻辑（注意重载）</li>
 <li>将程序打包成jar包，上传到服务器环境中（本地或者HDFS）</li>
 <li>在客户端命令行中添加jar包到Hive的classpath中：<code>add jar /.../xxx.jar</code></li>
@@ -416,11 +428,13 @@
 <blockquote>
 <p>自定义其他函数如UDTF，规则不尽相同。</p>
 </blockquote>
-<h1>Hive 函数高级用法</h1>
+<h1 id="hive-函数高级用法">Hive 函数高级用法</h1>
 <h2 id="explode函数和侧视图">explode函数和侧视图</h2>
 <p>explode函数可以接受map、array类型的数据作为输入，然后把输入数据中的每个元素拆开成为一行数据。array类型则一行对应一列，map类型则一行对应两列（Key-Value）</p>
 <p>explode函数是一个UDTF函数，它的执行结果可以理解成为一张虚拟的表，数据来源于源表。我们可以在select中查询源表数据，也可以只查询explode生成的虚拟表数据，但是不能直接查询源表和虚拟表的数据。（不能不做任何处理就查询分别属于两张表的字段）</p>
-<p>explode函数将复杂类型展开之后，展开的每一行和源表的行会有一个对应关系，即源表中一行对应到展开表中的多行，根据这种关系我们可以使用join连接两张表，不过在Hive中给我们提供了侧视图lateral view语法来实现这种效果。explode函数一般会结合侧视图lateral view一起使用</p>
+<p>explode函数将复杂类型展开之后，展开的每一行和源表的行会有一个对应关系，即源表中一行对应到展开表中的多行，根据这种关系我们可以使用join连接两张表，不过在Hive中给我们提供了侧视图lateral
+view语法来实现这种效果。explode函数一般会结合侧视图lateral
+view一起使用</p>
 <img src="/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-3-Hive%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE-%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BB%A5%E5%8F%8A%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/%E4%BE%A7%E8%A7%86%E5%9B%BE%E6%95%88%E6%9E%9C.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="侧视图效果">
 <p>语法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">--单独使用explode函数<br>select explode(col_map) from test_table;<br><br>--UDTF+侧视图<br>select …… from tabelA 别名1 lateral view UDTF(xxx) 别名2 as col1,col2,col3……;<br></code></pre></td></tr></table></figure>
@@ -432,7 +446,8 @@
 <li>侧视图的底层相当于就是自带条件的inner join</li>
 </ul>
 <h2 id="聚合函数">聚合函数</h2>
-<p>聚合函数的功能是对一组值执行计算并返回单一的值，是典型的UDAF函数，多进一出。通常搭配group by语法一起使用，在分组之后进行聚合操作</p>
+<p>聚合函数的功能是对一组值执行计算并返回单一的值，是典型的UDAF函数，多进一出。通常搭配group
+by语法一起使用，在分组之后进行聚合操作</p>
 <p>常见的聚合函数有：</p>
 <ul>
 <li><code>count</code>：统计检索到的总行数</li>
@@ -441,26 +456,32 @@
 <li><code>min</code>：最小值</li>
 <li><code>max</code>：最大值</li>
 <li><code>collect_set(col)</code>：数据收集函数，去重</li>
-<li><code>collect_list(col)</code>：数据收集函数，不qu’chong</li>
+<li><code>collect_list(col)</code>：数据收集函数，不qu'chong</li>
 </ul>
-<p>同时Hive来提供增强聚合的方式，包括grouping sets、cube、rollup等函数。增强聚合多用于多维数据分析，它达到的效果是可以综合多个分组后的结果，然后利用字段grouping__id来表示该行是通过哪个分组group得到的。</p>
+<p>同时Hive来提供增强聚合的方式，包括grouping
+sets、cube、rollup等函数。增强聚合多用于多维数据分析，它达到的效果是可以综合多个分组后的结果，然后利用字段grouping__id来表示该行是通过哪个分组group得到的。</p>
 <blockquote>
-<p>如果利用已有的方式来达到这样的操作，应该使用union连接多个经过group by的表，并且需要手动填充null列来保证列数的对应，而使用增强聚合就可以方便地达到这样的效果</p>
+<p>如果利用已有的方式来达到这样的操作，应该使用union连接多个经过group
+by的表，并且需要手动填充null列来保证列数的对应，而使用增强聚合就可以方便地达到这样的效果</p>
 <p>注意<code>grouping__id</code>是双下划线</p>
 </blockquote>
 <p><strong>grouping sets</strong>：</p>
-<p>可以将多个group by逻辑写在一个sql语句中，等价于将不同维度group by结果集进行union all，grouping__id表示结果数据哪一个分组集合</p>
+<p>可以将多个group by逻辑写在一个sql语句中，等价于将不同维度group
+by结果集进行union all，grouping__id表示结果数据哪一个分组集合</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>    month,<br>    day,<br>    count(distinct cookieid) as nums,<br>    grouping__id<br>from cookie_info<br>group by month,day<br>grouping sets (month,day) --这里是关键<br>order by grouping__id;<br><br>--等价于<br>--注意这里补充的null，以及grouping__id位置上的1和2<br>select month,null,count(distinct cookieid) as nums,1 as grouping__id from cookie_info group by month<br>union all<br>select null as month,day,count(distinct cookieid) as nums,2 as grouping__id from cookie_info group by day;<br><br></code></pre></td></tr></table></figure>
 <p><strong>cube</strong>：</p>
 <p>cube表示根据group by维度的所有组合进行聚合</p>
 <blockquote>
-<p>例如group by有a b c三个维度，则cube取所有的子集，共8个，注意包括空集，即表示不进行group by</p>
+<p>例如group by有a b
+c三个维度，则cube取所有的子集，共8个，注意包括空集，即表示不进行group
+by</p>
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>    month,<br>    day,<br>    count(distinct cookieid) as nums,<br>    grouping__id<br>from cookie_info<br>group by month,day<br>with cube --cube语法，上面group by有两个元素，则最终结果一共有4个grouping__id<br>order by grouping__id;<br><br>--等价于<br><br>select null,null,count(distinct cookieid) as nums,0 as grouping__id from cookie_info<br>union all<br>select month,null,count(distinct cookieid) as nums,1 as grouping__id from cookie_info group by month<br>union all<br>select null,day,count(distinct cookieid) as nums,2 as grouping__id from cookie_info group by day<br>union all<br>select month,day,count(distinct cookieid) as nums,3 as grouping__id from cookie_info group by month,day;<br></code></pre></td></tr></table></figure>
 <p><strong>rollup</strong>：</p>
 <p>rollup是cube的子集，以最左侧的维度为主。只有当左侧维度出现，右侧维度才可能出现。相当于是一个递进的关系</p>
 <blockquote>
-<p>例如group by有a b c三个维度，则rollup取的组合情况有()、(a)、(a, b)、(a, b, c)</p>
+<p>例如group by有a b c三个维度，则rollup取的组合情况有()、(a)、(a,
+b)、(a, b, c)</p>
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs hive">select<br>    month,<br>    day,<br>    count(distinct cookieid) as nums,<br>    grouping__id<br>from cookie_info<br>group by month,day<br>with rollup --rollup语法，聚合维度应该为空、month、month+day三种<br>order by grouping__id;<br><br>--等价于<br><br>select null,null,count(distinct cookieid) as nums,0 as grouping__id from cookie_info<br>union all<br>select month,null,count(distinct cookieid) as nums,1 as grouping__id from cookie_info group by month<br>union all<br>select month,day,count(distinct cookieid) as nums,2 as grouping__id from cookie_info group by month,day;<br></code></pre></td></tr></table></figure>
 <h2 id="窗口函数">窗口函数</h2>
@@ -475,7 +496,7 @@
 </ul>
 <blockquote>
 <p>over中的参数是可选的，但是出现与否的效果有所差异：</p>
-<ol>
+<ol type="1">
 <li>没有partition by，则将整张表看作一个分组</li>
 <li>没有order by没有窗口范围，则计算分组中的所有行</li>
 <li>有order by没有窗口范围，则计算分组中从开始到当前行的范围</li>
@@ -501,8 +522,7 @@
 <li>第一个参数为列名</li>
 <li>第二个参数为n，表示偏移多少行</li>
 <li>第三个参数为默认值，表示如果往上第n行为null的时候，取默认值default。如果不指定，则为null</li>
-</ul>
-</li>
+</ul></li>
 <li><code>lead(col, n, default)</code>：返回当前行往下的第n行的对应值</li>
 <li><code>first_value()</code>：取分组内排序后的第一个值</li>
 <li><code>last_value()</code>：取分组内排序后的最后一个值</li>
@@ -516,8 +536,7 @@
 <li>优点是随机，缺点是速度慢
 <ul>
 <li>推荐使用distribute+sort，底层执行效率更高</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs hive">--需求：随机抽取2个学生的情况进行查看<br>select * from student<br>distribute by rand() sort by rand() limit 2;<br><br>--使用order by+rand也可以实现同样的效果 但是效率不高<br>select * from student<br>    order by rand() limit 2;<br></code></pre></td></tr></table></figure>
 <p>Block基于块随机抽样：</p>
@@ -534,24 +553,21 @@
 </ul>
 <p>语法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs hive">tablesample (bucket x out of y [on colname])<br></code></pre></td></tr></table></figure>
-<ol>
+<ol type="1">
 <li>y必须是table总bucket数的倍数或者因子。hive根据y的大小，决定抽样的比例
 <ul>
 <li>例如，table总共分了4份（4个bucket），当y=2时，抽取(4/2=)2个bucket的数据，当y=8时，抽取(4/8=)1/2个bucket的数据。</li>
-</ul>
-</li>
+</ul></li>
 <li>x表示从哪个bucket开始抽取
 <ul>
 <li>例如，table总bucket数为4，<code>tablesample(bucket 4 out of 4)</code>表示总共抽取（4/4=）1个bucket的数据，抽取第4个bucket的数据</li>
 <li>注意：x的值必须小于等于y的值，否则会报错<code>failed:numerator should not be bigger than denominator in sample clause for table xxx</code></li>
-</ul>
-</li>
+</ul></li>
 <li>on colname表示基于什么抽
 <ul>
 <li>on rand()表示随机抽</li>
 <li>on 分桶字段 表示基于分桶字段抽样 效率更高 推荐</li>
-</ul>
-</li>
+</ul></li>
 </ol>
 
                 

@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,22 +328,30 @@
             
               <div class="markdown-body">
                 
-                <h1>Spring 简介</h1>
-<p>Spring是Java的以一种应用程序开发框架，因其性能优秀，易于测试，重用性高而被众多Java开发者欢迎。它是一个轻量级的框架，可以用于开发任何的Java应用程序。Spring的官方网站如下：<a target="_blank" rel="noopener" href="https://spring.io/">Spring | Home</a></p>
-<p>Spring家族生态中包括一系列项目（<a target="_blank" rel="noopener" href="https://spring.io/projects">Spring | Projects</a>），这些项目均以Spring Framework框架为基础，可以将其视为Spring基础设施。</p>
+                <h1 id="spring-简介">Spring 简介</h1>
+<p>Spring是Java的以一种应用程序开发框架，因其性能优秀，易于测试，重用性高而被众多Java开发者欢迎。它是一个轻量级的框架，可以用于开发任何的Java应用程序。Spring的官方网站如下：<a
+target="_blank" rel="noopener" href="https://spring.io/">Spring | Home</a></p>
+<p>Spring家族生态中包括一系列项目（<a
+target="_blank" rel="noopener" href="https://spring.io/projects">Spring |
+Projects</a>），这些项目均以Spring
+Framework框架为基础，可以将其视为Spring基础设施。</p>
 <p>Spring Framework具有如下特性：</p>
-<ol>
-<li>非侵入式：使用Spring Framework开发应用程序的时候，Spring对应用程序本身结构的影响非常小，对功能性组件只需要使用几个简单的注解进行标记，完全不会破坏原有结构，反而能够将组件结构进一步简化，使得应用程序变得结构清晰，简洁优雅。</li>
-<li>控制反转：指的是IOC，Inversion of Control。我们将资源的控制交由Spring来管理。</li>
-<li>面向切面编程：指的是AOP，Aspect Oriented Programming，在不修改源代码的基础上增强代码功能。</li>
+<ol type="1">
+<li>非侵入式：使用Spring
+Framework开发应用程序的时候，Spring对应用程序本身结构的影响非常小，对功能性组件只需要使用几个简单的注解进行标记，完全不会破坏原有结构，反而能够将组件结构进一步简化，使得应用程序变得结构清晰，简洁优雅。</li>
+<li>控制反转：指的是IOC，Inversion of
+Control。我们将资源的控制交由Spring来管理。</li>
+<li>面向切面编程：指的是AOP，Aspect Oriented
+Programming，在不修改源代码的基础上增强代码功能。</li>
 <li>IOC容器：IOC容器包含并管理组件对象的生命周期，组件受到容器化的管理，对程序员屏蔽了组件创建过程中的大量细节，极大降低了使用门槛，大幅度提高了开发效率。</li>
 <li>声明式：我们仅需使用一些声明，就可以让框架代为实现一些功能，降低了复杂度</li>
 <li>一站式：在IOC和AOP的基础上，可以整合各种企业应用的开源框架以及优秀的第三方类库，并且Spring生态中的项目覆盖领域也即为广泛，能够满足大部分的需求。</li>
 </ol>
 <p>上面的特性可能听起来比较抽象，随着后续的学习，我们会渐渐理解对应的含义。</p>
-<h1>IOC</h1>
+<h1 id="ioc">IOC</h1>
 <h2 id="介绍">介绍</h2>
-<p>IOC，全称为Inversion of Control，意为控制反转。在传统的程序开发中，我们会使用到很多实体类，如果需要使用到某个类的对象时，我们会直接使用new进行生成，这是正向控制的思想。而控制反转指的是将获取资源的方式进行反转，我们将类交由容器来进行管理，在需要使用的时候，由容器将资源进行主动推送，我们不需要知道容器是如何创建资源对象的，只需要接收资源即可。</p>
+<p>IOC，全称为Inversion of
+Control，意为控制反转。在传统的程序开发中，我们会使用到很多实体类，如果需要使用到某个类的对象时，我们会直接使用new进行生成，这是正向控制的思想。而控制反转指的是将获取资源的方式进行反转，我们将类交由容器来进行管理，在需要使用的时候，由容器将资源进行主动推送，我们不需要知道容器是如何创建资源对象的，只需要接收资源即可。</p>
 <p>Spring中的IOC容器是IOC思想的一种落地实现。我们将IOC容器中管理的类称为组件，也称为Bean。我们将类交由IOC容器进行管理，后续需要获取对应的Bean对象时，也需要从IOC容器中获取。由IOC容器来管理对象的生命周期，我们只需要在需要的时候获取资源即可。</p>
 <p>Spring中，IOC容器的相关继承体系如下，选取了一些重要接口和类进行展示：</p>
 <img src="/2022/10/13/Spring%E7%AC%94%E8%AE%B0-1-IOC%E4%B9%8B%E5%9F%BA%E4%BA%8EXML%E7%AE%A1%E7%90%86Bean/IOC%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="IOC继承体系">
@@ -374,8 +382,8 @@
 <p>从上面的过程中，我们可以发现，我们只创建了IOC容器，而我们需要的HelloWorld对象则是从IOC容器中进行获取的。中间的过程实际上是由Spring框架帮助我们完成的，通过getBean方法，IOC容器能够知道我们需要哪个类对象，找到对应Class对象后可以通过反射进行创建，之后返回给用户。并且Spring返回给我们的对象，默认是单例的。</p>
 <p>Spring底层默认通过反射技术调用组件类的无参构造来创建组件对象，因此需要保证组件类有一个无参构造。如果没有无参构造，则会抛出异常<code>BeanCreationException</code>。</p>
 </blockquote>
-<h1>基于XML管理Bean</h1>
-<h2 id="Bean对象的获取">Bean对象的获取</h2>
+<h1 id="基于xml管理bean">基于XML管理Bean</h1>
+<h2 id="bean对象的获取">Bean对象的获取</h2>
 <p>前面我们通过id进行Bean对象的获取，实际上还有其他的方式进行对象的获取，这里进行相关说明。我们在配置文件中有如下Bean对象的说明：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;helloworld&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.syh.spring.bean.HelloWorld&quot;</span>/&gt;</span><br></code></pre></td></tr></table></figure>
 <p><strong>方式一：通过id进行获取</strong></p>
@@ -456,7 +464,7 @@
 <blockquote>
 <p>如果需要为Set集合类型赋值，只需要将上面的list标签改为set标签即可。</p>
 </blockquote>
-<h3 id="Map类型赋值">Map类型赋值</h3>
+<h3 id="map类型赋值">Map类型赋值</h3>
 <p>在<code>Reader</code>类中添加对应的Map成员变量：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Reader</span> &#123;<br>    <span class="hljs-keyword">private</span> Integer id;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">private</span> Book readingBook;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span>[] borrowingBookIds;<br>    <span class="hljs-keyword">private</span> List&lt;Book&gt; returningBooks;<br>    <span class="hljs-keyword">private</span> Map&lt;String, Book&gt; bookMap;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>类比上面的操作，我们也可以通过bean标签中的<code>map</code>标签来对Map成员变量进行赋值。在<code>map</code>标签中还需要指定<code>entry</code>子标签，其中需要指定key，value属性，或者使用对应的子标签。</p>
@@ -492,7 +500,7 @@
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;reader&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.syh.spring.bean.Reader&quot;</span> <span class="hljs-attr">autowire</span>=<span class="hljs-string">&quot;byName&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;id&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;123&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;name&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;张三&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;readingBook&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.syh.spring.bean.Book&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;isbn&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;123456&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;bookName&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;算术&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">util:map</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;bookMap&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">entry</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&quot;AM&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.syh.spring.bean.Book&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;isbn&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;123&quot;</span>/&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;bookName&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;book-1&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">entry</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">entry</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&quot;PM&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.syh.spring.bean.Book&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;isbn&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;456&quot;</span>/&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;bookName&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;book-2&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">entry</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">util:map</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>输出如下，发现其中Map也可以按照名称进行相应的匹配。</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Reader&#123;<span class="hljs-attribute">id</span>=123, <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;张三&#x27;</span>, <span class="hljs-attribute">readingBook</span>=Book&#123;<span class="hljs-attribute">isbn</span>=123456, <span class="hljs-attribute">bookName</span>=<span class="hljs-string">&#x27;算术&#x27;</span>&#125;, <br><span class="hljs-attribute">borrowingBookIds</span>=<span class="hljs-literal">null</span>, <span class="hljs-attribute">returningBooks</span>=<span class="hljs-literal">null</span>, <br>bookMap=&#123;<span class="hljs-attribute">AM</span>=Book&#123;<span class="hljs-attribute">isbn</span>=123, <span class="hljs-attribute">bookName</span>=<span class="hljs-string">&#x27;book-1&#x27;</span>&#125;, <span class="hljs-attribute">PM</span>=Book&#123;<span class="hljs-attribute">isbn</span>=456, <span class="hljs-attribute">bookName</span>=<span class="hljs-string">&#x27;book-2&#x27;</span>&#125;&#125;&#125;<br></code></pre></td></tr></table></figure>
-<h1>Bean对象</h1>
+<h1 id="bean对象">Bean对象</h1>
 <h2 id="作用域与生命周期">作用域与生命周期</h2>
 <p>前面我们说到Spring中IOC容器给我们提供的默认是单例对象，这是由bean标签中的scope属性来进行控制的。scope的可选值有以下两种：</p>
 <ul>
@@ -500,7 +508,7 @@
 <li><code>prototype</code>：多例，表示在IOC容器中，这个Bean对象有多个实例，在获取对应Bean对象的时候才创建对象。</li>
 </ul>
 <p>Bean的具体生命周期如下：</p>
-<ol>
+<ol type="1">
 <li>Bean对象创建（反射调用无参构造）</li>
 <li>给Bean对象设置属性</li>
 <li>Bean对象初始化之前的操作（由Bean的后置处理器负责）</li>
@@ -532,9 +540,10 @@
 <blockquote>
 <p>上面的演示使用的是默认scope，即单例对象。如果配置的是多例，则销毁阶段不由IOC容器管理。</p>
 </blockquote>
-<h2 id="FactoryBean">FactoryBean</h2>
+<h2 id="factorybean">FactoryBean</h2>
 <p>我们首先考虑一个简单的工厂模式，我们有一个工厂类<code>BookFactory</code>，如果我们要获得<code>Book</code>对象，那么首先需要获取工厂类对象。在IOC思想指导下，我们应该将这个工厂类也交由IOC进行管理，因此全流程就变成了我们从IOC容器中获取工厂类对象，然后再由工厂类对象获得对应的需求类。</p>
-<p>在Spring IOC中，针对工厂模式的管理提供一种<code>FactoryBean</code>的机制。通过这种机制，我们可以直接从IOC容器中获取到需求类，也就是这里例子中的<code>Book</code>对象，而不需要先获取工厂类，再获取需求类。</p>
+<p>在Spring
+IOC中，针对工厂模式的管理提供一种<code>FactoryBean</code>的机制。通过这种机制，我们可以直接从IOC容器中获取到需求类，也就是这里例子中的<code>Book</code>对象，而不需要先获取工厂类，再获取需求类。</p>
 <p><code>FactoryBean</code>是一个接口，我们的工厂类可以实现其中的方法，然后将其配置在配置文件中。例如下面，我们实现了一个简单的<code>BookFactory</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BookFactory</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">FactoryBean</span>&lt;Book&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Book <span class="hljs-title function_">getObject</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Class&lt;?&gt; getObjectType() &#123;<br>        <span class="hljs-keyword">return</span> Book.class;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isSingleton</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>其中需要实现三个方法：</p>

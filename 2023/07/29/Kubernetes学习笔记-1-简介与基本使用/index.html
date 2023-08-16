@@ -85,7 +85,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -327,10 +327,11 @@
             
               <div class="markdown-body">
                 
-                <h1>Kubernetes简介</h1>
+                <h1 id="kubernetes简介">Kubernetes简介</h1>
 <h2 id="背景介绍">背景介绍</h2>
 <p>应用程序的部署方式主要经历了三个时代。传统部署将应用程序部署在物理机上，这种方式实现简单，但是很难合理地分配计算资源，容易导致资源浪费以及程序之间相互影响。而后发展到虚拟化部署，即可以在一台物理机上运行多个虚拟机，每个虚拟机都是一个独立的环境，每个程序部署在一台虚拟机上，这种方式程序之间不会相互影响，但是增加了操作系统的虚拟，同样会浪费部分资源。部署方式继续发展，到容器化部署。容器化与虚拟化部署类似，但是容器之间共享操作系统，降低了资源的浪费。</p>
-<p>在容器化部署的相关过程中，一个非常重要的课题就是容器编排。容器管理的相关问题统称为容器编排问题。例如当某个容 器故障停机之后，如何让另外一个容器立刻启动去替补停机的容器；或者如何根据并发访问量的多少来动态地调整容器的数量。</p>
+<p>在容器化部署的相关过程中，一个非常重要的课题就是容器编排。容器管理的相关问题统称为容器编排问题。例如当某个容
+器故障停机之后，如何让另外一个容器立刻启动去替补停机的容器；或者如何根据并发访问量的多少来动态地调整容器的数量。</p>
 <p>以下许多软件来解决容器编排问题，而我们主要学习的是其中最受欢迎，使用最为广泛的Kubernetes。</p>
 <ul>
 <li><code>Swarm</code>：Docker自己的容器编排工具</li>
@@ -347,8 +348,13 @@
 <li><strong>存储编排</strong>：可以根据容器自身的需求自动创建存储卷</li>
 </ul>
 <blockquote>
-<p>Kubernetes的环境搭建，可以参考官方文档<a target="_blank" rel="noopener" href="https://kubernetes.io/docs/setup/">Getting Started|Kubernetes</a>。</p>
-<p>另外，如果在Mac或者Windows上安装过Docker Desktop，可以在设置中开启Kubernetes的支持，就可以在本地进行Kubernetes的使用，可以参考相关博客<a target="_blank" rel="noopener" href="https://blog.csdn.net/liumiaocn/article/details/110037640">Kubernetes基础: 在MacOS上安装Kubernetes</a>。</p>
+<p>Kubernetes的环境搭建，可以参考官方文档<a
+target="_blank" rel="noopener" href="https://kubernetes.io/docs/setup/">Getting
+Started|Kubernetes</a>。</p>
+<p>另外，如果在Mac或者Windows上安装过Docker
+Desktop，可以在设置中开启Kubernetes的支持，就可以在本地进行Kubernetes的使用，可以参考相关博客<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/liumiaocn/article/details/110037640">Kubernetes基础:
+在MacOS上安装Kubernetes</a>。</p>
 </blockquote>
 <h2 id="组件与相关概念">组件与相关概念</h2>
 <p>Kubernetes属于主从架构，集群中的角色分为<strong>控制节点Master</strong>以及<strong>工作节点Node</strong>，在不同的节点上会安装不同的组件。</p>
@@ -367,7 +373,7 @@
 </ul>
 <img src="/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/Kubernetes%E7%BB%84%E4%BB%B6.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Kubernetes 组件">
 <p>现在假设我们需要在Kubernetes上部署一个nginx服务，那么需要经过如下的步骤：</p>
-<ol>
+<ol type="1">
 <li>首先启动Kubernetes环境，Master和Node将自身的信息注册到etcd数据库中</li>
 <li>nginx服务到安装请求通过kubectl发送到Master节点上的ApiServer组件</li>
 <li>ApiServer组件调用Scheduler组件来决定把这个服务安装到哪个Node节点上。这个过程需要从etcd中读取各个Node节点的信息，然后按照调度算法进行选择，并将选择结果告知ApiServer</li>
@@ -385,7 +391,7 @@
 <li><code>Label</code>：标签，用于对资源进行分类，同一类资源会拥有相同的标签</li>
 <li><code>Namespace</code>：命名空间，用于隔离Pod的运行环境</li>
 </ul>
-<h1>资源管理</h1>
+<h1 id="资源管理">资源管理</h1>
 <h2 id="介绍">介绍</h2>
 <p>在Kubernetes中，所有内容都被抽象为资源，用户需要通过操作资源来管理Kubernetes。</p>
 <p>Kubernetes的本质上就是一个集群系统，用户可以在集群中部署各种服务。所谓的部署服务，其实就是在Kubernetes集群中运行一个个的容器，并将指定的程序跑在容器中。Kubernetes的最小管理单元是Pod而不是容器，所以只能将容器放在<code>Pod</code>中，而Kubernetes一般也不会直接管理Pod，而是通过<code>Pod控制器</code>来管理Pod的。Pod可以提供服务之后，就要考虑如何访问Pod中服务，Kubernetes提供了<code>Service</code>资源实现这个功能。当然，如果Pod中程序的数据需要持久化，Kubernetes还提供了各种<code>存储</code>系统。</p>
@@ -417,13 +423,13 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>resource名称</th>
 <th>缩写</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>nodes</td>
 <td>no</td>
 </tr>
@@ -434,13 +440,13 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>resource名称</th>
 <th>缩写</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>namespace</td>
 <td>ns</td>
 </tr>
@@ -451,13 +457,13 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>resource名称</th>
 <th>缩写</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>pods</td>
 <td>pd</td>
 </tr>
@@ -468,41 +474,41 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>resource名称</th>
 <th>缩写</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>replicationcontrollers</td>
 <td>rc</td>
 </tr>
-<tr>
+<tr class="even">
 <td>replicasets</td>
 <td>rs</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>deployments</td>
 <td>deploy</td>
 </tr>
-<tr>
+<tr class="even">
 <td>daemonsets</td>
 <td>ds</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>jobs</td>
 <td></td>
 </tr>
-<tr>
+<tr class="even">
 <td>cronjobs</td>
 <td>cj</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>horizontalpodautoscalers</td>
 <td>hpa</td>
 </tr>
-<tr>
+<tr class="even">
 <td>statefulsets</td>
 <td>sts</td>
 </tr>
@@ -513,17 +519,17 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>resource名称</th>
 <th>缩写</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>services</td>
 <td>svc</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ingress</td>
 <td>ing</td>
 </tr>
@@ -534,21 +540,21 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>resource名称</th>
 <th>缩写</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>volumeattachements</td>
 <td></td>
 </tr>
-<tr>
+<tr class="even">
 <td>persistentvolumes</td>
 <td>pv</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>persistentvolumeclaims</td>
 <td>pvc</td>
 </tr>
@@ -559,17 +565,17 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>resource名称</th>
 <th>缩写</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>configmaps</td>
 <td>cm</td>
 </tr>
-<tr>
+<tr class="even">
 <td>secrets</td>
 <td></td>
 </tr>
@@ -584,33 +590,33 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>操作</th>
 <th>功能</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>create</td>
 <td>创建资源</td>
 </tr>
-<tr>
+<tr class="even">
 <td>edit</td>
 <td>编辑资源</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>get</td>
 <td>查看资源</td>
 </tr>
-<tr>
+<tr class="even">
 <td>patch</td>
 <td>更新资源</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>delete</td>
 <td>删除资源</td>
 </tr>
-<tr>
+<tr class="even">
 <td>explain</td>
 <td>展示资源详情</td>
 </tr>
@@ -621,49 +627,49 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>操作</th>
 <th>功能</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>run</td>
 <td>在集群中运行指定的镜像</td>
 </tr>
-<tr>
+<tr class="even">
 <td>expose</td>
 <td>暴露资源为Service</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>describe</td>
 <td>显示资源内部信息</td>
 </tr>
-<tr>
+<tr class="even">
 <td>logs</td>
 <td>输出容器在Pod中的日志</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>attach</td>
 <td>进入运行中的容器</td>
 </tr>
-<tr>
+<tr class="even">
 <td>exec</td>
 <td>执行容器中的某个命令</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>cp</td>
 <td>在Pod内外复制文件</td>
 </tr>
-<tr>
+<tr class="even">
 <td>rollout</td>
 <td>管理资源的发布</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>scale</td>
 <td>对Pod的规模进行调整（扩缩容）</td>
 </tr>
-<tr>
+<tr class="even">
 <td>autoscale</td>
 <td>自动调整Pod的数量</td>
 </tr>
@@ -674,17 +680,17 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>操作</th>
 <th>功能</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>apply</td>
 <td>通过文件对资源进行配置</td>
 </tr>
-<tr>
+<tr class="even">
 <td>label</td>
 <td>更新资源上的标签</td>
 </tr>
@@ -695,17 +701,17 @@
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>操作</th>
 <th>功能</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>cluster-info</td>
 <td>显示集群信息</td>
 </tr>
-<tr>
+<tr class="even">
 <td>version</td>
 <td>显示版本信息，包括Server以及Client</td>
 </tr>
@@ -719,36 +725,37 @@
 <li>声明式对象配置：通过apply命令和配置文件操作Kubernetes资源，其中apply用于创建和更新资源，无法删除资源</li>
 </ul>
 <table>
+
 <thead>
-<tr>
-<th style="text-align:left">类型</th>
-<th style="text-align:left">操作对象</th>
-<th style="text-align:left">适用环境</th>
-<th style="text-align:left">优点</th>
-<th style="text-align:left">缺点</th>
+<tr class="header">
+<th style="text-align: left;">类型</th>
+<th style="text-align: left;">操作对象</th>
+<th style="text-align: left;">适用环境</th>
+<th style="text-align: left;">优点</th>
+<th style="text-align: left;">缺点</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left">命令式对象管理</td>
-<td style="text-align:left">对象</td>
-<td style="text-align:left">测试</td>
-<td style="text-align:left">简单</td>
-<td style="text-align:left">只能操作活动对象，无法审计、跟踪</td>
+<tr class="odd">
+<td style="text-align: left;">命令式对象管理</td>
+<td style="text-align: left;">对象</td>
+<td style="text-align: left;">测试</td>
+<td style="text-align: left;">简单</td>
+<td style="text-align: left;">只能操作活动对象，无法审计、跟踪</td>
 </tr>
-<tr>
-<td style="text-align:left">命令式对象配置</td>
-<td style="text-align:left">文件</td>
-<td style="text-align:left">开发</td>
-<td style="text-align:left">可以审计、跟踪</td>
-<td style="text-align:left">项目大时，配置文件多，操作麻烦</td>
+<tr class="even">
+<td style="text-align: left;">命令式对象配置</td>
+<td style="text-align: left;">文件</td>
+<td style="text-align: left;">开发</td>
+<td style="text-align: left;">可以审计、跟踪</td>
+<td style="text-align: left;">项目大时，配置文件多，操作麻烦</td>
 </tr>
-<tr>
-<td style="text-align:left">声明式对象配置</td>
-<td style="text-align:left">目录</td>
-<td style="text-align:left">开发</td>
-<td style="text-align:left">支持目录操作</td>
-<td style="text-align:left">意外情况下难以调试</td>
+<tr class="odd">
+<td style="text-align: left;">声明式对象配置</td>
+<td style="text-align: left;">目录</td>
+<td style="text-align: left;">开发</td>
+<td style="text-align: left;">支持目录操作</td>
+<td style="text-align: left;">意外情况下难以调试</td>
 </tr>
 </tbody>
 </table>
@@ -756,11 +763,15 @@
 <p>命令式对象管理指的是直接使用命令去操作Kubernetes资源，如下所示：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 创建一个namesapce</span><br>kubectl create namespace dev<br><br><span class="hljs-comment"># 查看namespace</span><br>kubectl get ns  <br><br><span class="hljs-comment"># 在dev namepsace下创建并运行一个nginx的pod</span><br>kubectl run pod --image=nginx:latest -n dev<br><br><span class="hljs-comment"># 查看pod</span><br>kubectl get pod -n dev<br><span class="hljs-comment"># 结果如下</span><br>NAME   READY   STATUS    RESTARTS   AGE<br>pod    1/1     Running   0          46s<br><br><span class="hljs-comment"># 删除指定pod</span><br>kubectl delete pod pod -n dev<br></code></pre></td></tr></table></figure>
 <h3 id="命令式对象配置">命令式对象配置</h3>
-<p>命令式对象配置就是使用命令配合配置文件一起来操作Kubernetes Resource。 这种方式可以简单的认为是命令  +  yaml配置文件（里面是命令需要的各种参数）</p>
+<p>命令式对象配置就是使用命令配合配置文件一起来操作Kubernetes Resource。
+这种方式可以简单的认为是命令 +
+yaml配置文件（里面是命令需要的各种参数）</p>
 <p>例如我们可以创建一个配置文件<code>nginx-pod.yaml</code>，这个配置文件基本描述了Pod运行的环境以及相关的属性，内容如下：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">dev</span><br><br><span class="hljs-meta">---</span><br><span class="hljs-meta"></span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginxpod</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-containers</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br></code></pre></td></tr></table></figure>
-<p>该配置文件完成了两个资源的定义。首先定义了一个namespace，名称为<code>dev</code>。然后定义了一个pod，该pod的名称为<code>nginxpod</code>，运行在<code>dev</code> namespace中，同时在详细信息<code>spec</code>中指定了容器的名称以及对应的镜像。</p>
-<p>之后执行create命令进行资源创建，提示创建了namespace dev 以及pod nginxpod，可以通过相关get命令查看到创建出的资源。</p>
+<p>该配置文件完成了两个资源的定义。首先定义了一个namespace，名称为<code>dev</code>。然后定义了一个pod，该pod的名称为<code>nginxpod</code>，运行在<code>dev</code>
+namespace中，同时在详细信息<code>spec</code>中指定了容器的名称以及对应的镜像。</p>
+<p>之后执行create命令进行资源创建，提示创建了namespace dev 以及pod
+nginxpod，可以通过相关get命令查看到创建出的资源。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl create -f nginx-pod.yaml<br><span class="hljs-comment"># namespace/dev created</span><br><span class="hljs-comment"># pod/nginxpod created</span><br></code></pre></td></tr></table></figure>
 <p>同时也可以使用删除命令，同时删除这两个资源：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl delete -f nginx-pod.yaml <br><span class="hljs-comment"># namespace &quot;dev&quot; deleted</span><br><span class="hljs-comment"># pod &quot;nginxpod&quot; deleted</span><br></code></pre></td></tr></table></figure>
@@ -769,7 +780,8 @@
 <p>同样使用上面的实例配置文件，首先第一次执行apply命令，发现创建了资源。之后我们可以继续执行，发现资源没有变动。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl apply -f nginx-pod.yaml     <br><span class="hljs-comment"># namespace/dev created</span><br><span class="hljs-comment"># pod/nginxpod created</span><br><br>kubectl apply -f nginx-pod.yaml<br><span class="hljs-comment"># namespace/dev unchanged</span><br><span class="hljs-comment"># pod/nginxpod unchanged</span><br></code></pre></td></tr></table></figure>
 <p>实际上，声明式对象配置使用yaml配置文件来描述资源的最终状态，然后使用apply命令来将资源调整为描述的状态，如果没有该资源就进行创建，如果有修改就进行调整，没有变化就什么也不做。</p>
-<p>使用apply操作资源，如果资源不存在，就创建，相当于 kubectl create；如果资源已存在，就更新，相当于 kubectl patch。</p>
+<p>使用apply操作资源，如果资源不存在，就创建，相当于 kubectl
+create；如果资源已存在，就更新，相当于 kubectl patch。</p>
 <blockquote>
 <p>推荐使用方式：</p>
 <ul>
@@ -778,9 +790,9 @@
 <li>查询资源 使用命令式对象管理 kubectl get(describe) 资源名称</li>
 </ul>
 </blockquote>
-<h1>Getting Started</h1>
+<h1 id="getting-started">Getting Started</h1>
 <p>接下来我们通过在Kubernetes集群中部署一个可供外界访问的nginx服务来初步学习Kubernetes的使用以及相关概念。</p>
-<h2 id="Namespace">Namespace</h2>
+<h2 id="namespace">Namespace</h2>
 <p>namespace是Kubernetes系统中非常重要的resource，它的主要作用是实现多套环境的资源隔离或者多租户的资源隔离。</p>
 <p>在默认情况下，Kubernetes集群中的所有Pod都是可以相互访问的，但是在实际中，我们可能不想让两个Pod之间进行相互访问，那么此时就可以将两个Pod划分到不同的namespace下。</p>
 <p>Kubernetes通过namespace机制来划分逻辑上的组，方便对不同组的资源进行隔离和管理。同时通过Kubernetes的授权机制，可以将不同的namespace交给不同的租户来管理，实现多租户的资源隔离。此外，结合Kuberentes的资源配额机制，限定不同租户能够占用的资源，例如CPU使用量、内存使用量等，来实现租户可用资源的管理。</p>
@@ -791,12 +803,14 @@
 <li><code>kube-public</code>：此命名空间下的resource可以被所有人访问，包括未认证用户</li>
 <li><code>kube-system</code>：所有由Kubernetes系统创建的resource都处于这个命名空间</li>
 </ul>
-<p>在Getting Started中，我们创建一个名为dev的namespace，可以使用之前提到的三种资源管理方式中的任意一种来进行。通过<code>kubectl get ns dev -o yaml</code> 命令可以以yaml形式查看namespace的详细信息。</p>
+<p>在Getting
+Started中，我们创建一个名为dev的namespace，可以使用之前提到的三种资源管理方式中的任意一种来进行。通过<code>kubectl get ns dev -o yaml</code>
+命令可以以yaml形式查看namespace的详细信息。</p>
 <ul>
 <li>如果需要使用yaml配置文件来创建，可以参考：</li>
 </ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">dev</span><br></code></pre></td></tr></table></figure>
-<h2 id="Pod">Pod</h2>
+<h2 id="pod">Pod</h2>
 <p>Pod是Kubernetes集群进行管理的最小单元，程序要运行必须部署在容器中，而容器必须存在于Pod中。Pod可以认为是容器的封装，一个Pod中可以存在一个或者多个容器。Kubernetes在集群启动之后，集群中的各个组件也都是以Pod方式运行的，例如可以通过<code>kubectl get pod -n kube-system</code>查看集群系统相关Pod。</p>
 <p>我们可以通过<code>kubectl run</code>命令来指定在集群中运行Pod，例如：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl run nginx --image=nginx:latest --port=80 --namespace dev <br><span class="hljs-comment"># 命令格式： kubectl run (pod名称) [参数] </span><br><span class="hljs-comment"># --image  指定Pod的镜像</span><br><span class="hljs-comment"># --port   指定端口</span><br><span class="hljs-comment"># --namespace  指定namespace</span><br></code></pre></td></tr></table></figure>
@@ -808,9 +822,10 @@
 <li>参考yaml配置文件：</li>
 </ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">pod</span><br>    <span class="hljs-attr">ports:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-port</span><br>      <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br></code></pre></td></tr></table></figure>
-<h2 id="Deployment">Deployment</h2>
+<h2 id="deployment">Deployment</h2>
 <p>在Kubernetes中，Pod是最小的控制单元，但是Kubernetes很少直接控制Pod，一般都是通过Pod控制器来完成的。Pod控制器用于Pod的管理，确保Pod资源符合预期的状态，当Pod的资源出现故障时，会尝试进行重启或重建Pod。</p>
-<p>Kubernetes中Pod控制器的种类有很多，在Getting Started中我们先介绍其中的Deployment。</p>
+<p>Kubernetes中Pod控制器的种类有很多，在Getting
+Started中我们先介绍其中的Deployment。</p>
 <p>可以通过下面的命令创建一个Deployment：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl create deployment nginx --image=nginx:latest --port=80 --replicas=3 -n dev<br><br><span class="hljs-comment"># 命令格式: kubectl create deployment 名称  [参数] </span><br><span class="hljs-comment"># --image  指定pod的镜像</span><br><span class="hljs-comment"># --port   指定端口</span><br><span class="hljs-comment"># --replicas  指定创建pod数量</span><br><span class="hljs-comment"># --namespace  指定namespace</span><br></code></pre></td></tr></table></figure>
 <p>之后可以通过<code>kubectl get deploy -n dev</code>查看到相关Deployment的信息。创建Deployment的同时也会创建对应的Pod，也可以通过<code>kubectl get pod -n dev</code>来查看相关Pod信息。</p>
@@ -820,18 +835,21 @@
 <li>参考yaml配置文件：</li>
 </ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">matchLabels:</span><br>      <span class="hljs-attr">run:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">template:</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">nginx</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">containers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>        <span class="hljs-attr">ports:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>          <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br></code></pre></td></tr></table></figure>
-<h2 id="Service">Service</h2>
-<p>Deployment可以通过创建一组Pod来提供具有高可用性的服务，其中每个Pod都会分配一个单独的Pod IP。但是还是存在两个问题：</p>
+<h2 id="service">Service</h2>
+<p>Deployment可以通过创建一组Pod来提供具有高可用性的服务，其中每个Pod都会分配一个单独的Pod
+IP。但是还是存在两个问题：</p>
 <ul>
 <li>Pod IP 会随着Pod的重建产生变化</li>
 <li>Pod IP 仅仅是集群内可见的虚拟IP，外部无法访问</li>
 </ul>
 <p>为了能够从外部访问服务以及固定IP，Kubernetes提供了Service。Service可以看作是一组同类Pod提供的对外访问接口，借助Service，应用可以很方便地实现服务发现以及负载均衡。</p>
 <p>Service分为两类，分别对应两种type，<code>ClusterIP</code>以及<code>NodePort</code>。其中ClusterIP表示集群内部可访问的Service，主要解决了IP变化的问题，而NodePort表示集群内外都可以访问的Service。</p>
-<p>我们可以通过如下命令创建一个<code>ClusterIP</code>类型的Service。expose命令可以将resource暴露为新的Kubernetes Service（暴露resource，不是创建新resource，除了新得到的Service）</p>
+<p>我们可以通过如下命令创建一个<code>ClusterIP</code>类型的Service。expose命令可以将resource暴露为新的Kubernetes
+Service（暴露resource，不是创建新resource，除了新得到的Service）</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl expose deploy nginx --name=svc-nginx1 --<span class="hljs-built_in">type</span>=ClusterIP --port=80 --target-port=80 -n dev<br></code></pre></td></tr></table></figure>
 <p>这里我们将名为nginx的deployment暴露为了一个ClusterIP类型的Service，可以通过<code>kubectl get svc</code>命令查看，可以发现其中有一个<code>CLUSTER-IP</code>字段，这就是Service的IP。在Service的生命周期中，这个地址是不会变动的，可以通过访问这个IP来访问当前Service对应的Pod。</p>
-<p>同样我们也可以将nginx deployment暴露为一个<code>NodePort</code>类型的Service，只需要指定type为NodePort即可。</p>
+<p>同样我们也可以将nginx
+deployment暴露为一个<code>NodePort</code>类型的Service，只需要指定type为NodePort即可。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl expose deploy nginx --name=svc-nginx2 --<span class="hljs-built_in">type</span>=NodePort --port=80 --target-port=80 -n dev<br></code></pre></td></tr></table></figure>
 <p>创建完成之后，同样可以查看svc详情，使用命令<code>kubectl get svc svc-nginx2 -n dev -o wide</code>。发现其中的端口映射如下：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">NAME         TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE   SELECTOR<br>svc-nginx2   NodePort   10.97.137.15   &lt;none&gt;        80:31727/TCP   56m   app=nginx<br></code></pre></td></tr></table></figure>
@@ -840,33 +858,40 @@
 <li>参考配置yaml文件：</li>
 </ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">svc-nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">clusterIP:</span> <span class="hljs-number">10.105</span><span class="hljs-number">.165</span><span class="hljs-number">.43</span> <span class="hljs-comment">#固定svc的内网ip</span><br>  <span class="hljs-attr">ports:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">80</span><br>    <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br>    <span class="hljs-attr">targetPort:</span> <span class="hljs-number">80</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">ClusterIP</span> <span class="hljs-comment"># or NodePort</span><br></code></pre></td></tr></table></figure>
-<h2 id="Label">Label</h2>
+<h2 id="label">Label</h2>
 <p>Label是Kubernetes系统中的一个重要概念。它的作用就是在资源上添加标识，用来对它们进行区分和选择。</p>
 <ul>
 <li>一个Label会以key/value键值对的形式附加到各种对象上，如Node、Pod、Service等等</li>
-<li>一个资源对象可以定义任意数量的Label ，同一个Label也可以被添加到任意数量的资源对象上去</li>
+<li>一个资源对象可以定义任意数量的Label
+，同一个Label也可以被添加到任意数量的资源对象上去</li>
 <li>Label通常在资源对象定义时确定，当然也可以在对象创建后动态添加或者删除</li>
 </ul>
 <p>可以通过Label实现资源的多维度分组，以便灵活、方便地进行资源分配、调度、配置、部署等管理工作。</p>
 <blockquote>
 <p>一些常用的Label 示例如下：</p>
 <ul>
-<li>版本标签：“version”:“release”, “version”:“stable”…</li>
-<li>环境标签：“environment”:“dev”，“environment”:“test”，“environment”:“pro”</li>
-<li>架构标签：“tier”:“frontend”，“tier”:“backend”</li>
+<li>版本标签："version":"release", "version":"stable"......</li>
+<li>环境标签："environment":"dev"，"environment":"test"，"environment":"pro"</li>
+<li>架构标签："tier":"frontend"，"tier":"backend"</li>
 </ul>
 </blockquote>
 <p>可以通过label命令来为Resource进行标签相关操作：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 给Pod打Label</span><br>kubectl label pod nginx-cd55c47f5-jh9sf version=1.0 -n dev<br><br><span class="hljs-comment"># 更新Pod的Label [--overwrite]</span><br>kubectl label pod nginx-cd55c47f5-jh9sf version=2.0 -n dev -- overwrite<br><br><span class="hljs-comment"># 查看Label [--show-labels]</span><br>kubectl get pod nginx-cd55c47f5-jh9sf -n dev --show-labels<br><br><span class="hljs-comment"># 删除Label [-]</span><br>kubectl label pod nginx-cd55c47f5-jh9sf version- -n dev<br></code></pre></td></tr></table></figure>
-<p>基于标签，我们可以进行标签的选择。Kubernetes提供了Label Selector来完成这一操作。Label用于给某个资源对象定义标识，而Label Selector用于查询和筛选拥有某些标签的资源对象。</p>
-<p>在Kubernetes中有两类Label Selector，分别是基于等式的Label Selector，使用关键字为<code>=, !=</code>；以及基于集合的Label Selector，使用关键字为<code>in, not in</code>。同时Label的选择条件也可以多次使用，使用逗号<code>,</code>将多个Label Selector进行分隔即可。</p>
+<p>基于标签，我们可以进行标签的选择。Kubernetes提供了Label
+Selector来完成这一操作。Label用于给某个资源对象定义标识，而Label
+Selector用于查询和筛选拥有某些标签的资源对象。</p>
+<p>在Kubernetes中有两类Label Selector，分别是基于等式的Label
+Selector，使用关键字为<code>=, !=</code>；以及基于集合的Label
+Selector，使用关键字为<code>in, not in</code>。同时Label的选择条件也可以多次使用，使用逗号<code>,</code>将多个Label
+Selector进行分隔即可。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 筛选Label [-l / --selector]</span><br>kubectl get pod -n dev -l version=2.0 --show-labels<br></code></pre></td></tr></table></figure>
 <ul>
 <li>参考配置yaml文件：</li>
 </ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">dev</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">version:</span> <span class="hljs-string">&quot;3.0&quot;</span> <br>    <span class="hljs-attr">env:</span> <span class="hljs-string">&quot;test&quot;</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">containers:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">pod</span><br>    <span class="hljs-attr">ports:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-port</span><br>      <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span><br>      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span><br></code></pre></td></tr></table></figure>
-<hr>
-<p>经过Getting Started的全流程，我们可以得到下面一张概述图，描述Resource的组织方式。</p>
+<hr />
+<p>经过Getting
+Started的全流程，我们可以得到下面一张概述图，描述Resource的组织方式。</p>
 <img src="/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/GettingStarted.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Getting Started">
 
                 

@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -376,7 +376,7 @@
 <p>要完成对象匹配，我们应该实现伴生对象中的<code>apply</code>方法和<code>unapply</code>方法，其中<code>unapply</code>方法也是一个特殊的方法，用来对对象的属性进行拆解</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Student</span>(<span class="hljs-params">val name: <span class="hljs-type">String</span>, val age: <span class="hljs-type">Int</span></span>)</span><br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Student</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">apply</span></span>(name: <span class="hljs-type">String</span>, age: <span class="hljs-type">Int</span>): <span class="hljs-type">Student</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Student</span>(name, age)<br><br>  <span class="hljs-comment">// 实现unapply方法，用来对对象属性进行拆解</span><br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">unapply</span></span>(student: <span class="hljs-type">Student</span>): <span class="hljs-type">Option</span>[(<span class="hljs-type">String</span>, <span class="hljs-type">Int</span>)] = &#123;<br>    <span class="hljs-keyword">if</span> (student == <span class="hljs-literal">null</span>) <span class="hljs-type">None</span><br>    <span class="hljs-keyword">else</span> <span class="hljs-type">Some</span>((student.name, student.age))<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Test</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">val</span> student = <span class="hljs-keyword">new</span> <span class="hljs-type">Student</span>(<span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-number">21</span>)<br><br>    <span class="hljs-comment">// 针对对象实例的内容进行匹配</span><br>    <span class="hljs-keyword">val</span> result = student <span class="hljs-keyword">match</span> &#123;<br>      <span class="hljs-keyword">case</span> <span class="hljs-type">Student</span>(<span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-number">21</span>) =&gt; <span class="hljs-string">&quot;xxx, 21&quot;</span><br>      <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-string">&quot;Else&quot;</span><br>    &#125;<br>    println(result)<br>  &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 <ul>
-<li>在case后面的<code>Student(&quot;xxx&quot;, 21)</code>，实际上是调用了伴生对象的<code>apply</code>方法</li>
+<li>在case后面的<code>Student("xxx", 21)</code>，实际上是调用了伴生对象的<code>apply</code>方法</li>
 <li>当写在case后面，会默认调用<code>unapply</code>方法（对象提取器），Student对象作为<code>unapply</code>方法的参数，它将对象的<code>name</code>和<code>age</code>属性进行提取，然后与前面的case对象进行匹配</li>
 <li><code>unapply</code>方法返回Some对象，只有所有属性都一致才算返回成功。属性不一致或者返回None，则匹配失败</li>
 <li>以下是一些模板
@@ -384,8 +384,7 @@
 <li>只提取对象的一个属性：<code>unapply(obj:Obj):Option[T]</code></li>
 <li>提取对象的多个属性：<code>unapply(obj:Obj):Option[T1, T2, T3,...]</code></li>
 <li>提取对象的可变个属性：<code>unapplySeq(obj:Obj):Option[Seq[T]]</code></li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>也可以使用<strong>样例类</strong>的方式来完成，利用case声明一个样例类。样例类是为模式匹配而优化的类，其中自动生成了伴生对象，并且自动提供一些常用的方法，默认提供了如<code>apply</code>、<code>unapply</code>、<code>toString</code>、<code>equals</code>、<code>hashCode</code>、<code>copy</code>等方法，因此无需自己实现<code>unapply</code>方法。样例类中的每个参数都是val，除非它被显式地声明为var</p>
 <p>这样上面的代码可以修改成下面的代码，同样能够完成对应的功能。</p>

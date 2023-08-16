@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,42 +326,44 @@
             
               <div class="markdown-body">
                 
-                <h1>RESTful</h1>
+                <h1 id="restful">RESTful</h1>
 <h2 id="简介">简介</h2>
-<p>RESTful是一种网络应用程序的设计风格和开发方式。REST全称为Representational State Transfer，表现层资源状态转移。在这种风格下，一切皆资源。它将服务器看作由很多离散的资源组成，每个资源是服务器上一个可命名的抽象概念，我们可以通过一个路径访问。而我们对于资源的操作，可能有增删改查等，则对应到HTTP协议中不同的请求方式。</p>
+<p>RESTful是一种网络应用程序的设计风格和开发方式。REST全称为Representational
+State
+Transfer，表现层资源状态转移。在这种风格下，一切皆资源。它将服务器看作由很多离散的资源组成，每个资源是服务器上一个可命名的抽象概念，我们可以通过一个路径访问。而我们对于资源的操作，可能有增删改查等，则对应到HTTP协议中不同的请求方式。</p>
 <p>简单来说，我们通过路径来表示我们需要访问的资源，而通过请求方式来表示对一个资源的不同操作。前面我们也提到，REST风格中，将传统意义上的参数用路径来表示，也符合其利用路径表示资源的思想。在HTTP协议中，我们可以使用的请求方式包括：GET获取资源、POST新建资源、PUT更新资源、DELETE删除资源，结合不同路径来决定操作含义：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>操作</th>
 <th>传统方式</th>
 <th>REST风格</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>查询</td>
 <td>/getUserById?id=1</td>
 <td>get: /user/1</td>
 </tr>
-<tr>
+<tr class="even">
 <td>保存</td>
 <td>/saveUser</td>
 <td>post: /user</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>删除</td>
 <td>/deleteUser?id=1</td>
 <td>delete: /user/1</td>
 </tr>
-<tr>
+<tr class="even">
 <td>更新</td>
 <td>/updateUser</td>
 <td>put: /user</td>
 </tr>
 </tbody>
 </table>
-<h2 id="HiddenHttpMethodFilter">HiddenHttpMethodFilter</h2>
+<h2 id="hiddenhttpmethodfilter">HiddenHttpMethodFilter</h2>
 <p>浏览器仅支持发送get和post的请求，如果要想要在SpringMVC中发送put和delete方式的请求，需要利用它提供的HiddenHttpMethodFilter类。这是SpringMVC提供的一个类，可以帮助我们将POST请求转换为DELETE或者PUT请求。</p>
 <p>要使用它，我们需要先在<code>web.xml</code>中注册<code>HiddenHttpMethodFilter</code>：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--配置SpringMVC HiddenHttpMethodFilter--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">filter</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>HiddenHttpMethodFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-class</span>&gt;</span>org.springframework.web.filter.HiddenHttpMethodFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-class</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">filter</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">filter-mapping</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>HiddenHttpMethodFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/*<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">filter-mapping</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -369,24 +371,28 @@
 <p>注意，一般情况下我们也配置了SpringMVC的编码过滤器<code>CharacterEncodingFilter</code>，编码过滤器应该要配置在所有过滤器的前面。</p>
 </blockquote>
 <p>要想经过<code>HiddenHttpMethodFilter</code>的请求，我们需要符合它的规则：</p>
-<ol>
+<ol type="1">
 <li>当前请求的请求方式必须为POST</li>
 <li>当前请求必须传输请求参数<code>_method</code>，该参数的值为需要被转换为的请求方式，如<code>put</code>、<code>delete</code>等</li>
 </ol>
 <p>例如我们可以在前端设置下面的表单，这样实际传输的时候，会得到一个put请求方式的请求：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">th:action</span>=<span class="hljs-string">&quot;@&#123;/user&#125;&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;_method&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;put&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;修改用户信息&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<h1>静态资源</h1>
+<h1 id="静态资源">静态资源</h1>
 <p>回顾前面的操作，我们在SpringMVC的配置文件中配置了前端处理器<code>DispatcherServlet</code>，并且配置了它能够处理的请求路径为<code>/</code>，希望它能够匹配所有请求路径。但是在Tomcat的<code>web.xml</code>中，也配置了一个Servlet，它的url-pattern也是<code>/</code>，具体代码如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">servlet</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-name</span>&gt;</span>default<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-class</span>&gt;</span>org.apache.catalina.servlets.DefaultServlet<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-class</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">init-param</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-name</span>&gt;</span>debug<span class="hljs-tag">&lt;/<span class="hljs-name">param-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-value</span>&gt;</span>0<span class="hljs-tag">&lt;/<span class="hljs-name">param-value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">init-param</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">init-param</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-name</span>&gt;</span>listings<span class="hljs-tag">&lt;/<span class="hljs-name">param-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-value</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">param-value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">init-param</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">load-on-startup</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">load-on-startup</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">servlet</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">servlet-mapping</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-name</span>&gt;</span>default<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">servlet-mapping</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>可以看到，我们配置的SpringMVC前端控制器<code>DispatcherServlet</code>与Tomcat中的默认配置器<code>DefaultServlet</code>配置的url-pattern相同，我们工程中的配置会覆盖掉Tomcat中的配置，也就是说所有的请求都会经过<code>DispatcherServlet</code>来处理。但是在Tomcat中，静态资源是通过<code>DefaultServlet</code>来处理的，而我们配置的前端控制器无法处理静态资源，因此我们在使用到静态资源的时候应该做相应的配置，需要在SpringMVC的配置文件中增加如下的配置：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mvc:default-servlet-handler</span>/&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mvc:annotation-driven</span>/&gt;</span><br></code></pre></td></tr></table></figure>
 <p>上面配置包括配置默认的Servlet，以及开启注解驱动。如果我们只配置了<code>default-server-handler</code>，则所有请求都会交给<code>DefaultServlet</code>来处理；而如果我们同时配置了注解驱动<code>annotation-driven</code>，那么所有的请求先交给<code>DispatcherServlet</code>处理，如果处理不了，例如静态资源等，则再交给<code>DefaultServlet</code>处理。</p>
-<h1>AJAX</h1>
+<h1 id="ajax">AJAX</h1>
 <p>ajax是一种重要的异步请求技术，SpringMVC中也提供了处理ajax的相关方法。我们主要关注的就是SpringMVC如何获取ajax请求中的参数，以及如果向前端响应相关数据，下面我们将分别介绍。</p>
 <h2 id="获取json请求参数">获取json请求参数</h2>
 <p>这里首先介绍axios携带参数的方式。axios在发送请求的时候，如果需要携带参数则可以指定使用参数<code>params</code>或<code>data</code>，它们两者有所区别：</p>
 <ul>
-<li><code>params</code>：表示以<code>name1=value1&amp;name2=value2</code>的方式发送请求参数，不管使用的方式是get还是post，请求参数会被拼接到请求地址后。此种方式的参数可以通过<code>request.getParameter()</code>来获取，也可以用SpringMVC封装后形参的方式获取（见<a target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/17/SpringMVC%E7%AC%94%E8%AE%B0-2-RequestMapping%E4%B8%8E%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E8%8E%B7%E5%8F%96/">SpringMVC笔记(2)-@RequestMapping与请求参数获取 - EverNorif</a>）</li>
+<li><code>params</code>：表示以<code>name1=value1&amp;name2=value2</code>的方式发送请求参数，不管使用的方式是get还是post，请求参数会被拼接到请求地址后。此种方式的参数可以通过<code>request.getParameter()</code>来获取，也可以用SpringMVC封装后形参的方式获取（见<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/17/SpringMVC笔记-2-RequestMapping与请求参数获取/">SpringMVC笔记(2)-<span
+class="citation"
+data-cites="RequestMapping与请求参数获取">@RequestMapping与请求参数获取</span>
+- EverNorif</a>）</li>
 <li><code>data</code>：表示以json格式发送请求参数，请求参数会被保存到请求报文的请求体中，传输到服务器。这类参数的获取需要先获取请求体中的数据，这会是一个json字符串，处理字符串的过程可以通过jar包，也可以通过SpringMVC的封装</li>
 </ul>
 <p>这里我们主要关注后者，即如果获取json格式的数据。这部分数据以json的格式被保存在请求体中，我们无法通过前面的方式获取。而SpringMVC为我提供了方式来获取请求体信息，即<code>@RequestBody</code>注解。将该注解标注在字符串形参上，则该参数的内容即为请求体中的内容：</p>

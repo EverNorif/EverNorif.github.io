@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,17 +326,22 @@
             
               <div class="markdown-body">
                 
-                <h1>介绍</h1>
+                <h1 id="介绍">介绍</h1>
 <p>在前面JavaWeb章节，我们介绍了MVC的软件结构思想。按照这种思想，可以将软件按照模型、视图、控制器来进行划分。用户通过视图层发送请求到服务器，在服务器端，请求被Contorller接收，Controller调用相应的Model层来处理请求，处理完毕后将结果返回到Controller中，Controller再根据请求处理的结果找到相应的View视图，渲染数据后最终响应给浏览器。</p>
 <p>同时我们也介绍了三层架构，这是一种对MVC模式进行实现的方式。其中的表现层包含了MVC中的View和Controller。SpringMVC就是一款表示层的框架。</p>
 <p>SpringMVC是Spring的一个后续产品，是Spring的一个子项目。SpringMVC是Spring为表示层开发提供的一整套完备的解决方案。它是Spring家族原生的产品，因此可以与IOC容器等基础设施进行无缝对接；同时它封装了原生的Servler，通过功能强大的前端控制器DispatcherServlet来对请求和响应进行统一处理；此外，还具有其他的优点，包括代码简洁、组件化程度高即插即用、性能优异等等。</p>
-<h1>快速开始</h1>
-<p>下面我们进行SpringMVC的快速开始。首先我们需要创建一个Maven Web工程，具体步骤在JavaWeb章节中有说明（<a target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/05/JavaWeb%E7%AC%94%E8%AE%B0-2-Tomcat%E7%9A%84%E4%BD%BF%E7%94%A8/">JavaWeb笔记(2)-Tomcat的使用 - EverNorif</a>），包括修改<code>packaging</code>属性为<code>war</code>，补齐相关项目结构等。</p>
+<h1 id="快速开始">快速开始</h1>
+<p>下面我们进行SpringMVC的快速开始。首先我们需要创建一个Maven
+Web工程，具体步骤在JavaWeb章节中有说明（<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/05/JavaWeb笔记-2-Tomcat的使用/">JavaWeb笔记(2)-Tomcat的使用
+-
+EverNorif</a>），包括修改<code>packaging</code>属性为<code>war</code>，补齐相关项目结构等。</p>
 <p>之后，我们需要引入下面的依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--SpringMVC--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-webmvc<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.3.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--日志--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>ch.qos.logback<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>logback-classic<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.2.3<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Servlet-API--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>javax.servlet<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>javax.servlet-api<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.1.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>provided<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!--Spring5与Thymeleaf整合--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.thymeleaf<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>thymeleaf-spring5<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.0.12.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <blockquote>
 <p>在依赖中，我们用到了Spring和Thymeleaf的整合。</p>
-<p>Thymeleaf 是一款用于渲染 XML/XHTML/HTML5 内容的模板引擎。它的模板文件后缀为<code>.html</code>，可以直接被浏览器打开。Thymeleaf使用一些特定的语法标签来表示不同的含义，但是并不会破坏html结构。如果在离线情况下打开，则浏览器会忽略未定义的Thymeleaf标签属性，展示模板的静态页面效果；如果通过Web应用程序访问，则会动态替换掉其中的静态内容，使页面动态显示，达到动静结合的效果。Thymeleaf也是SpringBoot官方推荐的模板引擎。</p>
+<p>Thymeleaf 是一款用于渲染 XML/XHTML/HTML5
+内容的模板引擎。它的模板文件后缀为<code>.html</code>，可以直接被浏览器打开。Thymeleaf使用一些特定的语法标签来表示不同的含义，但是并不会破坏html结构。如果在离线情况下打开，则浏览器会忽略未定义的Thymeleaf标签属性，展示模板的静态页面效果；如果通过Web应用程序访问，则会动态替换掉其中的静态内容，使页面动态显示，达到动静结合的效果。Thymeleaf也是SpringBoot官方推荐的模板引擎。</p>
 <p>Thymeleaf的相关内容可以后面的参考内容。</p>
 </blockquote>
 <p>之后，我们需要配置<code>web.xml</code>，在其中注册SpringMVC的前端控制器DispatcherServlet以及相关信息：</p>
@@ -361,7 +366,7 @@
 </blockquote>
 <p>之后我们可以启动服务器Tomcat进行测试。默认情况下，我们是无法通过浏览器链接直接访问到<code>WEB-INF</code>下的资源，但是这里我们可以通过访问<code>/</code>和<code>/hello</code>看到对应的显示效果。</p>
 <p>总结来说，上面的流程大概分为下面的步骤：</p>
-<ol>
+<ol type="1">
 <li>浏览器向服务器发送请求，如果请求地址符合前端控制器配置的<code>url-pattern</code>，则该请求就会被前端控制器<code>DispatcherServlet</code>处理。</li>
 <li>前端控制器会读取SpringMVC的配置文件，扫描IOC容器中的组件并找到控制器，即使用<code>@Controller</code>注解标注的类。</li>
 <li>之后，将请求地址与控制器的方法上<code>@RequestMapping</code>注解的value属性进行匹配，如果匹配成功，则就由该方法来处理请求。</li>
@@ -369,11 +374,16 @@
 <li>该视图名称会被视图解析器进行解析，加上视图前缀和后缀组成视图的路径。</li>
 <li>然后Thymeleaf对找到的视图进行渲染，最终返回到视图所对应的页面上。</li>
 </ol>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="http://c.biancheng.net/spring_boot/thymeleaf.html">Thymeleaf教程（10分钟入门） (biancheng.net)</a></li>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/163391278">Thymeleaf从入门到精通 - 知乎 (zhihu.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.thymeleaf.org/documentation.html">Documentation - Thymeleaf</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="http://c.biancheng.net/spring_boot/thymeleaf.html">Thymeleaf教程（10分钟入门）
+(biancheng.net)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/163391278">Thymeleaf从入门到精通 -
+知乎 (zhihu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.thymeleaf.org/documentation.html">Documentation
+- Thymeleaf</a></li>
 </ol>
 
                 

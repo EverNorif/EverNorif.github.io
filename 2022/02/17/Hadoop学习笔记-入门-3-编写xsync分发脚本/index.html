@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -348,12 +348,12 @@
 <p>类似地，我们需要完成<code>/home/syh/bin</code>目录和<code>/opt/module/hadoop-3.1.3</code>目录的分发</p>
 <h2 id="命令使用">命令使用</h2>
 <p>在Linux服务器上进行文件传输会涉及到两个命令</p>
-<h3 id="1-scp安全拷贝">1.scp安全拷贝</h3>
+<h3 id="scp安全拷贝">1.scp安全拷贝</h3>
 <p>它的基本语法如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">scp -r $user@$host:$pdir/$fname $user@$host:$pdir/$fname<br></code></pre></td></tr></table></figure>
 <p>其中，前者为被拷贝的文件目录，后者是目标文件目录。scp可以完成任意两台服务器之间的文件拷贝，只要用户名密码匹配即可。如果是在本机上的文件目录，则可以不用添加user和host，直接用路径即可。</p>
 <p>scp每次都会完成文件的全部复制操作。</p>
-<h3 id="2-rsync远程同步">2.rsync远程同步</h3>
+<h3 id="rsync远程同步">2.rsync远程同步</h3>
 <p>rsync完成的是同步操作，同步即指的是会复制修改不同的文件，而不会全部复制，因此在执行的时候会比scp快一些。它主要用于备份和镜像，具有速度快、避免复制相同内容和支持符号链接的优点。</p>
 <p>基本语法如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">rsync -av $user@$host:$pdir/$fname $user@$host:$pdir/$fname<br></code></pre></td></tr></table></figure>

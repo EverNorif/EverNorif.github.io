@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,7 +326,7 @@
               <div class="markdown-body">
                 
                 <p>利用SpringBoot，我们可以快速开发一个Web项目。不过SpringBoot本身的功能主要在于简化配置，Web项目中一些核心功能还是由SpringMVC来提供。下面的介绍中有很多是对SpringMVC的复习，可以结合SpringMVC的笔记一起学习。</p>
-<h1>静态资源</h1>
+<h1 id="静态资源">静态资源</h1>
 <h2 id="静态资源存放与访问">静态资源存放与访问</h2>
 <p>在SpringBoot中，静态资源有默认的存放位置，可选的位置有<code>/static</code>、<code>/public</code>、<code>/resources</code>、<code>/META-INF/resources</code>。注意这里的resources路径是指定名称，而不是IDEA项目下的resources。将静态资源放置在对应位置上后，前端访问需要通过<code>项目根路径名/静态资源名称</code>，而不需要在意默认的存放位置。</p>
 <p>上面是默认的存放位置，当然我们也可以在配置文件中指定对应属性来改变静态资源存放的位置。设置之后，原来默认的位置将会失效。</p>
@@ -341,44 +341,35 @@
 <p>在SpringMVC中，我们需要在配置文件中开启<code>&lt;mvc:default-servlet-handler&gt;</code>以及<code>&lt;mvc:annotation-driven&gt;</code>，之后所有的请求会先交给<code>DispatcherServlet</code>进行处理，如果无法处理如静态资源，再交给<code>DefaultServlet</code>处理，如果仍然无法处理则响应404页面。</p>
 <p>由于SpringBoot帮助我们简化了配置，因此可以直接使用。</p>
 </blockquote>
-<p>对于一些css和js资源文件，我们可以使用jar的形式引入，我们称之为webjar（<a target="_blank" rel="noopener" href="https://www.webjars.org/">WebJars - Web Libraries in Jars</a>）。例如我们可以通过下面的方式来引入jquery：</p>
+<p>对于一些css和js资源文件，我们可以使用jar的形式引入，我们称之为webjar（<a
+target="_blank" rel="noopener" href="https://www.webjars.org/">WebJars - Web Libraries in
+Jars</a>）。例如我们可以通过下面的方式来引入jquery：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.webjars<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>jquery<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>这些资源也是作为静态资源引入的，可以通过前端访问得到。需要注意，对应的访问地址需要参照依赖jar包中的包路径。</p>
 <h2 id="欢迎页与图标">欢迎页与图标</h2>
 <p>在SpringBoot中，可以设置index.html欢迎页。有两种方式，第一种是静态资源路径下的index.html，不过此时不能配置静态资源的访问路径，否则会导致index.html不能被默认访问。第二种方式是配置一个Controller能够处理<code>/index</code>的请求，因为欢迎页对应的地址就是项目访问路径+/index。</p>
 <p>另一方面，SpringBoot中能够定义网页图标，只需要将图标名称修改为<code>favicon.ico</code>并将其放在静态资源目录下即可。</p>
-<h1>请求处理</h1>
+<h1 id="请求处理">请求处理</h1>
 <h2 id="请求映射">请求映射</h2>
 <p>请求处理即通过<code>@RequestMapping</code>注解来设置访问路径与处理器对象之间的映射。在这个注解中可以指定method属性来设置访问方法，也可以使用封装了访问属性的注解，包括<code>@GetMapping</code>、<code>@PostMapping</code>、<code>@PutMapping</code>、<code>@DeleteMapping</code>，用于匹配不同的访问方式。</p>
 <blockquote>
-<p>在<a target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/19/SpringMVC%E7%AC%94%E8%AE%B0-4-SpringMVC%E4%B8%AD%E7%9A%84RESTful%E4%B8%8EAjax/">SpringMVC笔记(4)-SpringMVC中的RESTful与Ajax - EverNorif</a>中我们学习过，如果想要在SpringMVC中发送put和delete方式的请求，需要利用到提供的<code>HiddenHttpMethodFilter</code>类，当时我们使用的方式是在<code>web.xml</code>中进行配置。而在SpringBoot中，默认没有开启该功能，我们需要在配置文件中配置开启：</p>
+<p>在<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/19/SpringMVC笔记-4-SpringMVC中的RESTful与Ajax/">SpringMVC笔记(4)-SpringMVC中的RESTful与Ajax
+-
+EverNorif</a>中我们学习过，如果想要在SpringMVC中发送put和delete方式的请求，需要利用到提供的<code>HiddenHttpMethodFilter</code>类，当时我们使用的方式是在<code>web.xml</code>中进行配置。而在SpringBoot中，默认没有开启该功能，我们需要在配置文件中配置开启：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">mvc:</span><br>    <span class="hljs-attr">hiddenmethod:</span><br>      <span class="hljs-attr">filter:</span><br>        <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
 <p>这种方式是通过在SpringMVC中发送put和delete方式的请求。不过在前后端分离的场景下，有其他方式能够发送对应请求，那么也无需使用到这里的配置。</p>
 </blockquote>
 <h2 id="参数获取">参数获取</h2>
 <p>参数获取使用的大都是SpringMVC中的注解，详细可以参考SpringMVC的相关笔记，这里只是进行一个小总结：</p>
 <ul>
-<li>
-<p><code>@PathVariable</code>：获取路径变量，即在路径占位符中出现的变量，举例来说对应的映射路径为<code>@RequestMapping(&quot;/testRest/&#123;id&#125;/&#123;username&#125;&quot;)</code></p>
-</li>
-<li>
-<p><code>@RequestParam</code>：获取请求参数，即出现在url中<code>?</code>后面的参数</p>
-</li>
-<li>
-<p><code>@RequestHeader</code>：获取请求头</p>
-</li>
-<li>
-<p><code>@CookieValue</code>：获取Cookie数据</p>
-</li>
-<li>
-<p><code>@RequestBody</code>：获取请求体数据</p>
-</li>
-<li>
-<p><code>@RequestAttribute</code>：获取Request域的数据</p>
-</li>
-<li>
-<p><code>@MatrixVariable</code>：获取矩阵变量数据</p>
-</li>
+<li><p><code>@PathVariable</code>：获取路径变量，即在路径占位符中出现的变量，举例来说对应的映射路径为<code>@RequestMapping("/testRest/&#123;id&#125;/&#123;username&#125;")</code></p></li>
+<li><p><code>@RequestParam</code>：获取请求参数，即出现在url中<code>?</code>后面的参数</p></li>
+<li><p><code>@RequestHeader</code>：获取请求头</p></li>
+<li><p><code>@CookieValue</code>：获取Cookie数据</p></li>
+<li><p><code>@RequestBody</code>：获取请求体数据</p></li>
+<li><p><code>@RequestAttribute</code>：获取Request域的数据</p></li>
+<li><p><code>@MatrixVariable</code>：获取矩阵变量数据</p></li>
 </ul>
 <p>这里需要介绍一下矩阵变量。在url中，我们可以在路径中使用<code>;</code>拼接一些参数，例如<code>/cat;name=haha;age=18</code>，这里出现在分号后面的name和age就是矩阵变量，注解<code>@MatrixVariable</code>就是用来获取这些变量的。</p>
 <p>在SpringBoot中默认禁用了矩阵变量的功能，默认会忽略这部分参数。在SpringBoot中，url解析的功能是由类<code>UrlPathHelper</code>来完成的，在自动配置的IOC容器中也会配置该类。矩阵变量的处理对应其中的<code>removeSemicolonContent</code>，将其设置为true表示忽略参数，设置为false则不忽略。不过需要注意的是，矩阵变量必须有url中路径变量才能被解析。</p>
@@ -387,27 +378,32 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration(proxyBeanMethods = false)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WebConfig</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">WebMvcConfigurer</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">configurePathMatch</span><span class="hljs-params">(PathMatchConfigurer configurer)</span> &#123;<br><br>        <span class="hljs-type">UrlPathHelper</span> <span class="hljs-variable">urlPathHelper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UrlPathHelper</span>();<br>        <span class="hljs-comment">// 不移除；后面的内容。矩阵变量功能就可以生效</span><br>        urlPathHelper.setRemoveSemicolonContent(<span class="hljs-literal">false</span>);<br>        configurer.setUrlPathHelper(urlPathHelper);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>第二种方式是直接在配置类中返回<code>WebMvcConfigurer</code>Bean对象，当然也需要在其中设置对应的类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration(proxyBeanMethods = false)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WebConfig</span>&#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> WebMvcConfigurer <span class="hljs-title function_">webMvcConfigurer</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">WebMvcConfigurer</span>() &#123;<br>                        <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">configurePathMatch</span><span class="hljs-params">(PathMatchConfigurer configurer)</span> &#123;<br>                <span class="hljs-type">UrlPathHelper</span> <span class="hljs-variable">urlPathHelper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UrlPathHelper</span>();<br>                <span class="hljs-comment">// 不移除；后面的内容。矩阵变量功能就可以生效</span><br>                urlPathHelper.setRemoveSemicolonContent(<span class="hljs-literal">false</span>);<br>                configurer.setUrlPathHelper(urlPathHelper);<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h1>响应处理</h1>
+<h1 id="响应处理">响应处理</h1>
 <h2 id="返回json数据">返回json数据</h2>
 <p>在SpringMVC中，一个处理器方法可以返回json数据，这也是在前后端分离场景下最常用的做法。在之前的SpringMVC中，返回json数据需要先导入jackson的依赖，开启mvc的注解驱动，之后使用<code>@ResponseBody</code>注解，声明该处理器方法返回的是json数据。</p>
 <p>在SpringBoot中已经帮助我们完成了自动配置，只需要使用对应注解即可。同时返回值可以是String，也可以是对象，系统会自动将其转换为json的格式。</p>
-<h2 id="模板引擎Thymeleaf">模板引擎Thymeleaf</h2>
+<h2 id="模板引擎thymeleaf">模板引擎Thymeleaf</h2>
 <p>在SpringMVC中，我们还可以返回一个视图名称，用来表示页面跳转的关系。之前的学习中我们使用的是Thymeleaf模板引擎，我们需要自己配置Thymeleaf视图解析器，在其中指定视图前缀，视图后缀等。</p>
 <p>在SpringBoot中，如果我们想要使用Thymeleaf，非常简单，只需要引入Starter即可：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-thymeleaf<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>通过启动器，SpringBoot帮助我们完成了自动配置。其中Thymeleaf的所有配置都在<code>ThymeleafProperties</code>中，配置好了<code>ThymeleafViewResolver</code>，配置好了<code>SpringTemplateEngine</code>，并且默认的视图前缀为<code>classpath:/templates/</code>，视图后缀为<code>.html</code>。所有配置都自动完成，我们只需要直接开发页面即可。</p>
-<h1>拦截器</h1>
+<h1 id="拦截器">拦截器</h1>
 <p>在SpringMVC中，我们实现拦截器，需要实现<code>HandlerInterceptor</code>接口，重写其中的方法，之后将拦截器注册到IOC容器当中。我们可以在配置文件中使用<code>&lt;mvc:interceptors&gt;</code>标签来注册拦截类，同时可以指定拦截规则。</p>
 <p>在SpringBoot中实现拦截器也是同样的流程，只是其中将拦截器注册到IOC容器中这一过程，我们通过实现<code>WebMvcConfigurer</code>的配置类来完成，实现接口的<code>addInterceptors</code>方法，在其中增加拦截器，并用链式调用指定拦截规则。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WebConfig</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">WebMvcConfigurer</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addInterceptors</span><span class="hljs-params">(InterceptorRegistry registry)</span> &#123;<br>        registry.addInterceptor(<span class="hljs-keyword">new</span> <span class="hljs-title class_">MyInterceptor</span>()) <span class="hljs-comment">// 注册拦截器</span><br>                .addPathPatterns(<span class="hljs-string">&quot;/**&quot;</span>) <span class="hljs-comment">// 拦截请求路径</span><br>                .excludePathPatterns(<span class="hljs-string">&quot;/login&quot;</span>, <span class="hljs-string">&quot;/pet&quot;</span>); <span class="hljs-comment">// 放行请求路径</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <blockquote>
 <p>注意这里<code>/**</code>表示拦截所有请求，包括静态资源。</p>
 </blockquote>
-<h1>错误处理</h1>
-<p>SpringBoot中有默认的错误处理机制。如果是浏览器错误访问，则会返回一个Whitelabel Error Page，如果是客户端错误访问，则会返回一个Json响应，其中包含错误、Http状态、异常消息等。默认情况下，提供一个<code>/error</code>路径的视图来作为所有错误的映射。</p>
+<h1 id="错误处理">错误处理</h1>
+<p>SpringBoot中有默认的错误处理机制。如果是浏览器错误访问，则会返回一个Whitelabel
+Error
+Page，如果是客户端错误访问，则会返回一个Json响应，其中包含错误、Http状态、异常消息等。默认情况下，提供一个<code>/error</code>路径的视图来作为所有错误的映射。</p>
 <p>同时我们可以自定义错误页，将错误页放在<code>/templates/error/</code>目录下，命名为<code>404.html</code>，<code>4xx.html</code>或者<code>5xx.html</code>。这些错误页将会被自动解析有精确的错误状态码页面就匹配精确，没有就找xx匹配，如果都没有就触发白页。</p>
-<h1>文件上传</h1>
-<p>SpringMVC中的文件上传和下载可以参考：<a target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/19/SpringMVC%E7%AC%94%E8%AE%B0-5-SpringMVC%E4%B8%AD%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%92%8C%E4%B8%8B%E8%BD%BD/">SpringMVC笔记(5)-SpringMVC中文件上传和下载 - EverNorif</a>。其中文件下载有着固定的套路，需要指定返回值为<code>ResponseEntity&lt;byte[]&gt;</code>，然后按照固定流程即可。</p>
+<h1 id="文件上传">文件上传</h1>
+<p>SpringMVC中的文件上传和下载可以参考：<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/19/SpringMVC笔记-5-SpringMVC中文件上传和下载/">SpringMVC笔记(5)-SpringMVC中文件上传和下载
+-
+EverNorif</a>。其中文件下载有着固定的套路，需要指定返回值为<code>ResponseEntity&lt;byte[]&gt;</code>，然后按照固定流程即可。</p>
 <p>而对于文件上传，上传的文件需要先封装成<code>MultipartFile</code>对象，之后才能进行处理。之前我们需要添加相关依赖<code>commons-fileupload</code>，并且需要在配置文件中配置<code>MultipartFile</code>Bean对象，不过在SpringBoot中，这些同样被自动配置完成了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@PostMapping(&quot;/upload&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">upload</span><span class="hljs-params">(<span class="hljs-meta">@RequestPart(&quot;headerImg&quot;)</span> MultipartFile headerImg,</span><br><span class="hljs-params">                     <span class="hljs-meta">@RequestPart(&quot;photos&quot;)</span> MultipartFile[] photos)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 单文件</span><br>    <span class="hljs-keyword">if</span>(!headerImg.isEmpty())&#123;<br>        <span class="hljs-comment">//保存到文件服务器，OSS服务器</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">originalFilename</span> <span class="hljs-operator">=</span> headerImg.getOriginalFilename();<br>        headerImg.transferTo(<span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(<span class="hljs-string">&quot;/files/&quot;</span>+originalFilename));<br>    &#125;<br><br>    <span class="hljs-comment">// 多文件</span><br>    <span class="hljs-keyword">for</span> (MultipartFile photo : photos) &#123;<br>        <span class="hljs-keyword">if</span>(!photo.isEmpty())&#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">originalFilename</span> <span class="hljs-operator">=</span> photo.getOriginalFilename();<br>            photo.transferTo(<span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(<span class="hljs-string">&quot;/files/&quot;</span>+originalFilename));<br>        &#125;<br>    &#125;<br><br><br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <blockquote>

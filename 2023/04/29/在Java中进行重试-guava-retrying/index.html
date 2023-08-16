@@ -83,7 +83,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -325,13 +325,16 @@
             
               <div class="markdown-body">
                 
-                <h1>Guava-retrying</h1>
+                <h1 id="guava-retrying">Guava-retrying</h1>
 <h2 id="简介">简介</h2>
-<p>在实际的过程中，我们开发一个函数功能往往会需要用到其他的服务，但是我们无法保证其他服务是稳定可用的，于是重试逻辑就是一个非常常见的行为，同时也是一个比较普遍适用的功能。同时考虑到对代码的侵入性，我们希望能够有一个统一的外部逻辑来进行函数的重试。<code>guava-retrying</code>就能够提供这样的功能，它是google Guava库的一个小扩展，允许为任意函数调用创建可配置的重试策略，为我们提供了一个简单易用的重试框架。该项目的官方地址为<a target="_blank" rel="noopener" href="https://github.com/rholder/guava-retrying">rholder/guava-retrying</a>。</p>
+<p>在实际的过程中，我们开发一个函数功能往往会需要用到其他的服务，但是我们无法保证其他服务是稳定可用的，于是重试逻辑就是一个非常常见的行为，同时也是一个比较普遍适用的功能。同时考虑到对代码的侵入性，我们希望能够有一个统一的外部逻辑来进行函数的重试。<code>guava-retrying</code>就能够提供这样的功能，它是google
+Guava库的一个小扩展，允许为任意函数调用创建可配置的重试策略，为我们提供了一个简单易用的重试框架。该项目的官方地址为<a
+target="_blank" rel="noopener" href="https://github.com/rholder/guava-retrying">rholder/guava-retrying</a>。</p>
 <blockquote>
-<p>Guava：Google Guava是一组由Google开源的Java通用库，其中提供了许多在Java中实用的功能。</p>
+<p>Guava：Google
+Guava是一组由Google开源的Java通用库，其中提供了许多在Java中实用的功能。</p>
 </blockquote>
-<h2 id="Quick-Start">Quick Start</h2>
+<h2 id="quick-start">Quick Start</h2>
 <p>首先我们需要引入相关依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.github.rholder<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>guava-retrying<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.0.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>通常来说，我们需要重试的情况有函数出现异常，函数返回值与预期不一致等，因此我们首先可以通过随机数来模拟可能的情况，下面两个函数在运行的时候会随机返回，一个随机返回null，另一个随机抛出错误。这里<code>MyException</code>是继承了<code>RuntimeException</code>的自定义异常，主要用于异常统一。</p>
@@ -344,17 +347,22 @@
 <p>我们可以看到上面，构造出<code>Retryer</code>对象的过程是非常类似的，所以对于类似的重试逻辑，我们完全可以再进行一层封装，方便后续的调用：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; T <span class="hljs-title function_">retry</span><span class="hljs-params">(Callable&lt;T&gt; callable, <span class="hljs-type">int</span> retryTimes,</span><br><span class="hljs-params">                          Class&lt;? extends Throwable&gt; retryException)</span> <span class="hljs-keyword">throws</span> RuntimeException &#123;<br>    Retryer&lt;T&gt; retryer = RetryerBuilder.&lt;T&gt;newBuilder()<br>            .retryIfExceptionOfType(retryException)<br>            .withStopStrategy(StopStrategies.stopAfterAttempt(retryTimes))<br>            .build();<br><br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-keyword">return</span> retryer.call(callable);<br>    &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(e);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>当然除了代码中使用到的这些，<code>guava-retrying</code>还提供了很多其他更加灵活的重试策略，我们可以在使用的时候进行参考使用。</p>
-<h2 id="RetryListener">RetryListener</h2>
-<p>如果在发生重试之后，我们需要做一些额外的处理动作，例如告警，那么可以使用<code>RetryListener</code>。每次重试之后，<code>guava-retrying</code>会自动回调我们注册的监听。当然也可以注册多个 RetryListener，会按照注册顺序依次调用。</p>
+<h2 id="retrylistener">RetryListener</h2>
+<p>如果在发生重试之后，我们需要做一些额外的处理动作，例如告警，那么可以使用<code>RetryListener</code>。每次重试之后，<code>guava-retrying</code>会自动回调我们注册的监听。当然也可以注册多个
+RetryListener，会按照注册顺序依次调用。</p>
 <p>首先，我们可以实现自定义的监听类，需要实现<code>RetryListener</code>接口以及其中的方法。其中的Attempt对象会给我们提供许多重试的相关信息：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyRetryListener</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">RetryListener</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> &lt;V&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">onRetry</span><span class="hljs-params">(Attempt&lt;V&gt; attempt)</span> &#123;<br>        <span class="hljs-comment">// 重试次数，第一次重试指的是第一次调用</span><br>        System.out.println(<span class="hljs-string">&quot;retry times = &quot;</span> + attempt.getAttemptNumber());<br>        <span class="hljs-comment">// 该次重试距离第一次调用的延迟</span><br>        System.out.println(<span class="hljs-string">&quot;delay = &quot;</span> + attempt.getDelaySinceFirstAttempt());<br>        <span class="hljs-comment">// 重试中是否出现异常</span><br>        System.out.println(<span class="hljs-string">&quot;hasException = &quot;</span> + attempt.hasException());<br>        System.out.println(<span class="hljs-string">&quot;hasResult = &quot;</span> + attempt.hasResult());<br>        <span class="hljs-comment">// 如果有异常可以获取异常，否则直接拿到返回结果</span><br>        <span class="hljs-keyword">if</span>(attempt.hasException())&#123;<br>            System.out.println(<span class="hljs-string">&quot;causeBy = &quot;</span> + attempt.getExceptionCause());<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            System.out.println(<span class="hljs-string">&quot;result = &quot;</span> + attempt.getResult());<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>完成之后，只需要在构造Retry对象的时候增加相关配置即可：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">.withRetryListener(<span class="hljs-keyword">new</span> <span class="hljs-title class_">MyRetryListener</span>())<br></code></pre></td></tr></table></figure>
-<h1>参考文章</h1>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7014099031718641694">Java开发利器之重试框架guava-retrying</a></li>
-<li><a target="_blank" rel="noopener" href="https://java.jverson.com/tools/guava-retryer.html">重试工具: Guaa Retryer</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/lvyuan1234/article/details/78875298">线程任务接口Callable使用void作为返回类型</a></li>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://juejin.cn/post/7014099031718641694">Java开发利器之重试框架guava-retrying</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://java.jverson.com/tools/guava-retryer.html">重试工具: Guaa
+Retryer</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/lvyuan1234/article/details/78875298">线程任务接口Callable使用void作为返回类型</a></li>
 </ol>
 
                 

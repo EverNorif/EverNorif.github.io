@@ -84,7 +84,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -326,18 +326,12 @@
             
               <div class="markdown-body">
                 
-                <h1>线程安全三大特性</h1>
+                <h1 id="线程安全三大特性">线程安全三大特性</h1>
 <p>在多线程代码编写的过程中，线程安全是一个非常重要的话题。而线程安全通常需要考虑三个方面：原子性，可见性和有序性</p>
 <ul>
-<li>
-<p>原子性：一个线程内多行代码以一个整体运行</p>
-</li>
-<li>
-<p>可见性：一个线程对共享变量修改，另一个线程能够看到最新的结果</p>
-</li>
-<li>
-<p>有序性：一个线程内代码按照编写顺序执行</p>
-</li>
+<li><p>原子性：一个线程内多行代码以一个整体运行</p></li>
+<li><p>可见性：一个线程对共享变量修改，另一个线程能够看到最新的结果</p></li>
+<li><p>有序性：一个线程内代码按照编写顺序执行</p></li>
 </ul>
 <h2 id="原子性">原子性</h2>
 <p>原子性问题很好理解，与临界区和临界资源相关。对于临界区的代码，同一时刻最多只能有一个线程执行。</p>
@@ -358,7 +352,7 @@
 <p>当然上面的两种方式都不是通用的解决方式，解决方式应该是使用关键字<code>volatile</code>来修饰stop。volatile可以解决可见性问题，其修饰的变量每次用到的时候都到主存中找。增加volatile修饰之后，主线程也能够正常停止：</p>
 <figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs llvm"><span class="hljs-number">10</span>:<span class="hljs-number">23</span>:<span class="hljs-number">05.430</span> [main] <span class="hljs-keyword">c</span>.ThreadTest - stopped... count:<span class="hljs-number">376220487</span><br><span class="hljs-number">10</span>:<span class="hljs-number">23</span>:<span class="hljs-number">05.430</span> [thread<span class="hljs-number">1</span>] <span class="hljs-keyword">c</span>.ThreadTest - modify stop <span class="hljs-keyword">to</span> <span class="hljs-keyword">true</span>...<br><span class="hljs-number">10</span>:<span class="hljs-number">23</span>:<span class="hljs-number">05.524</span> [thread<span class="hljs-number">2</span>] <span class="hljs-keyword">c</span>.ThreadTest - stop: <span class="hljs-keyword">true</span><br></code></pre></td></tr></table></figure>
 <h2 id="有序性">有序性</h2>
-<p>CPU的基本工作就是执行存储的指令序列。现代CPU支持多级指令流水线，我们可以将一条指令分成5个阶段：取指令–指令译码–执行指令–访存取数–结果写回，称之为五级指令流水线。CPU可以在一个时钟周期内，同时运行五条指令的不同阶段。流水线计数本质上不能缩短单条指令的执行时间，但是可以提高指令的吞吐率</p>
+<p>CPU的基本工作就是执行存储的指令序列。现代CPU支持多级指令流水线，我们可以将一条指令分成5个阶段：取指令--指令译码--执行指令--访存取数--结果写回，称之为五级指令流水线。CPU可以在一个时钟周期内，同时运行五条指令的不同阶段。流水线计数本质上不能缩短单条指令的执行时间，但是可以提高指令的吞吐率</p>
 <p>在不改变程序结果的前提下，指令的各个阶段可以通过重排序和组合来实现指令级并行。指令重排序的目的是减少流水线阻塞。在单线程的场景下，指令重排序并不会影响程序的正确性，但是在多线程的场景下，指令重排序就可能带来预期之外的结果</p>
 <p>考虑单例模式的经典实现，双重检验锁模式，代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton</span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">volatile</span> Singleton instance;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">Singleton</span><span class="hljs-params">()</span>&#123;&#125;;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Singleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">null</span>)&#123;<br>            <span class="hljs-keyword">synchronized</span>(Singleton.class)&#123;<br>                <span class="hljs-keyword">if</span>(instance == <span class="hljs-literal">null</span>)&#123;<br>                    instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Singleton</span>();<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -371,66 +365,68 @@
 <p>考虑不使用volatile的情况</p>
 <p>在这种情况下，可能会出现指令的重排序。问题的关键在于<code>instance = new Singleton()</code>的底层并不是一个原子操作，而是可以分成四个部分：创建对象，复制引用地址，调用构造方法，将引用地址赋值给instance。但是由于可能有指令重排，一种可能的顺序是先将引用地址赋值给instance，再调用构造方法。在这种情况下，可能出现一个线程执行第一个if发现不为null，直接返回结果，但是得到的单例对象还没有被初始化，使用的话就会出现错误</p>
 <p>解决方式就是使用volatile关键字，防止指令的重排序</p>
-<h1>volatile</h1>
+<h1 id="volatile">volatile</h1>
 <p>Java中提供<code>volatile</code>关键字，用来修饰成员变量或者静态变量。可以保证可见性和有序性，但是没有办法保证原子性</p>
 <p>对于可见性来说：被volatile修饰的变量，每次都会到主存中进行最新值的读取</p>
 <p>对于有序性来说：使用内存屏障来达到效果，具体来说又分为写屏障和读屏障</p>
 <ul>
-<li>
-<p>在对volatile变量的写指令之前加入写屏障<code>^^^^^</code>，保证前面的代码不会跑到后面去，但是后面的代码可以跑到前面</p>
-</li>
-<li>
-<p>在对volatile变量的读指令之后加入读屏障<code>vvvvv</code>，保证后面的代码不会跑到前面去，但是前面的代码可以跑到后面</p>
-</li>
+<li><p>在对volatile变量的写指令之前加入写屏障<code>^^^^^</code>，保证前面的代码不会跑到后面去，但是后面的代码可以跑到前面</p></li>
+<li><p>在对volatile变量的读指令之后加入读屏障<code>vvvvv</code>，保证后面的代码不会跑到前面去，但是前面的代码可以跑到后面</p></li>
 </ul>
 <p>考虑下面的代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> x;<br><span class="hljs-keyword">volatile</span> <span class="hljs-type">int</span> y;<br><br><span class="hljs-comment">// 在写操作前增加写屏障</span><br>x = <span class="hljs-number">1</span>;<br><span class="hljs-comment">// ^^^^^</span><br>y = <span class="hljs-number">2</span>;<br><br><br><span class="hljs-comment">// 在读操作之后增加读屏障</span><br>y;<br><span class="hljs-comment">// vvvvv</span><br>x;<br></code></pre></td></tr></table></figure>
 <blockquote>
 <p>一般来说，对于volatile变量的读操作在最先完成，写操作在最后完成，这样能够最大程度利用内存屏障。</p>
 </blockquote>
-<h1>Java内存模型</h1>
-<h2 id="JMM">JMM</h2>
-<p>Java内存模型（Java Memory Model，JMM）是Java虚拟机中的一种规范，目的是屏蔽各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的内存访问效果。它的主要目的是定义程序中各种变量的访问规则，包括实例字段、静态字段和数组元素等。（不包括局部变量与方法参数，因为这些是线程私有的，不共享，也就不存在竞争关系）</p>
-<p>JMM规定所有变量都存储在主内存（Main Memory，可以类比物理硬件的主内存，实际上是虚拟机内存的一部分）中，主内存对于所有线程来说是共享的。而每条线程还有自己的工作内存（Working Memory，可以类比高速缓存），线程的工作内存中保存了被该线程使用的变量的主内存副本，线程对变量的所有操作都必须在工作内存中进行，而不能直接操作主内存中的变量。线程之间无法相互直接访问，线程间变量值的传递均需要通过主内存来完成</p>
+<h1 id="java内存模型">Java内存模型</h1>
+<h2 id="jmm">JMM</h2>
+<p>Java内存模型（Java Memory
+Model，JMM）是Java虚拟机中的一种规范，目的是屏蔽各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的内存访问效果。它的主要目的是定义程序中各种变量的访问规则，包括实例字段、静态字段和数组元素等。（不包括局部变量与方法参数，因为这些是线程私有的，不共享，也就不存在竞争关系）</p>
+<p>JMM规定所有变量都存储在主内存（Main
+Memory，可以类比物理硬件的主内存，实际上是虚拟机内存的一部分）中，主内存对于所有线程来说是共享的。而每条线程还有自己的工作内存（Working
+Memory，可以类比高速缓存），线程的工作内存中保存了被该线程使用的变量的主内存副本，线程对变量的所有操作都必须在工作内存中进行，而不能直接操作主内存中的变量。线程之间无法相互直接访问，线程间变量值的传递均需要通过主内存来完成</p>
 <blockquote>
 <p>注意：JMM和Java内存区域中的堆、栈、方法区等并不是一个层次上对内存的划分，两者基本上是没有任何关系的</p>
 </blockquote>
 <h2 id="happens-before">happens-before</h2>
 <p>JMM中定义了8种操作来描述主内存与工作内存之间的交互，包括lock、unlock、read、load、use、assign、write。同时JMM还规定了在执行上述8种基本操作时必须满足的规则。规则定义非常严谨，但是也是极为繁琐。happens-before则是这些定义的等效判断原则，通过happens-before原则，我们可以确定操作在并发环境下是安全的</p>
-<p>happens-before原则由一系列原则构成。happens-before是JMM中定义的两个操作之间的偏序关系。JMM向程序员提供保证，如果两个操作满足happens-before原则，例如操作A happens-before 操作B，那么就可以保证操作A的结果对操作B是可见的。而如果不满足happens-before原则，则不能得到可见性的保证。happens-before原则也是我们判断是否存在竞争，线程是否安全的主要依据</p>
+<p>happens-before原则由一系列原则构成。happens-before是JMM中定义的两个操作之间的偏序关系。JMM向程序员提供保证，如果两个操作满足happens-before原则，例如操作A
+happens-before
+操作B，那么就可以保证操作A的结果对操作B是可见的。而如果不满足happens-before原则，则不能得到可见性的保证。happens-before原则也是我们判断是否存在竞争，线程是否安全的主要依据</p>
 <p>具体来说，happens-before原则由如下的规则构成：</p>
 <ul>
-<li>
-<p><strong>程序次序规则（Program Order Rule）</strong>：在一个线程内，按照控制流顺序，前面的操作 happens-before 后面的操作。</p>
-<p>即同一个线程中前面的所有操作对后面的操作可见</p>
-</li>
-<li>
-<p><strong>管程锁定规则（Monitor Lock Rule）</strong>：一个unlock操作 happens-before 后面对于同一个锁的lock操作。这里的lock和unlock指的是对Monitor的操作，与synchronized原理有关。</p>
-<p>举例来说，如果线程1解锁了Monitor a，然后线程2锁定了Monitor a，那么线程1解锁a之前的所有操作对线程2可见</p>
-</li>
-<li>
-<p><strong>volatile变量规则（Volatile Variable Rule）</strong>：对于一个volatile变量的写操作 happens-before 之后对于这个变量的读操作。</p>
-<p>举例来说，如果线程1写入了volatile变量，之后线程2读取了v，那么线程1写入v以及之前的操作对线程2可见</p>
-</li>
-<li>
-<p><strong>线程启动规则（Thread Start Rule）</strong>：Thread对象的start方法 happens-before 该线程的每一个操作。</p>
-<p>举例来说，线程1在执行过程中通过调用Thread2.start()来启动线程2，那么线程1在调用start方法之前的操作对线程2是可见的。注意在线程2启动之后，线程1的操作对于线程2来说未必可见</p>
-</li>
-<li>
-<p><strong>线程终止规则（Thread Termination Rule）</strong>：线程中所有的操作 happens-before 对于此线程的终止检测。终止检测可以通过<code>Thread::join()</code>或<code>Thread::isAlive()</code>等手段来进行检测。</p>
-<p>举例来说，线程1的所有操作都对线程2调用线程1的t1.join()或t1.isAlive()并成功返回之后可见</p>
-</li>
-<li>
-<p><strong>线程中断规则（Thread Interruption Rule）</strong>：线程<code>Thread::interrupt()</code>方法的调用 happens-before 被中断线程代码检测到中断事件的发生</p>
-<p>举例来说，线程1在执行线程2.interrupt()之前的操作，对于线程2在检测到打断之后是可见的</p>
-</li>
-<li>
-<p><strong>对象终结规则（Finalizer Rule）</strong>：一个对象的初始化完成 happens-before 它的finalize()方法的开始。</p>
-<p>即对象调用finalize()方法的时候，对象初始化完成的任意操作都对其可见</p>
-</li>
-<li>
-<p><strong>传递性（Transitivity）</strong>：如果操作A happens-before 操作B，操作B happens-before 操作C，那么操作A happens-before 操作C</p>
-</li>
+<li><p><strong>程序次序规则（Program Order
+Rule）</strong>：在一个线程内，按照控制流顺序，前面的操作 happens-before
+后面的操作。</p>
+<p>即同一个线程中前面的所有操作对后面的操作可见</p></li>
+<li><p><strong>管程锁定规则（Monitor Lock
+Rule）</strong>：一个unlock操作 happens-before
+后面对于同一个锁的lock操作。这里的lock和unlock指的是对Monitor的操作，与synchronized原理有关。</p>
+<p>举例来说，如果线程1解锁了Monitor a，然后线程2锁定了Monitor
+a，那么线程1解锁a之前的所有操作对线程2可见</p></li>
+<li><p><strong>volatile变量规则（Volatile Variable
+Rule）</strong>：对于一个volatile变量的写操作 happens-before
+之后对于这个变量的读操作。</p>
+<p>举例来说，如果线程1写入了volatile变量，之后线程2读取了v，那么线程1写入v以及之前的操作对线程2可见</p></li>
+<li><p><strong>线程启动规则（Thread Start
+Rule）</strong>：Thread对象的start方法 happens-before
+该线程的每一个操作。</p>
+<p>举例来说，线程1在执行过程中通过调用Thread2.start()来启动线程2，那么线程1在调用start方法之前的操作对线程2是可见的。注意在线程2启动之后，线程1的操作对于线程2来说未必可见</p></li>
+<li><p><strong>线程终止规则（Thread Termination
+Rule）</strong>：线程中所有的操作 happens-before
+对于此线程的终止检测。终止检测可以通过<code>Thread::join()</code>或<code>Thread::isAlive()</code>等手段来进行检测。</p>
+<p>举例来说，线程1的所有操作都对线程2调用线程1的t1.join()或t1.isAlive()并成功返回之后可见</p></li>
+<li><p><strong>线程中断规则（Thread Interruption
+Rule）</strong>：线程<code>Thread::interrupt()</code>方法的调用
+happens-before 被中断线程代码检测到中断事件的发生</p>
+<p>举例来说，线程1在执行线程2.interrupt()之前的操作，对于线程2在检测到打断之后是可见的</p></li>
+<li><p><strong>对象终结规则（Finalizer
+Rule）</strong>：一个对象的初始化完成 happens-before
+它的finalize()方法的开始。</p>
+<p>即对象调用finalize()方法的时候，对象初始化完成的任意操作都对其可见</p></li>
+<li><p><strong>传递性（Transitivity）</strong>：如果操作A happens-before
+操作B，操作B happens-before 操作C，那么操作A happens-before
+操作C</p></li>
 </ul>
 <blockquote>
 <p>上面的原则描述起来可能有些拗口，但是实际含义与我们直觉相符合。事实上，这是JMM做出的努力，它通过定义的8种操作和烦琐的规则，让程序员能够更加直接方便地进行多线程的编程</p>

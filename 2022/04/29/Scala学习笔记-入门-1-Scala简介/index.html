@@ -86,7 +86,7 @@
 
 
   
-<meta name="generator" content="Hexo 6.0.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -328,24 +328,20 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Scala简介">Scala简介</h2>
+                <h2 id="scala简介">Scala简介</h2>
 <p>Scala是一门以JVM为运行环境，并将面向对象和函数式编程的最佳特性结合在一起的一种静态类型编程语言。</p>
 <ul>
-<li>
-<p>Scala是一门多范式的编程语言，支持面向对象和函数式编程</p>
+<li><p>Scala是一门多范式的编程语言，支持面向对象和函数式编程</p>
 <blockquote>
 <p>多范式指多种编程方式，如面向过程、面向对象、泛型、函数式编程等</p>
-</blockquote>
-</li>
-<li>
-<p>Scala的源代码会被编译成字节码，然后运行在JVM上，并且可以调用现有的Java类库，实现两种语言的无缝对接</p>
-</li>
+</blockquote></li>
+<li><p>Scala的源代码会被编译成字节码，然后运行在JVM上，并且可以调用现有的Java类库，实现两种语言的无缝对接</p></li>
 </ul>
 <p>在学习Scala的过程中，应当多加注意Scala与Java的区别。</p>
 <p>在编译运行过程中，Java使用<code>javac</code>和<code>java</code>命令。由于同样是运行在JVM之上，Scala也有对应的过程。Scala的源代码文件后缀为<code>.scala</code>，通过<code>scalac</code>命令可以将源代码编译成字节码文件<code>.class</code>，之后使用<code>scala</code>命令进行运行。但是具体细节有所不同，这点在后续的HelloWorld原理对比中会进行说明。</p>
 <h2 id="环境搭建">环境搭建</h2>
 <h3 id="本地环境搭建">本地环境搭建</h3>
-<ol>
+<ol type="1">
 <li>确保JDK 1.8安装成功</li>
 <li>下载对应的Scala安装文件，这里选择的是scala2.12版本</li>
 <li>之后解压到某个路径</li>
@@ -353,8 +349,8 @@
 </ol>
 <p>完成上面步骤之后，可以进入命令行输入<code>scala</code>，之后就可以看到Scala的版本并进入交互式命令行模式，在里面可以尝试简单的指令。通过<code>:quit</code>命令退出。</p>
 <img src="/2022/04/29/Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-Scala%E7%AE%80%E4%BB%8B/scala%E4%BA%A4%E4%BA%92%E5%BC%8F%E7%AA%97%E5%8F%A3.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="scala交互式窗口">
-<h3 id="IDEA开发环境配置">IDEA开发环境配置</h3>
-<ol>
+<h3 id="idea开发环境配置">IDEA开发环境配置</h3>
+<ol type="1">
 <li>正常创建一个Maven项目</li>
 <li>默认情况下IDEA不支持Scala的开发，需要安装Scala插件</li>
 <li>之后需要关联Scala的依赖包，具体路径：<code>File</code>-&gt;<code>Project Structure</code>-&gt;<code>Platfrom Settings</code>-&gt;<code>Global Libraries</code>-&gt;<code>+</code>，在其中关联对应路径，应选择<code>SCALA_HOME</code></li>
@@ -363,13 +359,13 @@
 <p>如果在<code>Global Libraries</code>中已经关联了对应的依赖，可以右键选择添加到对应的Module上。</p>
 <p>目前我们的项目中已经可以书写Scala代码了。在Maven项目中，我们的Java源代码写在java目录下，为了规范，我们也可以创建对应的源文件目录。在main目录下新建一个文件夹，命名为scala，然后将这个文件夹标记为<code>Sources Root</code>。原本的java目录可以删除，但是建议保留。因为Scala可以和Java代码无缝连接，后续项目中的Java代码可以写在对应的文件夹中，便于管理。这样就可以进入HelloWorld的编写了。</p>
 <h3 id="关联源码">关联源码</h3>
-<ol>
+<ol type="1">
 <li>首先在官网下载源码包<code>scala-sources-2.12.15.tar.gz</code></li>
 <li>然后将其拷贝到对应<code>SCALA_HOME/lib</code>目录下，并解压为<code>scala-source-2.12.15</code>文件夹</li>
 <li>之后Attach Sources选择对应文件夹即可关联源码</li>
 </ol>
-<h2 id="HelloWorld以及原理对比">HelloWorld以及原理对比</h2>
-<h3 id="HelloWorld">HelloWorld</h3>
+<h2 id="helloworld以及原理对比">HelloWorld以及原理对比</h2>
+<h3 id="helloworld">HelloWorld</h3>
 <p>下面是经典HelloWrold程序，Scala源代码如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">HelloWorld</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    println(<span class="hljs-string">&quot;Hello World!&quot;</span>)<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>简要说明：</p>
@@ -381,7 +377,7 @@
 <li><code>;</code>句尾分号可有可无</li>
 </ul>
 <p>可以使用<code>scalac</code>和<code>scala</code>进行运行，也可以在IDEA中直接运行。</p>
-<h3 id="与Java混合">与Java混合</h3>
+<h3 id="与java混合">与Java混合</h3>
 <p>前面我们说到，Scala代码中可以调用Java类库，所以我们也可以在Scala代码中直接插入Java代码，如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">HelloWorld</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    println(<span class="hljs-string">&quot;Hello Scala!&quot;</span>)<br>    <span class="hljs-type">System</span>.out.println(<span class="hljs-string">&quot;Hello Java!&quot;</span>)<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>可以正确输出结果。</p>
@@ -410,7 +406,7 @@
 <p><code>Student$.class</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Student$</span><br>&#123;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">school</span><span class="hljs-params">()</span><br>    &#123;<br>        <span class="hljs-keyword">return</span> school;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String args[])</span><br>    &#123;<br>        <span class="hljs-type">Student</span> <span class="hljs-variable">syh</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Student</span>(<span class="hljs-string">&quot;syh&quot;</span>, <span class="hljs-number">21</span>);<br>        syh.printInfo();<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> Student$()<br>    &#123;<br>        MODULE$ = <span class="hljs-built_in">this</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Student$ MODULE$;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">school</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;xxxSchool&quot;</span>;<br><br>    <span class="hljs-keyword">static</span> <br>    &#123;<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Student$</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>可以看到，这里的Student类依然是一个入口类，其中有name和age的定义，用于<code>Student$</code>中单例对象的生成。利用单例对象的属性school来达到static的功能。</p>
-<h3 id="与Java-HelloWorld对比">与Java HelloWorld对比</h3>
+<h3 id="与java-helloworld对比">与Java HelloWorld对比</h3>
 <p>由于Java和Scala的源代码都是编译成字节码文件然后在JVM上运行，那么它们的命令之间是否可以相互调用呢？这里首先构建如下的测试代码：</p>
 <p><code>HelloJava.java</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloJava</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;Hello Java!&quot;</span>);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
