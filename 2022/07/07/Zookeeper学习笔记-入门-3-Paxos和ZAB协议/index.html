@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          23 分钟
+          22 分钟
         
       </span>
     
@@ -329,16 +329,19 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Paxos协议"><a href="#Paxos协议" class="headerlink" title="Paxos协议"></a>Paxos协议</h1><p>Paxos是一种基于消息传递且具有高度容错性的一致性算法，它主要解决的问题是如何快速正确地在一个分布式系统中对某个数据值达成一致，并且保证无论发生任何异常，都不会破坏整个系统的一致性</p>
+                <h1>Paxos协议</h1>
+<p>Paxos是一种基于消息传递且具有高度容错性的一致性算法，它主要解决的问题是如何快速正确地在一个分布式系统中对某个数据值达成一致，并且保证无论发生任何异常，都不会破坏整个系统的一致性</p>
 <p>在一个Paxos系统中，节点角色有Proposer、Acceptor和Learner。我们可以将一致性问题简化为集群中所有节点对一个值value达成一致。一个完整的Paxos算法流程分为三个阶段，提案生成、提案接受和Learn学习：</p>
 <p>这里首先明确，Acceptor在整个过程中需要完成的工作就是响应请求和接受提案，一个Acceptor需要保存它响应过的最大请求编号<code>ResN</code>以及接受过的最大提案编号<code>AcceptN</code>和对应的提案值<code>AcceptV</code>。</p>
 <ol>
-<li>提案生成阶段：<ol>
+<li>提案生成阶段：
+<ol>
 <li>Proposer向多个Acceptor发送Propose请求，proposal编号为N</li>
 <li>如果一个Acceptor收到编号为N的proposal，那么它会比较该编号N和自己的<code>ResN</code>的大小，只有当<code>N&gt;ResN</code>的时候，Acceptor才会响应这个请求，并在响应中返回已经接受过的Pok，最大请求编号和对应的值<code>(Pok,AcceptN,AcceptV)</code>，如果该Acceptor没有接受过提案，则返回null。</li>
 </ol>
 </li>
-<li>提案接受阶段：<ol>
+<li>提案接受阶段：
+<ol>
 <li>如果Proposer接受了超过半数的Acceptor的响应，那么就会生成一个提案，编号为N，值为获取到的响应中编号最大的Value。如果都返回null，则Value为Proposer自己生成的值。之后Proposer将提案发生给Acceptor</li>
 <li>如果没有收到超过半数的Acceptor，则重新获取编号，并回到提案生成阶段</li>
 <li>如果Acceptor收到了一个编号为N的提案，也会比较<code>ResN</code>和N的大小，只有<code>N&gt;ResN</code>，才会接受该提案，并返回Aok</li>
@@ -348,15 +351,14 @@
 <li>Learn学习阶段：Proposer将形成的决议发送给所有的Learners</li>
 </ol>
 <img src="/2022/07/07/Zookeeper%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-3-Paxos%E5%92%8CZAB%E5%8D%8F%E8%AE%AE/paxos%E5%8D%8F%E8%AE%AE.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="paxos协议">
-
-<h1 id="ZAB协议"><a href="#ZAB协议" class="headerlink" title="ZAB协议"></a>ZAB协议</h1><p>由于Paxos系统中可以存在多个Proposer，在网络复杂的情况下，可能很久无法收敛，甚至陷入活锁的情况。这是因为可能出现多个Proposer相互争夺Acceptor，造成迟迟无法达成一致。</p>
+<h1>ZAB协议</h1>
+<p>由于Paxos系统中可以存在多个Proposer，在网络复杂的情况下，可能很久无法收敛，甚至陷入活锁的情况。这是因为可能出现多个Proposer相互争夺Acceptor，造成迟迟无法达成一致。</p>
 <p>ZAB协议，全称为Zookeeper Atomic Broadcast，借鉴了Paxos算法，是特别为Zookeeper设计的支持崩溃恢复的原子广播协议。</p>
 <p>基于该协议，Zookeeper设计为只有一台客户端，即Leader负责处理外部的写事务请求，然后Leader客户端将数据同步到其他的Follower节点。也就是说，Zookeeper中只有一个Leader可以发起提案。</p>
 <p>Zookeeper 客户端会随机的链接到 zookeeper 集群中的一个节点，如果是读请求，就直接从当前节点中读取数据；如果是写请求，那么节点就会向 Leader 提交事务，Leader 接收到事务提交，会广播该事务，只要超过半数节点写入成功，该事务就会被提交。</p>
 <p>ZAB协议主要包括两种基本的模式：<strong>消息广播</strong>和<strong>崩溃恢复</strong>。</p>
 <p>消息广播是ZAB协议的正常工作模式：</p>
 <img src="/2022/07/07/Zookeeper%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-3-Paxos%E5%92%8CZAB%E5%8D%8F%E8%AE%AE/%E6%B6%88%E6%81%AF%E5%B9%BF%E6%92%AD.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="消息广播">
-
 <ol>
 <li>客户端发起一个写请求操作</li>
 <li>Leader服务器将客户端的请求转化为事务proposal提案，同时为每个proposal分配一个全局的zxid</li>
@@ -366,7 +368,7 @@
 <li>Leader向所有Follower广播commit消息，同时自身也会完成事务提交。Follower接收到commit消息之后，会将上一条事务提交</li>
 </ol>
 <p>消息广播的处理类似于一个两阶段提交的机制，但是这里仅要求超过半数的Acceptor返回了ack即可。</p>
-<p>Zookeeper 采用 Zab 协议的核心，就是只要有一台服务器提交了 Proposal，就要确保所有的服务器最终都能正确提交 proposal。这也是 CAP&#x2F;BASE 实现最终一致性的一个体现。</p>
+<p>Zookeeper 采用 Zab 协议的核心，就是只要有一台服务器提交了 Proposal，就要确保所有的服务器最终都能正确提交 proposal。这也是 CAP/BASE 实现最终一致性的一个体现。</p>
 <p>Leader 服务器与每一个 Follower 服务器之间都维护了一个单独的 FIFO 消息队列进行收发消息，使用队列消息可以做到异步解耦。 Leader 和 Follower 之间只需要往队列中发消息即可。如果使用同步的方式会引起阻塞，性能要下降很多。</p>
 <p>崩溃恢复则是ZAB协议在异常情况下的工作模式。如果Leader服务器崩溃，或者由于网络原因导致Leader服务器失去了与过半Follower的联系，则进入崩溃恢复模式。在异常情况下，proposal的执行情况会受到影响，ZAB协议中遵循以下原则：</p>
 <ol>
@@ -384,7 +386,8 @@
 <p>ZAB协议中，zxid设计成为一个64位的整型数字。其中低32位可以看成是一个简单的递增计数器，表示事务请求；而高32位则代表了Leader周期的epoch编号。</p>
 <p>当选举产生了一个新Leader之后，会从该服务器上读取出本地事务日志中最大编号proposal的zxid，从中解析出对应的epoch编号之后，对其+1作为目前Leader的epoch，并将低32位数字归零，重新生成zxid</p>
 </blockquote>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<h1>参考文章</h1>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2bceacd60b8a">Zookeeper——一致性协议:Zab协议 - 简书 (jianshu.com)</a></li>
 </ol>
 

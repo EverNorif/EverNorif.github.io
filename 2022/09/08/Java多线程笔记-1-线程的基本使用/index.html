@@ -270,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          8.8k 字
+          8.7k 字
         
       </span>
     
@@ -329,7 +329,9 @@
             
               <div class="markdown-body">
                 
-                <h1 id="基本知识"><a href="#基本知识" class="headerlink" title="基本知识"></a>基本知识</h1><h2 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h2><p>进程：</p>
+                <h1>基本知识</h1>
+<h2 id="进程与线程">进程与线程</h2>
+<p>进程：</p>
 <ul>
 <li>程序由指令和数据组成，但是这些指令要运行，数据要读写，就必须将指令加载至CPU，将数据加载至内存；同时在指令运行过程中还需要用到磁盘、网络等设备。而进程就是用来加载指令、管理内存、管理IO的</li>
 <li>当一个程序被执行，从磁盘加载这个程序的代码到内存中，就已经开启了一个进程</li>
@@ -355,11 +357,13 @@
 <li>提高资源利用率和系统吞吐量</li>
 <li>增强操作系统的并发性能</li>
 </ul>
-<h2 id="并行与并发"><a href="#并行与并发" class="headerlink" title="并行与并发"></a>并行与并发</h2><ul>
+<h2 id="并行与并发">并行与并发</h2>
+<ul>
 <li>并行（parallel）：在同一时刻，多个指令在多个CPU上同时执行。（真正同时）</li>
 <li>并发（concurrent）：在同一时刻，多个指令在单个CPU上交替执行（模拟同时，微观串行，宏观并行）</li>
 </ul>
-<h2 id="同步与异步"><a href="#同步与异步" class="headerlink" title="同步与异步"></a>同步与异步</h2><p>从方法调用的角度来看：</p>
+<h2 id="同步与异步">同步与异步</h2>
+<p>从方法调用的角度来看：</p>
 <ul>
 <li>需要等待结果返回，才能继续运行就是同步</li>
 <li>不需要等待结果返回，就能继续运行就是异步</li>
@@ -367,42 +371,53 @@
 <blockquote>
 <p>IO不占用CPU，只是我们一般拷贝文件使用的是阻塞IO，这时相当于线程虽然不用CPU，但是需要一直等待IO结束，没能充分利用线程。所以才有后面的非阻塞IO和异步IO的优化。</p>
 </blockquote>
-<h1 id="Java线程"><a href="#Java线程" class="headerlink" title="Java线程"></a>Java线程</h1><h2 id="线程创建"><a href="#线程创建" class="headerlink" title="线程创建"></a>线程创建</h2><h3 id="方法1：Thread"><a href="#方法1：Thread" class="headerlink" title="方法1：Thread"></a>方法1：Thread</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyThread</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Thread</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyThread</span><span class="hljs-params">(String name)</span> &#123;<br>        <span class="hljs-built_in">super</span>(name);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">MyThread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyThread</span>(<span class="hljs-string">&quot;thread1&quot;</span>); <span class="hljs-comment">// 继承Thread</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-string">&quot;thread2&quot;</span>) &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>                log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>            &#125;<br>        &#125;<br>    &#125;; <span class="hljs-comment">// 匿名内部类形式</span><br><br>    thread1.start();<br>    thread2.start();<br><br>    <span class="hljs-comment">// 主线程执行</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>        log.info(i + <span class="hljs-string">&quot;&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<h1>Java线程</h1>
+<h2 id="线程创建">线程创建</h2>
+<h3 id="方法1：Thread">方法1：Thread</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyThread</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Thread</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyThread</span><span class="hljs-params">(String name)</span> &#123;<br>        <span class="hljs-built_in">super</span>(name);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">MyThread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyThread</span>(<span class="hljs-string">&quot;thread1&quot;</span>); <span class="hljs-comment">// 继承Thread</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-string">&quot;thread2&quot;</span>) &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>                log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>            &#125;<br>        &#125;<br>    &#125;; <span class="hljs-comment">// 匿名内部类形式</span><br><br>    thread1.start();<br>    thread2.start();<br><br>    <span class="hljs-comment">// 主线程执行</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>        log.info(i + <span class="hljs-string">&quot;&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <ul>
-<li><p>继承Thread，重写run方法。也可以使用匿名内部类来完成</p>
+<li>
+<p>继承Thread，重写run方法。也可以使用匿名内部类来完成</p>
 </li>
-<li><p>Thread 相关构造器：</p>
+<li>
+<p>Thread 相关构造器：</p>
 <ul>
 <li><code>public Thread()</code>：默认构造器</li>
 <li><code>public Thread(String name)</code>：指定线程名称</li>
 </ul>
 </li>
-<li><p>优点：编码简单</p>
+<li>
+<p>优点：编码简单</p>
 </li>
-<li><p>缺点：线程类已经继承了 Thread 类无法继承其他类了，功能不能通过继承拓展（单继承的局限性）</p>
+<li>
+<p>缺点：线程类已经继承了 Thread 类无法继承其他类了，功能不能通过继承拓展（单继承的局限性）</p>
 </li>
 </ul>
 <blockquote>
 <ol>
-<li><p>start() 方法向 CPU 注册当前线程，并且触发 run() 方法执行</p>
+<li>
+<p>start() 方法向 CPU 注册当前线程，并且触发 run() 方法执行</p>
 </li>
-<li><p>线程的启动必须调用 start() 方法，如果线程直接调用 run() 方法，相当于变成了普通类的执行，此时主线程将只有执行该线程</p>
+<li>
+<p>线程的启动必须调用 start() 方法，如果线程直接调用 run() 方法，相当于变成了普通类的执行，此时主线程将只有执行该线程</p>
 </li>
 </ol>
 </blockquote>
-<h3 id="方法2：Runnable"><a href="#方法2：Runnable" class="headerlink" title="方法2：Runnable"></a>方法2：Runnable</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyRunnable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">Runnable</span> <span class="hljs-variable">target</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyRunnable</span>(); <span class="hljs-comment">// 实现Runnable接口</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(target, <span class="hljs-string">&quot;thread1&quot;</span>);<br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;, <span class="hljs-string">&quot;thread2&quot;</span>); <span class="hljs-comment">// lambda表达式</span><br><br>    thread1.start();<br>    thread2.start();<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<h3 id="方法2：Runnable">方法2：Runnable</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyRunnable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">Runnable</span> <span class="hljs-variable">target</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyRunnable</span>(); <span class="hljs-comment">// 实现Runnable接口</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(target, <span class="hljs-string">&quot;thread1&quot;</span>);<br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            log.info(i + <span class="hljs-string">&quot; &quot;</span>);<br>        &#125;<br>    &#125;, <span class="hljs-string">&quot;thread2&quot;</span>); <span class="hljs-comment">// lambda表达式</span><br><br>    thread1.start();<br>    thread2.start();<br>&#125;<br></code></pre></td></tr></table></figure>
 <ul>
-<li><p>实现Runnable，实现run（没有返回值，不能抛异常），之后传递给Thread构造方法</p>
+<li>
+<p>实现Runnable，实现run（没有返回值，不能抛异常），之后传递给Thread构造方法</p>
 </li>
-<li><p>Thread 相关构造器：</p>
+<li>
+<p>Thread 相关构造器：</p>
 <ul>
 <li><code>public Thread(Runnable target)</code></li>
 <li><code>public Thread(Runnable target, String name)</code></li>
 </ul>
 </li>
-<li><p>优点：</p>
+<li>
+<p>优点：</p>
 <ol>
 <li>线程任务类只是实现了 Runnable 接口，可以继续继承其他类，避免了单继承的局限性</li>
 <li>将线程和任务分开，让任务类脱离了Thread继承体系，更加灵活</li>
@@ -417,8 +432,8 @@
 <li>方法2中将Runnable对象赋值给Thread类内部的一个Runnable类型的target属性，然后在run方法中调用target的run方法</li>
 </ul>
 </blockquote>
-<h3 id="方法3：Callable"><a href="#方法3：Callable" class="headerlink" title="方法3：Callable"></a>方法3：Callable</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyCallable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Callable</span>&lt;Integer&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">call</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        log.info(<span class="hljs-string">&quot;Hello1&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">100</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ExecutionException, InterruptedException &#123;<br>    Callable&lt;Integer&gt; myCallable = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyCallable</span>();<br>    FutureTask&lt;Integer&gt; futureTask1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FutureTask</span>&lt;&gt;(myCallable); <span class="hljs-comment">// 实现Callable接口</span><br>    FutureTask&lt;Integer&gt; futureTask2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FutureTask</span>&lt;&gt;(() -&gt; &#123;<br>        log.info(<span class="hljs-string">&quot;Hello2&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">200</span>;<br>    &#125;); <span class="hljs-comment">// Lambda表达式</span><br><br>    <span class="hljs-comment">// 包装成Thread对象</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(futureTask1, <span class="hljs-string">&quot;thread1&quot;</span>);<br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(futureTask2, <span class="hljs-string">&quot;thread2&quot;</span>);<br><br>    thread1.start();<br>    thread2.start();<br><br>    <span class="hljs-type">Integer</span> <span class="hljs-variable">res1</span> <span class="hljs-operator">=</span> futureTask1.get(); <span class="hljs-comment">// 调用FutureTask的get方法获取返回值</span><br>    <span class="hljs-type">Integer</span> <span class="hljs-variable">res2</span> <span class="hljs-operator">=</span> futureTask2.get();<br>    log.info(<span class="hljs-string">&quot;res1: &quot;</span> + res1);<br>    log.info(<span class="hljs-string">&quot;res2: &quot;</span> + res2);<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<h3 id="方法3：Callable">方法3：Callable</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyCallable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Callable</span>&lt;Integer&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">call</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        log.info(<span class="hljs-string">&quot;Hello1&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">100</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ExecutionException, InterruptedException &#123;<br>    Callable&lt;Integer&gt; myCallable = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyCallable</span>();<br>    FutureTask&lt;Integer&gt; futureTask1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FutureTask</span>&lt;&gt;(myCallable); <span class="hljs-comment">// 实现Callable接口</span><br>    FutureTask&lt;Integer&gt; futureTask2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FutureTask</span>&lt;&gt;(() -&gt; &#123;<br>        log.info(<span class="hljs-string">&quot;Hello2&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">200</span>;<br>    &#125;); <span class="hljs-comment">// Lambda表达式</span><br><br>    <span class="hljs-comment">// 包装成Thread对象</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(futureTask1, <span class="hljs-string">&quot;thread1&quot;</span>);<br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(futureTask2, <span class="hljs-string">&quot;thread2&quot;</span>);<br><br>    thread1.start();<br>    thread2.start();<br><br>    <span class="hljs-type">Integer</span> <span class="hljs-variable">res1</span> <span class="hljs-operator">=</span> futureTask1.get(); <span class="hljs-comment">// 调用FutureTask的get方法获取返回值</span><br>    <span class="hljs-type">Integer</span> <span class="hljs-variable">res2</span> <span class="hljs-operator">=</span> futureTask2.get();<br>    log.info(<span class="hljs-string">&quot;res1: &quot;</span> + res1);<br>    log.info(<span class="hljs-string">&quot;res2: &quot;</span> + res2);<br>&#125;<br></code></pre></td></tr></table></figure>
 <ul>
 <li>实现Callable接口，重写其中的call方法。在这个call方法中可以有泛型，也可以有返回值</li>
 <li>创建一个Callable的线程任务对象，将其包装成一个FutureTask</li>
@@ -430,7 +445,6 @@
 <p><strong>FutureTask补充</strong>：</p>
 <p>FutureTask继承了Runnable、Future接口，用于包装Callable对象，实现任务的提交</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 相关类和接口的定义</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FutureTask</span>&lt;V&gt; <span class="hljs-keyword">implements</span> <span class="hljs-title class_">RunnableFuture</span>&lt;V&gt;;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">RunnableFuture</span>&lt;V&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Runnable</span>, Future&lt;V&gt;<br></code></pre></td></tr></table></figure>
-
 <p>相关API：</p>
 <p><code>public FutureTask(Callable&lt;V&gt; callable)</code>：在线程执行完后得到线程的执行结果</p>
 <ul>
@@ -443,7 +457,8 @@
 <li>run() 执行完后会把结果设置到 FutureTask  的一个成员变量，get() 线程可以获取到该变量的值</li>
 </ul>
 </blockquote>
-<h2 id="线程查看"><a href="#线程查看" class="headerlink" title="线程查看"></a>线程查看</h2><p>Windows：</p>
+<h2 id="线程查看">线程查看</h2>
+<p>Windows：</p>
 <ul>
 <li>任务管理器可以查看进程和线程数，也可以用来杀死进程</li>
 <li><code>tasklist</code> 查看进程</li>
@@ -463,7 +478,8 @@
 <li><code>jstack &lt;PID&gt;</code> 查看某个 Java 进程（PID）的所有线程状态</li>
 <li><code>jconsole</code> 来查看某个 Java 进程中线程的运行情况（图形界面）</li>
 </ul>
-<h2 id="线程原理"><a href="#线程原理" class="headerlink" title="线程原理"></a>线程原理</h2><p>一个方法对应一个栈帧中的内容，其中包括了局部变量表、返回地址，锁记录，操作数栈等。一个线程对应一块栈内存，不同的线程使用不同的栈空间，里面有多个栈帧。即使用不同的Java虚拟机栈，每个线程启动后，虚拟机就会为其分配一块栈内存</p>
+<h2 id="线程原理">线程原理</h2>
+<p>一个方法对应一个栈帧中的内容，其中包括了局部变量表、返回地址，锁记录，操作数栈等。一个线程对应一块栈内存，不同的线程使用不同的栈空间，里面有多个栈帧。即使用不同的Java虚拟机栈，每个线程启动后，虚拟机就会为其分配一块栈内存</p>
 <ul>
 <li>每个栈由多个栈帧（Frame）组成，对应着每次方法调用时所占用的内存</li>
 <li>每个线程只能有一个活动栈帧，对应着当前正在执行的那个方法</li>
@@ -476,14 +492,17 @@
 <li>线程自己调用了 sleep、yield、wait、join、park 等方法</li>
 </ul>
 <p>当 Context Switch 发生时，需要由操作系统保存当前线程的状态（PCB 中），并恢复另一个线程的状态，包括程序计数器、虚拟机栈中每个栈帧的信息，如局部变量、操作数栈、返回地址等。可以预见的是，上下文切换频繁会影响性能，因此线程数不是越多越好。</p>
-<h2 id="线程常用方法"><a href="#线程常用方法" class="headerlink" title="线程常用方法"></a>线程常用方法</h2><h3 id="API-列表"><a href="#API-列表" class="headerlink" title="API 列表"></a>API 列表</h3><table>
+<h2 id="线程常用方法">线程常用方法</h2>
+<h3 id="API-列表">API 列表</h3>
+<table>
 <thead>
 <tr>
 <th>方法</th>
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>public void start()</td>
 <td>启动一个新线程，Java虚拟机调用此线程的 run 方法</td>
 </tr>
@@ -547,14 +566,17 @@
 <td>public final void setDaemon(boolean on)</td>
 <td>将此线程标记为守护线程或用户线程</td>
 </tr>
-</tbody></table>
-<h3 id="start-vs-run"><a href="#start-vs-run" class="headerlink" title="start vs run"></a>start vs run</h3><p>如果要使用多线程启动Thread，必须要调用Thread的start方法。如果直接调用run方法，则只是简单的方法调用，而不是多线程执行</p>
+</tbody>
+</table>
+<h3 id="start-vs-run">start vs run</h3>
+<p>如果要使用多线程启动Thread，必须要调用Thread的start方法。如果直接调用run方法，则只是简单的方法调用，而不是多线程执行</p>
 <p>start不能多次调用，多次调用会抛出异常<code>java.lang.IllegalThreadStateException</code></p>
-<h3 id="sleep-vs-yield"><a href="#sleep-vs-yield" class="headerlink" title="sleep vs yield"></a>sleep vs yield</h3><p>sleep：</p>
+<h3 id="sleep-vs-yield">sleep vs yield</h3>
+<p>sleep：</p>
 <ul>
 <li>调用 sleep 会让当前线程从 <code>Running</code> 进入 <code>Timed Waiting</code> 状态</li>
 <li>sleep() 方法的过程中，<strong>线程不会释放对象锁</strong></li>
-<li>其它线程可以<strong>使用 interrupt 方法打断正在睡眠的线程</strong>，这时 sleep 方法会抛出 InterruptedException，可以使用try&#x2F;catch来进行代码执行</li>
+<li>其它线程可以<strong>使用 interrupt 方法打断正在睡眠的线程</strong>，这时 sleep 方法会抛出 InterruptedException，可以使用try/catch来进行代码执行</li>
 <li>睡眠结束后的线程未必会立刻得到执行，需要抢占 CPU</li>
 <li>建议用 TimeUnit 的 sleep 代替 Thread 的 sleep 来获得更好的可读性</li>
 </ul>
@@ -562,7 +584,6 @@
 <p>sleep通常用来防止CPU占用100%。</p>
 <p>在没有利用CPU来计算的时候，我们希望不要让while(true)空转占用CPU，这时候就可以使用sleep来让出CPU的使用权给其他程序</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;<br>    <span class="hljs-keyword">try</span>&#123;<br>        Thread.sleep(<span class="hljs-number">50</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e)&#123;<br>        e.printStackTrace();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>在一些服务端监听的场景下会用到 while(true)</li>
 </ul>
@@ -584,14 +605,15 @@
 <li>最小优先级1，最大优先级10，默认优先级5。数字越大，优先级越高</li>
 </ul>
 </blockquote>
-<h3 id="join"><a href="#join" class="headerlink" title="join"></a>join</h3><p>join可以等待线程结束，底层原理是调用者轮询检查线程的alive状态</p>
+<h3 id="join">join</h3>
+<p>join可以等待线程结束，底层原理是调用者轮询检查线程的alive状态</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">join</span><span class="hljs-params">(<span class="hljs-type">long</span> millis)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>    <span class="hljs-comment">// 调用者线程进入 thread 的 waitSet 等待, 直到当前线程运行结束</span><br>    <span class="hljs-comment">// wait(0)和wait()方法的实际意义是一样的，都表示在没有唤醒的情况下该线程一直处于等待状态</span><br>    ...<br>    <span class="hljs-keyword">while</span> (isAlive()) &#123;<br>        wait(<span class="hljs-number">0</span>);<br>    &#125;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>可以设置超时时间</li>
 <li>join 方法是一个Thread类的成员方法，并且被 synchronized 修饰</li>
 </ul>
-<h3 id="interrupt"><a href="#interrupt" class="headerlink" title="interrupt"></a>interrupt</h3><p><code>public void interrupt()</code>：打断这个线程，触发<code>InterruptedExecption</code>异常</p>
+<h3 id="interrupt">interrupt</h3>
+<p><code>public void interrupt()</code>：打断这个线程，触发<code>InterruptedExecption</code>异常</p>
 <p><code>public static boolean interrupted()</code>：Thread类的静态方法，判断当前线程是否被打断，打断返回 true，<strong>清除打断标记</strong>，连续调用两次一定返回 false</p>
 <p><code>public boolean isInterrupted()</code>：Thread类的成员方法，判断当前线程是否被打断，不清除打断标记</p>
 <blockquote>
@@ -605,27 +627,23 @@
 </ul>
 <p>打断阻塞状态的线程：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    log.debug(<span class="hljs-string">&quot;sleeping....&quot;</span>);<br>    <span class="hljs-keyword">try</span> &#123;<br>        Thread.sleep(<span class="hljs-number">5000</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br>&#125;, <span class="hljs-string">&quot;thread1&quot;</span>);<br><br>thread1.start();<br><br>Thread.sleep(<span class="hljs-number">1000</span>); <br><span class="hljs-comment">// 注意主线程需要先等一会，才会出现打断睡眠状态线程的情况</span><br><span class="hljs-comment">// 如果主线程不等的话，可能就不是打断睡眠状态的线程了</span><br>thread1.interrupt();<br>log.debug(<span class="hljs-string">&quot;打断标记: &#123;&#125;&quot;</span>, thread1.isInterrupted());<br></code></pre></td></tr></table></figure>
-
 <p>输出如下：可以看到会清除打断标记</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">15:08:55.136 [thread1] c.ThreadTest - sleeping....<br>java.lang.InterruptedException: sleep interrupted<br>	at java.lang.Thread.sleep(Native Method)<br>	at ThreadTest.lambda$main$0(ThreadTest.java:14)<br>	at java.lang.Thread.run(Thread.java:748)<br>15:08:56.140 [main] c.ThreadTest - 打断标记: false<br></code></pre></td></tr></table></figure>
-
 <p>打断正常运行的线程</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Thread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">current</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">interrupted</span> <span class="hljs-operator">=</span> current.isInterrupted();<br>        <span class="hljs-keyword">if</span> (interrupted) &#123;<br>            log.debug(<span class="hljs-string">&quot;退出循环&quot;</span>);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br><br>    &#125;<br>&#125;, <span class="hljs-string">&quot;thread1&quot;</span>);<br><br>thread1.start();<br><br>Thread.sleep(<span class="hljs-number">1000</span>);<br>thread1.interrupt();<br>log.debug(<span class="hljs-string">&quot;打断标记: &#123;&#125;&quot;</span>, thread1.isInterrupted());<br></code></pre></td></tr></table></figure>
-
 <p>输出如下：可以看到没有清除打断标记</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">15:18:35.108 [main] c.ThreadTest - 打断标记: true<br>15:18:35.108 [thread1] c.ThreadTest - 退出循环<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>利用interrupt，可以完成多线程设计模式-两阶段终止。具体实现可以参考后面的多线程设计模式笔记。</p>
 </blockquote>
-<h3 id="daemon"><a href="#daemon" class="headerlink" title="daemon"></a>daemon</h3><p>守护线程的生命周期与其他非守护线程相同，它是服务于用户线程的。只要其它非守护线程运行结束了，即使守护线程代码没有执行完，也会强制结束。JVM中的垃圾回收线程就是一种守护线程</p>
+<h3 id="daemon">daemon</h3>
+<p>守护线程的生命周期与其他非守护线程相同，它是服务于用户线程的。只要其它非守护线程运行结束了，即使守护线程代码没有执行完，也会强制结束。JVM中的垃圾回收线程就是一种守护线程</p>
 <p>设置守护线程需要在线程启动之前调用方法<code>setDaemon(boolean on)</code>，将其中的标志位设置为true。</p>
-<h2 id="线程状态"><a href="#线程状态" class="headerlink" title="线程状态"></a>线程状态</h2><p>从操作系统层面来看，分为初始状态、就绪状态、运行状态、阻塞状态、终止状态。</p>
+<h2 id="线程状态">线程状态</h2>
+<p>从操作系统层面来看，分为初始状态、就绪状态、运行状态、阻塞状态、终止状态。</p>
 <img src="/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%B1%82%E9%9D%A2%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="操作系统层面线程状态">
-
 <p>从Java API层面来看，在 API 中 <code>java.lang.Thread.State</code> 这个枚举中给出了六种线程状态，分为新建New、可运行Runnable、阻塞Blocked、等待Waiting、超时等待Timed Waiting、结束Terminated。</p>
 <img src="/2022/09/08/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AC%94%E8%AE%B0-1-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/JavaAPI%E5%B1%82%E9%9D%A2%E7%9A%84%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="JavaAPI层面的线程状态">
-
 <blockquote>
 <ul>
 <li>操作系统层面的阻塞状态指的是因为等待某一事件而不能运行，例如等待IO。</li>

@@ -326,11 +326,11 @@
             
               <div class="markdown-body">
                 
-                <h1 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h1><p>CAS，全称为Compare-And-Set &#x2F; Compare-And-Swap，它是一个CPU并发原语，保证其是一个原子操作</p>
+                <h1>CAS</h1>
+<p>CAS，全称为Compare-And-Set / Compare-And-Swap，它是一个CPU并发原语，保证其是一个原子操作</p>
 <p>CAS完成一个变量的交换操作，需要提供变量的预期值A以及设置值B，然后进行CAS原子操作。CAS会先检测当前变量的值是否是预期值A，如果是就将其赋值为设置值B，如果不是则交换失败，对变量不做其他操作</p>
 <p><strong>CAS的操作必须需要借助volatile</strong>，读取到共享变量的最新值，来实现比较并交换的效果。并且在使用的时候，通常会配合while使用，通过自旋+CAS来实现无锁并发的效果</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 自旋+CAS实现无锁并发的伪代码</span><br><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">prev</span> <span class="hljs-operator">=</span> xxx;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">next</span> <span class="hljs-operator">=</span> yyy;<br>    CAS(target, prev, next);<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>结合CAS和volatile可以实现无锁并发，基于乐观锁的思想，适用于线程数少，多核CPU的场景下，最好不要超过CPU的核心数。因为没有使用synchronzied，所以线程不会陷入阻塞，这也是效率提升的因素之一。但是如果竞争激烈，可以想到的是重试必然频繁发生，效率反而受到影响</p>
 <p>CAS本身也有一些缺点：</p>
 <ul>
@@ -341,8 +341,10 @@
 <p>Java中的CAS，底层都是通过<code>sun.misc.Unsafe</code>类来完成的。在Unsafe类中提供了一个单例的Unsafe对象，其中的所有方法都是native方法，直接调用操作系统底层资源执行相应的任务</p>
 <p>这里，Unsafe指的并不是线程安全，而是说这个类是直接调用操作系统底层的资源，因此不建议程序员直接使用。在Unsafe类中的单例对象也是使用了private进行修饰，无法直接获得，但是可以通过反射进行获取</p>
 <p>Unsafe类中，提供的与CAS相关的方法有<code>getAndSetInt</code>，<code>getAndSetLong</code>，<code>getAndSetObject</code></p>
-<h1 id="原子类"><a href="#原子类" class="headerlink" title="原子类"></a>原子类</h1><p>利用循环+CAS机制可以实现无锁并发，但是如果由程序员直接使用的话会较为复杂，因此Java中也封装了一些比较方便的方法。<code>java.util.concurrent.atomic</code>包提供了许多利用CAS机制实现的原子类和工具类，这些类可以保证不同共享变量的原子性</p>
-<h2 id="原子基本类型"><a href="#原子基本类型" class="headerlink" title="原子基本类型"></a>原子基本类型</h2><p>原子基本类型可以保证基本类型的原子性，常用的类有<code>AtomicInteger</code>、<code>AtomicBoolean</code>、<code>AtomicLong</code>，下面简单介绍其中原子整数的使用</p>
+<h1>原子类</h1>
+<p>利用循环+CAS机制可以实现无锁并发，但是如果由程序员直接使用的话会较为复杂，因此Java中也封装了一些比较方便的方法。<code>java.util.concurrent.atomic</code>包提供了许多利用CAS机制实现的原子类和工具类，这些类可以保证不同共享变量的原子性</p>
+<h2 id="原子基本类型">原子基本类型</h2>
+<p>原子基本类型可以保证基本类型的原子性，常用的类有<code>AtomicInteger</code>、<code>AtomicBoolean</code>、<code>AtomicLong</code>，下面简单介绍其中原子整数的使用</p>
 <p>构造方法：</p>
 <ul>
 <li><code>public AtomicInteger()</code>：初始化一个默认值为 0 的原子型 Integer</li>
@@ -356,7 +358,8 @@
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>public final int get()</td>
 <td>获取 AtomicInteger 的值</td>
 </tr>
@@ -396,40 +399,40 @@
 <td>public final int updateAndGet(IntUnaryOperator updateFunction)</td>
 <td>提供一个函数式接口，描述对元素值的操作，以原子方式进行操作<br />返回进行操作后的值</td>
 </tr>
-</tbody></table>
-<h2 id="原子引用"><a href="#原子引用" class="headerlink" title="原子引用"></a>原子引用</h2><p>如果需要保证一个对象的原子性，则需要使用原子引用类。原子引用类可以对某个对象进行原子操作。常用的原子引用类有<code>AtomicReference</code>、<code>AtomicMarkableReference</code>、<code>AtomicStampedReference</code></p>
+</tbody>
+</table>
+<h2 id="原子引用">原子引用</h2>
+<p>如果需要保证一个对象的原子性，则需要使用原子引用类。原子引用类可以对某个对象进行原子操作。常用的原子引用类有<code>AtomicReference</code>、<code>AtomicMarkableReference</code>、<code>AtomicStampedReference</code></p>
 <p>AtomicReference类的使用：</p>
 <ul>
-<li><p>构造方法：<code>AtomicReference&lt;T&gt; atomicReference = new AtomicReference&lt;T&gt;()</code></p>
+<li>
+<p>构造方法：<code>AtomicReference&lt;T&gt; atomicReference = new AtomicReference&lt;T&gt;()</code></p>
 </li>
-<li><p>常用 API：</p>
+<li>
+<p>常用 API：</p>
 <ul>
 <li><code>public final boolean compareAndSet(V expectedValue, V newValue)</code>：CAS 操作</li>
-<li><code>public final void set(V newValue)</code>：将值设置为 newValue </li>
+<li><code>public final void set(V newValue)</code>：将值设置为 newValue</li>
 <li><code>public final V get()</code>：返回当前值</li>
 </ul>
 </li>
 </ul>
 <p>前面我们提到了CAS中会存在的ABA问题，我们可以使用版本号来解决这种问题。<code>AtomicStampedReference</code>类就是带版本的原子类。考虑下面的代码，模拟ABA问题的流程：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">static</span> AtomicStampedReference&lt;String&gt; ref = <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicStampedReference</span>&lt;&gt;(<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-number">0</span>);<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>    <span class="hljs-comment">// 打印初始状态</span><br>    log.debug(<span class="hljs-string">&quot;main start...&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">prev</span> <span class="hljs-operator">=</span> ref.getReference();<br>    <span class="hljs-type">int</span> <span class="hljs-variable">startStamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>    log.debug(<span class="hljs-string">&quot;当前状态: ref:&#123;&#125;, stamp:&#123;&#125;&quot;</span>, prev, startStamp);<br><br>    <span class="hljs-comment">// thread1先将A修改成B</span><br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">stamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;change A-&gt;B:&#123;&#125;&quot;</span>, ref.compareAndSet(ref.getReference(), <span class="hljs-string">&quot;B&quot;</span>, stamp, stamp + <span class="hljs-number">1</span>));<br>        <span class="hljs-type">int</span> <span class="hljs-variable">nowStamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;stamp:&#123;&#125;-&gt;&#123;&#125;&quot;</span>, stamp, nowStamp);<br>    &#125;, <span class="hljs-string">&quot;thread1&quot;</span>).start();<br>    Thread.sleep(<span class="hljs-number">500</span>);<br>    <span class="hljs-comment">// thread2再将B修改成A</span><br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">stamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;change B-&gt;A:&#123;&#125;&quot;</span>, ref.compareAndSet(ref.getReference(), <span class="hljs-string">&quot;A&quot;</span>, stamp, stamp + <span class="hljs-number">1</span>));<br>        <span class="hljs-type">int</span> <span class="hljs-variable">nowStamp</span> <span class="hljs-operator">=</span> ref.getStamp();<br>        log.debug(<span class="hljs-string">&quot;stamp:&#123;&#125;-&gt;&#123;&#125;&quot;</span>, stamp, nowStamp);<br>    &#125;, <span class="hljs-string">&quot;thread2&quot;</span>).start();<br><br>    Thread.sleep(<span class="hljs-number">1000</span>);<br>    <span class="hljs-comment">// main将A修改成C</span><br>    log.debug(<span class="hljs-string">&quot;change A-&gt;C:&#123;&#125;&quot;</span>, ref.compareAndSet(prev, <span class="hljs-string">&quot;C&quot;</span>, startStamp, startStamp + <span class="hljs-number">1</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>输出如下，发现确实无法修改，解决了ABA问题</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.464</span> [main] c.ThreadTest - main start...<br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.464</span> [main] c.ThreadTest - 当前状态: ref:A, stamp:<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.519</span> [thread1] c.ThreadTest - change A-&gt;B:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">03.519</span> [thread1] c.ThreadTest - stamp:<span class="hljs-number">0</span>-&gt;<span class="hljs-number">1</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">04.021</span> [thread2] c.ThreadTest - change B-&gt;A:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">04.021</span> [thread2] c.ThreadTest - stamp:<span class="hljs-number">1</span>-&gt;<span class="hljs-number">2</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">05.030</span> [main] c.ThreadTest - change A-&gt;C:<span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
-
 <p>如果我们深入到<code>compareAndSet</code>的方法中，可以看到实际上这种版本的机制在底层实际上相当于是多增加了一个stamp的CAS机制，源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(V   expectedReference,</span><br><span class="hljs-params">                             V   newReference,</span><br><span class="hljs-params">                             <span class="hljs-type">int</span> expectedStamp,</span><br><span class="hljs-params">                             <span class="hljs-type">int</span> newStamp)</span> &#123;<br>    Pair&lt;V&gt; current = pair;<br>    <span class="hljs-type">return</span><br>        <span class="hljs-variable">expectedReference</span> <span class="hljs-operator">=</span>= current.reference &amp;&amp;<br>        expectedStamp == current.stamp &amp;&amp;<br>        ((newReference == current.reference &amp;&amp;<br>          newStamp == current.stamp) ||<br>         casPair(current, Pair.of(newReference, newStamp)));<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(V   expectedReference,</span><br><span class="hljs-params">                             V   newReference,</span><br><span class="hljs-params">                             <span class="hljs-type">int</span> expectedStamp,</span><br><span class="hljs-params">                             <span class="hljs-type">int</span> newStamp)</span> &#123;<br>    Pair&lt;V&gt; current = pair;<br>    <span class="hljs-keyword">return</span><br>        expectedReference == current.reference &amp;&amp;<br>        expectedStamp == current.stamp &amp;&amp;<br>        ((newReference == current.reference &amp;&amp;<br>          newStamp == current.stamp) ||<br>         casPair(current, Pair.of(newReference, newStamp)));<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>如果我们在使用的时候不利用stamp的规则，在修改的时候不进行stamp的更新，那么也是无法解决ABA的问题的。即如果将上面的代码中，在指定expectedStamp和newStamp的时候，给定相同的值，不进行+1的操作，那么主线程还是可以完成修改。输出如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.729</span> [main] c.ThreadTest - main start...<br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.729</span> [main] c.ThreadTest - 当前状态: ref:A, stamp:<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.776</span> [thread1] c.ThreadTest - change A-&gt;B:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">36.776</span> [thread1] c.ThreadTest - stamp:<span class="hljs-number">0</span>-&gt;<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">37.290</span> [thread2] c.ThreadTest - change B-&gt;A:<span class="hljs-literal">true</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">37.290</span> [thread2] c.ThreadTest - stamp:<span class="hljs-number">0</span>-&gt;<span class="hljs-number">0</span><br><span class="hljs-number">10</span>:<span class="hljs-number">39</span>:<span class="hljs-number">38.305</span> [main] c.ThreadTest - change A-&gt;C:<span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>因此我们在使用带有版本号的原子引用的时候，需要自我约束，遵循版本stamp的使用规则</p>
 </blockquote>
 <p><code>AtomicStampedReference</code>可以给原子引用增加版本号，追踪原子引用整个的变化过程。通过它，我们可以知道引用变量在中途被更改了多少次。但是有的时候，我们可能并不关心引用变量更改了多少次，而只是单纯地关心它是否被更改过，那么可以使用<code>AtomicMarkableReference</code></p>
 <p>相比于前面利用一个整型的stamp记录版本，AtomicMarkableReference将其替换成了一个布尔型的mark，可以记载的状态就只有true和false两种了，而其他的逻辑都基本类似</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 构造方法</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">AtomicMarkableReference</span><span class="hljs-params">(V initialRef, <span class="hljs-type">boolean</span> initialMark)</span> &#123;<br>        pair = Pair.of(initialRef, initialMark);<br>&#125;<br><br><span class="hljs-comment">// cas方法</span><br><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(V       expectedReference,</span><br><span class="hljs-params">                             V       newReference,</span><br><span class="hljs-params">                             <span class="hljs-type">boolean</span> expectedMark,</span><br><span class="hljs-params">                             <span class="hljs-type">boolean</span> newMark)</span> &#123;<br>    Pair&lt;V&gt; current = pair;<br>    <span class="hljs-type">return</span><br>        <span class="hljs-variable">expectedReference</span> <span class="hljs-operator">=</span>= current.reference &amp;&amp;<br>        expectedMark == current.mark &amp;&amp;<br>        ((newReference == current.reference &amp;&amp;<br>          newMark == current.mark) ||<br>         casPair(current, Pair.of(newReference, newMark)));<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h2 id="原子数组"><a href="#原子数组" class="headerlink" title="原子数组"></a>原子数组</h2><p>原子数组类型可以保护数组内的元素的原子性，常用的原子数组类有<code>AtomicIntegerArray</code>、<code>AtomicLongArray</code>、<code>AtomicReferenceArray</code>。这里简要介绍原子整数数组类的使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 构造方法</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">AtomicMarkableReference</span><span class="hljs-params">(V initialRef, <span class="hljs-type">boolean</span> initialMark)</span> &#123;<br>        pair = Pair.of(initialRef, initialMark);<br>&#125;<br><br><span class="hljs-comment">// cas方法</span><br><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(V       expectedReference,</span><br><span class="hljs-params">                             V       newReference,</span><br><span class="hljs-params">                             <span class="hljs-type">boolean</span> expectedMark,</span><br><span class="hljs-params">                             <span class="hljs-type">boolean</span> newMark)</span> &#123;<br>    Pair&lt;V&gt; current = pair;<br>    <span class="hljs-keyword">return</span><br>        expectedReference == current.reference &amp;&amp;<br>        expectedMark == current.mark &amp;&amp;<br>        ((newReference == current.reference &amp;&amp;<br>          newMark == current.mark) ||<br>         casPair(current, Pair.of(newReference, newMark)));<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="原子数组">原子数组</h2>
+<p>原子数组类型可以保护数组内的元素的原子性，常用的原子数组类有<code>AtomicIntegerArray</code>、<code>AtomicLongArray</code>、<code>AtomicReferenceArray</code>。这里简要介绍原子整数数组类的使用</p>
 <p>构造方法：</p>
 <ul>
 <li><code>public AtomicIntegerArray(int length)</code>：提供数组长度，构造一个空数组</li>
@@ -437,17 +440,20 @@
 </ul>
 <p>CAS方法：</p>
 <p><code>public final boolean compareAndSet(int i, int expect, int update)</code>：利用CAS修改指定下标上的值</p>
-<h2 id="原子更新器"><a href="#原子更新器" class="headerlink" title="原子更新器"></a>原子更新器</h2><p>原子更新器可以允许我们针对对象的某个属性进行原子操作，常用的原子更新器有<code>AtomicReferenceFieldUpdater</code>、<code>AtomicIntegerFieldUpdater</code>、<code>AtomicLongFieldUpdater</code></p>
+<h2 id="原子更新器">原子更新器</h2>
+<p>原子更新器可以允许我们针对对象的某个属性进行原子操作，常用的原子更新器有<code>AtomicReferenceFieldUpdater</code>、<code>AtomicIntegerFieldUpdater</code>、<code>AtomicLongFieldUpdater</code></p>
 <p>利用原子更新器，可以针对对象的某个属性进行原子操作，但是只能配合 volatile 修饰的字段使用，否则会出现异常 <code>IllegalArgumentException: Must be volatile type</code></p>
 <p>常用 API：</p>
 <ul>
-<li><p><code>static &lt;U&gt; AtomicIntegerFieldUpdater&lt;U&gt; newUpdater(Class&lt;U&gt; c, String fieldName)</code>：构造方法</p>
+<li>
+<p><code>static &lt;U&gt; AtomicIntegerFieldUpdater&lt;U&gt; newUpdater(Class&lt;U&gt; c, String fieldName)</code>：构造方法</p>
 <blockquote>
 <p>如果是AtomicReferenceFieldUpdater，则还需要指定一个字段的类型对应的Class类</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;U,W&gt; AtomicReferenceFieldUpdater&lt;U,W&gt; <span class="hljs-title function_">newUpdater</span><span class="hljs-params">(Class&lt;U&gt; tclass, Class&lt;W&gt; vclass, String fieldName)</span><br></code></pre></td></tr></table></figure>
 </blockquote>
 </li>
-<li><p><code>abstract boolean compareAndSet(T obj, int expect, int update)</code>：CAS方法，需要指定修改哪个对象的字段</p>
+<li>
+<p><code>abstract boolean compareAndSet(T obj, int expect, int update)</code>：CAS方法，需要指定修改哪个对象的字段</p>
 </li>
 </ul>
 

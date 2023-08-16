@@ -325,25 +325,20 @@
             
               <div class="markdown-body">
                 
-                <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>下面的操作都是在hadoop102节点上完成的。</p>
+                <h2 id="安装">安装</h2>
+<p>下面的操作都是在hadoop102节点上完成的。</p>
 <p>这里使用了两个压缩包<code>hadoop-3.1.3.tar.gz</code>和<code>jdk-8u212-linux-x64.tar.gz</code></p>
 <p>解压安装：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd /opt/software/<br>tar -zxvf jdk-8u212-linux-x64.tar.gz -C /opt/module/<br>tar -zxvf hadoop-3.1.3.tar.gz -C /opt/module/<br></code></pre></td></tr></table></figure>
-
 <p>之后完成配置文件的修改即可，可以分别使用如下命令进行测试</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">java -version<br>hadoop version<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>可以在<code>/etc/profile</code>中进行配置，但是这里可以使用另一种方法。在这个配置文件中有一段脚本，可以将<code>/etc/profile.d/</code>目录下的所有<code>.sh</code>文件全局生效来配置环境变量。即我们可以在这个目录下维护自己添加的所有环境变量，便于管理。</p>
+<h2 id="配置文件">配置文件</h2>
+<p>可以在<code>/etc/profile</code>中进行配置，但是这里可以使用另一种方法。在这个配置文件中有一段脚本，可以将<code>/etc/profile.d/</code>目录下的所有<code>.sh</code>文件全局生效来配置环境变量。即我们可以在这个目录下维护自己添加的所有环境变量，便于管理。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo vim my_env.sh<br></code></pre></td></tr></table></figure>
-
 <p>在其中完成java和Hadoop的配置</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#JAVA_HOME</span><br><span class="hljs-built_in">export</span> JAVA_HOME=/opt/module/jdk1.8.0_212<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$JAVA_HOME</span>/bin<br><br><span class="hljs-comment">#HADOOP_HOME</span><br><span class="hljs-built_in">export</span> HADOOP_HOME=/opt/module/hadoop-3.1.3<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HADOOP_HOME</span>/bin<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HADOOP_HOME</span>/sbin<br></code></pre></td></tr></table></figure>
-
 <p>之后刷新环境变量</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">source /etc/profile<br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

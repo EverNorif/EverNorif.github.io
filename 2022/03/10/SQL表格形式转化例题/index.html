@@ -326,7 +326,9 @@
             
               <div class="markdown-body">
                 
-                <h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><h3 id="eg-1179-重新格式化部门表"><a href="#eg-1179-重新格式化部门表" class="headerlink" title="eg.1179.重新格式化部门表"></a>eg.1179.重新格式化部门表</h3><blockquote>
+                <h2 id="列转行">列转行</h2>
+<h3 id="eg-1179-重新格式化部门表">eg.1179.重新格式化部门表</h3>
+<blockquote>
 <p>部门表 Department：</p>
 <table>
 <thead>
@@ -335,7 +337,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>id</td>
 <td>int</td>
 </tr>
@@ -347,8 +350,9 @@
 <td>month</td>
 <td>varchar</td>
 </tr>
-</tbody></table>
-<p>(id, month) 是表的联合主键。这个表格有关于每个部门每月收入的信息。月份（month）可以取下列值 [“Jan”,”Feb”,”Mar”,”Apr”,”May”,”Jun”,”Jul”,”Aug”,”Sep”,”Oct”,”Nov”,”Dec”]。</p>
+</tbody>
+</table>
+<p>(id, month) 是表的联合主键。这个表格有关于每个部门每月收入的信息。月份（month）可以取下列值 [“Jan”,“Feb”,“Mar”,“Apr”,“May”,“Jun”,“Jul”,“Aug”,“Sep”,“Oct”,“Nov”,“Dec”]。</p>
 <p>编写一个 SQL 查询来重新格式化表，使得新的表中有一个部门 id 列和一些对应 每个月 的收入（revenue）列。</p>
 <p>查询结果格式如下面的示例所示：</p>
 <p>Department 表：</p>
@@ -360,7 +364,8 @@
 <th>month</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>8000</td>
 <td>Jan</td>
@@ -385,7 +390,8 @@
 <td>6000</td>
 <td>Mar</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>查询得到的结果表：</p>
 <table>
 <thead>
@@ -398,7 +404,8 @@
 <th>Dec_Revenue</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>8000</td>
 <td>7000</td>
@@ -422,16 +429,18 @@
 <td>…</td>
 <td>null</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>注意，结果表有 13 列 (1个部门 id 列 + 12个月份的收入列)。</p>
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select<br>    id, <br>    max(if(month=&#x27;Jan&#x27;, revenue, NULL)) as Jan_Revenue,<br>    max(if(month=&#x27;Feb&#x27;, revenue, NULL)) as Feb_Revenue,<br>    max(if(month=&#x27;Mar&#x27;, revenue, NULL)) as Mar_Revenue,<br>    max(if(month=&#x27;Apr&#x27;, revenue, NULL)) as Apr_Revenue,<br>    max(if(month=&#x27;May&#x27;, revenue, NULL)) as May_Revenue,<br>    max(if(month=&#x27;Jun&#x27;, revenue, NULL)) as Jun_Revenue,<br>    max(if(month=&#x27;Jul&#x27;, revenue, NULL)) as Jul_Revenue,<br>    max(if(month=&#x27;Aug&#x27;, revenue, NULL)) as Aug_Revenue,<br>    max(if(month=&#x27;Sep&#x27;, revenue, NULL)) as Sep_Revenue,<br>    max(if(month=&#x27;Oct&#x27;, revenue, NULL)) as Oct_Revenue,<br>    max(if(month=&#x27;Nov&#x27;, revenue, NULL)) as Nov_Revenue,<br>    max(if(month=&#x27;Dec&#x27;, revenue, NULL)) as Dec_Revenue<br>from Department<br>group by id<br>order by id<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>group by之后使用if过滤</li>
 </ul>
-<h2 id="行转列"><a href="#行转列" class="headerlink" title="行转列"></a>行转列</h2><h3 id="eg-1795-每个产品在不同商店的价格"><a href="#eg-1795-每个产品在不同商店的价格" class="headerlink" title="eg.1795.每个产品在不同商店的价格"></a>eg.1795.每个产品在不同商店的价格</h3><blockquote>
+<h2 id="行转列">行转列</h2>
+<h3 id="eg-1795-每个产品在不同商店的价格">eg.1795.每个产品在不同商店的价格</h3>
+<blockquote>
 <p>表：Products</p>
 <table>
 <thead>
@@ -440,7 +449,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>product_id</td>
 <td>int</td>
 </tr>
@@ -456,12 +466,14 @@
 <td>store3</td>
 <td>int</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>这张表的主键是product_id（产品Id）。每行存储了这一产品在不同商店store1, store2, store3的价格。如果这一产品在商店里没有出售，则值将为null。</p>
 <p>请你重构 Products 表，查询每个产品在不同商店的价格，使得输出的格式变为(product_id, store, price) 。如果这一产品在商店里没有出售，则不输出这一行。输出结果表中的 顺序不作要求 。</p>
 <p>查询输出格式请参考下面示例。</p>
 <p>示例 1：</p>
-<p>输入：<br>Products table:</p>
+<p>输入：<br>
+Products table:</p>
 <table>
 <thead>
 <tr>
@@ -471,7 +483,8 @@
 <th>store3</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>0</td>
 <td>95</td>
 <td>100</td>
@@ -483,7 +496,8 @@
 <td>null</td>
 <td>80</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>输出：</p>
 <table>
 <thead>
@@ -493,7 +507,8 @@
 <th>price</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>0</td>
 <td>store1</td>
 <td>95</td>
@@ -518,19 +533,21 @@
 <td>store3</td>
 <td>80</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>解释：</p>
 <p>产品0在store1，store2,store3的价格分别为95,100,105。</p>
 <p>产品1在store1，store3的价格分别为70,80。在store2无法买到。</p>
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select <br>    product_id, <br>    &#x27;store1&#x27; as store,<br>    max(store1) as price<br>from Products<br>where store1 is not NULL<br>group by product_id<br>union all<br>select <br>    product_id, <br>    &#x27;store2&#x27; as store,<br>    max(store2) as price<br>from Products<br>where store2 is not NULL<br>group by product_id<br>union all<br>select <br>    product_id, <br>    &#x27;store3&#x27; as store,<br>    max(store3) as price<br>from Products<br>where store3 is not NULL<br>group by product_id<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>利用union all拼接不同情况</li>
 <li>利用where过滤不同情况</li>
 </ul>
-<h2 id="数列构建"><a href="#数列构建" class="headerlink" title="数列构建"></a>数列构建</h2><h3 id="eg-1613-找到遗失的ID"><a href="#eg-1613-找到遗失的ID" class="headerlink" title="eg.1613.找到遗失的ID"></a>eg.1613.找到遗失的ID</h3><blockquote>
+<h2 id="数列构建">数列构建</h2>
+<h3 id="eg-1613-找到遗失的ID">eg.1613.找到遗失的ID</h3>
+<blockquote>
 <p>表: Customers</p>
 <table>
 <thead>
@@ -539,7 +556,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>customer_id</td>
 <td>int</td>
 </tr>
@@ -547,7 +565,8 @@
 <td>customer_name</td>
 <td>varchar</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>customer_id 是该表主键.该表第一行包含了顾客的名字和id.</p>
 <p>写一个 SQL 语句, 找到所有遗失的顾客id. 遗失的顾客id是指那些不在 Customers 表中, 值却处于 1 和表中最大 customer_id 之间的id.</p>
 <p>注意: 最大的 customer_id 值不会超过 100.返回结果按 ids 升序排列</p>
@@ -560,7 +579,8 @@
 <th>customer_name</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>Alice</td>
 </tr>
@@ -572,7 +592,8 @@
 <td>5</td>
 <td>Charlie</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>Result 表:</p>
 <table>
 <thead>
@@ -580,21 +601,21 @@
 <th>ids</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>2</td>
 </tr>
 <tr>
 <td>3</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>表中最大的customer_id是5, 所以在范围[1,5]内, ID2和3从表中遗失.</p>
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(n) as (<br>    select 1<br>    union all<br>    select n+1<br>    from temp<br>    where n &lt;(<br>        select max(customer_id)<br>        from Customers<br>    )<br>) # 利用with递归查询构造id范围<br><br>select t.n as ids<br>from temp as t<br>where t.n not in (<br>    select customer_id<br>    from Customers<br>)<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="eg-1767-寻找没有被执行的任务对"><a href="#eg-1767-寻找没有被执行的任务对" class="headerlink" title="eg.1767.寻找没有被执行的任务对"></a>eg.1767.寻找没有被执行的任务对</h3><blockquote>
+<h3 id="eg-1767-寻找没有被执行的任务对">eg.1767.寻找没有被执行的任务对</h3>
+<blockquote>
 <p>表：Tasks</p>
 <table>
 <thead>
@@ -603,7 +624,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>task_id</td>
 <td>int</td>
 </tr>
@@ -611,8 +633,9 @@
 <td>subtasks_count</td>
 <td>int</td>
 </tr>
-</tbody></table>
-<p>task_id 是这个表的主键。task_id 表示的为主任务的id,每一个task_id被分为了多个子任务(subtasks)，subtasks_count表示为子任务的个数（n），它的值表示了子任务的索引从1到n。本表保证2 &lt;&#x3D;subtasks_count&lt;&#x3D; 20。</p>
+</tbody>
+</table>
+<p>task_id 是这个表的主键。task_id 表示的为主任务的id,每一个task_id被分为了多个子任务(subtasks)，subtasks_count表示为子任务的个数（n），它的值表示了子任务的索引从1到n。本表保证2 &lt;=subtasks_count&lt;= 20。</p>
 <p>表： Executed</p>
 <table>
 <thead>
@@ -621,7 +644,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>task_id</td>
 <td>int</td>
 </tr>
@@ -629,8 +653,9 @@
 <td>subtask_id</td>
 <td>int</td>
 </tr>
-</tbody></table>
-<p>(task_id, subtask_id) 是这个表的主键。每一行表示标记为task_id的主任务与标记为subtask_id的子任务被成功执行。本表保证，对于每一个task_id，subtask_id &lt;&#x3D; subtasks_count。请试写一个SQL查询语句报告没有被执行的（主任务，子任务）对，即没有被执行的（task_id, subtask_id）。</p>
+</tbody>
+</table>
+<p>(task_id, subtask_id) 是这个表的主键。每一行表示标记为task_id的主任务与标记为subtask_id的子任务被成功执行。本表保证，对于每一个task_id，subtask_id &lt;= subtasks_count。请试写一个SQL查询语句报告没有被执行的（主任务，子任务）对，即没有被执行的（task_id, subtask_id）。</p>
 <p>以 任何顺序 返回即可。</p>
 <p>查询结果格式如下。</p>
 <p>示例 1：</p>
@@ -643,7 +668,8 @@
 <th>subtasks_count</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>3</td>
 </tr>
@@ -655,7 +681,8 @@
 <td>3</td>
 <td>4</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>Executed 表:</p>
 <table>
 <thead>
@@ -664,7 +691,8 @@
 <th>subtask_id</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>2</td>
 </tr>
@@ -684,7 +712,8 @@
 <td>3</td>
 <td>4</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>输出：</p>
 <table>
 <thead>
@@ -693,7 +722,8 @@
 <th>subtask_id</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>1</td>
 </tr>
@@ -709,7 +739,8 @@
 <td>2</td>
 <td>2</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>解释：</p>
 <p>Task 1 被分成了 3 subtasks (1, 2, 3)。只有 subtask 2 被成功执行, 所以我们返回 (1, 1) 和 (1, 3) 这两个主任务子任务对。</p>
 <p>Task 2 被分成了 2 subtasks (1, 2)。没有一个subtask被成功执行, 因此我们返回(2, 1)和(2, 2)。</p>
@@ -717,12 +748,9 @@
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with recursive temp(task_id, subtask_id) as(<br>    select task_id, subtasks_count as subtask_id<br>    from Tasks<br>    union all<br>    select task_id, subtask_id-1<br>    from temp<br>    where subtask_id &gt; 1<br>) # 主要注意递归查询的书写<br><br>select t.task_id as task_id, t.subtask_id as subtask_id<br>from temp as t<br>left join Executed as e<br>on t.task_id = e.task_id and t.subtask_id = e.subtask_id<br>where e.subtask_id is NULL<br>order by task_id, subtask_id<br></code></pre></td></tr></table></figure>
-
-
-
-
-
-<h2 id="字符串构建"><a href="#字符串构建" class="headerlink" title="字符串构建"></a>字符串构建</h2><h3 id="eg-1384-按年度列出销售总额"><a href="#eg-1384-按年度列出销售总额" class="headerlink" title="eg.1384.按年度列出销售总额"></a>eg.1384.按年度列出销售总额</h3><blockquote>
+<h2 id="字符串构建">字符串构建</h2>
+<h3 id="eg-1384-按年度列出销售总额">eg.1384.按年度列出销售总额</h3>
+<blockquote>
 <p>Product 表：</p>
 <table>
 <thead>
@@ -731,7 +759,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>product_id</td>
 <td>int</td>
 </tr>
@@ -739,7 +768,8 @@
 <td>product_name</td>
 <td>varchar</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>product_id 是这张表的主键。product_name 是产品的名称。</p>
 <p>Sales 表：</p>
 <table>
@@ -749,7 +779,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>product_id</td>
 <td>int</td>
 </tr>
@@ -765,7 +796,8 @@
 <td>average_daily_sales</td>
 <td>int</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>product_id 是这张表的主键。period_start 和 period_end 是该产品销售期的起始日期和结束日期，且这两个日期包含在销售期内。average_daily_sales 列存储销售期内该产品的日平均销售额。</p>
 <p>编写一段 SQL 查询每个产品每年的总销售额，并包含 product_id, product_name 以及 report_year 等信息。</p>
 <p>销售年份的日期介于 2018 年到 2020 年之间。你返回的结果需要按 product_id 和 report_year 排序。</p>
@@ -778,7 +810,8 @@
 <th>product_name</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>LC Phone</td>
 </tr>
@@ -790,7 +823,8 @@
 <td>3</td>
 <td>LC Keychain</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>Sales table:</p>
 <table>
 <thead>
@@ -801,7 +835,8 @@
 <th>average_daily_sales</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>2019-01-25</td>
 <td>2019-02-28</td>
@@ -819,7 +854,8 @@
 <td>2020-01-31</td>
 <td>1</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>Result table:</p>
 <table>
 <thead>
@@ -830,7 +866,8 @@
 <th>total_amount</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>LC Phone</td>
 <td>2019</td>
@@ -866,13 +903,11 @@
 <td>2020</td>
 <td>31</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with years as (<br>    select<br>        &#x27;2018&#x27; as year,<br>        &#x27;2018-01-01&#x27; as year_start,<br>        &#x27;2018-12-31&#x27; as year_end<br>    union<br>    select<br>        &#x27;2019&#x27; as year,<br>        &#x27;2019-01-01&#x27; as year_start,<br>        &#x27;2019-12-31&#x27; as year_end<br>    union<br>    select<br>        &#x27;2020&#x27; as year,<br>        &#x27;2020-01-01&#x27; as year_start,<br>        &#x27;2020-12-31&#x27; as year_end<br>) # 列出时间范围框架表<br><br>select <br>    temp.product_id as product_id,<br>    p.product_name as product_name,<br>    temp.year as report_year,<br>    (datediff(temp.end,temp.start) + 1) * temp.avg_sales as total_amount<br>from (<br>    select #列出每个产品在每一年的销售时间<br>        s.product_id as product_id, y.year as year, average_daily_sales as avg_sales,<br>        if(s.period_start&gt;y.year_start, s.period_start, y.year_start) as start,<br>        if(s.period_end&lt;y.year_end, s.period_end, y.year_end) as end<br>    from Sales as s<br>    left join years as y<br>    on not(s.period_end &lt; y.year_start or s.period_start &gt; year_end)<br>) as temp<br>join Product as p<br>on temp.product_id = p.product_id<br>order by product_id, report_year<br></code></pre></td></tr></table></figure>
-
-
-
 <p>eg.1635.Hopper公司查询</p>
 <blockquote>
 <p>表: Drivers</p>
@@ -883,7 +918,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>driver_id</td>
 <td>int</td>
 </tr>
@@ -891,7 +927,8 @@
 <td>join_date</td>
 <td>date</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>driver_id是该表的主键。该表的每一行均包含驾驶员的ID以及他们加入Hopper公司的日期。</p>
 <p>表: Rides</p>
 <table>
@@ -901,7 +938,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>ride_id</td>
 <td>int</td>
 </tr>
@@ -913,7 +951,8 @@
 <td>requested_at</td>
 <td>date</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>ride_id是该表的主键。该表的每一行均包含行程ID(ride_id)，用户ID(user_id)以及该行程的日期(requested_at)。该表中可能有一些不被接受的乘车请求。</p>
 <p>表: AcceptedRides</p>
 <table>
@@ -923,7 +962,8 @@
 <th>Type</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>ride_id</td>
 <td>int</td>
 </tr>
@@ -939,7 +979,8 @@
 <td>ride_duration</td>
 <td>int</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>ride_id是该表的主键。该表的每一行都包含已接受的行程信息。表中的行程信息都在“Rides”表中存在。</p>
 <p>编写SQL查询以报告2020年每个月的以下统计信息：</p>
 <p>截至某月底，当前在Hopper公司工作的驾驶员数量（active_drivers）。该月接受的乘车次数（accepted_rides）。返回按month 升序排列的结果表，其中month 是月份的数字（一月是1，二月是2，依此类推）。</p>
@@ -952,7 +993,8 @@
 <th>join_date</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>10</td>
 <td>2019-12-10</td>
 </tr>
@@ -980,7 +1022,8 @@
 <td>6</td>
 <td>2021-1-5</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>表 Rides:</p>
 <table>
 <thead>
@@ -990,7 +1033,8 @@
 <th>requested_at</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>6</td>
 <td>75</td>
 <td>2019-12-9</td>
@@ -1065,7 +1109,8 @@
 <td>18</td>
 <td>2021-1-27</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>表 AcceptedRides:</p>
 <table>
 <thead>
@@ -1076,7 +1121,8 @@
 <th>ride_duration</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>10</td>
 <td>10</td>
 <td>63</td>
@@ -1142,7 +1188,8 @@
 <td>90</td>
 <td>74</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>结果表:</p>
 <table>
 <thead>
@@ -1152,7 +1199,8 @@
 <th>accepted_rides</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>2</td>
 <td>0</td>
@@ -1212,7 +1260,8 @@
 <td>6</td>
 <td>1</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>截至1月底-&gt;两个活跃的驾驶员（10,8），没有被接受的行程。</p>
 <p>截至2月底-&gt;三个活跃的驾驶员（10,8,5），没有被接受的行程。</p>
 <p>截至3月底-&gt;四个活跃的驾驶员（10,8,5,7），一个被接受的行程（10）。</p>
@@ -1228,7 +1277,6 @@
 </blockquote>
 <p>题解：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs mysql">with temp as (<br>    select &#x27;2020-1-31&#x27; as end_date<br>    union all<br>    select &#x27;2020-2-29&#x27; as end_date<br>    union all<br>    select &#x27;2020-3-31&#x27; as end_date<br>    union all<br>    select &#x27;2020-4-30&#x27; as end_date<br>    union all    <br>    select &#x27;2020-5-31&#x27; as end_date<br>    union all<br>    select &#x27;2020-6-30&#x27; as end_date<br>    union all<br>    select &#x27;2020-7-31&#x27; as end_date<br>    union all <br>    select &#x27;2020-8-31&#x27; as end_date<br>    union all <br>    select &#x27;2020-9-30&#x27; as end_date<br>    union all <br>    select &#x27;2020-10-31&#x27; as end_date<br>    union all <br>    select &#x27;2020-11-30&#x27; as end_date<br>    union all <br>    select &#x27;2020-12-31&#x27; as end_date  <br>) # 构建每个月份的最终截止日期<br><br><br>select <br>    month(t1.end_date) as month,<br>    any_value(t1.active_drivers) as active_drivers,<br>    sum(if(t2.ride_date is NULL, 0, 1)) as accepted_rides<br>from(<br>    select # 查询每个月的活跃司机数<br>        t.end_date as end_date, <br>        count(if(d.join_date &lt;= t.end_date, 1, NULL)) as active_drivers<br>    from temp as t <br>    join Drivers as d<br>    group by t.end_date<br>) as t1<br>left join(<br>    select # 查询接受的行程的具体时间<br>    	date_format(r.requested_at,&#x27;%Y-%m&#x27;) as ride_date<br>    from AcceptedRides as a<br>    left join Rides as r<br>    on a.ride_id = r.ride_id<br>) as t2<br>on date_format(t1.end_date, &#x27;%Y-%m&#x27;) = t2.ride_date<br>group by t1.end_date<br>order by month<br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

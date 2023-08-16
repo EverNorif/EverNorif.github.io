@@ -278,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          15 分钟
+          14 分钟
         
       </span>
     
@@ -325,66 +325,54 @@
             
               <div class="markdown-body">
                 
-                <h2 id="前情回顾"><a href="#前情回顾" class="headerlink" title="前情回顾"></a>前情回顾</h2><p>在此之前，完成了VMware的基本安装来模拟不同服务器，安装系统使用了centos-7.5，安装了最小版本。接下来的操作是完成一台模板虚拟机的配置，并将这台模板虚拟机进行克隆得到后续的其他节点。</p>
-<h2 id="配置操作"><a href="#配置操作" class="headerlink" title="配置操作"></a>配置操作</h2><h3 id="1-修改虚拟机IP"><a href="#1-修改虚拟机IP" class="headerlink" title="1.修改虚拟机IP"></a>1.修改虚拟机IP</h3><p>通过修改文件来修改虚拟机的静态IP（如果没有软件需要使用yum先安装一下）</p>
+                <h2 id="前情回顾">前情回顾</h2>
+<p>在此之前，完成了VMware的基本安装来模拟不同服务器，安装系统使用了centos-7.5，安装了最小版本。接下来的操作是完成一台模板虚拟机的配置，并将这台模板虚拟机进行克隆得到后续的其他节点。</p>
+<h2 id="配置操作">配置操作</h2>
+<h3 id="1-修改虚拟机IP">1.修改虚拟机IP</h3>
+<p>通过修改文件来修改虚拟机的静态IP（如果没有软件需要使用yum先安装一下）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim /etc/sysconfig/network-scripts/ifcfg-ens33<br></code></pre></td></tr></table></figure>
-
 <p>将其中的以下字段进行修改（第一个字段是修改，后续是添加）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">BOOTPROTO=static<br><br>IPADDR=192.168.10.100<br>GATEWAY=192.168.10.2<br>DNS1=192.168.10.2<br></code></pre></td></tr></table></figure>
-
 <p>分别配置静态地址、网关和DNS。</p>
-<h3 id="2-修改VMware和Windows网络设置"><a href="#2-修改VMware和Windows网络设置" class="headerlink" title="2.修改VMware和Windows网络设置"></a>2.修改VMware和Windows网络设置</h3><p>在VMware中，点击编辑-&gt;虚拟网络编辑器-&gt;VMnet8，修改网络配置。</p>
+<h3 id="2-修改VMware和Windows网络设置">2.修改VMware和Windows网络设置</h3>
+<p>在VMware中，点击编辑-&gt;虚拟网络编辑器-&gt;VMnet8，修改网络配置。</p>
 <p>修改子网IP为192.168.10.0。</p>
 <p>选择NAT模式，修改NAT设置中的网关IP为192.168.10.2。</p>
 <p>查看Windows系统适配器中VMware Network Adapter VMnet8的IP地址。打开”网络和Internet“设置，修改适配器选项，选择VMnet8的属性，修改其中的IPV4设置，其中默认网关设置为192.168.10.2，首选DNS服务器设置为192.168.10.2，备用DNS服务器设置为8.8.8.8。</p>
 <p>上面的网络配置都是对应的。</p>
-<h3 id="3-修改主机名和主机映射文件"><a href="#3-修改主机名和主机映射文件" class="headerlink" title="3.修改主机名和主机映射文件"></a>3.修改主机名和主机映射文件</h3><p>修改主机名</p>
+<h3 id="3-修改主机名和主机映射文件">3.修改主机名和主机映射文件</h3>
+<p>修改主机名</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim /etc/hostname<br>hadoop 100<br></code></pre></td></tr></table></figure>
-
 <p>配置主机名称映射hosts文件</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim /etc/hosts<br></code></pre></td></tr></table></figure>
-
 <p>添加如下内容</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">192.168.10.100 hadoop100<br>192.168.10.101 hadoop101<br>192.168.10.102 hadoop102<br>192.168.10.103 hadoop103<br>192.168.10.104 hadoop104<br>192.168.10.105 hadoop105<br>192.168.10.106 hadoop106<br>192.168.10.107 hadoop107<br>192.168.10.108 hadoop108<br></code></pre></td></tr></table></figure>
-
 <p>重启虚拟机</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">reboot<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-后续的软件准备"><a href="#4-后续的软件准备" class="headerlink" title="4.后续的软件准备"></a>4.后续的软件准备</h3><p>安装epel-release：</p>
+<h3 id="4-后续的软件准备">4.后续的软件准备</h3>
+<p>安装epel-release：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">yum install -y epel-release<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>Extra Packages for Enterprise Linux 是为“红帽系”的操作系统提供额外的软件包， 适用于 RHEL、CentOS 和 Scientific Linux。相当于是一个软件仓库，大多数 rpm 包在官方 repository 中是找不到的）</p>
 </blockquote>
 <p>安装net-tool：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">yum install -y net-tools<br></code></pre></td></tr></table></figure>
-
 <p>安装vim：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">yum install -y vim<br></code></pre></td></tr></table></figure>
-
 <p>关闭防火墙，关闭防火墙开机自启：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">systemctl stop firewalld<br>systemctl disable firewalld.service<br></code></pre></td></tr></table></figure>
-
 <p>创建syh用户并修改密码：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">useradd syh<br>passwd syh<br></code></pre></td></tr></table></figure>
-
 <p>配置syh用户具有root权限：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim /etc/sudoers<br></code></pre></td></tr></table></figure>
-
 <p>修改文件，在%wheel这行下面添加</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="language-bash"><span class="hljs-comment"># Allows people in group wheel to run all commands</span></span><br><span class="hljs-meta">%</span><span class="language-bash">wheel  ALL=(ALL)       ALL</span><br>syh     ALL=(ALL)       NOPASSWD:ALL<br></code></pre></td></tr></table></figure>
-
-<p>在&#x2F;opt目录下创建文件夹module和software文件夹，并修改所属主和组：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># Allows people in group wheel to run all commands</span></span><br><span class="hljs-meta prompt_">%</span><span class="language-bash">wheel  ALL=(ALL)       ALL</span><br>syh     ALL=(ALL)       NOPASSWD:ALL<br></code></pre></td></tr></table></figure>
+<p>在/opt目录下创建文件夹module和software文件夹，并修改所属主和组：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">mkdir /opt/module<br>mkdir /opt/software<br><br>chown syh:syh /opt/module<br>chown syh:syh /opt/software<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="虚拟机克隆"><a href="#虚拟机克隆" class="headerlink" title="虚拟机克隆"></a>虚拟机克隆</h2><p>从hadoop100中克隆出三台虚拟机，分别为hadoop102，hadoop103，hadoop104。</p>
+<h2 id="虚拟机克隆">虚拟机克隆</h2>
+<p>从hadoop100中克隆出三台虚拟机，分别为hadoop102，hadoop103，hadoop104。</p>
 <p>克隆完成之后需要依次将这些虚拟机的IP和hostname进行修改。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim /etc/sysconfig/network-scripts/ifcfg-ens33<br>vim /etc/hostname<br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

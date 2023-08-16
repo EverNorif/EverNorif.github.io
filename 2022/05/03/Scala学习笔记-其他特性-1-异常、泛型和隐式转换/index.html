@@ -325,40 +325,43 @@
             
               <div class="markdown-body">
                 
-                <h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><p>Scala的异常处理在语法上和Java类似，但是又不尽相同。</p>
+                <h2 id="异常">异常</h2>
+<p>Scala的异常处理在语法上和Java类似，但是又不尽相同。</p>
 <p>在Java中，异常处理采用<code>try-catch-finally</code>的方式。其中使用多个catch语句来捕获对应的异常，这时候需要将范围小的异常类写在前面，大的异常类写在后面。</p>
 <p>在Scala中同样使用<code>try-catch-finally</code>的方式来获取，其中只有一个catch代码块，在里面通过case进行异常的判定</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">try</span>&#123;<br>    <span class="hljs-keyword">val</span> n = <span class="hljs-number">10</span> / <span class="hljs-number">0</span><br>&#125; <span class="hljs-keyword">catch</span> &#123;<br>    <span class="hljs-keyword">case</span> e: <span class="hljs-type">ArithmeticException</span> =&gt; &#123;<br>        println(<span class="hljs-string">&quot;发生算术异常&quot;</span>)<br>    &#125;<br>    <span class="hljs-keyword">case</span> e: <span class="hljs-type">Exception</span> =&gt; &#123;<br>        println(<span class="hljs-string">&quot;发生一般异常&quot;</span>)<br>    &#125;<br>&#125; <span class="hljs-keyword">finally</span> &#123;<br>    println(<span class="hljs-string">&quot;处理结束&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
-<li><p>Scala的异常工作机制与Java一样，但是没有编译时异常，所有的异常都是运行时处理</p>
+<li>
+<p>Scala的异常工作机制与Java一样，但是没有编译时异常，所有的异常都是运行时处理</p>
 </li>
-<li><p>Scala中也是用<code>throw</code>关键字抛出异常，所有异常都是<code>Throwable</code>的子类，<code>throw</code>表达式是有类型的，就是<code>Nothing</code>。<code>Nothing</code>主要用在一个函数总是不能正常工作，总是抛出异常的时候用作返回值类型。</p>
+<li>
+<p>Scala中也是用<code>throw</code>关键字抛出异常，所有异常都是<code>Throwable</code>的子类，<code>throw</code>表达式是有类型的，就是<code>Nothing</code>。<code>Nothing</code>主要用在一个函数总是不能正常工作，总是抛出异常的时候用作返回值类型。</p>
 </li>
-<li><p>Java中提供了throws关键字来声明方法可能引发的异常，在Scala中可以使用throws注解来声明异常</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">NumberFormatException</span>])<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f11</span></span>()=&#123;<br> <span class="hljs-string">&quot;abc&quot;</span>.toInt<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li>
+<p>Java中提供了throws关键字来声明方法可能引发的异常，在Scala中可以使用throws注解来声明异常</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">NumberFormatException</span>])<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">f11</span></span>()=&#123;<br> <span class="hljs-string">&quot;abc&quot;</span>.toInt<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
 </ul>
-<h2 id="隐式转换"><a href="#隐式转换" class="headerlink" title="隐式转换"></a>隐式转换</h2><p>总结来说，在Scala中，当编译器第一次编译失败的时候，会在当前的环境中查找能够让代码编译通过的方法，用于将类型进行转换，实现二次编译。当编译错误的时候，编译器会尝试在当前作用域范围内查找能够调用对应功能的转换规则，这个过程由编译器完成，称之为隐式转换或者自动转换。（隐式转换能够在不修改类代码的情况下扩充类的功能）</p>
+<h2 id="隐式转换">隐式转换</h2>
+<p>总结来说，在Scala中，当编译器第一次编译失败的时候，会在当前的环境中查找能够让代码编译通过的方法，用于将类型进行转换，实现二次编译。当编译错误的时候，编译器会尝试在当前作用域范围内查找能够调用对应功能的转换规则，这个过程由编译器完成，称之为隐式转换或者自动转换。（隐式转换能够在不修改类代码的情况下扩充类的功能）</p>
 <p>首先描述下面场景：</p>
 <p>现在我们完成了一个自定义类<code>MyRichInt</code>，其中实现了自定义的比较大小的方法。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 自定义类</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyRichInt</span>(<span class="hljs-params">val value: <span class="hljs-type">Int</span></span>) </span>&#123;<br>  <span class="hljs-comment">// 自定义比较大小的方法</span><br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myMax</span></span>(n: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = <span class="hljs-keyword">if</span> (n &lt; value) value <span class="hljs-keyword">else</span> n<br><br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myMin</span></span>(n: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = <span class="hljs-keyword">if</span> (n &gt; value) value <span class="hljs-keyword">else</span> n<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>但是能够调用我们方法的只有<code>MyRichInt</code>对应的对象，如果是一个整数的话，是无法调用我们的自定义比较大小方法的。下面的代码会报错：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">println(<span class="hljs-number">12.</span>myMax(<span class="hljs-number">15</span>))<br></code></pre></td></tr></table></figure>
-
 <p>隐式转换就能够解决这样的场景。</p>
-<h3 id="隐式函数"><a href="#隐式函数" class="headerlink" title="隐式函数"></a>隐式函数</h3><p>在函数定义前加上<code>implicit</code>将其声明为隐式转换函数。</p>
+<h3 id="隐式函数">隐式函数</h3>
+<p>在函数定义前加上<code>implicit</code>将其声明为隐式转换函数。</p>
 <p>之前Int类型的对象无法调用我们的自定义比较大小方法，但是编译器发现了一个隐式函数，能够完成从Int到MyRichInt的转换，完成转换之后能够调用，因此能够正常运行。</p>
 <p>隐式函数定义如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 隐式函数</span><br><span class="hljs-keyword">implicit</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">convert</span></span>(num: <span class="hljs-type">Int</span>): <span class="hljs-type">MyRichInt</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">MyRichInt</span>(num)<br></code></pre></td></tr></table></figure>
-
 <p>有了隐式函数之后，下面代码能够正常运行（当然注意隐式函数需要在下面代码的作用域内，即定义在它之前）</p>
 <blockquote>
 <p>能够运行是因为编译器找到了隐式函数，然后将Int对象转换成了一个MyRichInt对象</p>
 </blockquote>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">println(<span class="hljs-number">12.</span>myMax(<span class="hljs-number">15</span>))<br></code></pre></td></tr></table></figure>
-
-<h3 id="隐式参数"><a href="#隐式参数" class="headerlink" title="隐式参数"></a>隐式参数</h3><p>普通方法或者函数中的参数可以通过<code>implicit</code>关键字声明为隐式参数，调用该方法的时候，如果传入了，则以传入参数为准，如果没有传入，则编译器在当前作用域寻找符合条件的隐式值。</p>
+<h3 id="隐式参数">隐式参数</h3>
+<p>普通方法或者函数中的参数可以通过<code>implicit</code>关键字声明为隐式参数，调用该方法的时候，如果传入了，则以传入参数为准，如果没有传入，则编译器在当前作用域寻找符合条件的隐式值。</p>
 <p>关于隐式值：</p>
 <ul>
 <li>在同一个作用域，相同类型的隐式值只能有一个（避免二义性）</li>
@@ -367,33 +370,33 @@
 </ul>
 <p>示例代码如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 指定隐式参数</span><br><span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> str: <span class="hljs-type">String</span> = <span class="hljs-string">&quot;hello world&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hello</span></span>(<span class="hljs-keyword">implicit</span> arg: <span class="hljs-type">String</span> = <span class="hljs-string">&quot;goodbye world&quot;</span>) = &#123;<br>    println(arg)<br>&#125;<br><br>hello <span class="hljs-comment">// hello world</span><br>hello() <span class="hljs-comment">// goodbye world</span><br></code></pre></td></tr></table></figure>
-
 <p>输出结果如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">hello world<br>goodbye world<br></code></pre></td></tr></table></figure>
-
 <p>如上所示，如果参数列表中只有一个隐式参数，那么无论这个隐式参数是否提供默认参数，需要使用隐式参数的话，在调用的时候需要将括号一起省略掉。（如同上面的<code>hello</code>）</p>
 <p>如果调用的时候，又想要括号，则可以在函数定义的时候，在隐式参数列表之前添加一个空参数列表<code>()</code>，那么会出现以下情况</p>
 <ul>
-<li><p><code>func</code>：调用隐式参数</p>
+<li>
+<p><code>func</code>：调用隐式参数</p>
 </li>
-<li><p><code>func()</code>：调用隐式参数</p>
+<li>
+<p><code>func()</code>：调用隐式参数</p>
 </li>
-<li><p><code>func()()</code>：使用默认参数</p>
+<li>
+<p><code>func()()</code>：使用默认参数</p>
 </li>
-<li><p><code>func()(arg)</code>：使用传入参数</p>
+<li>
+<p><code>func()(arg)</code>：使用传入参数</p>
 </li>
 </ul>
 <p>示例代码如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 指定隐式参数</span><br><span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> str: <span class="hljs-type">String</span> = <span class="hljs-string">&quot;hello world&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hello</span></span>()(<span class="hljs-keyword">implicit</span> arg: <span class="hljs-type">String</span> = <span class="hljs-string">&quot;goodbye world&quot;</span>) = &#123;<br>    println(arg)<br>&#125;<br><br>hello <span class="hljs-comment">// hello world</span><br>hello() <span class="hljs-comment">// hello world</span><br>hello()() <span class="hljs-comment">// goodbye world</span><br>hello()(<span class="hljs-string">&quot;wow&quot;</span>) <span class="hljs-comment">// wow</span><br></code></pre></td></tr></table></figure>
-
 <p>输出结果如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">hello world<br>hello world<br>goodbye world<br>wow<br></code></pre></td></tr></table></figure>
-
 <p>示例代码可以简写为如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hello</span></span>() = &#123;<br>    println(implicitly[<span class="hljs-type">String</span>])<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>这样的话就无法传入参数了（这样不像是一个全局变量吗？）</p>
-<h3 id="隐式类"><a href="#隐式类" class="headerlink" title="隐式类"></a>隐式类</h3><p>在Scala2.10之后提供了隐式类。通过<code>implicit</code>来声明类。此时类的构造方法将被声明为隐式转换函数。也就是说，如果第一次编译没有通过，就可能将数据直接传给构造函数转换成对应的类，可以将隐式类看作是隐式函数的一个扩展。</p>
+<h3 id="隐式类">隐式类</h3>
+<p>在Scala2.10之后提供了隐式类。通过<code>implicit</code>来声明类。此时类的构造方法将被声明为隐式转换函数。也就是说，如果第一次编译没有通过，就可能将数据直接传给构造函数转换成对应的类，可以将隐式类看作是隐式函数的一个扩展。</p>
 <p>隐式类的说明：</p>
 <ul>
 <li>所带构造参数有且只能有一个</li>
@@ -401,26 +404,29 @@
 </ul>
 <p>在同一个作用域中定义隐式转换函数和隐式类会冲突，定义一个就行</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Test</span> </span>&#123;<br>  <span class="hljs-comment">// 自定义隐式类</span><br>  <span class="hljs-keyword">implicit</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyRichInt</span>(<span class="hljs-params">val value: <span class="hljs-type">Int</span></span>) </span>&#123;<br>    <span class="hljs-comment">// 自定义比较大小的方法</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myMax</span></span>(n: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = <span class="hljs-keyword">if</span> (n &lt; value) value <span class="hljs-keyword">else</span> n<br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myMin</span></span>(n: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = <span class="hljs-keyword">if</span> (n &gt; value) value <span class="hljs-keyword">else</span> n<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    println(<span class="hljs-number">12.</span>myMax(<span class="hljs-number">15</span>))<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="隐式解析机制"><a href="#隐式解析机制" class="headerlink" title="隐式解析机制"></a>隐式解析机制</h3><ul>
+<h3 id="隐式解析机制">隐式解析机制</h3>
+<ul>
 <li>首先在<strong>当前代码作用域下</strong>查找隐式实体（隐式方法、隐式类、隐式对象）。</li>
 <li>如果第一条规查找隐式对象失败，会继续在<strong>隐式参数的类型的作用域</strong>中查找。类型的作用域是指该类型相关联的全部伴生对象以及该类型所在包的包对象。</li>
 </ul>
-<h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><h3 id="协变和逆变"><a href="#协变和逆变" class="headerlink" title="协变和逆变"></a>协变和逆变</h3><p>语法如下：</p>
+<h2 id="泛型">泛型</h2>
+<h3 id="协变和逆变">协变和逆变</h3>
+<p>语法如下：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyList</span>[+<span class="hljs-type">T</span>] </span>&#123;&#125; <span class="hljs-comment">// 协变</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyList</span>[-<span class="hljs-type">T</span>] </span>&#123;&#125; <span class="hljs-comment">// 逆变</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyList</span>[<span class="hljs-type">T</span>] </span>&#123;&#125; <span class="hljs-comment">// 不变</span><br></code></pre></td></tr></table></figure>
-
 <p>假设<code>Son</code>和<code>Father</code>是父子关系，<code>Son</code>是子类。</p>
 <ul>
 <li>协变（Covariance）：<code>MyList[Son]</code>是<code>MyList[Father]</code>的子类，协同变化。</li>
 <li>逆变（Contravariance）：<code>MyList[Son]</code>是<code>MyList[Father]</code>的父类，逆向变化。</li>
 <li>不变（Invariant）：<code>MyList[Father] MyList[Son]</code>没有父子关系。</li>
 </ul>
-<h3 id="泛型上下限"><a href="#泛型上下限" class="headerlink" title="泛型上下限"></a>泛型上下限</h3><p>规定泛型的上下限，对传入的泛型进行限定</p>
+<h3 id="泛型上下限">泛型上下限</h3>
+<p>规定泛型的上下限，对传入的泛型进行限定</p>
 <ul>
 <li>泛型上限：<code>class MyList[T &lt;: Type]</code>，可以传入<code>Type</code>自身或者子类。</li>
 <li>泛型下限：<code>class MyList[T &gt;: Type]</code>，可以传入<code>Type</code>自身或者父类。</li>
 </ul>
-<h3 id="上下文限定"><a href="#上下文限定" class="headerlink" title="上下文限定"></a>上下文限定</h3><ul>
+<h3 id="上下文限定">上下文限定</h3>
+<ul>
 <li><code>def f[A : B](a: A) = println(a)</code>等同于<code>def f[A](a: A)(implicit arg: B[A])</code></li>
 <li>是将泛型和隐式转换结合的产物，使用上下文限定（前者）后，方法内无法使用隐式参数名调用隐式参数，需要通过<code>implicitly[Ordering[A]]</code>获取隐式变量。</li>
 </ul>

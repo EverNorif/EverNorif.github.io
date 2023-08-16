@@ -324,9 +324,11 @@
             
               <div class="markdown-body">
                 
-                <h1 id="空值处理背景"><a href="#空值处理背景" class="headerlink" title="空值处理背景"></a>空值处理背景</h1><p>在Java中，空值被定义为<code>null</code>。这是一个特殊的关键字，用来表示某个引用为空。正是因为这只是一个关键字，而不是一个对象，因此用它调用任何方法都是非法的。但是仔细思考，这一点实际上存在不合理的地方，我们明明希望返回的是一个对象，可是返回的却是一个关键字。</p>
+                <h1>空值处理背景</h1>
+<p>在Java中，空值被定义为<code>null</code>。这是一个特殊的关键字，用来表示某个引用为空。正是因为这只是一个关键字，而不是一个对象，因此用它调用任何方法都是非法的。但是仔细思考，这一点实际上存在不合理的地方，我们明明希望返回的是一个对象，可是返回的却是一个关键字。</p>
 <p>于是在Scala中，使用<code>Option</code>对象来对这一现象进行处理。Option类表示的是那种可能存在，也可能不存在的值，对应到Java中，就是说这个值可能为null。但是由于使用Option进行了一层包装，无论值是否存在，返回的都是一个对象，可以进行方法调用。一个很好的编程习惯是当方法的返回值有可能为null的时候，都使用Option对象来代替。</p>
-<h1 id="Option"><a href="#Option" class="headerlink" title="Option"></a>Option</h1><p>为了使得一切皆对象的目标更加一致，Scala鼓励在变量和函数返回值可能不会引用任何值的时候使用Option类型。在没有值的时候，使用None；在有值的时候，则使用Some来包装这个值。</p>
+<h1>Option</h1>
+<p>为了使得一切皆对象的目标更加一致，Scala鼓励在变量和函数返回值可能不会引用任何值的时候使用Option类型。在没有值的时候，使用None；在有值的时候，则使用Some来包装这个值。</p>
 <p><code>Option[T]</code>是一个带泛型的类，我们可以将其看作是一个包装了某个值的容器。<code>Some</code>和<code>None</code>都是Option的子类。Some是一个class，表示有值；None是一个object，表示没有值。Some和None都可以调用<code>isEmpty</code>以及<code>get</code>方法：</p>
 <ul>
 <li>在调用isEmpty方法的时候，Some返回false，而None返回true</li>
@@ -334,14 +336,11 @@
 </ul>
 <p>因此我们在接收一个Option对象之后，应该通过调用<code>isEmpty</code>来判断是否为空，然后选择如何处理。通过下面的例子，我们可以更好地理解<code>Option</code>的使用。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">toInt</span></span>(in: <span class="hljs-type">String</span>): <span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>] = &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>      <span class="hljs-type">Some</span>(<span class="hljs-type">Integer</span>.parseInt(in.trim))<br>    &#125; <span class="hljs-keyword">catch</span> &#123;<br>      <span class="hljs-keyword">case</span> e: <span class="hljs-type">NumberFormatException</span> =&gt; <span class="hljs-type">None</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>这里我们定义了一个将字符串转化为Int的函数，这个函数的返回值是有可能不存在的，因此我们将返回值定义为Option的形式。如果解析成功，能够返回，那么就使用Some进行包装，否则就返回None。</p>
 <p>要使用这个函数，则需要在使用结果之前进行判断：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> maybeInt = toInt(<span class="hljs-string">&quot;123&quot;</span>)<br><span class="hljs-keyword">if</span>(maybeInt.isEmpty)&#123;<br>  println(<span class="hljs-string">&quot;not a Int&quot;</span>)<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>  println(maybeInt.get)<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>而借助于Scala中强大的模式匹配，我们也可以通过下面的方式来处理：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> maybeInt = toInt(<span class="hljs-string">&quot;xxx&quot;</span>)<br>maybeInt <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-type">Some</span>(i) =&gt; println(i)<br>  <span class="hljs-keyword">case</span> <span class="hljs-type">None</span> =&gt; println(<span class="hljs-string">&quot;not a Int&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>简单总结Option的使用，就是将我们需要返回的实际值使用Option进行包装，其中泛型指定为对应的类型。当正常返回值的时候，使用Some进行包装，异常的时候则直接返回None。Option类型的值通常作为Scala集合类型操作的返回类型。</p>
 <p>使用Option的好处在于返回了一个统一的对象，无论真实值是否存在，都能够进行方法的调用。在Java中，我们可以利用<code>!= null</code>来进行空值的处理，但是如果一个不小心没有处理到，就很容易出现NullPointException异常，并且出现异常之后，问题排查是一个比较难的问题。另一方面，一个Java方法是否会返回空值无法通过返回值看出来，只能通过看相关文档。而Scala的Option类型可以避免这种情况，使用Option类型就表示这个地方可能返回None。</p>
 <p>Option类型本身还有一些相关的方法，列举如下：</p>
@@ -352,7 +351,8 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>def get: A</td>
 <td>获取对应的值</td>
 </tr>
@@ -368,8 +368,10 @@
 <td>def isDefined: Boolean</td>
 <td>与上面相反，检查是否为Some。是返回true，否则返回false</td>
 </tr>
-</tbody></table>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+</tbody>
+</table>
+<h1>参考文章</h1>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Android_xue/article/details/119972710">Scala中如何优雅的处理Null</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.runoob.com/scala/scala-options.html">Scala Option | 菜鸟教程 (runoob.com)</a></li>
 </ol>

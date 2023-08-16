@@ -325,19 +325,16 @@
             
               <div class="markdown-body">
                 
-                <h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p>正常情况下，通过如下方式即可获取：</p>
+                <h2 id="问题解决">问题解决</h2>
+<p>正常情况下，通过如下方式即可获取：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">ip = request.remote_addr<br></code></pre></td></tr></table></figure>
-
 <p>如果使用了nginx进行代理的话，需要首先在nginx的配置文件中进行相应的修改：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml">server &#123;<br>    location / &#123;<br>        proxy_set_header X-Real-IP $remote_addr;<br>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>之后在Flask代码中通过如下方式获取：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> request<br><br>real_ip = request.headers[<span class="hljs-string">&#x27;X-Forwarded-For&#x27;</span>]<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://lpwmm.blog.csdn.net/article/details/109474476?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&utm_relevant_index=1#/">Flask使用nginx反向代理后获取客户端真实IP地址_Dexter’s Laboratory-CSDN博客</a></li>
+<h2 id="参考文章">参考文章</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://lpwmm.blog.csdn.net/article/details/109474476?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&amp;utm_relevant_index=1#/">Flask使用nginx反向代理后获取客户端真实IP地址_Dexter’s Laboratory-CSDN博客</a></li>
 </ol>
 
                 

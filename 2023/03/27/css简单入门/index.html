@@ -324,38 +324,45 @@
             
               <div class="markdown-body">
                 
-                <h1 id="CSS基础"><a href="#CSS基础" class="headerlink" title="CSS基础"></a>CSS基础</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>css：层叠样式表</p>
+                <h1>CSS基础</h1>
+<h2 id="简介">简介</h2>
+<p>css：层叠样式表</p>
 <ul>
-<li><p>可以在html中内嵌CSS代码实现格式</p>
+<li>
+<p>可以在html中内嵌CSS代码实现格式</p>
 <ul>
 <li>首先不建议这么做，更优方法是前后端分离</li>
 <li>利用标签<code>&lt;style&gt;&lt;/style&gt;</code>，在标签的范围内书写CSS代码</li>
 <li>style标签放在head标签里面</li>
 </ul>
 </li>
-<li><p>将html与CSS分离</p>
+<li>
+<p>将html与CSS分离</p>
 <ul>
-<li><p>CSS文件同样是如上面的<code>&lt;style&gt;&lt;/style&gt;</code>标签中的内容</p>
+<li>
+<p>CSS文件同样是如上面的<code>&lt;style&gt;&lt;/style&gt;</code>标签中的内容</p>
 <ul>
 <li>但是在单独的文件中无需再次使用style标签</li>
 </ul>
 </li>
-<li><p>将其单独写进一个<code>.css</code>文件中</p>
+<li>
+<p>将其单独写进一个<code>.css</code>文件中</p>
 </li>
-<li><p>然后需要将其链接到html文件中来</p>
+<li>
+<p>然后需要将其链接到html文件中来</p>
 <ul>
 <li>在html文件中<code>head</code>标签中引入</li>
 </ul>
 </li>
 </ul>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;./koncss.css&quot;</span>&gt;</span>、<br><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;需要引入的css文件的位置&quot;</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>此时在浏览器中可以点击看到css文件</li>
 <li>建议使用html和css分离的方式</li>
 </ul>
 </li>
-<li><p>css中的注释是使用<code>/*注释*/</code></p>
+<li>
+<p>css中的注释是使用<code>/*注释*/</code></p>
 </li>
 </ul>
 <p>CSS的优势：</p>
@@ -366,72 +373,86 @@
 <li>建议使用独立于html的css文件</li>
 <li>利于SEO，容易被搜索引擎收录</li>
 </ol>
-<h2 id="导入方式"><a href="#导入方式" class="headerlink" title="导入方式"></a>导入方式</h2><ul>
-<li><p>内部样式表：css代码嵌套在html中</p>
+<h2 id="导入方式">导入方式</h2>
+<ul>
+<li>
+<p>内部样式表：css代码嵌套在html中</p>
 </li>
-<li><p>外部样式表：css与html分离</p>
+<li>
+<p>外部样式表：css与html分离</p>
 </li>
-<li><p>行内样式：在html的标签中利用style</p>
+<li>
+<p>行内样式：在html的标签中利用style</p>
 </li>
 </ul>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;color:red&quot;</span>&gt;</span>xxx<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <ul>
-<li><p>多种样式生效规则：覆盖原则，外部样式表的按照link引入的位置顺序</p>
+<li>
+<p>多种样式生效规则：覆盖原则，外部样式表的按照link引入的位置顺序</p>
 <ul>
 <li>从上到下按顺序执行，每次执行覆盖执行效果</li>
 </ul>
 </li>
-<li><p>扩展：外部样式的两种写法</p>
+<li>
+<p>扩展：外部样式的两种写法</p>
 <ul>
-<li><p>链接式：link</p>
+<li>
+<p>链接式：link</p>
 </li>
-<li><p>导入式：（CSS2.1）</p>
+<li>
+<p>导入式：（CSS2.1）</p>
 </li>
 </ul>
 </li>
 </ul>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-keyword">@import</span> url(<span class="hljs-string">&quot;需要导入的css的路径&quot;</span>)</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>弊端：顺序是先展示结构，在渲染效果。在网络卡顿或者网站庞大的时候这种先后效果会更加明显</li>
 <li>不推荐，还是建议使用链接式link</li>
 </ul>
-<h2 id="三种基本选择器"><a href="#三种基本选择器" class="headerlink" title="三种基本选择器"></a>三种基本选择器</h2><p>选择器的作用是选择页面上的某一个或者某一类元素。</p>
+<h2 id="三种基本选择器">三种基本选择器</h2>
+<p>选择器的作用是选择页面上的某一个或者某一类元素。</p>
 <p>基本选择器：</p>
 <ol>
-<li><p>标签选择器</p>
+<li>
+<p>标签选择器</p>
 <ul>
-<li>会选择到页面中所有的相应标签<ul>
+<li>会选择到页面中所有的相应标签
+<ul>
 <li>选择器格式为<code>标签名（如h1）</code></li>
 </ul>
 </li>
 <li>选择所有有时候也是弊端</li>
 </ul>
 </li>
-<li><p>类选择器（class）</p>
+<li>
+<p>类选择器（class）</p>
 <ul>
-<li><p>首先在标签中可以添加class属性，class属性可以任意命名（应该有意义）</p>
+<li>
+<p>首先在标签中可以添加class属性，class属性可以任意命名（应该有意义）</p>
 </li>
-<li><p>然后通过class来选择</p>
+<li>
+<p>然后通过class来选择</p>
 <ul>
 <li>选择器格式为<code>.类名（.class）</code></li>
 </ul>
 </li>
 </ul>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ctitle&quot;</span>&gt;</span>xxx<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>.ctitle<br>&#123;<br>    color:red;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>可以多个标签归类</li>
 </ul>
 </li>
-<li><p>id选择器</p>
+<li>
+<p>id选择器</p>
 <ul>
-<li>与类选择器类似，需要在标签中定义id，id也可以任意命名，然后通过id来选择<ul>
+<li>与类选择器类似，需要在标签中定义id，id也可以任意命名，然后通过id来选择
+<ul>
 <li>选择器格式为<code>#id</code></li>
 </ul>
 </li>
-<li>id必须保证全局唯一（是规范）<ul>
+<li>id必须保证全局唯一（是规范）
+<ul>
 <li>如果有相同的id，还是能够使用</li>
 </ul>
 </li>
@@ -444,45 +465,55 @@
 </ul>
 <p>这些是最基本的选择器，还有更加高级的选择器。</p>
 <ul>
-<li><p>id选择器选择到的是唯一确定的一个元素。</p>
+<li>
+<p>id选择器选择到的是唯一确定的一个元素。</p>
 </li>
-<li><p>类选择器和标签选择器返回的是元素的列表。如果只有一个元素也将会组织成列表的形式。</p>
+<li>
+<p>类选择器和标签选择器返回的是元素的列表。如果只有一个元素也将会组织成列表的形式。</p>
 </li>
 </ul>
-<h2 id="层次选择器"><a href="#层次选择器" class="headerlink" title="层次选择器"></a>层次选择器</h2><p>网页的结构是天然的一种树形结构。层次选择器适应这种树形结构。</p>
+<h2 id="层次选择器">层次选择器</h2>
+<p>网页的结构是天然的一种树形结构。层次选择器适应这种树形结构。</p>
 <ol>
-<li><p>后代选择器</p>
+<li>
+<p>后代选择器</p>
 <ul>
-<li><p>在某个元素的后面的所有元素（树形结构的后代关系）</p>
+<li>
+<p>在某个元素的后面的所有元素（树形结构的后代关系）</p>
 </li>
-<li><p>使用方法：当前标签 后代标签(中间有一个空格)</p>
+<li>
+<p>使用方法：当前标签 后代标签(中间有一个空格)</p>
 </li>
-<li><p>eg：<code>body p&#123;color:#xxxxxx&#125;</code></p>
+<li>
+<p>eg：<code>body p&#123;color:#xxxxxx&#125;</code></p>
 </li>
 </ul>
 </li>
-<li><p>子选择器</p>
+<li>
+<p>子选择器</p>
 <ul>
 <li>在某个元素的后一代元素</li>
 <li>使用方法：当前标签&gt;后代标签</li>
 </ul>
 </li>
-<li><p>相邻兄弟选择器（弟弟选择器，对下不对上，且只有一个）</p>
+<li>
+<p>相邻兄弟选择器（弟弟选择器，对下不对上，且只有一个）</p>
 <ul>
 <li>这需要选中许多标签中的一个元素，应该会使用到类选择器</li>
 <li>使用方法：当前元素+后代元素</li>
 </ul>
 </li>
-<li><p>通用选择器</p>
+<li>
+<p>通用选择器</p>
 <ul>
 <li>通用兄弟选择器，同样是对下不对上，但是选择所有（所有弟弟选择器）</li>
 <li>使用方法：当前元素~后代元素</li>
 </ul>
 </li>
 </ol>
-<h2 id="结构伪类选择器"><a href="#结构伪类选择器" class="headerlink" title="结构伪类选择器"></a>结构伪类选择器</h2><p>选择器选择到了某类元素之后，再加条件进行限定（增加条件来进行更加精准地定位）</p>
+<h2 id="结构伪类选择器">结构伪类选择器</h2>
+<p>选择器选择到了某类元素之后，再加条件进行限定（增加条件来进行更加精准地定位）</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html">ul li:first-child<br>ul li:last-child<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li><code>当前元素:first-child</code>：当前元素的第一个子元素</li>
 <li><code>当前元素:last-child</code>：当前元素的最后一个子元素</li>
@@ -490,10 +521,12 @@
 <li><code>当前元素:nth-of-type(x)</code>：选择父元素中第二个类型与当前元素相同的子元素。（与上相似，找子元素的时候考虑标签类型）</li>
 </ul>
 <p>理解伪类：增加的条件限定（比如找到第几个元素，或者在某些情况下生效，像鼠标悬停，选中之类的）</p>
-<h2 id="属性选择"><a href="#属性选择" class="headerlink" title="属性选择"></a>属性选择</h2><p>功能更加强大，可以使用正则表达式进行匹配操作。</p>
+<h2 id="属性选择">属性选择</h2>
+<p>功能更加强大，可以使用正则表达式进行匹配操作。</p>
 <p>选择器格式：<code>属性[条件表达式]&#123;声明&#125;</code></p>
 <ul>
-<li>条件表达式中，可以使用正则表达式<ul>
+<li>条件表达式中，可以使用正则表达式
+<ul>
 <li>举例说明：</li>
 <li><code>[attr=&quot;val&quot;]</code>：选择attr属性等于val的元素</li>
 <li><code>[attr]</code>：选择拥有attr属性的元素</li>
@@ -507,30 +540,35 @@
 </ul>
 </li>
 </ul>
-<h2 id="盒子模型及边框使用"><a href="#盒子模型及边框使用" class="headerlink" title="盒子模型及边框使用"></a>盒子模型及边框使用</h2><ul>
-<li><p>盒子模型：就是一个类似于盒子的东西</p>
+<h2 id="盒子模型及边框使用">盒子模型及边框使用</h2>
+<ul>
+<li>
+<p>盒子模型：就是一个类似于盒子的东西</p>
 <ul>
 <li>margin：外边距</li>
 <li>padding：内边距</li>
 <li>border：边框</li>
 </ul>
 </li>
-<li><p>很多元素有默认盒子的边距，例如body，h等等</p>
+<li>
+<p>很多元素有默认盒子的边距，例如body，h等等</p>
 <ul>
 <li>可以利用一系列初始化动作将其还原</li>
 </ul>
 </li>
 </ul>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html">h1,ul,li,a,body&#123;<br>    margin:0;<br>    padding:0;<br>    text-decoration:none;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>盒子模型的参数可以直接指定，也可以分开上下左右来指定（上右下左）</li>
-<li>边框：border<ul>
+<li>边框：border
+<ul>
 <li>border:粗细，边框样式，颜色</li>
 </ul>
 </li>
-<li>外边距：margin<ul>
-<li>外边距妙用：实现元素居中<ul>
+<li>外边距：margin
+<ul>
+<li>外边距妙用：实现元素居中
+<ul>
 <li><code>margin:0 auto</code></li>
 <li>居中有要求，外元素是一个有宽度的盒子</li>
 </ul>
@@ -538,25 +576,31 @@
 </ul>
 </li>
 <li>内边距：padding</li>
-<li>盒子元素：来确定整个元素的大小<ul>
+<li>盒子元素：来确定整个元素的大小
+<ul>
 <li>margin+border+padding+内容宽度</li>
 </ul>
 </li>
 </ul>
-<h2 id="display和浮动"><a href="#display和浮动" class="headerlink" title="display和浮动"></a>display和浮动</h2><ul>
-<li>块级元素：独占一行<ul>
+<h2 id="display和浮动">display和浮动</h2>
+<ul>
+<li>块级元素：独占一行
+<ul>
 <li><code>h1~h6 p div 列表...</code></li>
 </ul>
 </li>
-<li>行内元素：不独占一行<ul>
+<li>行内元素：不独占一行
+<ul>
 <li><code>span a img strong ...</code></li>
 </ul>
 </li>
 </ul>
 <p>行内元素可以包含在块级元素中，但是反之不可以。</p>
 <ul>
-<li>display：有很多属性，可以修改元素的块级元素或者行内元素等，可以打破上面的规则<ul>
-<li>重要属性值：<ul>
+<li>display：有很多属性，可以修改元素的块级元素或者行内元素等，可以打破上面的规则
+<ul>
+<li>重要属性值：
+<ul>
 <li>block：块元素</li>
 <li>inline：行内元素</li>
 <li>inline-block：即使块元素又是行内元素（是块元素，但是可以写在一行）</li>
@@ -572,8 +616,10 @@
 <li><code>float</code></li>
 <li>浮动的时候会边框塌陷，改变页面大小会造成排版失败等</li>
 </ul>
-<h2 id="overflow及父级边框塌陷问题"><a href="#overflow及父级边框塌陷问题" class="headerlink" title="overflow及父级边框塌陷问题"></a>overflow及父级边框塌陷问题</h2><ul>
-<li><code>clear</code>：对浮动的效果加以一些限制<ul>
+<h2 id="overflow及父级边框塌陷问题">overflow及父级边框塌陷问题</h2>
+<ul>
+<li><code>clear</code>：对浮动的效果加以一些限制
+<ul>
 <li>right：清除右侧浮动（右侧不允许有浮动元素）</li>
 <li>left：清除左侧浮动</li>
 <li>both：两侧均不允许浮动</li>
@@ -586,77 +632,90 @@
 <li>增加父级元素的高度</li>
 </ul>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#father</span>&#123;<br>    <span class="hljs-attribute">border</span>:<span class="hljs-number">1px</span> <span class="hljs-number">#000</span> solid;<br>    <span class="hljs-attribute">height</span>:<span class="hljs-number">800px</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>在漂浮块后面增加一个空的div标签并清除浮动</li>
 </ul>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs css">&lt;<span class="hljs-selector-tag">div</span> class=&quot;xxx&quot;&gt;&lt;/<span class="hljs-selector-tag">div</span>&gt;<br><br><span class="hljs-selector-class">.clear</span>&#123;<br>    <span class="hljs-attribute">clear</span>:both;<br>    <span class="hljs-attribute">margin</span>:<span class="hljs-number">0</span>;<br>    <span class="hljs-attribute">padding</span>:<span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
-<li><p>overflow：可以完成的效果是，在块元素设定了宽高的时候，内容如何显示的问题</p>
+<li>
+<p>overflow：可以完成的效果是，在块元素设定了宽高的时候，内容如何显示的问题</p>
 <ul>
 <li>在默认情况下，会展现出所有内容，且内容可以超出边框</li>
-<li>使用overflow：<ul>
+<li>使用overflow：
+<ul>
 <li>hidden：隐藏超出部分</li>
 <li>scroll：形成滚动条的形式</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><p>在父类中添加一个伪类：after</p>
+<li>
+<p>在父类中添加一个伪类：after</p>
 </li>
 </ul>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#father</span><span class="hljs-selector-pseudo">:after</span>&#123;<br>    <span class="hljs-attribute">content</span>:<span class="hljs-string">&#x27;&#x27;</span>;<br>    <span class="hljs-attribute">display</span>:block;<br>    <span class="hljs-attribute">clear</span>:both;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>与增加空div标签的原理类似，只不过不用在html代码中增加空div，可以直接利用伪类完成</li>
 </ul>
 <p>小结：</p>
 <ol>
-<li>设置父元素高度<ul>
+<li>设置父元素高度
+<ul>
 <li>简单，但是父元素有了固定的高度，会被限制</li>
 </ul>
 </li>
-<li>浮动元素后面增加空div<ul>
+<li>浮动元素后面增加空div
+<ul>
 <li>简单，但是代码中加入空的div不太好</li>
 </ul>
 </li>
-<li>overflow<ul>
+<li>overflow
+<ul>
 <li>简单，但是在一些下拉，内容不能清除的地方不建议使用（因为丑）</li>
 </ul>
 </li>
-<li>在父类增加伪类<ul>
+<li>在父类增加伪类
+<ul>
 <li>简单，推荐使用</li>
 </ul>
 </li>
 </ol>
 <ul>
-<li><p>对比</p>
+<li>
+<p>对比</p>
 <ul>
-<li><p>display：方向不可控</p>
+<li>
+<p>display：方向不可控</p>
 </li>
-<li><p>float：方向可控，但是会增加父级边框塌陷的问题</p>
+<li>
+<p>float：方向可控，但是会增加父级边框塌陷的问题</p>
 </li>
 </ul>
 </li>
 </ul>
-<h2 id="绝对定位和固定定位"><a href="#绝对定位和固定定位" class="headerlink" title="绝对定位和固定定位"></a>绝对定位和固定定位</h2><p>绝对定位：基于xxx定位的情况，给定上下左右</p>
+<h2 id="绝对定位和固定定位">绝对定位和固定定位</h2>
+<p>绝对定位：基于xxx定位的情况，给定上下左右</p>
 <ul>
-<li><p>不在标准文档流中，原来的位置不会被保留</p>
+<li>
+<p>不在标准文档流中，原来的位置不会被保留</p>
 </li>
-<li><p>在父级元素没有定位的情况下，相对于浏览器定位</p>
+<li>
+<p>在父级元素没有定位的情况下，相对于浏览器定位</p>
 <ul>
 <li>这种情况一般会使用后面的fixed</li>
 </ul>
 </li>
-<li><p>如果父级元素有定位（即指定了position属性），相对于父级元素定位</p>
+<li>
+<p>如果父级元素有定位（即指定了position属性），相对于父级元素定位</p>
 <ul>
 <li>更过情况是这个</li>
 </ul>
 </li>
-<li><p><code>postion:absolute</code></p>
+<li>
+<p><code>postion:absolute</code></p>
 </li>
-<li><p>需要上下左右来确定元素如何偏移</p>
+<li>
+<p>需要上下左右来确定元素如何偏移</p>
 <ul>
 <li>top bottom left right</li>
 </ul>
@@ -664,17 +723,21 @@
 </ul>
 <p>固定定位：</p>
 <ul>
-<li><p>直接定死，定死在画面中。也并非是相对于浏览器，而相对于屏幕画面（可以这样理解）</p>
+<li>
+<p>直接定死，定死在画面中。也并非是相对于浏览器，而相对于屏幕画面（可以这样理解）</p>
 </li>
-<li><p><code>postion:fixed</code></p>
+<li>
+<p><code>postion:fixed</code></p>
 </li>
-<li><p>需要上下左右来确定元素如何偏移</p>
+<li>
+<p>需要上下左右来确定元素如何偏移</p>
 <ul>
 <li>top bottom left right</li>
 </ul>
 </li>
 </ul>
-<h2 id="z-index以及透明度"><a href="#z-index以及透明度" class="headerlink" title="z-index以及透明度"></a>z-index以及透明度</h2><p>类似于图层概念。</p>
+<h2 id="z-index以及透明度">z-index以及透明度</h2>
+<p>类似于图层概念。</p>
 <p><code>z-index</code>来指定层级（0最小，往上递增）</p>
 <ul>
 <li>堆叠了才有图层的概念</li>
@@ -682,7 +745,8 @@
 <p>透明操作：</p>
 <ul>
 <li>直接指定透明：透明度<code>opacity</code></li>
-<li><code>filter</code>实现：<code>filter:alpha(透明度)</code><ul>
+<li><code>filter</code>实现：<code>filter:alpha(透明度)</code>
+<ul>
 <li>早期版本使用，历史了不建议使用</li>
 </ul>
 </li>

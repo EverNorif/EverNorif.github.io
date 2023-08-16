@@ -324,61 +324,76 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Echarts的引入"><a href="#Echarts的引入" class="headerlink" title="Echarts的引入"></a>Echarts的引入</h2><ol>
-<li><p>首先安装Echarts模块</p>
+                <h2 id="Echarts的引入">Echarts的引入</h2>
+<ol>
+<li>
+<p>首先安装Echarts模块</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install echarts --save<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>之后在<code>main.js</code>中进行引入，部分代码如下</p>
+<li>
+<p>之后在<code>main.js</code>中进行引入，部分代码如下</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;createApp&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./App.vue&#x27;</span><br><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> echarts <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;echarts&#x27;</span><br><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">createApp</span>(<span class="hljs-title class_">App</span>)<br><br>app.<span class="hljs-property">config</span>.<span class="hljs-property">globalProperties</span>.<span class="hljs-property">$echarts</span> = echarts<br><br>app.<span class="hljs-title function_">mount</span>(<span class="hljs-string">&#x27;#app&#x27;</span>)<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>然后进行使用即可。在使用的过程中，可以利用<code>this.$echarts</code>来获取echarts对象，如下面的例子所示，使用一个官方提供的柱状图代码，函数可以在mounted中挂载，也可以在method中指定，将echarts和dom元素进行绑定</p>
+<li>
+<p>然后进行使用即可。在使用的过程中，可以利用<code>this.$echarts</code>来获取echarts对象，如下面的例子所示，使用一个官方提供的柱状图代码，函数可以在mounted中挂载，也可以在method中指定，将echarts和dom元素进行绑定</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>  &lt;div&gt;<br>    &lt;div id=&quot;myChart&quot; style=&quot;height: 600px;position: center&quot;&gt;&lt;/div&gt;<br>  &lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>export default &#123;<br>  name: &quot;TestChart&quot;,<br>  mounted() &#123;<br>    var chartDom = document.getElementById(&#x27;myChart&#x27;);<br>    var myChart = this.$echarts.init(chartDom);<br>    var option;<br><br>    option = &#123;<br>      xAxis: &#123;<br>        type: &#x27;category&#x27;,<br>        data: [&#x27;Mon&#x27;, &#x27;Tue&#x27;, &#x27;Wed&#x27;, &#x27;Thu&#x27;, &#x27;Fri&#x27;, &#x27;Sat&#x27;, &#x27;Sun&#x27;]<br>      &#125;,<br>      yAxis: &#123;<br>        type: &#x27;value&#x27;<br>      &#125;,<br>      series: [<br>        &#123;<br>          data: [120, 200, 150, 80, 70, 110, 130],<br>          type: &#x27;bar&#x27;<br>        &#125;<br>      ]<br>    &#125;;<br><br>    option &amp;&amp; myChart.setOption(option);<br>  &#125;<br>&#125;<br>&lt;/script&gt;<br><br>&lt;style scoped&gt;<br><br>&lt;/style&gt;<br></code></pre></td></tr></table></figure>
-
 <p>这里需要注意的是，绑定的dom元素必须设置高度height</p>
 </li>
 </ol>
-<h2 id="Element-UI的引入"><a href="#Element-UI的引入" class="headerlink" title="Element UI的引入"></a>Element UI的引入</h2><ol>
-<li><p>首先安装Element UI模块，需要注意这里安装的是element-plus</p>
+<h2 id="Element-UI的引入">Element UI的引入</h2>
+<ol>
+<li>
+<p>首先安装Element UI模块，需要注意这里安装的是element-plus</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install element-plus --save<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>然后在<code>main.js</code>中引入，部分代码如下</p>
+<li>
+<p>然后在<code>main.js</code>中引入，部分代码如下</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// main.ts</span><br><span class="hljs-keyword">import</span> &#123; createApp &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">ElementPlus</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;element-plus&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;element-plus/dist/index.css&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./App.vue&#x27;</span><br><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">createApp</span>(<span class="hljs-title class_">App</span>)<br><br>app.<span class="hljs-title function_">use</span>(<span class="hljs-title class_">ElementPlus</span>)<br>app.<span class="hljs-title function_">mount</span>(<span class="hljs-string">&#x27;#app&#x27;</span>)<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>最后就可以按照官方文档中使用方法进行使用</p>
+<li>
+<p>最后就可以按照官方文档中使用方法进行使用</p>
 </li>
 </ol>
-<h2 id="axios的引入"><a href="#axios的引入" class="headerlink" title="axios的引入"></a>axios的引入</h2><ol>
-<li><p>首先安装axios模块</p>
+<h2 id="axios的引入">axios的引入</h2>
+<ol>
+<li>
+<p>首先安装axios模块</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install axios --save<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>之后在需要用到的组件中按需引入即可</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;axios&quot;</span>;<br></code></pre></td></tr></table></figure></li>
+<li>
+<p>之后在需要用到的组件中按需引入即可</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;axios&quot;</span>;<br></code></pre></td></tr></table></figure>
+</li>
 </ol>
-<h2 id="vue-router的引入"><a href="#vue-router的引入" class="headerlink" title="vue-router的引入"></a>vue-router的引入</h2><ol>
-<li><p>首先安装vue-router模块</p>
+<h2 id="vue-router的引入">vue-router的引入</h2>
+<ol>
+<li>
+<p>首先安装vue-router模块</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install vue-router --save<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>之后在src下新建route文件夹，router文件夹内新建index.js，写入如下的代码。（注意名称）具体配置可以参考官方文档</p>
+<li>
+<p>之后在src下新建route文件夹，router文件夹内新建index.js，写入如下的代码。（注意名称）具体配置可以参考官方文档</p>
 <p><a target="_blank" rel="noopener" href="https://router.vuejs.org/zh/">Home | Vue Router (vuejs.org)</a></p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;createRouter, createWebHistory&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue-router&#x27;</span><br><br><span class="hljs-keyword">const</span> routes = [<br>    &#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-attr">component</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">import</span>(<span class="hljs-string">&#x27;../components/TestChart&#x27;</span>)&#125;,<br>]<br><br><span class="hljs-keyword">const</span> router = <span class="hljs-title function_">createRouter</span>(&#123;<br>    <span class="hljs-attr">history</span>: <span class="hljs-title function_">createWebHistory</span>(),<br>    routes<br>&#125;)<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;<br></code></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;createRouter, createWebHistory&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue-router&#x27;</span><br><br><span class="hljs-keyword">const</span> routes = [<br>    &#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-attr">component</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">import</span>(<span class="hljs-string">&#x27;../components/TestChart&#x27;</span>)&#125;,<br>]<br><br><span class="hljs-keyword">const</span> router = <span class="hljs-title function_">createRouter</span>(&#123;<br>    <span class="hljs-attr">history</span>: <span class="hljs-title function_">createWebHistory</span>(),<br>    routes<br>&#125;)<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>之后在<code>main.js</code>中进行引入，部分代码如下</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;createApp&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./App.vue&#x27;</span><br><span class="hljs-keyword">import</span> router <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./route&#x27;</span><br><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">createApp</span>(<span class="hljs-title class_">App</span>)<br><br>app.<span class="hljs-title function_">use</span>(router)<br>app.<span class="hljs-title function_">mount</span>(<span class="hljs-string">&#x27;#app&#x27;</span>)<br></code></pre></td></tr></table></figure></li>
+<li>
+<p>之后在<code>main.js</code>中进行引入，部分代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;createApp&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./App.vue&#x27;</span><br><span class="hljs-keyword">import</span> router <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./route&#x27;</span><br><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">createApp</span>(<span class="hljs-title class_">App</span>)<br><br>app.<span class="hljs-title function_">use</span>(router)<br>app.<span class="hljs-title function_">mount</span>(<span class="hljs-string">&#x27;#app&#x27;</span>)<br></code></pre></td></tr></table></figure>
+</li>
 </ol>
-<h2 id="code-mirror的引入"><a href="#code-mirror的引入" class="headerlink" title="code-mirror的引入"></a>code-mirror的引入</h2><p>CodeMirror是一个前端常用的编辑器组件，我们可以在Vue中很方便的引入它。首先需要安装该模块：</p>
+<h2 id="code-mirror的引入">code-mirror的引入</h2>
+<p>CodeMirror是一个前端常用的编辑器组件，我们可以在Vue中很方便的引入它。首先需要安装该模块：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">npm install vue-codemirror --save<br></code></pre></td></tr></table></figure>
-
 <p>之后需要在组件中按需引入，如下所示</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">codemirror</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;text-align: left&quot;</span></span><br><span class="hljs-tag">          <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;code&quot;</span></span><br><span class="hljs-tag">          <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;Code goes here...&quot;</span></span><br><span class="hljs-tag">          <span class="hljs-attr">:style</span>=<span class="hljs-string">&quot;&#123; height: &#x27;400px&#x27; &#125;&quot;</span></span><br><span class="hljs-tag">          <span class="hljs-attr">:autofocus</span>=<span class="hljs-string">&quot;true&quot;</span></span><br><span class="hljs-tag">          <span class="hljs-attr">:indent-with-tab</span>=<span class="hljs-string">&quot;true&quot;</span></span><br><span class="hljs-tag">          <span class="hljs-attr">:tab-size</span>=<span class="hljs-string">&quot;2&quot;</span></span><br><span class="hljs-tag">          <span class="hljs-attr">:extensions</span>=<span class="hljs-string">&quot;extensions&quot;</span>/&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>在script标签中则进行如下代码添加，这里编辑器中的内容就与code进行了绑定，而在extensions中可以设置黑暗模式，语言模式等。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br><span class="hljs-keyword">import</span> &#123;<span class="hljs-title class_">Codemirror</span>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue-codemirror&#x27;</span><br><span class="hljs-keyword">import</span> &#123;python&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@codemirror/lang-python&quot;</span><br><span class="hljs-keyword">import</span> &#123;oneDark&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@codemirror/theme-one-dark&quot;</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">code</span>: <span class="hljs-string">&quot;import times&quot;</span>,<br>      extensions<br>    &#125;<br>  &#125;<br>&#125;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
-
 <p>如果需要切换正常和语言模式，则需要动态切换<code>extensions</code>属性。</p>
 <p>我们也可以按照官方案例进行组件添加，不过需要注意的是这里所有额外的东西例如ondark模式，特定的language，都需要额外进行安装。</p>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<h2 id="参考文章">参考文章</h2>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_54883970/article/details/126080987">前端插件库之vue3使用vue-codemirror插件-CSDN博客</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/surmon-china/vue-codemirror">surmon-china&#x2F;vue-codemirror: @codemirror code editor component for @vuejs (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/surmon-china/vue-codemirror">surmon-china/vue-codemirror: @codemirror code editor component for @vuejs (github.com)</a></li>
 </ol>
 
                 

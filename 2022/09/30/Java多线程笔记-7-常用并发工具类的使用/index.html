@@ -326,60 +326,76 @@
             
               <div class="markdown-body">
                 
-                <h1 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>ReentrantLock，可重入锁，即支持一个线程对资源的重复加锁。ReentrantLock实现的锁与synchronized非常类似，但是也是有一些区别，大体如下：</p>
+                <h1>ReentrantLock</h1>
+<h2 id="概述">概述</h2>
+<p>ReentrantLock，可重入锁，即支持一个线程对资源的重复加锁。ReentrantLock实现的锁与synchronized非常类似，但是也是有一些区别，大体如下：</p>
 <ul>
-<li><p>在锁的实现方面：synchronzied是JVM实现的，源码使用C++编写，而ReentrantLock是JDK实现，源码使用Java编写</p>
+<li>
+<p>在锁的实现方面：synchronzied是JVM实现的，源码使用C++编写，而ReentrantLock是JDK实现，源码使用Java编写</p>
 </li>
-<li><p>在使用方面：ReentrantLock实现了Lock接口，需要手动解锁，synchronized执行完代码块之后会自动解锁</p>
+<li>
+<p>在使用方面：ReentrantLock实现了Lock接口，需要手动解锁，synchronized执行完代码块之后会自动解锁</p>
 </li>
-<li><p>可中断：ReentrantLock可中断，但是synchronized不行</p>
+<li>
+<p>可中断：ReentrantLock可中断，但是synchronized不行</p>
 </li>
-<li><p>公平锁：公平锁指的是多个线程在等待同一个锁的时候，必须按照申请锁的时间顺序来依次获得锁。ReentrantLock支持设置公平锁，而synchronzied中的锁的非公平的</p>
+<li>
+<p>公平锁：公平锁指的是多个线程在等待同一个锁的时候，必须按照申请锁的时间顺序来依次获得锁。ReentrantLock支持设置公平锁，而synchronzied中的锁的非公平的</p>
 </li>
-<li><p>锁超时：ReentrantLock在获取锁的时候可以设置超时时间，而synchronized会一直等待</p>
+<li>
+<p>锁超时：ReentrantLock在获取锁的时候可以设置超时时间，而synchronized会一直等待</p>
 </li>
-<li><p>等待队列：ReentrantLock可以提供多个Condition等待队列，而synchronized只有一个等待队列</p>
+<li>
+<p>等待队列：ReentrantLock可以提供多个Condition等待队列，而synchronized只有一个等待队列</p>
 </li>
 </ul>
 <blockquote>
 <p>非公平锁指的是阻塞队列内公平，阻塞队列外非公平。事实上，公平的锁机制往往没有非公平的效率更高，公平锁能够减少饥饿发生的概率，等待越久的请求越能够得到优先满足</p>
 </blockquote>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="lock操作"><a href="#lock操作" class="headerlink" title="lock操作"></a>lock操作</h3><p>基本使用，ReentrantLock实现了Lock接口，提供了其中的相关操作。</p>
+<h2 id="使用">使用</h2>
+<h3 id="lock操作">lock操作</h3>
+<p>基本使用，ReentrantLock实现了Lock接口，提供了其中的相关操作。</p>
 <ul>
 <li>构造方法：<code>ReentrantLock lock = new ReentrantLock()</code></li>
-<li>加锁：<code>public void lock()</code><ul>
+<li>加锁：<code>public void lock()</code>
+<ul>
 <li>如果锁没有被占用，则将锁中计数state设置为1</li>
 <li>如果执行锁重入，则令计数state增加1</li>
 <li>如果锁被其他线程占用，则阻塞在锁上</li>
 </ul>
 </li>
-<li>解锁：<code>public void unlock()</code><ul>
+<li>解锁：<code>public void unlock()</code>
+<ul>
 <li>如果当前线程是该锁的持有者，则保持计数递减</li>
 <li>如果计数为0，则表示锁被释放</li>
 <li>如果当前线程不是该锁的持有者，则抛出异常</li>
 </ul>
 </li>
-<li>可打断：<code>public void lockInterruptibly()</code><ul>
+<li>可打断：<code>public void lockInterruptibly()</code>
+<ul>
 <li>如果没有竞争，则获取对象锁</li>
 <li>如果有竞争，则加入阻塞队列，但是可以被其他线程打断</li>
 </ul>
 </li>
-<li>锁超时：<ul>
+<li>锁超时：
+<ul>
 <li><code>public boolean tryLock()</code>：尝试获取锁，获取到返回 true，获取不到直接放弃，不进入阻塞队列</li>
 <li><code>public boolean tryLock(long timeout, TimeUnit unit)</code>：在给定时间内获取锁，获取不到就退出</li>
 </ul>
 </li>
 </ul>
-<h3 id="公平锁"><a href="#公平锁" class="headerlink" title="公平锁"></a>公平锁</h3><p>公平锁与非公平锁在Reentrant中，主要区别在于其中同步器的实现。公平锁对应的同步器为<code>FairSync</code>，而非公平锁对应的同步器为<code>NonfairSync</code>，Reentrant默认是非公平锁，如果给构造方法提供<code>true</code>的布尔值，则可以生成公平锁</p>
+<h3 id="公平锁">公平锁</h3>
+<p>公平锁与非公平锁在Reentrant中，主要区别在于其中同步器的实现。公平锁对应的同步器为<code>FairSync</code>，而非公平锁对应的同步器为<code>NonfairSync</code>，Reentrant默认是非公平锁，如果给构造方法提供<code>true</code>的布尔值，则可以生成公平锁</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 指定是否是公平锁</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ReentrantLock</span><span class="hljs-params">(<span class="hljs-type">boolean</span> fair)</span> &#123;<br>    sync = fair ? <span class="hljs-keyword">new</span> <span class="hljs-title class_">FairSync</span>() : <span class="hljs-keyword">new</span> <span class="hljs-title class_">NonfairSync</span>();<br>&#125;<br><br><span class="hljs-comment">// 默认是非公平锁</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ReentrantLock</span><span class="hljs-params">()</span> &#123;<br>    sync = <span class="hljs-keyword">new</span> <span class="hljs-title class_">NonfairSync</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>公平锁和非公平锁的主要区别在于获取锁的逻辑。对于非公平锁来说，只需要CAS设置同步状态成功，就表示当前线程获取了锁。而对于公平锁来说，在进行获取锁之前，需要加入同步队列中，并检查当前节点是否有前驱节点，如果没有才能继续获取锁，否则需要等待前驱节点对应的线程获取并释放锁之后，才能继续获取锁</p>
-<h1 id="ReentrantReadWriteLock"><a href="#ReentrantReadWriteLock" class="headerlink" title="ReentrantReadWriteLock"></a>ReentrantReadWriteLock</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>前面提到的ReentrantLock排他锁，指的是在同一个时刻只允许有一个线程进行访问。</p>
+<h1>ReentrantReadWriteLock</h1>
+<h2 id="概述-2">概述</h2>
+<p>前面提到的ReentrantLock排他锁，指的是在同一个时刻只允许有一个线程进行访问。</p>
 <p>但是我们经常会遇到的一种情况是读写锁，读写锁允许读-读并发，在同一时刻允许多个读线程访问，但是在写线程访问的时候，所有的读线程和其他写线程均被阻塞。具体来说，读写锁维护了一对锁，分别是读锁和写锁。读锁是共享锁，写锁是独占锁。通过分离读锁和写锁，提高了并发性。</p>
 <p>ReentrantReadWriteLock是Java并发包中提供的一个读写锁的实现，它实现了读写锁接口ReadWriteLock，该接口中有两个抽象方法<code>readLock()</code>和<code>writeLock()</code>，分别返回读锁和写锁。</p>
-<h2 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h2><p>ReentrantReadWriteLock的使用分为读锁和写锁，分别在不同情况下进行使用。这里同样可以设置公平和非公平锁，只需要在构造方法中指定<code>true</code>即可。</p>
+<h2 id="使用-2">使用</h2>
+<p>ReentrantReadWriteLock的使用分为读锁和写锁，分别在不同情况下进行使用。这里同样可以设置公平和非公平锁，只需要在构造方法中指定<code>true</code>即可。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ReentrantReadWriteLock</span> <span class="hljs-variable">rw</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantReadWriteLock</span>();<br>ReentrantReadWriteLock.<span class="hljs-type">ReadLock</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> rw.readLock();<br>ReentrantReadWriteLock.<span class="hljs-type">WriteLock</span> <span class="hljs-variable">w</span> <span class="hljs-operator">=</span> rw.writeLock();<br></code></pre></td></tr></table></figure>
-
 <p>在使用的时候需要注意：</p>
 <ul>
 <li>读锁不支持条件变量</li>
@@ -397,7 +413,8 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>int getReadLockCount()</td>
 <td>返回当前读锁被获取的次数，重入次数重复计算</td>
 </tr>
@@ -413,20 +430,20 @@
 <td>int getWriteHoldCount()</td>
 <td>返回当前写锁被获取的次数</td>
 </tr>
-</tbody></table>
-<h1 id="StampedLock"><a href="#StampedLock" class="headerlink" title="StampedLock"></a>StampedLock</h1><p>StampedLock也是一种读写锁，它的目的是进一步优化读的性能。和它的名字呼应，在使用StampedLock的时候，使用读锁和写锁都必须配合戳来使用。</p>
+</tbody>
+</table>
+<h1>StampedLock</h1>
+<p>StampedLock也是一种读写锁，它的目的是进一步优化读的性能。和它的名字呼应，在使用StampedLock的时候，使用读锁和写锁都必须配合戳来使用。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">StampedLcok</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StampedLock</span>();<br><br><span class="hljs-comment">// 读锁的使用</span><br><span class="hljs-type">long</span> <span class="hljs-variable">r_stamp</span> <span class="hljs-operator">=</span> lock.readLock();<br>lock.unlockRead(r_stamp);<br><br><span class="hljs-comment">// 解锁的使用</span><br><span class="hljs-type">long</span> <span class="hljs-variable">w_stamp</span> <span class="hljs-operator">=</span> lock.writeLock();<br>lock.unlockWrite(w_stamp)<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>StampedLock进一步优化了读的性能，是因为它底层使用了乐观读的思想。在读取完毕之后，StampedLock会进行一次戳校验，如果校验通过，则表示这期间没有其他线程的写操作，数据可以安全使用；如果校验没有通过，则需要重新获取读锁，保证数据的一致性</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">long</span> <span class="hljs-variable">stamp</span> <span class="hljs-operator">=</span> lock.tryOptimisticRead();<br><span class="hljs-comment">// 验戳</span><br><span class="hljs-keyword">if</span>(!lock.validate(stamp))&#123;<br>	<span class="hljs-comment">// 锁升级</span><br>&#125;<br></code></pre></td></tr></table></figure>
-
-
 </blockquote>
 <blockquote>
 <p>需要注意的是，StampedLock不支持条件变量，不支持重入</p>
 </blockquote>
-<h1 id="Semaphore"><a href="#Semaphore" class="headerlink" title="Semaphore"></a>Semaphore</h1><p>Semaphore，信号量，联想到操作系统中的信号量。它可以用来控制同时访问特定资源的线程数量，通过协调各个线程，以保证合理地使用公共资源。</p>
+<h1>Semaphore</h1>
+<p>Semaphore，信号量，联想到操作系统中的信号量。它可以用来控制同时访问特定资源的线程数量，通过协调各个线程，以保证合理地使用公共资源。</p>
 <p>Semaphore的基本使用如下：</p>
 <p>构造方法：</p>
 <ul>
@@ -446,7 +463,8 @@
 <li><code>protected void reducePermits(int reduction)</code>：减少reduction个许可</li>
 <li><code>protected Collection&lt;Thread&gt; getQueuedThreads()</code>：返回所有等待获取许可的线程集合</li>
 </ul>
-<h1 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h1><p>CountDownLatch允许一个或者多个线程等待其他线程完成操作。它可以用来进行线程同步线程，等待所有线程完成倒计时。</p>
+<h1>CountDownLatch</h1>
+<p>CountDownLatch允许一个或者多个线程等待其他线程完成操作。它可以用来进行线程同步线程，等待所有线程完成倒计时。</p>
 <p>构造器如下：</p>
 <ul>
 <li><code>public CountDownLatch(int count)</code>：初始化需要完成倒计时的步数，也可以将其看作是等待完成的count个执行步骤</li>
@@ -458,10 +476,8 @@
 </ul>
 <p>举例：主线程等待其他线程执行结束</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">CountDownLatch</span> <span class="hljs-variable">countDownLatch</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CountDownLatch</span>(<span class="hljs-number">2</span>);<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        Thread.sleep(<span class="hljs-number">1000</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br>    log.debug(<span class="hljs-string">&quot;countdown -1&quot;</span>);<br>    countDownLatch.countDown();<br>&#125;, <span class="hljs-string">&quot;thread1&quot;</span>).start();<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        Thread.sleep(<span class="hljs-number">2000</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br>    log.debug(<span class="hljs-string">&quot;countdown -1&quot;</span>);<br>    countDownLatch.countDown();<br>&#125;, <span class="hljs-string">&quot;thread2&quot;</span>).start();<br><br><span class="hljs-comment">// 主线程等待其他两个线程完成倒计时</span><br>log.debug(<span class="hljs-string">&quot;waiting...&quot;</span>);<br>countDownLatch.await();<br>log.debug(<span class="hljs-string">&quot;over&quot;</span>);<br></code></pre></td></tr></table></figure>
-
 <p>输出如下：thread1和2先后完成countDown之后，计数器变为0，主线程继续运行</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-number">20</span>:<span class="hljs-number">23</span>:<span class="hljs-number">11.345</span> <span class="hljs-selector-attr">[main]</span> c<span class="hljs-selector-class">.ThreadTest</span> - waiting...<br><span class="hljs-number">20</span>:<span class="hljs-number">23</span>:<span class="hljs-number">12.356</span> <span class="hljs-selector-attr">[thread1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - countdown -<span class="hljs-number">1</span><br><span class="hljs-number">20</span>:<span class="hljs-number">23</span>:<span class="hljs-number">13.346</span> <span class="hljs-selector-attr">[thread2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - countdown -<span class="hljs-number">1</span><br><span class="hljs-number">20</span>:<span class="hljs-number">23</span>:<span class="hljs-number">13.346</span> <span class="hljs-selector-attr">[main]</span> c<span class="hljs-selector-class">.ThreadTest</span> - over<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>注意：</p>
 <ul>
@@ -473,13 +489,15 @@
 <p>CountDownLatch与join的区别：</p>
 <p>join同样能够完成等待线程结束操作，但是join是一个比较底层的API，并且是等待线程达到结束状态。而CountDownLatch是一个高级的API，更容易配合线程池等高级API进行使用。线程池中的线程进行复用，使用join不是等待不是很方便</p>
 </blockquote>
-<h1 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a>CyclicBarrier</h1><p>CyclicBarrier：循环屏障，用来进行线程协作，等待线程满足某个计数之后，触发继续执行。</p>
+<h1>CyclicBarrier</h1>
+<p>CyclicBarrier：循环屏障，用来进行线程协作，等待线程满足某个计数之后，触发继续执行。</p>
 <p>常用方法：</p>
 <ul>
 <li><code>public CyclicBarrier(int parties)</code>：屏障前需要的线程数目</li>
 </ul>
 <ul>
-<li><code>public CyclicBarrier(int parties, Runnable barrierAction)</code>：用于在线程到达屏障 parties 时，执行 barrierAction<ul>
+<li><code>public CyclicBarrier(int parties, Runnable barrierAction)</code>：用于在线程到达屏障 parties 时，执行 barrierAction
+<ul>
 <li>parties：代表多少个线程到达屏障开始触发线程任务</li>
 <li>barrierAction：等够线程之后，执行的任务</li>
 </ul>
@@ -489,23 +507,23 @@
 <p>举例：重复等待线程</p>
 <p>如果使用CountDownLatch来完成重复等待线程，由于它不能重用，我们需要多次创建新的CountDownLatch对象，但是使用CyclicBarrier，就不需要重新创建。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ExecutorService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">2</span>);<br><span class="hljs-type">CyclicBarrier</span> <span class="hljs-variable">cyclicBarrier</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CyclicBarrier</span>(<span class="hljs-number">2</span>, () -&gt; &#123;<br>    log.debug(<span class="hljs-string">&quot;task1 task2 finish...&quot;</span>);<br>&#125;);<br><br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++) &#123;<br>    service.submit(() -&gt; &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            Thread.sleep(<span class="hljs-number">1000</span>);<br>            log.debug(<span class="hljs-string">&quot;task1 run to barrier...&quot;</span>);<br>            cyclicBarrier.await();<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException | BrokenBarrierException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;);<br><br>    service.submit(() -&gt; &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            Thread.sleep(<span class="hljs-number">2000</span>);<br>            log.debug(<span class="hljs-string">&quot;task2 run to barrier...&quot;</span>);<br>            cyclicBarrier.await();<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException | BrokenBarrierException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;);<br>&#125;<br><br>service.shutdown();<br></code></pre></td></tr></table></figure>
-
 <p>输出如下：</p>
 <figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">09.206</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-1</span>] c.ThreadTest - task1 run to barrier...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">10.217</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-2</span>] c.ThreadTest - task2 run to barrier...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">10.217</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-2</span>] c.ThreadTest - task1 task2 finish...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">11.218</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-2</span>] c.ThreadTest - task1 run to barrier...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">12.229</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-1</span>] c.ThreadTest - task2 run to barrier...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">12.229</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-1</span>] c.ThreadTest - task1 task2 finish...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">13.236</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-1</span>] c.ThreadTest - task1 run to barrier...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">14.240</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-2</span>] c.ThreadTest - task2 run to barrier...<br><span class="hljs-number">21</span>:<span class="hljs-number">01</span>:<span class="hljs-number">14.240</span> [pool<span class="hljs-number">-1</span>-thread<span class="hljs-number">-2</span>] c.ThreadTest - task1 task2 finish...<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>CountDownLatch vs CyclicBarrier：</p>
 <ul>
 <li>CountDownLatch的计数器只能使用一次</li>
 <li>CyclicBarrier的计数器可以使用reset方法重置</li>
-<li>CyclicBarrier中还提供了其他有用方法<ul>
+<li>CyclicBarrier中还提供了其他有用方法
+<ul>
 <li><code>getNumberWaiting()</code>：获得阻塞的线程数量</li>
 <li><code>isBroken()</code>：判断阻塞的线程是否被中断</li>
 </ul>
 </li>
 </ul>
 </blockquote>
-<h1 id="Exchanger"><a href="#Exchanger" class="headerlink" title="Exchanger"></a>Exchanger</h1><p>Exchanger：交换器，是一个用于线程间协作的工具类，用于进行线程间的数据交换。</p>
+<h1>Exchanger</h1>
+<p>Exchanger：交换器，是一个用于线程间协作的工具类，用于进行线程间的数据交换。</p>
 <p>Exchanger会提供一个同步点，在这个同步点，两个线程可以交换彼此的数据。线程之间通过exchange方法交换数据，线程1先执行到exchange之后，会等待第二个线程也执行到exchange，当两个线程都到达同步点之后，两个线程就可以交换数据</p>
 <p>常用方法：</p>
 <ul>
@@ -515,10 +533,8 @@
 </ul>
 <p>示例：两个线程进行数据交换</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java">Exchanger&lt;Integer&gt; exchanger = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exchanger</span>&lt;&gt;();<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    log.debug(<span class="hljs-string">&quot;now value: &#123;&#125;&quot;</span>, value);<br>    <span class="hljs-keyword">try</span> &#123;<br>        Thread.sleep(<span class="hljs-number">2000</span>);<br>        value = exchanger.exchange(value);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br>    log.debug(<span class="hljs-string">&quot;after exchange value: &#123;&#125;&quot;</span>, value);<br>&#125;, <span class="hljs-string">&quot;thread1&quot;</span>).start();<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br>    log.debug(<span class="hljs-string">&quot;now value: &#123;&#125;&quot;</span>, value);<br>    <span class="hljs-keyword">try</span> &#123;<br>        Thread.sleep(<span class="hljs-number">1000</span>);<br>        value = exchanger.exchange(value);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br>    log.debug(<span class="hljs-string">&quot;after exchange value: &#123;&#125;&quot;</span>, value);<br>&#125;, <span class="hljs-string">&quot;thread2&quot;</span>).start();<br></code></pre></td></tr></table></figure>
-
 <p>输出如下，在两个线程都执行到exchange后进行数据交换</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-number">21</span>:<span class="hljs-number">16</span>:<span class="hljs-number">27.789</span> <span class="hljs-selector-attr">[thread1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - now value: <span class="hljs-number">1</span><br><span class="hljs-number">21</span>:<span class="hljs-number">16</span>:<span class="hljs-number">27.789</span> <span class="hljs-selector-attr">[thread2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - now value: <span class="hljs-number">2</span><br><span class="hljs-number">21</span>:<span class="hljs-number">16</span>:<span class="hljs-number">29.813</span> <span class="hljs-selector-attr">[thread2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - after exchange value: <span class="hljs-number">1</span><br><span class="hljs-number">21</span>:<span class="hljs-number">16</span>:<span class="hljs-number">29.813</span> <span class="hljs-selector-attr">[thread1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - after exchange value: <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

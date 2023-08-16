@@ -325,14 +325,13 @@
             
               <div class="markdown-body">
                 
-                <h2 id="整体描述"><a href="#整体描述" class="headerlink" title="整体描述"></a>整体描述</h2><p>利用elementUI中提供的upload组件可以完成文件上传功能。</p>
+                <h2 id="整体描述">整体描述</h2>
+<p>利用elementUI中提供的upload组件可以完成文件上传功能。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>	&lt;div&gt;<br>        &lt;el-upload<br>              ref=&quot;upload&quot;<br>              :action=&quot;$store.state.backend_url+&#x27;post/reference&#x27;&quot;<br>              :headers=&quot;myHeaders&quot;<br>              :file-list=&quot;fileList&quot;<br>              :on-success=&quot;handleSuccess&quot;<br>              :on-error=&quot;handleError&quot;<br>              :auto-upload=&quot;false&quot;&gt;<br>        &lt;/el-upload&gt;<br>    &lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>export default &#123;<br>  data() &#123;<br>    return &#123;<br>      myHeaders: &#123;<br>        Authorization: &#x27;Bearer &#x27; + this.$cookies.get(&#x27;token&#x27;)<br>      &#125;,<br>      fileList: [],<br>    &#125;<br>  &#125;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
-
 <p>其中action表示后端接收的地址，header可以携带自定义的请求header。</p>
 <p><code>on-sucess</code>和<code>on-error</code>可以分别绑定上传事件和上传失败事件。</p>
 <p>在后端如果使用Flask进行接收的话，可以利用request中的file进行接收</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">data = request.files.get(<span class="hljs-string">&#x27;file&#x27;</span>)<br>data.save(<span class="hljs-string">&#x27;reference/&#x27;</span> + data.filename)<br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

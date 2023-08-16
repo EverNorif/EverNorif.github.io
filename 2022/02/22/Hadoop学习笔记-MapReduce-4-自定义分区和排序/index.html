@@ -326,30 +326,31 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Partition分区"><a href="#Partition分区" class="headerlink" title="Partition分区"></a>Partition分区</h2><p>自定义分区类需要继承Partitioner，重写其中的getPartiton方法</p>
+                <h2 id="Partition分区">Partition分区</h2>
+<p>自定义分区类需要继承Partitioner，重写其中的getPartiton方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">myPartitioner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Partitioner</span>&lt;Text, FLowBean&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getPartition</span><span class="hljs-params">(Text text, FLowBean fLowBean, <span class="hljs-type">int</span> numPartitions)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">phone</span> <span class="hljs-operator">=</span> text.toString();<br><br>        <span class="hljs-type">int</span> partition;<br>        <span class="hljs-comment">// 分区逻辑</span><br>        <span class="hljs-keyword">if</span> (phone.startsWith(<span class="hljs-string">&quot;136&quot;</span>)) &#123;<br>            partition = <span class="hljs-number">0</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (phone.startsWith(<span class="hljs-string">&quot;137&quot;</span>)) &#123;<br>            partition = <span class="hljs-number">1</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (phone.startsWith(<span class="hljs-string">&quot;138&quot;</span>)) &#123;<br>            partition = <span class="hljs-number">2</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (phone.startsWith(<span class="hljs-string">&quot;139&quot;</span>)) &#123;<br>            partition = <span class="hljs-number">3</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            partition = <span class="hljs-number">4</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> partition;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>之后在驱动类中进行相应的设置</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//设置自定义的partitioner，以及设置对应的分区数目</span><br>job.setPartitionerClass(myPartitioner.class);<br>job.setNumReduceTasks(<span class="hljs-number">5</span>);<br></code></pre></td></tr></table></figure>
-
 <p><strong>注意事项</strong>：</p>
 <ol>
-<li><p>可以自由指定ReduceTask的数量，但是最好和getPartition的结果数保持一致</p>
+<li>
+<p>可以自由指定ReduceTask的数量，但是最好和getPartition的结果数保持一致</p>
 <blockquote>
 <ul>
 <li>如果ReduceTask的数量 &gt; getPartition的结果数，则会多产生几个空的输出文件part-r-000xx；</li>
 <li>如果ReduceTask的数量 &lt; getPartition的结果数，则会有一部分数据无处安放，会报错；</li>
-<li>如果ReduceTask的数量 &#x3D; 1，那么不管MapTask输出多少个分区文件，最终结果都交给一个ReduceTask，最终也就只会产生一个结果文件part-r-00000；</li>
+<li>如果ReduceTask的数量 = 1，那么不管MapTask输出多少个分区文件，最终结果都交给一个ReduceTask，最终也就只会产生一个结果文件part-r-00000；</li>
 <li><strong>在ReduceTask数量为1的时候，MapTask中根本不走我们自定义的Partitioner，而是走自己创建的一个内部类</strong></li>
 </ul>
 </blockquote>
 </li>
-<li><p>返回的分区号必须从0开始，逐一累加</p>
+<li>
+<p>返回的分区号必须从0开始，逐一累加</p>
 </li>
 </ol>
-<h2 id="WritableComparable排序"><a href="#WritableComparable排序" class="headerlink" title="WritableComparable排序"></a>WritableComparable排序</h2><p>将自定义类作为key的时候，应该实现WritableComparable接口，使得它能够进行排序</p>
+<h2 id="WritableComparable排序">WritableComparable排序</h2>
+<p>将自定义类作为key的时候，应该实现WritableComparable接口，使得它能够进行排序</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FlowBean</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">WritableComparable</span>&lt;FlowBean&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">compareTo</span><span class="hljs-params">(FlowBean bean)</span> &#123;<br>        <span class="hljs-type">int</span> result;<br>        <span class="hljs-comment">// 按照总流量大小，倒序排列</span><br>        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.sumFlow &gt; bean.getSumFlow()) &#123;<br>            result = -<span class="hljs-number">1</span>;<br>        &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.sumFlow &lt; bean.getSumFlow()) &#123;<br>            result = <span class="hljs-number">1</span>;<br>        &#125;<span class="hljs-keyword">else</span> &#123;<br>            result = <span class="hljs-number">0</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> result;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

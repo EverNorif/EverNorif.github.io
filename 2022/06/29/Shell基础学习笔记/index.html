@@ -329,17 +329,19 @@
                 <p>Shell是一个命令的解释器，它可以接收应用程序或用户命令，然后调用系统内核。shell也是一个功能强大的脚本语言，易编写，易调试、灵活性强。</p>
 <p>Linux提供的Shell解析器如下，写在<code>/etc/shells</code>中</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">(base) [root@EverNorif ~]# cat /etc/shells<br>/bin/sh<br>/bin/bash<br>/usr/bin/sh<br>/usr/bin/bash<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>bash和sh即为一个链接的关系，sh -&gt; bash</li>
 <li>CentOS默认的解析器是bash</li>
 </ul>
-<h1 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h1><h2 id="入门知识"><a href="#入门知识" class="headerlink" title="入门知识"></a>入门知识</h2><ul>
-<li><p>脚本以<code>#!/bin/bash</code>开头，用以指定解析器</p>
+<h1>基础语法</h1>
+<h2 id="入门知识">入门知识</h2>
+<ul>
+<li>
+<p>脚本以<code>#!/bin/bash</code>开头，用以指定解析器</p>
 </li>
-<li><p>脚本的常用执行方式</p>
+<li>
+<p>脚本的常用执行方式</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 方法1</span><br><span class="hljs-comment"># 使用bash或者sh的相对路径或者绝对路径，不需要赋予脚本+x的权限</span><br>bash ./helloworld.sh<br><br><span class="hljs-comment"># 方法2</span><br><span class="hljs-comment"># 直接输入脚本的绝对路径或者相对路径，需要赋予脚本+x的权限</span><br><span class="hljs-built_in">chmod</span> +x helloworld.sh<br><span class="hljs-comment"># 如果直接在脚本文件所在目录里调用，则相对路径格式是./</span><br>./helloworld.sh<br><br><span class="hljs-comment"># 方法3</span><br><span class="hljs-comment"># 在脚本的路径前加上. 或者 source</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>方法1和方法2，是在当前Shell中打开一个子Shell来执行脚本内容，当脚本内容结束，则子Shell关闭，回到父Shell中</li>
 <li>方法3，可以使得脚本内容在当前Shell里执行，无需打开子Shell</li>
@@ -347,15 +349,18 @@
 </ul>
 </li>
 </ul>
-<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>变量包括系统预定义变量、自定义变量和特殊变量；根据变量的作用范围，可以分为全局的变量和局部的变量。全局指的是对所有的子Shell有效，局部指的是只对自己的Shell有效，对子Shell无效</p>
-<h3 id="系统预定义变量"><a href="#系统预定义变量" class="headerlink" title="系统预定义变量"></a>系统预定义变量</h3><p>常用的系统变量有：<code>$HOME $PWD $SHELL $USER</code>，可以使用echo查看对应的系统变量的值。set命令则可以显示当前Shell中的所有变量；env命令则可以显示当前系统的所有全局变量</p>
-<h3 id="自定义变量"><a href="#自定义变量" class="headerlink" title="自定义变量"></a>自定义变量</h3><p>基本语法如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">定义变量，注意等号的前后不能有空格</span><br>A=5<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">查看变量的值</span><br>echo $A<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">撤销变量</span><br>unset A<br><span class="hljs-meta"></span><br><span class="hljs-meta"># </span><span class="language-bash">声明只读变量，只读变量不能修改，也不能撤销<span class="hljs-built_in">unset</span></span><br>readonly B=2<br></code></pre></td></tr></table></figure>
-
+<h2 id="变量">变量</h2>
+<p>变量包括系统预定义变量、自定义变量和特殊变量；根据变量的作用范围，可以分为全局的变量和局部的变量。全局指的是对所有的子Shell有效，局部指的是只对自己的Shell有效，对子Shell无效</p>
+<h3 id="系统预定义变量">系统预定义变量</h3>
+<p>常用的系统变量有：<code>$HOME $PWD $SHELL $USER</code>，可以使用echo查看对应的系统变量的值。set命令则可以显示当前Shell中的所有变量；env命令则可以显示当前系统的所有全局变量</p>
+<h3 id="自定义变量">自定义变量</h3>
+<p>基本语法如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">定义变量，注意等号的前后不能有空格</span><br>A=5<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看变量的值</span><br>echo $A<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">撤销变量</span><br>unset A<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">声明只读变量，只读变量不能修改，也不能撤销<span class="hljs-built_in">unset</span></span><br>readonly B=2<br></code></pre></td></tr></table></figure>
 <ul>
 <li>变量定义规则基本同其他的编程语言</li>
 <li><strong>等号两侧不能有空格</strong></li>
-<li>在bash中，变量的默认类型都是字符串类型，无法直接进行数值运算<ul>
+<li>在bash中，变量的默认类型都是字符串类型，无法直接进行数值运算
+<ul>
 <li>如果想要进行运算，需要使用到后续的运算符</li>
 </ul>
 </li>
@@ -368,9 +373,11 @@
 <p>单引号：直接原封不动地输出引号中的内容，比较傻</p>
 <p>双引号：会解析其中的使用了<code>$</code>解析的变量，比较聪明</p>
 </blockquote>
-<h3 id="特殊变量"><a href="#特殊变量" class="headerlink" title="特殊变量"></a>特殊变量</h3><p>主要用于脚本的输入参数的获取，处理等</p>
+<h3 id="特殊变量">特殊变量</h3>
+<p>主要用于脚本的输入参数的获取，处理等</p>
 <ul>
-<li><code>$n</code>：表示脚本的第几个参数<ul>
+<li><code>$n</code>：表示脚本的第几个参数
+<ul>
 <li>其中n表示数字，如果数字超过9，则需要使用大括号进行包裹，如<code>$&#123;10&#125;</code></li>
 <li><code>$0</code>，表示该脚本的名称，根据调用方式的不同而不同</li>
 </ul>
@@ -378,108 +385,102 @@
 <li><code>$#</code>：获取所有的输入参数个数，常用于循环中的判断，判断参数的个数是否正确</li>
 <li><code>$*</code>：表示命令行中所有参数，将所有参数看作一个整体</li>
 <li><code>$@</code>：表示命令行中的所有参数，但是不是一个整体，可以看作是一个参数集合</li>
-<li><code>$?</code>：相当于返回值，为最后一次执行命令的返回状态<ul>
+<li><code>$?</code>：相当于返回值，为最后一次执行命令的返回状态
+<ul>
 <li>如果值为0，证明上一个命令正确执行；非0则表示不正确</li>
 </ul>
 </li>
 </ul>
-<h2 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h2><p>前面提到了变量默认都是字符串类型，计算需要使用运算符。</p>
+<h2 id="运算符">运算符</h2>
+<p>前面提到了变量默认都是字符串类型，计算需要使用运算符。</p>
 <p>运算符的基本语法为<code>$((运算式))</code>或者<code>$[运算式]</code></p>
 <p>如果需要将一个命令的返回结果当作值进行赋值，则使用反引号或者<code>$()</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">a=`<span class="hljs-built_in">ls</span>`<br>b=$(<span class="hljs-built_in">ls</span> -a)<br></code></pre></td></tr></table></figure>
-
-<h2 id="条件判断"><a href="#条件判断" class="headerlink" title="条件判断"></a>条件判断</h2><p><strong>基本语法</strong>：</p>
+<h2 id="条件判断">条件判断</h2>
+<p><strong>基本语法</strong>：</p>
 <ul>
 <li><code>test 条件表达式</code></li>
 <li><code>[ 条件表达式 ]</code>，注意这里条件表达式的前后需要有空格</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">[ $B = 2]<br>echo $?<br></code></pre></td></tr></table></figure>
-
 <p>执行完命令之后，不会自动打印结果，需要使用<code>$?</code>来获取判断的返回值，如果返回值是0，则条件表达式的值为true，否则为false。并且注意这里的运算符两边也要有空格。以及条件非空即为true，即<code>[ $B ]</code>为true，<code>[ ]</code>为false</p>
 <p><strong>常用判断条件</strong>：</p>
 <ul>
 <li>字符串之间的比较</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">= <br>!=<br><span class="hljs-comment"># 字符串的拼接直接写在一起即可</span><br><span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>_log_$(<span class="hljs-built_in">date</span> +%s)<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>整数之间的比较</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">-eq 等于 <br>-ne 不等于<br>-lt 小于<br>-le 小于等于<br>-gt 大于<br>-ge 大于等于<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>文件权限判断</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">-r 有读的权限<br>-w 有写权限<br>-x 有执行权限<br><br>[ -r helloworld.sh ]<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>文件类型判断</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">-e 文件存在<br>-f 文件存在并且是一个常规的文件<br>-d 文件存在并且是一个目录<br><br>[ -e /root/file]<br></code></pre></td></tr></table></figure>
-
 <p><strong>多条件判断</strong>：与<code>&amp;&amp;</code>和或<code>||</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">同样具有短路操作的特性，可以用来实现类似?:三元操作符的效果</span><br><span class="hljs-meta"># </span><span class="language-bash">&amp;&amp;表示前一条命令执行成功后才执行下一条命令</span><br><span class="hljs-meta"># </span><span class="language-bash">||表示前一条命令执行失败后才执行下一条命令</span><br>[ 条件 ] &amp;&amp; echo yes || echo no<br></code></pre></td></tr></table></figure>
-
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">同样具有短路操作的特性，可以用来实现类似?:三元操作符的效果</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">&amp;&amp;表示前一条命令执行成功后才执行下一条命令</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">||表示前一条命令执行失败后才执行下一条命令</span><br>[ 条件 ] &amp;&amp; echo yes || echo no<br></code></pre></td></tr></table></figure>
 <p>如果在一个中括号中进行多条件判断，可以使用<code>-a</code>或者<code>-o</code>（and or）</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">[ <span class="hljs-variable">$b</span> -gt 18 -a <span class="hljs-variable">$b</span> -lt 35]<br>[ <span class="hljs-variable">$b</span> -gt 18 -o <span class="hljs-variable">$b</span> -lt 35]<br></code></pre></td></tr></table></figure>
-
-<h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><h3 id="if判断"><a href="#if判断" class="headerlink" title="if判断"></a>if判断</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 单分支</span><br><span class="hljs-keyword">if</span> [ 条件表达式 ];<span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment"># 或者</span><br><span class="hljs-keyword">if</span> [ 条件表达式 ]<br><span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment"># 多分支</span><br><span class="hljs-keyword">if</span> [ 条件表达式 ]<br><span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">elif</span> [ 条件表达式 ]<br><span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">else</span><br>	程序<br><span class="hljs-keyword">fi</span><br></code></pre></td></tr></table></figure>
-
+<h2 id="流程控制">流程控制</h2>
+<h3 id="if判断">if判断</h3>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 单分支</span><br><span class="hljs-keyword">if</span> [ 条件表达式 ];<span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment"># 或者</span><br><span class="hljs-keyword">if</span> [ 条件表达式 ]<br><span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment"># 多分支</span><br><span class="hljs-keyword">if</span> [ 条件表达式 ]<br><span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">elif</span> [ 条件表达式 ]<br><span class="hljs-keyword">then</span><br>	程序<br><span class="hljs-keyword">else</span><br>	程序<br><span class="hljs-keyword">fi</span><br></code></pre></td></tr></table></figure>
 <ul>
 <li>分号<code>;</code>表示一行中可以输入多个命令，使用分号隔开</li>
 <li>if后面要有空格</li>
 <li>条件表达式和中括号之间需要有空格</li>
 </ul>
-<h3 id="case语句"><a href="#case语句" class="headerlink" title="case语句"></a>case语句</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-keyword">case</span> $变量名 <span class="hljs-keyword">in</span><br><span class="hljs-string">&quot;值1&quot;</span>)<br>	程序1<br>;;<br><span class="hljs-string">&quot;值2&quot;</span>)<br>	程序2<br>;;<br>*)<br>	默认走的程序<br>;;<br><span class="hljs-keyword">esac</span><br></code></pre></td></tr></table></figure>
-
+<h3 id="case语句">case语句</h3>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-keyword">case</span> $变量名 <span class="hljs-keyword">in</span><br><span class="hljs-string">&quot;值1&quot;</span>)<br>	程序1<br>;;<br><span class="hljs-string">&quot;值2&quot;</span>)<br>	程序2<br>;;<br>*)<br>	默认走的程序<br>;;<br><span class="hljs-keyword">esac</span><br></code></pre></td></tr></table></figure>
 <ul>
 <li>case行尾必须为单词<code>in</code>，每个模式匹配必须以<code>)</code>结束</li>
 <li>双分号<code>;;</code>表示命令序列结束，相当于java中的break</li>
 <li>最后的<code>*)</code>表示默认模式，相当于java中的default</li>
 </ul>
-<h3 id="for循环"><a href="#for循环" class="headerlink" title="for循环"></a>for循环</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 语法1</span><br><span class="hljs-keyword">for</span> (( 初始值;循环控制条件;变量变化))<br><span class="hljs-keyword">do</span><br>	程序<br><span class="hljs-keyword">done</span><br><br><span class="hljs-comment"># 举例1</span><br><span class="hljs-comment">#!/bin/bash</span><br><span class="hljs-built_in">sum</span>=0<br><span class="hljs-keyword">for</span>((i=0;i&lt;=100;i++))<br><span class="hljs-keyword">do</span><br>	<span class="hljs-built_in">sum</span>=$[<span class="hljs-variable">$sum</span>+<span class="hljs-variable">$i</span>]<br><span class="hljs-keyword">done</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$sum</span><br></code></pre></td></tr></table></figure>
-
+<h3 id="for循环">for循环</h3>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 语法1</span><br><span class="hljs-keyword">for</span> (( 初始值;循环控制条件;变量变化))<br><span class="hljs-keyword">do</span><br>	程序<br><span class="hljs-keyword">done</span><br><br><span class="hljs-comment"># 举例1</span><br><span class="hljs-comment">#!/bin/bash</span><br><span class="hljs-built_in">sum</span>=0<br><span class="hljs-keyword">for</span>((i=<span class="hljs-number">0</span>;i&lt;=<span class="hljs-number">100</span>;i++))<br><span class="hljs-keyword">do</span><br>	<span class="hljs-built_in">sum</span>=$[<span class="hljs-variable">$sum</span>+<span class="hljs-variable">$i</span>]<br><span class="hljs-keyword">done</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$sum</span><br></code></pre></td></tr></table></figure>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 语法2</span><br><span class="hljs-keyword">for</span> 变量 <span class="hljs-keyword">in</span> 值1 值2 值3...<br><span class="hljs-keyword">do</span><br>	程序<br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>前面说到的<code>$*</code>和<code>$@</code>，如果使用双引号包含的时候，会进行不同的变化，前者作为一个整体，后者展开成为一个序列</li>
 <li>如果没有双引号包裹的话，则没有区别</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;=============$*=============&#x27;</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;$*&quot;</span><br><span class="hljs-comment">#$*中的所有参数看成是一个整体，所以这个 for 循环只会循环一次</span><br><span class="hljs-keyword">do</span><br>	<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;haha <span class="hljs-variable">$i</span>&quot;</span><br><span class="hljs-keyword">done</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;=============$@=============&#x27;</span><br><span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;<span class="hljs-variable">$@</span>&quot;</span><br><span class="hljs-comment">#$@中的每个参数都看成是独立的，所以“$@”中有几个参数，就会循环几次</span><br><span class="hljs-keyword">do</span><br>	<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;haha <span class="hljs-variable">$j</span>&quot;</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="while循环"><a href="#while循环" class="headerlink" title="while循环"></a>while循环</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-keyword">while</span> [ 条件判断式 ]<br><span class="hljs-keyword">do</span> <br>	程序<br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="read读取控制台输入"><a href="#read读取控制台输入" class="headerlink" title="read读取控制台输入"></a>read读取控制台输入</h2><p>基本语法：read [选项] [参数]</p>
+<h3 id="while循环">while循环</h3>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-keyword">while</span> [ 条件判断式 ]<br><span class="hljs-keyword">do</span> <br>	程序<br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+<h2 id="read读取控制台输入">read读取控制台输入</h2>
+<p>基本语法：read [选项] [参数]</p>
 <ul>
-<li>选项：<ul>
+<li>选项：
+<ul>
 <li>-p：指定读取值时的提示符</li>
 <li>-t：指定读取值时等待的时间（单位为秒），如果不加-t则一直等待</li>
 </ul>
 </li>
-<li>参数：<ul>
+<li>参数：
+<ul>
 <li>变量：指定存放值的变量名</li>
 </ul>
 </li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">read</span> -t 7 -p <span class="hljs-string">&quot;Enter your name in 7 seconds :&quot;</span> name<br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$name</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>函数又可以分成系统函数和自定义函数。</p>
+<h2 id="函数">函数</h2>
+<p>函数又可以分成系统函数和自定义函数。</p>
 <p>这里举几个系统函数的例子</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">basename</span> [string/pathname] [suffix]<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>basename命令会删掉所有的前缀，包括最后一个<code>/</code>字符，然后将字符串显示出来</li>
 <li>可以理解为取出路径中的文件名称</li>
 <li>suffix为后缀，如果被指定了，会将其中的suffix删除</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">dirname</span> 文件绝对路径<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>从给定给定包含绝对路径的文件名中去除文件名，返回目录的部分</li>
 </ul>
 <p>我们也可以自定义函数实现，基本语法如下</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">[<span class="hljs-keyword">function</span>] funname[()]<br>&#123;<br>	函数体;<br>	[retur int;]<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>上面的方括号表示可以省略</li>
 <li>函数的形参不需要定义，可以使用<code>$n</code>获取，与脚本类似；也可以有函数返回值，使用<code>$?</code>获取</li>
@@ -488,16 +489,13 @@
 <li>一种方法可以绕过返回值的限制，在函数中进行echo，然后用命令替换<code>$()</code>进行捕获</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">sum</span></span>()<br>&#123;<br>	s=0<br>	s=$[<span class="hljs-variable">$1</span>+<span class="hljs-variable">$2</span>]<br>	<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$s</span>&quot;</span><br>&#125;<br><br>res=$(<span class="hljs-built_in">sum</span> 255 255)<br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$res</span><br></code></pre></td></tr></table></figure>
-
-<h1 id="应用举例"><a href="#应用举例" class="headerlink" title="应用举例"></a>应用举例</h1><p><code>helloworld.sh</code></p>
+<h1>应用举例</h1>
+<p><code>helloworld.sh</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;helloworld!&quot;</span><br></code></pre></td></tr></table></figure>
-
 <p><code>acc.sh</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">sum</span>=0<br><span class="hljs-keyword">for</span>((i=0;i&lt;=100;i++))<br><span class="hljs-keyword">do</span><br>	<span class="hljs-built_in">sum</span>=$[<span class="hljs-variable">$sum</span>+<span class="hljs-variable">$i</span>]<br><span class="hljs-keyword">done</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$sum</span><br></code></pre></td></tr></table></figure>
-
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">sum</span>=0<br><span class="hljs-keyword">for</span>((i=<span class="hljs-number">0</span>;i&lt;=<span class="hljs-number">100</span>;i++))<br><span class="hljs-keyword">do</span><br>	<span class="hljs-built_in">sum</span>=$[<span class="hljs-variable">$sum</span>+<span class="hljs-variable">$i</span>]<br><span class="hljs-keyword">done</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$sum</span><br></code></pre></td></tr></table></figure>
 <p><code>printHa.sh</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ha haha hahaha<br><span class="hljs-keyword">do</span><br>	<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;I say <span class="hljs-variable">$i</span>&quot;</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

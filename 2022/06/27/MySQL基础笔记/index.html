@@ -325,33 +325,28 @@
             
               <div class="markdown-body">
                 
-                <h1 id="MySQL基础笔记"><a href="#MySQL基础笔记" class="headerlink" title="MySQL基础笔记"></a>MySQL基础笔记</h1><h2 id="一-常用命令"><a href="#一-常用命令" class="headerlink" title="一.常用命令"></a>一.常用命令</h2><p><strong>启动和停止MySQL服务</strong></p>
+                <h1>MySQL基础笔记</h1>
+<h2 id="一-常用命令">一.常用命令</h2>
+<p><strong>启动和停止MySQL服务</strong></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">//windows<br>net start mysql<br>net stop mysql<br>//linux<br>service mysqld start<br>service mysqld stop<br>service mysqld status<br></code></pre></td></tr></table></figure>
-
 <p><strong>登录mysql</strong></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">mysql -h 主机地址 -u 用户名 -p 用户密码 -P 连接端口号<br>mysql -uroot -p<br></code></pre></td></tr></table></figure>
-
 <p><strong>常用命令</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sql">修改字符集：<span class="hljs-keyword">set</span> names xxx;<br>展示数据库：<span class="hljs-keyword">show</span> databases;<br>使用某一个数据库：use xxx;<br>展示表：<span class="hljs-keyword">show</span> tables; <span class="hljs-keyword">show</span> tables <span class="hljs-keyword">from</span> xxx;<br>查案当前所在数据库：<span class="hljs-keyword">select</span> database();<br>创建表：<span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> xxx(字段名称 数据类型,...);<br>查看表的结构：<span class="hljs-keyword">desc</span> xxx;<br>插入数据：<span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> xxx <span class="hljs-keyword">values</span>(...);<br>更新数据：<span class="hljs-keyword">update</span> 表名称 <span class="hljs-keyword">set</span> 属性名称 <span class="hljs-operator">=</span> xxx <span class="hljs-keyword">where</span> 字段名称 <span class="hljs-operator">=</span>xx;<br>删除数据：<span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> 表名称 <span class="hljs-keyword">where</span> 名称字段<span class="hljs-operator">=</span>xx；<br>修改表结构：<span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> 表名称 ...<br>删除表：<span class="hljs-keyword">drop</span> <span class="hljs-keyword">table</span> 表名称;<br>退出客户端：exit<br></code></pre></td></tr></table></figure>
-
 <p><strong>Linux服务器</strong></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs shell">//配置开机自启<br>1.修改文件 添加service mysqld start<br>vim /etc/rc.local<br> <br>2.启动服务：<br>systemctl start mysqld<br><br>3.设置开机自启动：<br>systemctl enable mysqld<br>systemctl daemon-reload<br><br>//配置远程登陆<br>1.在安全组中入规则开放3306端口<br>2.通过shell登录数据库<br>mysql -uroot -p<br>3.查看当前连接规则<br>use mysql;<br>select host,user from user;<br>4.修改连接规则<br>update user set host=&#x27;%&#x27; where user=&#x27;root&#x27;;<br>ALTER USER &#x27;root&#x27;@&#x27;%&#x27; IDENTIFIED WITH mysql_native_password BY &#x27;yourpassword&#x27;;<br>5.刷新权限<br>FLUSH PRIVILEGES;<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>安装过程：（在Centos8上安装mysql8）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="language-bash">下载</span><br>wget https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm<br><span class="hljs-meta">#</span><span class="language-bash">安装数据源</span><br>yum install mysql80-community-release-el8-1.noarch.rpm<br><span class="hljs-meta">#</span><span class="language-bash">检查数据源</span><br>yum repolist enabled | grep &quot;mysql.*-community.*&quot;<br><span class="hljs-meta">#</span><span class="language-bash">禁用CentOS8自带mysql模块</span><br>yum module disable mysql<br><span class="hljs-meta">#</span><span class="language-bash">安装数据库</span><br>yum install mysql-community-server<br><span class="hljs-meta">#</span><span class="language-bash">启动mysql</span><br>service mysqld start<br>service mysqld status<br><span class="hljs-meta">#</span><span class="language-bash">显示mysql的随机密码</span><br>grep &#x27;temporary password&#x27; /var/log/mysqld.log<br><span class="hljs-meta">#</span><span class="language-bash">登录mysql</span><br>mysql -u root -p<br><span class="hljs-meta">#</span><span class="language-bash">修改密码</span><br>ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;Test_123456&#x27;;<br><span class="hljs-meta">#</span><span class="language-bash">查看密码策略</span><br>SHOW VARIABLES LIKE &#x27;validate_password%&#x27;;<br><span class="hljs-meta">#</span><span class="language-bash">开放远程访问</span><br><span class="hljs-meta">#</span><span class="language-bash">1.创建权限用户记录</span><br>create user &#x27;root&#x27;@&#x27;%&#x27; identified by &#x27;Test_123456&#x27;;<br><span class="hljs-meta">#</span><span class="language-bash">2.授权</span><br>grant all privileges on *.* to &#x27;root&#x27;@&#x27;%&#x27; with grant option;<br><span class="hljs-meta">#</span><span class="language-bash">开放3306端口</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">下载</span><br>wget https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm<br><span class="hljs-meta prompt_">#</span><span class="language-bash">安装数据源</span><br>yum install mysql80-community-release-el8-1.noarch.rpm<br><span class="hljs-meta prompt_">#</span><span class="language-bash">检查数据源</span><br>yum repolist enabled | grep &quot;mysql.*-community.*&quot;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">禁用CentOS8自带mysql模块</span><br>yum module disable mysql<br><span class="hljs-meta prompt_">#</span><span class="language-bash">安装数据库</span><br>yum install mysql-community-server<br><span class="hljs-meta prompt_">#</span><span class="language-bash">启动mysql</span><br>service mysqld start<br>service mysqld status<br><span class="hljs-meta prompt_">#</span><span class="language-bash">显示mysql的随机密码</span><br>grep &#x27;temporary password&#x27; /var/log/mysqld.log<br><span class="hljs-meta prompt_">#</span><span class="language-bash">登录mysql</span><br>mysql -u root -p<br><span class="hljs-meta prompt_">#</span><span class="language-bash">修改密码</span><br>ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;Test_123456&#x27;;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">查看密码策略</span><br>SHOW VARIABLES LIKE &#x27;validate_password%&#x27;;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">开放远程访问</span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">1.创建权限用户记录</span><br>create user &#x27;root&#x27;@&#x27;%&#x27; identified by &#x27;Test_123456&#x27;;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">2.授权</span><br>grant all privileges on *.* to &#x27;root&#x27;@&#x27;%&#x27; with grant option;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">开放3306端口</span><br></code></pre></td></tr></table></figure>
 </blockquote>
 <p>1.创建表的时候指定主键和外键：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mysql">[CONSTRAINT 外键名]  FOREIGN KEY (外键字段名) REFERENCES  父表名(参照字段名);<br>PRIMARY KEY (主键字段名)<br></code></pre></td></tr></table></figure>
-
 <p>2.创建表之后指定外键依赖关系：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">ALTER TABLE 子表名 ADD [CONSTRAINT 外键名] FOREIGN KEY(外键字段名) REFERENCES 父表名(参照字段名);<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="二-学习笔记"><a href="#二-学习笔记" class="headerlink" title="二.学习笔记"></a>二.学习笔记</h2><h3 id="1-数据准备"><a href="#1-数据准备" class="headerlink" title="1. 数据准备"></a>1. 数据准备</h3><p>导入数据：</p>
+<h2 id="二-学习笔记">二.学习笔记</h2>
+<h3 id="1-数据准备">1. 数据准备</h3>
+<p>导入数据：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">source  sql路径<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>示例数据：bjpowernode.sql</p>
 <p>表格：show tables；</p>
@@ -361,19 +356,18 @@
 </blockquote>
 <p>大致查看数据：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs mysql">查看所有数据：<br>select * from 表名称; <br><br>查看表的结构：<br>desc 表名;<br>describe 表名;<br><br>查看mysql版本：<br>select version();<br><br>查看当前使用的数据库：<br>select database();<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="2-SQL语句"><a href="#2-SQL语句" class="headerlink" title="2. SQL语句"></a>2. SQL语句</h3><p>简单分类：</p>
+<h3 id="2-SQL语句">2. SQL语句</h3>
+<p>简单分类：</p>
 <ol>
 <li>DDL（Data Definition Language）：数据定义语言</li>
 <li>DML（Data Manipulation Language）：数据操作语言</li>
 <li>DCL（Data Control Language）：数据控制语言</li>
 <li>DQL（Data Query Language）：数据查询语言</li>
 </ol>
-<h3 id="3-简单查询"><a href="#3-简单查询" class="headerlink" title="3. 简单查询"></a>3. 简单查询</h3><p><strong>查询</strong>：<strong>select</strong> … <strong>from</strong> … <strong>where</strong>…</p>
+<h3 id="3-简单查询">3. 简单查询</h3>
+<p><strong>查询</strong>：<strong>select</strong> … <strong>from</strong> … <strong>where</strong>…</p>
 <ul>
-<li>select后面也可以直接跟字面值，例如1，’abc’…</li>
+<li>select后面也可以直接跟字面值，例如1，‘abc’…</li>
 <li>字面值会借助表结构直接打印出来</li>
 <li><strong>distinct</strong>：去重（select distinct）</li>
 </ul>
@@ -391,15 +385,16 @@
 <th></th>
 </tr>
 </thead>
-<tbody><tr>
-<td>&#x3D;</td>
+<tbody>
+<tr>
+<td>=</td>
 <td>&lt;</td>
 <td>&gt;</td>
 </tr>
 <tr>
-<td>&lt;&gt; 或者 !&#x3D;</td>
-<td>&lt;&#x3D;</td>
-<td>&gt;&#x3D;</td>
+<td>&lt;&gt; 或者 !=</td>
+<td>&lt;=</td>
+<td>&gt;=</td>
 </tr>
 <tr>
 <td>between … and …</td>
@@ -416,25 +411,30 @@
 <td>like</td>
 <td></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <ul>
 <li>like模糊查询，支持使用<code>%</code>和<code>_</code>进行匹配，前者匹配任意个字符，后者匹配一个字符</li>
 <li>between and：必须左小右大，并且包含观点</li>
 </ul>
 <p><strong>排序</strong>：使用关键字<strong>order by</strong></p>
 <ul>
-<li><p>默认是升序，指定降序需要在后面添加 <strong>desc</strong>（升序为<strong>asc</strong>）</p>
+<li>
+<p>默认是升序，指定降序需要在后面添加 <strong>desc</strong>（升序为<strong>asc</strong>）</p>
 </li>
-<li><p>多个字段排序：使用逗号隔开多个字段</p>
+<li>
+<p>多个字段排序：使用逗号隔开多个字段</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">order by sal desc, name asc;<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>也可以使用字段位置- 不建议使用</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mysql">order by 2;<br>//表示第二列<br></code></pre></td></tr></table></figure></li>
+<li>
+<p>也可以使用字段位置- 不建议使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mysql">order by 2;<br>//表示第二列<br></code></pre></td></tr></table></figure>
+</li>
 </ul>
-<h3 id="4-数据处理函数（单行处理函数）"><a href="#4-数据处理函数（单行处理函数）" class="headerlink" title="4. 数据处理函数（单行处理函数）"></a>4. 数据处理函数（单行处理函数）</h3><p>数据处理函数又称为单行处理函数（一个输入对应一个输出）</p>
+<h3 id="4-数据处理函数（单行处理函数）">4. 数据处理函数（单行处理函数）</h3>
+<p>数据处理函数又称为单行处理函数（一个输入对应一个输出）</p>
 <p>ifnull：在所有数据库的运算当中，只要有null参与运算，结果都是null</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mysql">ifnull可以进行空处理<br>ifnull(数据， 如果数据是null时候的替代值)<br></code></pre></td></tr></table></figure>
-
 <table>
 <thead>
 <tr>
@@ -442,7 +442,8 @@
 <th></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>concat(str1, str2,…)</td>
 <td>拼接函数</td>
 </tr>
@@ -467,11 +468,11 @@
 <td>去除前后指定的字符，默认去除空格</td>
 </tr>
 <tr>
-<td>lpad&#x2F;rpad(str, 要求字符长度，填充字符长度)</td>
+<td>lpad/rpad(str, 要求字符长度，填充字符长度)</td>
 <td>左填充和右填充</td>
 </tr>
 <tr>
-<td>upper&#x2F;lower(str)</td>
+<td>upper/lower(str)</td>
 <td>转大小写</td>
 </tr>
 <tr>
@@ -479,10 +480,11 @@
 <td>比较两个字符的大小</td>
 </tr>
 <tr>
-<td>left&#x2F;right(str, 截取指定长度)</td>
+<td>left/right(str, 截取指定长度)</td>
 <td>从左边或者右边截取字符串</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -490,12 +492,13 @@
 <th></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>abs()</td>
 <td>绝对值</td>
 </tr>
 <tr>
-<td>ceil()&#x2F;floor()</td>
+<td>ceil()/floor()</td>
 <td>向上向下取整</td>
 </tr>
 <tr>
@@ -510,7 +513,8 @@
 <td>mod()</td>
 <td>取余</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -518,7 +522,8 @@
 <th></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>now</td>
 <td>当前日期+时间</td>
 </tr>
@@ -542,7 +547,8 @@
 <td>str_to_date(expr, fmt)</td>
 <td>根据指定格式解析字符串为日期格式</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -550,7 +556,8 @@
 <th></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>if(expr1, expr2, expr3)</td>
 <td>类似于?:运算符</td>
 </tr>
@@ -558,12 +565,11 @@
 <td>case()</td>
 <td>类似于switch-case</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mysql">case 表达式<br>when 值1/条件1 then 结果1<br>when 值2/条件2 then 结果2<br>...<br>eles 结果n<br>end<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="5-分组处理函数（多行处理函数）"><a href="#5-分组处理函数（多行处理函数）" class="headerlink" title="5. 分组处理函数（多行处理函数）"></a>5. 分组处理函数（多行处理函数）</h3><p>sum、avg、max、min、count</p>
+<h3 id="5-分组处理函数（多行处理函数）">5. 分组处理函数（多行处理函数）</h3>
+<p>sum、avg、max、min、count</p>
 <p>分组处理函数在使用之前必须先进行分组，如果没有进行分组的话，则默认整张表为一个组。</p>
 <ul>
 <li>分组函数自动忽略null</li>
@@ -583,7 +589,8 @@
 <blockquote>
 <p>优化策略：having和where优先使用where，能用where先过滤的先使用where</p>
 </blockquote>
-<h3 id="6-连接查询"><a href="#6-连接查询" class="headerlink" title="6. 连接查询"></a>6. 连接查询</h3><p>连接查询：多表连接</p>
+<h3 id="6-连接查询">6. 连接查询</h3>
+<p>连接查询：多表连接</p>
 <p>分类：</p>
 <ul>
 <li>内连接：等值连接、非等值连接、自连接</li>
@@ -596,13 +603,11 @@
 <p><strong>内连接</strong>：</p>
 <p>SQ92语法：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select 查询列表<br>from 表名1,表名2,...<br>where 筛选条件 and (其他条件)<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>缺点：结构不侵袭，表的连接条件和后续其他筛选条件混在一起</li>
 </ul>
 <p>SQ99语法：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select 查询列表<br>from 表名1 别名1<br>(inner) join 表名2 别名2<br>on 连接条件<br>...join ...<br>on ...<br>where 筛选条件<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>等值连接：连接条件是等价关系</li>
 <li>非等值连接：连接条件不是等价关系（例如在范围之间等）</li>
@@ -612,10 +617,8 @@
 <p>内连接的特点：完全能够匹配才出现在结果中</p>
 <p>外连接：某张表中的内容会全部显示，哪张表全部显示则对应了左右全外连接</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">left/right/full (outer) join<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="7-子查询"><a href="#7-子查询" class="headerlink" title="7. 子查询"></a>7. 子查询</h3><p>子查询就是select语句嵌套select语句。</p>
+<h3 id="7-子查询">7. 子查询</h3>
+<p>子查询就是select语句嵌套select语句。</p>
 <p>from后面的子查询可以将子查询的结果当作一张临时表</p>
 <blockquote>
 <p>select后面：要求子查询的结果为单行单列</p>
@@ -625,31 +628,33 @@
 </blockquote>
 <p><strong>union</strong>的用法：union联合查询</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">(子查询)<br>union<br>(子查询)<br></code></pre></td></tr></table></figure>
-
 <ul>
-<li><p>当查询结果来自多张表，但是多张表之间没有关联的时候，这个时候往往使用union将表结果进行合并</p>
+<li>
+<p>当查询结果来自多张表，但是多张表之间没有关联的时候，这个时候往往使用union将表结果进行合并</p>
 </li>
-<li><p>多条查询语句的列数必须一致（相当于在后面拼接）</p>
+<li>
+<p>多条查询语句的列数必须一致（相当于在后面拼接）</p>
 <blockquote>
 <p>列的数据类型在mysql中不要求一致，在Oracle中要求一致</p>
 </blockquote>
 </li>
-<li><p>union自动去重，union all可以支持重复项</p>
+<li>
+<p>union自动去重，union all可以支持重复项</p>
 </li>
 </ul>
 <blockquote>
 <p>union的效率要高一些，对于表连接来说，每连接一次新表，则匹配的次数满足笛卡尔积</p>
 <p>union可以满足匹配的次数，在减少匹配次数的情况下，还可以完成两个结果集的拼接</p>
 </blockquote>
-<h3 id="8-分页查询"><a href="#8-分页查询" class="headerlink" title="8. 分页查询"></a>8. 分页查询</h3><p>使用<strong>limit</strong>关键字</p>
+<h3 id="8-分页查询">8. 分页查询</h3>
+<p>使用<strong>limit</strong>关键字</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">limit 起始条目索引, 显示的条目数<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>limit语句放在命令后面，也在最后执行</li>
 <li>起始条目索引从0开始</li>
 </ul>
-<h3 id="9-表的创建和删除"><a href="#9-表的创建和删除" class="headerlink" title="9. 表的创建和删除"></a>9. 表的创建和删除</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mysql">create table 表名(<br>    字段名1 数据类型,<br>    字段名2 数据类型,<br>    ...,<br>    字段名n 数据类型<br>);<br></code></pre></td></tr></table></figure>
-
+<h3 id="9-表的创建和删除">9. 表的创建和删除</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mysql">create table 表名(<br>    字段名1 数据类型,<br>    字段名2 数据类型,<br>    ...,<br>    字段名n 数据类型<br>);<br></code></pre></td></tr></table></figure>
 <ul>
 <li>最后一个没有逗号</li>
 </ul>
@@ -660,7 +665,8 @@
 <th></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>varchar(n)</td>
 <td>可变长度字符串（根据实际存储决定开辟空间，n表示最多存储字符数，最多255，必须给出）</td>
 </tr>
@@ -700,15 +706,13 @@
 <td>blob</td>
 <td>二进制大对象</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>表的删除</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">删除表<br>drop table 表名;<br>drop table if exists 表名;<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="10-表中数据的操作"><a href="#10-表中数据的操作" class="headerlink" title="10. 表中数据的操作"></a>10. 表中数据的操作</h3><p><strong>插入数据</strong></p>
+<h3 id="10-表中数据的操作">10. 表中数据的操作</h3>
+<p><strong>插入数据</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">insert into 表名 (字段名1, 字段名2, ...) values (值1, 值2, ...)<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>其中字段名和值需要一一对应</li>
 <li>字段名可以省略，缺省表示匹配全部字段</li>
@@ -716,13 +720,11 @@
 </ul>
 <p><strong>修改数据</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">update 表名 set 字段1 = 值1, 字段2 = 值2, ... where 条件;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>没有条件限制会导致所有数据全部更新</li>
 </ul>
 <p><strong>删除数据</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">delete from 表名 where 条件;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>没有条件全部删除</li>
 <li>这种删除数据的方式比较慢：逐个删除，存储空间不释放，后续数据可以回滚</li>
@@ -730,7 +732,6 @@
 </ul>
 <p><strong>表中数据的快速删除</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">truncate table 表名;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>删除效率较高，物理删除：存储空间释放，后续数据不支持回滚</li>
 <li>属于DDL语句</li>
@@ -738,21 +739,16 @@
 </ul>
 <p><strong>表的快速复制</strong>（快速复制表）</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">create table 新表名 as select * from 旧表名;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>将一个查询结果当作一张表新建</li>
 </ul>
 <p><strong>将查询结果插入</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">insert into 被插入的表名 select * from 查询表名;<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="11-对表结构的增删改"><a href="#11-对表结构的增删改" class="headerlink" title="11. 对表结构的增删改"></a>11. 对表结构的增删改</h3><p>实际业务当中，需求和表确定了之后，对表结构的修改一般是比较少的。因为成本较高。</p>
+<h3 id="11-对表结构的增删改">11. 对表结构的增删改</h3>
+<p>实际业务当中，需求和表确定了之后，对表结构的修改一般是比较少的。因为成本较高。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">添加字段<br>alter table 表名 add 新字段 数据类型;<br><br>修改字段<br>alter table 表名 modify 旧字段 新数据类型;<br><br>删除字段<br>alter table 表名 drop 旧字段;<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="12-约束"><a href="#12-约束" class="headerlink" title="12. 约束"></a>12. 约束</h3><p>约束：constraint</p>
+<h3 id="12-约束">12. 约束</h3>
+<p>约束：constraint</p>
 <p>常见约束：</p>
 <ul>
 <li>非空约束：<strong>not null</strong></li>
@@ -767,56 +763,71 @@
 </blockquote>
 <p>注意事项：</p>
 <ol>
-<li><p>唯一性约束的字段可以为null，null和null不算重复</p>
+<li>
+<p>唯一性约束的字段可以为null，null和null不算重复</p>
 </li>
-<li><p>两个字段综合起来的唯一性（联合唯一）</p>
+<li>
+<p>两个字段综合起来的唯一性（联合唯一）</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mysql">create table t_test (<br>    id int,<br>    name varchar(255),<br>    email varchar(255),<br>    unique(name, emial)<br>)<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>约束分为列级约束和表级约束</p>
+<li>
+<p>约束分为列级约束和表级约束</p>
 <ul>
 <li>列级约束：直接添加在字段后面的约束，仅对单个字段的约束</li>
 <li>表级约束：非列级约束，需要对多个字段进行约束</li>
 </ul>
 </li>
-<li><p>not null只有列级约束</p>
+<li>
+<p>not null只有列级约束</p>
 </li>
-<li><p>在mysql中，not null unique 自动变成 primary key（在Oracle中不一样）</p>
+<li>
+<p>在mysql中，not null unique 自动变成 primary key（在Oracle中不一样）</p>
 </li>
-<li><p>修改约束就是修改字段</p>
+<li>
+<p>修改约束就是修改字段</p>
 </li>
 </ol>
 <p><strong>主键约束</strong></p>
 <ol>
-<li><p>主键值是每一行记录的唯一标识</p>
+<li>
+<p>主键值是每一行记录的唯一标识</p>
 </li>
-<li><p>任何一张表都应该有主键，没有主键的话表是无效的</p>
+<li>
+<p>任何一张表都应该有主键，没有主键的话表是无效的</p>
 </li>
-<li><p>复合主键（是表级约束，但是在实际开发中不建议使用复合主键）</p>
+<li>
+<p>复合主键（是表级约束，但是在实际开发中不建议使用复合主键）</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">primary key(id, name)<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>主键值建议使用int、bigint、char等类型，不建议使用varchar</p>
+<li>
+<p>主键值建议使用int、bigint、char等类型，不建议使用varchar</p>
 </li>
-<li><p>主键还可以分为自然主键和业务主键，<strong>自然主键使用比较多</strong></p>
+<li>
+<p>主键还可以分为自然主键和业务主键，<strong>自然主键使用比较多</strong></p>
 </li>
-<li><p>在mysql中，可以使用自增机制来帮助自动维护主键值，从1开始自增</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">id int primary key auto_increment<br></code></pre></td></tr></table></figure></li>
+<li>
+<p>在mysql中，可以使用自增机制来帮助自动维护主键值，从1开始自增</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">id int primary key auto_increment<br></code></pre></td></tr></table></figure>
+</li>
 </ol>
 <p><strong>外键约束</strong></p>
 <ol>
-<li><p>外键需要时刻保证外键值一定在另一张表中存在（涉及到表，数据等的创建和删除顺序）</p>
+<li>
+<p>外键需要时刻保证外键值一定在另一张表中存在（涉及到表，数据等的创建和删除顺序）</p>
 </li>
-<li><p>外键约束的写法，写在字段定义的后面</p>
+<li>
+<p>外键约束的写法，写在字段定义的后面</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">foreign key(本表字段) references 其他表名(该表字段)<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>外键可以为null，外键在另一张表中一定要具有唯一性，不一定是主键</p>
+<li>
+<p>外键可以为null，外键在另一张表中一定要具有唯一性，不一定是主键</p>
 </li>
 </ol>
-<h3 id="13-存储引擎"><a href="#13-存储引擎" class="headerlink" title="13. 存储引擎"></a>13. 存储引擎</h3><p>存储引擎是MySQL中特有的一个术语，实际存储引擎指的就是一个表存储和组织数据的方式，不同的存储引擎，表存储数据的方式不同。</p>
+<h3 id="13-存储引擎">13. 存储引擎</h3>
+<p>存储引擎是MySQL中特有的一个术语，实际存储引擎指的就是一个表存储和组织数据的方式，不同的存储引擎，表存储数据的方式不同。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mysql">展示建表的时候的sql语句<br>show create table 表名<br></code></pre></td></tr></table></figure>
-
 <p>可以在建表的时候指定存储引擎和字符编码方式</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mysql">create table t_test (<br>    id int,<br>    name varchar(20)<br>)ENGINE=InnoDB DEFAULE CHARSET=utf8<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>mysql默认的存储引擎是：InnoDB</li>
 <li>mysql默认的字符编码方式是：utf8</li>
@@ -829,14 +840,12 @@
 </ul>
 <p>查看当前可用的存储引擎，使用show engines语句：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">show engines \G<br></code></pre></td></tr></table></figure>
-
-
-
 <p><strong>常用的存储引擎</strong></p>
 <p><strong>MyISAM</strong>：</p>
 <ol>
 <li>MyISAM存储引擎是MySQL最常用的引擎</li>
-<li>使用三个文件来表示每个表<ul>
+<li>使用三个文件来表示每个表
+<ul>
 <li>格式文件：（mytable.frm）存储表结构的定义</li>
 <li>数据文件：（mytable.MYD）存储表的行内容</li>
 <li>索引文件：（mytable.MYI）存储表上的索引</li>
@@ -851,7 +860,8 @@
 <li>这是MySQL默认的存储引擎，同时也是一个重量级的引擎</li>
 <li>支持事务，支持数据库崩溃后的自动恢复机制</li>
 <li>最主要的特点就是：非常安全</li>
-<li>它管理的表具有以下特征<ul>
+<li>它管理的表具有以下特征
+<ul>
 <li>每个InnoDB表在数据库目录中以.fmt格式文件表示</li>
 <li>InnoDB表空间tablespace中用于存储表的内容（表空间是一个逻辑名称，表空间中存储表数据和索引）</li>
 <li>提供一组用来记录事务性活动的日志文件</li>
@@ -867,7 +877,8 @@
 <p><strong>MEMORY</strong>：</p>
 <ol>
 <li>数据存储在内存中，且行的长度固定，这使得MEMORY引擎非常快</li>
-<li>MEMORY存储引擎管理的表具有以下特征：<ul>
+<li>MEMORY存储引擎管理的表具有以下特征：
+<ul>
 <li>在数据库目录中，每个表均以.frm格式的文件表示</li>
 <li>表数据及索引被存储在内存当中</li>
 <li>表级的锁机制</li>
@@ -886,23 +897,25 @@
 <li>MEMORY引擎存储非永久需要的数据，或者是能够从基于硬盘的表中重新生成的数据</li>
 </ul>
 </blockquote>
-<h3 id="14-事务"><a href="#14-事务" class="headerlink" title="14. 事务"></a>14. 事务</h3><p>事务的特性：ACID（原子性，一致性，隔离性，持久性）</p>
+<h3 id="14-事务">14. 事务</h3>
+<p>事务的特性：ACID（原子性，一致性，隔离性，持久性）</p>
 <p>与事务有关的语句是DML语句（insert、delete、update），其他语句与事务无关。</p>
 <p>批量的DML语句同时成功或者同时失败。</p>
 <p>实现原理：InnoDB存储引擎提供一组用来记录事务性活动的日志文件</p>
 <ul>
-<li>提交事务：清空事务性活动的日志文件，将数据全部彻底持久化到数据库表中<ul>
+<li>提交事务：清空事务性活动的日志文件，将数据全部彻底持久化到数据库表中
+<ul>
 <li>提交事务标志着事务的<strong>全部成功</strong>的结束</li>
 </ul>
 </li>
-<li>回滚事务：将之前所有的DML操作全部撤销，并且清空事务性活动的日志文件<ul>
+<li>回滚事务：将之前所有的DML操作全部撤销，并且清空事务性活动的日志文件
+<ul>
 <li>提交事务标志着事务的<strong>全部失败</strong>的结束</li>
 <li>回滚事务只能回滚到上一次事务的提交点</li>
 </ul>
 </li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">事务举例：<br>start transaction;<br><br>...一系列操作<br><br>提交事务：commit;<br>回滚事务：rollback;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>MySQL当中默认支持自动事务提交（每执行一条DML语句，就提交一次）</li>
 <li>如果不用自动提交的话，就需要先执行<code>start transaction</code>开启事务</li>
@@ -910,20 +923,23 @@
 <p><strong>事务的隔离性</strong></p>
 <p>事务有不同的隔离级别，一共有4个级别</p>
 <ul>
-<li>读未提交（read uncommitted）-最低级别<ul>
+<li>读未提交（read uncommitted）-最低级别
+<ul>
 <li>提交事务之前就能读取到</li>
 <li>事务A可以读取到事务B未提交的数据</li>
 <li>存在问题：脏读</li>
 </ul>
 </li>
-<li>读已提交（read committed）<ul>
+<li>读已提交（read committed）
+<ul>
 <li>提交事务之后才能读取到</li>
 <li>事务A只能读取到事务B提交之后的数据</li>
 <li>存在问题：不可重复读取数据（事务A每次读取的数据可能是不一致的）</li>
 <li>每次读取到的数据都是真实的</li>
 </ul>
 </li>
-<li>可重复读（repeatable read）<ul>
+<li>可重复读（repeatable read）
+<ul>
 <li>提交事务之后也读不到，永远读取的都是刚开启事务时的数据</li>
 <li>其他事务不会改变这个事务读取到的数据</li>
 <li>事务A开启之后，不管是多久，每一次事务A中读取到的数据都是一致的</li>
@@ -931,16 +947,15 @@
 <li>这是mysql中默认的隔离级别</li>
 </ul>
 </li>
-<li>序列化（serializable）-最高级别<ul>
+<li>序列化（serializable）-最高级别
+<ul>
 <li>事务排队，不能并发</li>
 </ul>
 </li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">查看目前的事务隔离级别<br>查看当前会话的隔离级别：(8.0后的表达)<br>select @@transaction_isolation;<br>查看全局隔离级别：<br>select @@session.transaction_isolation;<br><br>通过命令设置隔离级别：<br>set transaction isolation level 隔离等级<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="15-索引"><a href="#15-索引" class="headerlink" title="15. 索引"></a>15. 索引</h3><p>索引概述：</p>
+<h3 id="15-索引">15. 索引</h3>
+<p>索引概述：</p>
 <p>索引是在数据库表的字段上添加的，每个字段上都可以添加索引，添加索引可以提高查询效率。</p>
 <blockquote>
 <p>mysql查询的两种方式：</p>
@@ -952,9 +967,11 @@
 </blockquote>
 <p>MyISAM和InnoDB使用B+树作为索引结构（主键，unqiue都会默认添加索引）</p>
 <ul>
-<li><p>在任何数据库中，主键上都会自动添加索引对象；在mysql中，一个字段上如果有unique约束的话，也会自动添加索引对象</p>
+<li>
+<p>在任何数据库中，主键上都会自动添加索引对象；在mysql中，一个字段上如果有unique约束的话，也会自动添加索引对象</p>
 </li>
-<li><p>遵循左小右大原则存放，采用中序遍历</p>
+<li>
+<p>遵循左小右大原则存放，采用中序遍历</p>
 </li>
 </ul>
 <p>索引实现原理</p>
@@ -964,8 +981,8 @@
 </ol>
 <blockquote>
 <p>mysql中为什么不使用B树而是用B+树？</p>
-<p>B 树与 B+ 树的最大区别就是，B 树可以在非叶结点中存储数据，但是 B+ 树的所有数据其实都存储在叶子节点中由于所有的节点都可能包含目标数据，我们总是要从根节点向下遍历子树查找满足条件的数据行，这个特点带来了大量的随机 I&#x2F;O，也是 B 树最大的性能问题。</p>
-<p>B+ 树中就不存在这个问题了，因为所有的数据行都存储在叶节点中，而这些叶节点可以<strong>通过『指针』依次按顺序连接</strong>，当我们在如下所示的 B+ 树遍历数据时可以直接在多个子节点之间进行跳转，这样能够节省大量的磁盘 I&#x2F;O 时间，也不需要在不同层级的节点之间对数据进行拼接和排序；通过一个 B+ 树最左侧的叶子节点，我们可以像链表一样遍历整个树中的全部数据，我们也可以引入双向链表保证倒序遍历时的性能</p>
+<p>B 树与 B+ 树的最大区别就是，B 树可以在非叶结点中存储数据，但是 B+ 树的所有数据其实都存储在叶子节点中由于所有的节点都可能包含目标数据，我们总是要从根节点向下遍历子树查找满足条件的数据行，这个特点带来了大量的随机 I/O，也是 B 树最大的性能问题。</p>
+<p>B+ 树中就不存在这个问题了，因为所有的数据行都存储在叶节点中，而这些叶节点可以<strong>通过『指针』依次按顺序连接</strong>，当我们在如下所示的 B+ 树遍历数据时可以直接在多个子节点之间进行跳转，这样能够节省大量的磁盘 I/O 时间，也不需要在不同层级的节点之间对数据进行拼接和排序；通过一个 B+ 树最左侧的叶子节点，我们可以像链表一样遍历整个树中的全部数据，我们也可以引入双向链表保证倒序遍历时的性能</p>
 </blockquote>
 <p>在什么条件下考虑给字段添加索引：</p>
 <ol>
@@ -976,16 +993,15 @@
 </ol>
 <p>索引使用的语法</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">创建索引<br>create index 索引对象名 on 表名(字段名); <br><br>删除索引<br>drop index 索引对象名 on 表名;<br><br>查看sql语句是否使用了索引进行查询<br>explain sql语句;<br></code></pre></td></tr></table></figure>
-
-
-
 <p>索引失效：</p>
 <ol>
-<li>模糊查询中，如果以<code>%</code>开头，不会走索引<ul>
+<li>模糊查询中，如果以<code>%</code>开头，不会走索引
+<ul>
 <li>对应优化模糊查询</li>
 </ul>
 </li>
-<li>使用or的时候会失效。如果使用or那么要求or两边的条件字段都要求有索引，才能走索引<ul>
+<li>使用or的时候会失效。如果使用or那么要求or两边的条件字段都要求有索引，才能走索引
+<ul>
 <li>对应优化尽量少用 or</li>
 </ul>
 </li>
@@ -993,30 +1009,33 @@
 <li>在where当中，索引列参加了运算，索引失效</li>
 <li>在where当中，索引列使用了函数</li>
 </ol>
-<h3 id="16-视图"><a href="#16-视图" class="headerlink" title="16. 视图"></a>16. 视图</h3><p>视图：view，在不同的角度看待同一份数据</p>
+<h3 id="16-视图">16. 视图</h3>
+<p>视图：view，在不同的角度看待同一份数据</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mysql">创建视图<br>create view 视图名称 as select语句<br><br>删除视图<br>drop view 视图名称;<br></code></pre></td></tr></table></figure>
-
 <p>视图的作用：我们可以面向视图对象进行增删改查，对视图对象的增删改查会导致原表被操作</p>
-<h3 id="17-数据的备份-导出和导入"><a href="#17-数据的备份-导出和导入" class="headerlink" title="17.数据的备份 导出和导入"></a>17.数据的备份 导出和导入</h3><p>数据导出</p>
+<h3 id="17-数据的备份-导出和导入">17.数据的备份 导出和导入</h3>
+<p>数据导出</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">在命令行窗口中（不是登录到mysql）<br>mysql dump 数据库名称 &gt; 导出路径 -uroot -p123123<br>导出指定的表<br>mysql dump 数据库名称 数据表名称 &gt; 导出路径 -uroot -p123123<br></code></pre></td></tr></table></figure>
-
 <p>数据导出</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mysql">先登录到mysql<br>source语句<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="18-数据库设计三范式"><a href="#18-数据库设计三范式" class="headerlink" title="18. 数据库设计三范式"></a>18. 数据库设计三范式</h3><ol>
-<li><p>要求任何一张表必须有主键，每个字段原子性不可再分</p>
+<h3 id="18-数据库设计三范式">18. 数据库设计三范式</h3>
+<ol>
+<li>
+<p>要求任何一张表必须有主键，每个字段原子性不可再分</p>
 </li>
-<li><p>建立在第一范式的基础上，要求所有的非主键字段完全依赖主键，不要产生部分依赖</p>
+<li>
+<p>建立在第一范式的基础上，要求所有的非主键字段完全依赖主键，不要产生部分依赖</p>
 <ul>
-<li><p>一般不要复合主键</p>
+<li>
+<p>一般不要复合主键</p>
 </li>
-<li><p>多对多，使用三张表，关系表为两个外键</p>
+<li>
+<p>多对多，使用三张表，关系表为两个外键</p>
 </li>
 </ul>
 </li>
-<li><p>建立在第二范式的基础上，要求所有的非主键字段直接依赖主键，不要产生传递依赖</p>
+<li>
+<p>建立在第二范式的基础上，要求所有的非主键字段直接依赖主键，不要产生传递依赖</p>
 <ul>
 <li>一对多，拆分成两张表，多的表加外键</li>
 </ul>
@@ -1127,9 +1146,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/06/27/Pandas%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/" title="Pandas基础笔记">
+                      <a href="/2022/06/28/Linux%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Linux基础学习笔记">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Pandas基础笔记</span>
+                        <span class="hidden-mobile">Linux基础学习笔记</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     

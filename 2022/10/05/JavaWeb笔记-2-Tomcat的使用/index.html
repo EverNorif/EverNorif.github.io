@@ -328,26 +328,34 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Tomcat"><a href="#Tomcat" class="headerlink" title="Tomcat"></a>Tomcat</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在介绍Tomcat之前，我们需要先了解Web服务器的概念。Web服务器是一个应用程序，它对HTTP协议的操作进行了封装，使得程序员无需直接对协议进行操作，从而让Web开发更加便捷。Web服务器软件被安装在服务器端，后续我们可以将自己写的Web项目部署到服务器软件中，当Web服务器软件启动后，就可以直接通过浏览器来访问对应的页面。Tomcat就是一种服务器软件，当然它也只是其中的一种，还有很多其他的服务器软件，而这里我们先学习的是Tomcat。</p>
+                <h1>Tomcat</h1>
+<h2 id="简介">简介</h2>
+<p>在介绍Tomcat之前，我们需要先了解Web服务器的概念。Web服务器是一个应用程序，它对HTTP协议的操作进行了封装，使得程序员无需直接对协议进行操作，从而让Web开发更加便捷。Web服务器软件被安装在服务器端，后续我们可以将自己写的Web项目部署到服务器软件中，当Web服务器软件启动后，就可以直接通过浏览器来访问对应的页面。Tomcat就是一种服务器软件，当然它也只是其中的一种，还有很多其他的服务器软件，而这里我们先学习的是Tomcat。</p>
 <p>Tomcat是Apache软件基金会的一个核心项目，是一个开源的轻量级Web服务器，支持Servlet，JSP等少量JavaEE规范。Tomcat又被称为Web容器、Servlet容器，Servlet需要依赖Tomcat才能够运行。</p>
 <blockquote>
 <p>JavaEE规范：JavaEE，Java Enterprise Edition，Java企业版，指的是Java企业级开发的技术规范总和，包含了13项技术规范，JDBC、JNDI、EJB、RMI、JSP、Servlet、XML、JMS、Java IDL、JTS、JTA、JavaMail、JAF。</p>
 </blockquote>
-<h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><p>那么接下来先了解Tomcat的基本使用。</p>
+<h2 id="基本使用">基本使用</h2>
+<p>那么接下来先了解Tomcat的基本使用。</p>
 <p>首先是下载与安装。Tomcat的下载可以从官网<a target="_blank" rel="noopener" href="https://tomcat.apache.org/">Apache Tomcat® - Welcome!</a>直接进行，根据实际情况选择对应的版本，下载完成后得到压缩包，解压到对应目录即可。</p>
 <p>下载完成之后可以启动服务，服务启动只需要执行对应命令即可，命令位置为<code>bin/startup</code>。启动成功之后会弹出新的黑窗口，我们可以访问localhost:8080，就可以看到Tomcat默认的内容。关闭Tomcat服务可以通过<code>bin\shutdown</code>命令来进行正常关闭。</p>
 <p>Tomcat的相关配置文件在<code>conf</code>目录下，其中启动端口号默认为8080，配置信息在<code>conf/server.xml</code>下。</p>
 <p>利用Tomcat进行项目部署也非常简单，只需要将我们的项目放置到<code>webapps</code>目录下即可。但是随着项目的增大，项目的资源越来越多，项目的拷贝过程也会比较长，因此我们一般情况是使用war包的形式来进行项目传输。我们一般会将JavaWeb项目打包成<code>war</code>包的形式，然后将其放置到<code>webapps</code>目录下，Tomcat会自动进行<code>war</code>包的解压。</p>
-<h2 id="利用IDEA进行开发"><a href="#利用IDEA进行开发" class="headerlink" title="利用IDEA进行开发"></a>利用IDEA进行开发</h2><p>我们首先了解一下Web项目的结构，可以分成开发中的项目以及可以部署的项目，这两种项目的结构有所差别。</p>
+<h2 id="利用IDEA进行开发">利用IDEA进行开发</h2>
+<p>我们首先了解一下Web项目的结构，可以分成开发中的项目以及可以部署的项目，这两种项目的结构有所差别。</p>
 <p>开发中的项目，其结构如下：</p>
 <ul>
-<li><code>src</code>：源码文件<ul>
-<li><code>main</code>：主目录<ul>
+<li><code>src</code>：源码文件
+<ul>
+<li><code>main</code>：主目录
+<ul>
 <li><code>java</code>：java代码</li>
 <li><code>resources</code>：资源文件</li>
-<li><code>webapp</code>：Web项目的特有目录<ul>
+<li><code>webapp</code>：Web项目的特有目录
+<ul>
 <li><code>html</code>：html文件目录，允许自定义名称</li>
-<li><code>WEB-INF</code>：Web项目核心目录，不允许修改名称<ul>
+<li><code>WEB-INF</code>：Web项目核心目录，不允许修改名称
+<ul>
 <li><code>web.xml</code>：Web项目配置文件</li>
 </ul>
 </li>
@@ -363,7 +371,8 @@
 <p>开发完成可以部署的项目，其结构如下：</p>
 <ul>
 <li><code>html</code>：html文件目录</li>
-<li><code>WEB-INF</code>：Web项目核心目录<ul>
+<li><code>WEB-INF</code>：Web项目核心目录
+<ul>
 <li><code>classes</code>：Java字节码文件</li>
 <li><code>lib</code>：项目所需的jar包</li>
 <li><code>web.xml</code>：Web项目配置文件</li>
@@ -384,15 +393,10 @@
 </blockquote>
 <p>启动配置：</p>
 <img src="/2022/10/05/JavaWeb%E7%AC%94%E8%AE%B0-2-Tomcat%E7%9A%84%E4%BD%BF%E7%94%A8/%E6%AD%A5%E9%AA%A41.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="步骤1">
-
 <p>项目添加：</p>
 <img src="/2022/10/05/JavaWeb%E7%AC%94%E8%AE%B0-2-Tomcat%E7%9A%84%E4%BD%BF%E7%94%A8/%E6%AD%A5%E9%AA%A42.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="步骤2">
-
 <p>第二种方式，采用Tomcat Maven插件。它使用Maven中的Tomcat插件来进行项目部署，首先需要在pom.xml中添加Tomcat插件，然后使用Maven Helper插件快速启动项目，右键 -&gt; <code>Run Maven</code> -&gt; <code>tomcat7:run</code>即可启动项目。（这种方式下，Tomcat Maven插件的版本会受到限制）</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>    	<span class="hljs-comment">&lt;!--Tomcat插件 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.tomcat.maven<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>tomcat7-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
 
                 
               </div>

@@ -326,34 +326,43 @@
             
               <div class="markdown-body">
                 
-                <h2 id="HDFS的写机制"><a href="#HDFS的写机制" class="headerlink" title="HDFS的写机制"></a>HDFS的写机制</h2><ol>
-<li><p>客户端向NameNode请求上传文件，NameNode检查该上传请求的权限以及目录结构，然后返回是否可以上传</p>
+                <h2 id="HDFS的写机制">HDFS的写机制</h2>
+<ol>
+<li>
+<p>客户端向NameNode请求上传文件，NameNode检查该上传请求的权限以及目录结构，然后返回是否可以上传</p>
 </li>
-<li><p>如果可以上传，那么客户端会请求第一个数据分块Block应该上传到哪几个DataNode节点上</p>
+<li>
+<p>如果可以上传，那么客户端会请求第一个数据分块Block应该上传到哪几个DataNode节点上</p>
 </li>
-<li><p>NameNode返回对应的DataNode节点</p>
+<li>
+<p>NameNode返回对应的DataNode节点</p>
 </li>
-<li><p>客户端向对应的DataNode节点上传数据</p>
+<li>
+<p>客户端向对应的DataNode节点上传数据</p>
 <blockquote>
-<p> 用户成功写入了一个数据块就认为成功，不关心后续副本的复制问题。每次创建副本的时候，当前Datanode只对下一个Datanode负责</p>
+<p>用户成功写入了一个数据块就认为成功，不关心后续副本的复制问题。每次创建副本的时候，当前Datanode只对下一个Datanode负责</p>
 <p>客户端上传Block，以Packet为单位，每一个Packet会携带一个chunk。chunk是Hadoop中最小的单位。</p>
 <p>Packet是Client端向Dataode，或者DataNode的PipLine之间传输数据的基本单位，默认<code>64kB</code>.</p>
 <p>Chunk是最小的Hadoop中最小的单位，是Client向DataNode或DataNode的PipLne之间进行数据校验的基本单位，默认<code>512Byte</code>，因为用作校验(自己校验自己)，故每个chunk需要带有<code>4Byte</code>的校验位。所以实际每个chunk写入packet的大小为516Byte，真实数据与校验值数据的比值为128:1。</p>
 </blockquote>
 </li>
-<li><p>当一个Block传输完成之后，客户端再次请求NameNode进行第二个Block的传输。</p>
+<li>
+<p>当一个Block传输完成之后，客户端再次请求NameNode进行第二个Block的传输。</p>
 </li>
 </ol>
 <blockquote>
 <p>机架感知策略：如果客户端在DataNode上写入，则第一份写入自己所在的DataNode，如果不是，则随机选择一个DataNode。之后第二份选择写入与第一份不同机架的一个DataNode，第三份选择与第二份相同机架不同节点的一个DataNode。</p>
 </blockquote>
-<h2 id="HDFS的读机制"><a href="#HDFS的读机制" class="headerlink" title="HDFS的读机制"></a>HDFS的读机制</h2><ol>
+<h2 id="HDFS的读机制">HDFS的读机制</h2>
+<ol>
 <li>客户端向NameNode请求下载文件，NameNode通过查询元数据，找到文件块所在的DataNode地址</li>
 <li>挑选一台DataNode（就近原则，然后随机）服务器，请求读取数据</li>
-<li>DataNode 开始传输数据给客户端（从磁盘里面读取数据输入流，以 Packet 为单位 来做校验）。 </li>
+<li>DataNode 开始传输数据给客户端（从磁盘里面读取数据输入流，以 Packet 为单位 来做校验）。</li>
 <li>客户端以 Packet 为单位接收，先在本地缓存，然后写入目标文件</li>
 </ol>
-<h2 id="NameNode和SecondaryNameNode工作机制"><a href="#NameNode和SecondaryNameNode工作机制" class="headerlink" title="NameNode和SecondaryNameNode工作机制"></a>NameNode和SecondaryNameNode工作机制</h2><h3 id="1-简要描述"><a href="#1-简要描述" class="headerlink" title="1. 简要描述"></a>1. 简要描述</h3><ul>
+<h2 id="NameNode和SecondaryNameNode工作机制">NameNode和SecondaryNameNode工作机制</h2>
+<h3 id="1-简要描述">1. 简要描述</h3>
+<ul>
 <li>fsimage文件：由Namenode存储的，文件系统中的元数据信息。该文件在Namenode启动时被加载到内存当中，并且一直保持只读状态。</li>
 <li>Namnode启动过程中，只接受读请求，不接受写请求（安全模式）</li>
 <li>需要修改元数据的时候，不能直接修改fsimage文件。需要将修改事务写到一系列新的edits文件当中。edits文件会定时合并，成为新的fsimage文件</li>
@@ -362,22 +371,25 @@
 <li>Secondary Namenode可以帮助Namenode完成合并任务，降低Namenode的压力。Secondary Namenode负责将fsimage和edits文件合并形成新的fsimage文件。该过程周期性自动进行</li>
 <li>合并的时候会通知Namenode，让其暂停使用当前的edits文件，将新纪录写到新的edits文件当中</li>
 </ul>
-<h3 id="2-具体流程"><a href="#2-具体流程" class="headerlink" title="2. 具体流程"></a>2. 具体流程</h3><ol>
-<li>第一阶段：NameNode启动<ol>
+<h3 id="2-具体流程">2. 具体流程</h3>
+<ol>
+<li>第一阶段：NameNode启动
+<ol>
 <li>第一次启动NameNode格式化之后，创建Fsiamge文件和Edits文件；如果不是第一次创建，就将文件加载到内存中</li>
 <li>客户端对元数据进行增删改的请求</li>
 <li>NameNode记录操作日志，更新滚动日志</li>
 <li>NameNode在内存中对元数据进行增删改</li>
 </ol>
 </li>
-<li>第二阶段：SecondaryNameNode启动<ol>
-<li>Secondary NameNode 询问 NameNode 是否需要 CheckPoint。直接带回 NameNode 是否检查结果。 </li>
-<li>Secondary NameNode 请求执行 CheckPoint。 </li>
-<li>NameNode 滚动正在写的 Edits 日志。 </li>
-<li>将滚动前的编辑日志和镜像文件拷贝到 Secondary NameNode。 </li>
+<li>第二阶段：SecondaryNameNode启动
+<ol>
+<li>Secondary NameNode 询问 NameNode 是否需要 CheckPoint。直接带回 NameNode 是否检查结果。</li>
+<li>Secondary NameNode 请求执行 CheckPoint。</li>
+<li>NameNode 滚动正在写的 Edits 日志。</li>
+<li>将滚动前的编辑日志和镜像文件拷贝到 Secondary NameNode。</li>
 <li>Secondary NameNode 加载编辑日志和镜像文件到内存，并合并。</li>
-<li>生成新的镜像文件 fsimage.chkpoint。 </li>
-<li>拷贝 fsimage.chkpoint 到 NameNode。 </li>
+<li>生成新的镜像文件 fsimage.chkpoint。</li>
+<li>拷贝 fsimage.chkpoint 到 NameNode。</li>
 <li>NameNode 将 fsimage.chkpoint 重新命名成 fsimage。</li>
 </ol>
 </li>
@@ -391,54 +403,61 @@
 <p>合并Edits的时候，只会合并编号高于当前最大Fsimage编号的那些Edits文件</p>
 </blockquote>
 <p><strong>注意</strong>：fsimage中并没有记录块所对应的DataNode信息，这些信息是在集群启动的时候由DataNode向NameNode汇报的。</p>
-<h3 id="3-文件查看"><a href="#3-文件查看" class="headerlink" title="3. 文件查看"></a>3. 文件查看</h3><p>可以通过命令查看Fsimage文件</p>
+<h3 id="3-文件查看">3. 文件查看</h3>
+<p>可以通过命令查看Fsimage文件</p>
 <ol>
-<li><p>ovi查看Fsimage文件</p>
+<li>
+<p>ovi查看Fsimage文件</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hdfs oiv -p 文件类型 -i 镜像文件 -o 转换后文件输出路径<br></code></pre></td></tr></table></figure>
-
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hdfs oiv -p XML -i fsimage_0000000000000000025 -o ~/fsimage.xml<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>oev查看edits文件</p>
+<li>
+<p>oev查看edits文件</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hdfs oev -p 文件类型 -i 编辑日志 -o 转换后文件输出路径<br></code></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hdfs oev -p XML -i edits_0000000000000000012-0000000000000000013 -o ~/edits.xml<br></code></pre></td></tr></table></figure></li>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">hdfs oev -p XML -i edits_0000000000000000012-0000000000000000013 -o ~/edits.xml<br></code></pre></td></tr></table></figure>
+</li>
 </ol>
-<h3 id="4-CheckPoint时间设置"><a href="#4-CheckPoint时间设置" class="headerlink" title="4.CheckPoint时间设置"></a>4.CheckPoint时间设置</h3><blockquote>
+<h3 id="4-CheckPoint时间设置">4.CheckPoint时间设置</h3>
+<blockquote>
 <p>在hdfs-default.xml中的配置</p>
 </blockquote>
 <ol>
-<li><p>定时执行：默认SecondaryNameNode每隔一小时执行一次</p>
+<li>
+<p>定时执行：默认SecondaryNameNode每隔一小时执行一次</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.namenode.checkpoint.period<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>3600s<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
 </li>
-<li><p>当操作次数达到一百万的时候执行一次，每一分钟检查一次操作次数</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.namenode.checkpoint.txns<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>1000000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span>操作动作次数<span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.namenode.checkpoint.check.period<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>60s<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span> 1 分钟检查一次操作次数<span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure></li>
+<li>
+<p>当操作次数达到一百万的时候执行一次，每一分钟检查一次操作次数</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.namenode.checkpoint.txns<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>1000000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span>操作动作次数<span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.namenode.checkpoint.check.period<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>60s<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span> 1 分钟检查一次操作次数<span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
+</li>
 </ol>
-<h2 id="DataNode工作机制"><a href="#DataNode工作机制" class="headerlink" title="DataNode工作机制"></a>DataNode工作机制</h2><h3 id="1-工作机制"><a href="#1-工作机制" class="headerlink" title="1. 工作机制"></a>1. 工作机制</h3><ol>
-<li>一个数据块在 DataNode 上以文件形式存储在磁盘上，包括两个文件，一个是数据 本身，一个是元数据包括数据块的长度，块数据的校验和，以及时间戳。 </li>
+<h2 id="DataNode工作机制">DataNode工作机制</h2>
+<h3 id="1-工作机制">1. 工作机制</h3>
+<ol>
+<li>一个数据块在 DataNode 上以文件形式存储在磁盘上，包括两个文件，一个是数据 本身，一个是元数据包括数据块的长度，块数据的校验和，以及时间戳。</li>
 <li>DataNode 启动后向 NameNode 注册，通过后，周期性（6 小时）的向 NameNode 上 报所有的块信息。</li>
-<li>心跳是每 3 秒一次，心跳返回结果带有 NameNode 给该 DataNode 的命令如复制块 数据到另一台机器，或删除某个数据块。如果超过 10 分钟没有收到某个 DataNode 的心跳， 则认为该节点不可用。 </li>
+<li>心跳是每 3 秒一次，心跳返回结果带有 NameNode 给该 DataNode 的命令如复制块 数据到另一台机器，或删除某个数据块。如果超过 10 分钟没有收到某个 DataNode 的心跳， 则认为该节点不可用。</li>
 <li>集群运行中可以安全加入和退出一些机器</li>
 </ol>
 <blockquote>
 <p>DataNode向NameNode上报信息的设置</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.blockreport.intervalMsec<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>21600000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.datanode.directoryscan.interval<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>21600s<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
 </blockquote>
-<h3 id="2-数据完整性"><a href="#2-数据完整性" class="headerlink" title="2. 数据完整性"></a>2. 数据完整性</h3><p>DataNode节点检查数据完整性，使用crc校验算法。</p>
+<h3 id="2-数据完整性">2. 数据完整性</h3>
+<p>DataNode节点检查数据完整性，使用crc校验算法。</p>
 <p>DataNode在读取Block的时候会计算校验和，如果计算得到的校验和与Block在创建的时候得到的校验和不一致，说明Block已经损坏，数据不可用。则让Client去读取其他DataNode上的Block。</p>
 <p>并且在DataNode内部，也会在文件创建之后周期性验证它的校验和。</p>
-<h3 id="3-掉线时限参数设置"><a href="#3-掉线时限参数设置" class="headerlink" title="3.掉线时限参数设置"></a>3.掉线时限参数设置</h3><p>DataNode进程死亡或者网络故障，会导致DataNode无法与NameNode进行通信。如果经过连续一段时间之后，NameNode仍然没有收到该DataNode的心跳信息，那么就认为这个DataNode已经挂掉了，不能使用。这段时间称作超时时长。HDFS默认的超时时长为10分钟+30秒。</p>
+<h3 id="3-掉线时限参数设置">3.掉线时限参数设置</h3>
+<p>DataNode进程死亡或者网络故障，会导致DataNode无法与NameNode进行通信。如果经过连续一段时间之后，NameNode仍然没有收到该DataNode的心跳信息，那么就认为这个DataNode已经挂掉了，不能使用。这段时间称作超时时长。HDFS默认的超时时长为10分钟+30秒。</p>
 <p>实际的超时时长计算公式如下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">TimeOut = <span class="hljs-number">2</span> * dfs.namenode.heartbeat.recheck-interval + <span class="hljs-number">10</span> * dfs.heartbeat.interval<br></code></pre></td></tr></table></figure>
-
 <p>对应在<code>hdfs-site.xml</code>中的配置信息：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.namenode.heartbeat.recheck-interval<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>300000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>dfs.heartbeat.interval<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>3<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>前者单位为毫秒、后者单位为秒</li>
 </ul>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<h2 id="参考文章">参考文章</h2>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/we9999/p/12404121.html#/">Hadoop之HDFS的block、packet、chunk - 浮世间 - 博客园 (cnblogs.com)</a></li>
 </ol>
 

@@ -265,7 +265,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1k 字
+          972 字
         
       </span>
     
@@ -325,11 +325,16 @@
               <div class="markdown-body">
                 
                 <p>在Linux中有多个文件涉及到环境变量，不同文件之间的生效范围不同。可以配置环境变量的文件有<code>/etc/profile</code>，<code>/etc/bashrc</code>，<code>/etc/profile.d/*.sh</code>，<code>~/.bashrc</code>，<code>~/.bash_profile</code>等。它们的读入顺序也有所不同</p>
-<h1 id="x2F-etc-x2F-profile"><a href="#x2F-etc-x2F-profile" class="headerlink" title="&#x2F;etc&#x2F;profile"></a>&#x2F;etc&#x2F;profile</h1><p>该文件为系统级别的环境变量，为每个用户设置环境变量。<strong>当用户第一次登录的时候</strong>，该文件被执行。在执行的时候会读取<code>/etc/profile.d</code>目录下的脚本文件并进行执行，因此我们可以在该目录下新建<code>.sh</code>文件配置我们自己的环境变量，方便管理。</p>
-<h1 id="x2F-etc-x2F-bashrc"><a href="#x2F-etc-x2F-bashrc" class="headerlink" title="&#x2F;etc&#x2F;bashrc"></a>&#x2F;etc&#x2F;bashrc</h1><p>在执行完<code>/etc/prifile</code>中的内容之后，如果用户运行的是bash，那么接着会执行这个文件。也是系统级别的环境变量。文件中也会读取<code>/etc/profile.d</code>目录下的脚本文件并进行执行。<strong>每当一个新的bash shell被打开时</strong>，会执行此文件。一般来说，如果想要每个使用bash的用户新开一个bash或者每次登录都执行某些操作，可以在这个文件中设置。</p>
-<h1 id="x2F-bash-profile"><a href="#x2F-bash-profile" class="headerlink" title="~&#x2F;.bash_profile"></a>~&#x2F;.bash_profile</h1><p>该文件属于用户级别的环境变量。当用户登录的时候，该文件仅仅执行一次。默认情况下，它会执行用户的<code>.bashrc</code>文件。该文件的主要特点就是在登录的时候仅执行一次。</p>
-<h1 id="x2F-bashrc"><a href="#x2F-bashrc" class="headerlink" title="~&#x2F;.bashrc"></a>~&#x2F;.bashrc</h1><p>该文件属于用户级别的环境变量，在登录的时候，或者每次打开一个新的shell的时候，会执行该文件。默认情况下，该文件会执行<code>/etc/bashrc</code>文件。</p>
-<h1 id="login-shell与非login-shell"><a href="#login-shell与非login-shell" class="headerlink" title="login shell与非login shell"></a>login shell与非login shell</h1><p>这里还有一个login shell和non-login shell的区别。简单来说，我们通过终端输入用户名密码登录系统之后，得到的就是一个login shell，而当我们执行<code>ssh xxx command</code>，即只是通过ssh到某个机器执行某条命令，则属于non-login shell。</p>
+<h1>/etc/profile</h1>
+<p>该文件为系统级别的环境变量，为每个用户设置环境变量。<strong>当用户第一次登录的时候</strong>，该文件被执行。在执行的时候会读取<code>/etc/profile.d</code>目录下的脚本文件并进行执行，因此我们可以在该目录下新建<code>.sh</code>文件配置我们自己的环境变量，方便管理。</p>
+<h1>/etc/bashrc</h1>
+<p>在执行完<code>/etc/prifile</code>中的内容之后，如果用户运行的是bash，那么接着会执行这个文件。也是系统级别的环境变量。文件中也会读取<code>/etc/profile.d</code>目录下的脚本文件并进行执行。<strong>每当一个新的bash shell被打开时</strong>，会执行此文件。一般来说，如果想要每个使用bash的用户新开一个bash或者每次登录都执行某些操作，可以在这个文件中设置。</p>
+<h1>~/.bash_profile</h1>
+<p>该文件属于用户级别的环境变量。当用户登录的时候，该文件仅仅执行一次。默认情况下，它会执行用户的<code>.bashrc</code>文件。该文件的主要特点就是在登录的时候仅执行一次。</p>
+<h1>~/.bashrc</h1>
+<p>该文件属于用户级别的环境变量，在登录的时候，或者每次打开一个新的shell的时候，会执行该文件。默认情况下，该文件会执行<code>/etc/bashrc</code>文件。</p>
+<h1>login shell与非login shell</h1>
+<p>这里还有一个login shell和non-login shell的区别。简单来说，我们通过终端输入用户名密码登录系统之后，得到的就是一个login shell，而当我们执行<code>ssh xxx command</code>，即只是通过ssh到某个机器执行某条命令，则属于non-login shell。</p>
 <p>这两种shell的主要区别在于启动的时候会加载不同的配置文件。</p>
 <p>login shell会加载上面所说的所有文件，而non-login shell只会加载<code>~/.bashrc</code>文件，当然由于文件中的设置关系，也会依次执行到<code>/etc/bashrc</code>，以及<code>/etc/profile.d</code>目录下的脚本文件。</p>
 <p>因此无论哪种shell，在启动的时候都会加载<code>/etc/profile.d/*.sh</code>中设置的环境变量。</p>

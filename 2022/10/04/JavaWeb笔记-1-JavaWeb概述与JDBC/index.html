@@ -325,35 +325,41 @@
             
               <div class="markdown-body">
                 
-                <h1 id="JavaWeb-概述"><a href="#JavaWeb-概述" class="headerlink" title="JavaWeb 概述"></a>JavaWeb 概述</h1><p>JavaWeb，就是使用Java技术栈来解决Web互联网领域相关问题的技术栈，简单来说就是利用Java来搭建网站。而搭建网站大体的框架可以分成三部分，前端页面，后端程序以及数据库，而JavaWeb部分也就主要由这三部分组成。前端页面的知识主要包括前端三大件，相关框架等；数据库的知识主要指的是利用Java程序来连接数据库，相关知识点有JDBC等；后端程序即JavaWeb程序，为内容核心，包括Tomcat、Servlet、JSP等，后续会展开详细说明。</p>
-<h1 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>JDBC，全称为Java DataBase Connectivity，Java数据库连接。它是Java语言用来操作关系型数据库的一套API，是由sun公司定义的一套标准接口，而它的实现类，这里也称作驱动，则由各个数据库公司来提供，这样达到的效果就是利用同一套Java代码，就可以操作不同的关系型数据库，只需要变更底层的数据库驱动即可。</p>
+                <h1>JavaWeb 概述</h1>
+<p>JavaWeb，就是使用Java技术栈来解决Web互联网领域相关问题的技术栈，简单来说就是利用Java来搭建网站。而搭建网站大体的框架可以分成三部分，前端页面，后端程序以及数据库，而JavaWeb部分也就主要由这三部分组成。前端页面的知识主要包括前端三大件，相关框架等；数据库的知识主要指的是利用Java程序来连接数据库，相关知识点有JDBC等；后端程序即JavaWeb程序，为内容核心，包括Tomcat、Servlet、JSP等，后续会展开详细说明。</p>
+<h1>JDBC</h1>
+<h2 id="简介">简介</h2>
+<p>JDBC，全称为Java DataBase Connectivity，Java数据库连接。它是Java语言用来操作关系型数据库的一套API，是由sun公司定义的一套标准接口，而它的实现类，这里也称作驱动，则由各个数据库公司来提供，这样达到的效果就是利用同一套Java代码，就可以操作不同的关系型数据库，只需要变更底层的数据库驱动即可。</p>
 <ul>
 <li>JDBC是由sun公司定义的一套操作关系型数据库的规则，也即接口</li>
 <li>各个数据库厂商去实现这套接口，提供数据库驱动jar包</li>
 <li>程序员利用JDBC进行编程，而真正指定的底层代码是驱动jar包中的相关类</li>
 </ul>
-<h2 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h2><p>利用JDBC访问数据库的操作基本上可以分成下面的步骤，我们通过一个快速入门程序来进行说明。当然在书写程序之前，我们需要准备好相关的数据库驱动jar包，并将其引入到项目中</p>
+<h2 id="快速入门">快速入门</h2>
+<p>利用JDBC访问数据库的操作基本上可以分成下面的步骤，我们通过一个快速入门程序来进行说明。当然在书写程序之前，我们需要准备好相关的数据库驱动jar包，并将其引入到项目中</p>
 <blockquote>
-<p>数据库驱动jar包可以利用<a target="_blank" rel="noopener" href="https://mvnrepository.com/">Maven Repository: Search&#x2F;Browse&#x2F;Explore (mvnrepository.com)</a>下载。之后将其引入项目，在项目目录下新建lib目录，将驱动jar包加入该目录下方便管理，然后将其添加为library，对应<code>Add as Library</code>，之后需要选定作用范围，视情况而选择</p>
+<p>数据库驱动jar包可以利用<a target="_blank" rel="noopener" href="https://mvnrepository.com/">Maven Repository: Search/Browse/Explore (mvnrepository.com)</a>下载。之后将其引入项目，在项目目录下新建lib目录，将驱动jar包加入该目录下方便管理，然后将其添加为library，对应<code>Add as Library</code>，之后需要选定作用范围，视情况而选择</p>
 </blockquote>
 <p>JDBC的大体使用框架如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 1. 反射注册驱动(新版本无需此步)</span><br><span class="hljs-comment">// Class.forName(&quot;com.mysql.jdbc.Driver&quot;);</span><br><br><span class="hljs-comment">// 2. 获取连接</span><br><span class="hljs-type">String</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;jdbc:mysql://127.0.0.1:3306/web_test&quot;</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">username</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;root&quot;</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">password</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;******&quot;</span>;<br><span class="hljs-type">Connection</span> <span class="hljs-variable">connection</span> <span class="hljs-operator">=</span> DriverManager.getConnection(url, username, password);<br><br><span class="hljs-comment">// 3. 定义SQL</span><br><span class="hljs-type">String</span> <span class="hljs-variable">sql</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;select * from paints&quot;</span>;<br><br><span class="hljs-comment">// 4. 获取执行SQL的对象 Statement</span><br><span class="hljs-type">Statement</span> <span class="hljs-variable">statement</span> <span class="hljs-operator">=</span> connection.createStatement();<br><br><span class="hljs-comment">// 5. 执行SQL</span><br><span class="hljs-type">ResultSet</span> <span class="hljs-variable">resultSet</span> <span class="hljs-operator">=</span> statement.executeQuery(sql);<br><br><span class="hljs-comment">// 6. 结果处理</span><br><span class="hljs-keyword">while</span> (resultSet.next()) &#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> resultSet.getString(<span class="hljs-string">&quot;书名&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">author</span> <span class="hljs-operator">=</span> resultSet.getString(<span class="hljs-string">&quot;作者&quot;</span>);<br>    <span class="hljs-type">long</span> <span class="hljs-variable">isbn</span> <span class="hljs-operator">=</span> resultSet.getLong(<span class="hljs-string">&quot;ISBN&quot;</span>);<br>    System.out.println(book + <span class="hljs-string">&quot;\t&quot;</span> + author + <span class="hljs-string">&quot;\t&quot;</span> + isbn);<br>&#125;<br><br><span class="hljs-comment">// 7. 资源释放</span><br>resultSet.close();<br>statement.close();<br>connection.close();<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>通过这个快速入门代码，我们也可以看出JDBC的一些缺点，例如硬编码，包括注册驱动、获取连接、用户名、密码、SQL语句等都需要写在代码中，不够灵活；例如操作繁琐，它需要我们手动设置参数，手动封装结果集等等，比较麻烦。后面我们会学习一些优秀的框架，它们可以用来简化JDBC的开发。</p>
 </blockquote>
-<h2 id="API详解"><a href="#API详解" class="headerlink" title="API详解"></a>API详解</h2><h3 id="DriverManager"><a href="#DriverManager" class="headerlink" title="DriverManager"></a>DriverManager</h3><p>DriverManager即驱动管理类，这是一个工具类，提供了许多静态方法。我们主要利用其中的<code>getConnection</code>来获取数据库连接，完整的方法包括了三个必要的参数：</p>
+<h2 id="API详解">API详解</h2>
+<h3 id="DriverManager">DriverManager</h3>
+<p>DriverManager即驱动管理类，这是一个工具类，提供了许多静态方法。我们主要利用其中的<code>getConnection</code>来获取数据库连接，完整的方法包括了三个必要的参数：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Connection <span class="hljs-title function_">getConnection</span><span class="hljs-params">(String url, String user, String password)</span> <span class="hljs-keyword">throws</span> SQLException<br></code></pre></td></tr></table></figure>
-
 <ul>
-<li>url：连接路径<ul>
+<li>url：连接路径
+<ul>
 <li>路径语法如下：<code>jdbc:mysql://域名:端口号/数据库名称?参数键值对1&amp;参数键值对2...</code></li>
 </ul>
 </li>
 <li>user：用户名</li>
 <li>password：密码</li>
 </ul>
-<h3 id="Connection"><a href="#Connection" class="headerlink" title="Connection"></a>Connection</h3><p>Connection即数据库连接对象，它主要的作用包括获取执行SQL的对象Statement，以及进行事务的管理。</p>
+<h3 id="Connection">Connection</h3>
+<p>Connection即数据库连接对象，它主要的作用包括获取执行SQL的对象Statement，以及进行事务的管理。</p>
 <p>通过Connection对象的<code>createStatement()</code>方法可以获取执行SQL的对象（后面会提到又分为普通的Statement对象以及防止SQL注入的PreparedStatement等），相关的SQL语句都需要通过Statement对象来进行执行。</p>
 <p>Connection对象同样还负责事务管理，主要通过下面的三个方法来完成：</p>
 <ul>
@@ -363,26 +369,29 @@
 </ul>
 <p>在JDBC程序中，事务管理一般都与异常处理机制配合使用，如果在事务执行的过程中有异常出现，就执行事务回滚操作</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 已经获得Connection对象，conn</span><br><span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-comment">// 开启事务</span><br>    conn.setAutoCommit(<span class="hljs-literal">false</span>);<br>    <br>    <span class="hljs-comment">// 事务相关操作...</span><br>    <br>    <span class="hljs-comment">// 事务提交</span><br>    conn.commit();<br>&#125; <span class="hljs-keyword">catch</span> (Exception e)&#123;<br>    <span class="hljs-comment">// 事务回滚</span><br>    conn.rollback();<br>    e.printStackTrace();<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="Statement"><a href="#Statement" class="headerlink" title="Statement"></a>Statement</h3><p>Statement对象，它的作用就是用来执行SQL语句。对象可以调用的方法有很多，分别对应了不同类型的SQL语句：</p>
+<h3 id="Statement">Statement</h3>
+<p>Statement对象，它的作用就是用来执行SQL语句。对象可以调用的方法有很多，分别对应了不同类型的SQL语句：</p>
 <ul>
 <li>执行DDL、DML语句：返回结果表示影响的行数</li>
 <li>执行DQL语句：返回ResultSet对象，是对查询结果的封装</li>
 </ul>
-<h3 id="PreparedStatement"><a href="#PreparedStatement" class="headerlink" title="PreparedStatement"></a>PreparedStatement</h3><p>PreparedStatement相比Statement，它完成的是预编译SQL语句并执行，可以防止SQL注入问题。每一个PreparedStatement对象都对应一个事先写好的SQL，这个SQL描述了后续执行的一系列SQL语句的模式，其中利用?进行占位，并利用程序说明对应位置的对应参数</p>
+<h3 id="PreparedStatement">PreparedStatement</h3>
+<p>PreparedStatement相比Statement，它完成的是预编译SQL语句并执行，可以防止SQL注入问题。每一个PreparedStatement对象都对应一个事先写好的SQL，这个SQL描述了后续执行的一系列SQL语句的模式，其中利用?进行占位，并利用程序说明对应位置的对应参数</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// SQL模式</span><br><span class="hljs-type">String</span> <span class="hljs-variable">sql</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;select * from user where username = ? and password = ?&quot;</span>;<br><br><span class="hljs-comment">// 获取PreparedStatement对象</span><br><span class="hljs-type">PreparedStatement</span> <span class="hljs-variable">preparedStatement</span> <span class="hljs-operator">=</span> conn.prepareStatement(sql);<br><br><span class="hljs-comment">// 设置对应位置的对应值，按照顺序index从1开始</span><br><span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;test&quot;</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">pwd</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;123123&quot;</span>;<br>preparedStatement.setString(<span class="hljs-number">1</span>, name);<br>preparedStatement.setString(<span class="hljs-number">2</span>, pwd);<br><br><span class="hljs-comment">// sql执行</span><br>preparedStatement.executeQuery();<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>PreparedStatement防止SQL注入的原理主要是将特殊字符进行转移，防止字符串拼接时导致的逻辑错误</li>
 <li>另一方面，由于每一个PreparedStatement对象后续执行的都是相同模式的SQL语句，因此它可以完成SQL的预编译，提高性能。当然这个功能需要在连接的时候设置键值对参数来开启预编译功能<code>useServerPrepStmts=true</code></li>
 </ul>
-<h3 id="ResultSet"><a href="#ResultSet" class="headerlink" title="ResultSet"></a>ResultSet</h3><p>ResultSet对象，它是Java对SQL查询语句返回结果的封装，它有如下两类重要方法：</p>
+<h3 id="ResultSet">ResultSet</h3>
+<p>ResultSet对象，它是Java对SQL查询语句返回结果的封装，它有如下两类重要方法：</p>
 <ul>
-<li><code>boolean next()</code>：<ul>
+<li><code>boolean next()</code>：
+<ul>
 <li>判断当前行是否为有效行，并进行行光标的移动</li>
 </ul>
 </li>
-<li><code>xxx getXxx(arg)</code>：<ul>
+<li><code>xxx getXxx(arg)</code>：
+<ul>
 <li>表示从当前行获取相应的列数据</li>
 <li>xxx表示当前列的类型</li>
 <li>arg表示传入参数，可以是列的整型index编号（从1开始），也可以是列的String名称</li>
@@ -391,11 +400,10 @@
 </ul>
 <p>可以将ResultSet看作是一个对行的迭代器，它的相关遍历操作有下面的模板：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 已经获得ResultSet对象，名称为res</span><br><span class="hljs-keyword">while</span>(res.next())&#123;<br>    <span class="hljs-comment">// 获取数据</span><br>    <span class="hljs-type">int</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> res.getInt(<span class="hljs-string">&quot;id&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> res.getString(<span class="hljs-string">&quot;name&quot;</span>);<br>    <span class="hljs-comment">// 其他相关操作</span><br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h2 id="数据库连接池"><a href="#数据库连接池" class="headerlink" title="数据库连接池"></a>数据库连接池</h2><p>如果我们每次进行相关查询都创建一个新的Connection对象，使用完毕之后就将其销毁，那么性能就会因为连接对象的重复创建和销毁而大大消耗。池化则是一种很好的资源管理方式，数据库连接池就是用来实现Connection对象复用的池化技术。</p>
+<h2 id="数据库连接池">数据库连接池</h2>
+<p>如果我们每次进行相关查询都创建一个新的Connection对象，使用完毕之后就将其销毁，那么性能就会因为连接对象的重复创建和销毁而大大消耗。池化则是一种很好的资源管理方式，数据库连接池就是用来实现Connection对象复用的池化技术。</p>
 <p>Java官方提供了数据库连接池的标准接口<code>DataSource</code>，其他第三方组织实现这个接口，来提供数据库连接池的相关功能。接口中定义的获取连接的方法如下，前面我们是通过DriverManager来获取Connection对象，而更好的方法则是通过数据库连接池来获取Connection对象。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Connection <span class="hljs-title function_">getConnection</span><span class="hljs-params">()</span>;<br></code></pre></td></tr></table></figure>
-
 <p>常见的数据库连接池有DBCP、C3P0、Druid等，其中Druid连接池是阿里巴巴开源的数据库连接池项目，它的功能强大，性能优秀，是比较好的数据库连接池之一。</p>
 
                 

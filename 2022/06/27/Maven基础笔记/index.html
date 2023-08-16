@@ -283,7 +283,7 @@
         
         
           <!-- compatible with older versions-->
-          27 分钟
+          26 分钟
         
       </span>
     
@@ -330,23 +330,32 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Maven基础"><a href="#Maven基础" class="headerlink" title="Maven基础"></a>Maven基础</h1><h2 id="一-简介"><a href="#一-简介" class="headerlink" title="一. 简介"></a>一. 简介</h2><p>Maven的作用：</p>
+                <h1>Maven基础</h1>
+<h2 id="一-简介">一. 简介</h2>
+<p>Maven的作用：</p>
 <ol>
-<li><p>项目构建：提供标准的、跨平台的自动化项目构建方式</p>
+<li>
+<p>项目构建：提供标准的、跨平台的自动化项目构建方式</p>
 </li>
-<li><p>依赖管理：方便快捷的管理项目依赖资源（jar包），避免资源之间的版本冲突问题</p>
+<li>
+<p>依赖管理：方便快捷的管理项目依赖资源（jar包），避免资源之间的版本冲突问题</p>
 </li>
-<li><p>统一开发结构：提供标准的、统一的项目结构</p>
-<img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/maven%E7%AE%80%E4%BB%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="maven简介"></li>
+<li>
+<p>统一开发结构：提供标准的、统一的项目结构</p>
+<img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/maven%E7%AE%80%E4%BB%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="maven简介">
+</li>
 </ol>
 <blockquote>
 <p>每一个项目都对应一个项目对象模型（POM），一个项目对象模型通过一份pom.xml文件进行管理，同时依赖管理可以管理项目中需要的依赖。本身这个项目也可以作为一个资源供其他项目作为依赖使用。</p>
 </blockquote>
-<h2 id="二-基础概念"><a href="#二-基础概念" class="headerlink" title="二.基础概念"></a>二.基础概念</h2><h3 id="1-仓库"><a href="#1-仓库" class="headerlink" title="1. 仓库"></a>1. 仓库</h3><p>仓库：用于存储资源，包含各种jar包</p>
+<h2 id="二-基础概念">二.基础概念</h2>
+<h3 id="1-仓库">1. 仓库</h3>
+<p>仓库：用于存储资源，包含各种jar包</p>
 <p>仓库的分类：</p>
 <ul>
 <li>本地仓库：自己电脑上存储资源的仓库，连接远程仓库获取资源</li>
-<li>远程仓库：非本地电脑上的仓库，为本地仓库提供资源<ul>
+<li>远程仓库：非本地电脑上的仓库，为本地仓库提供资源
+<ul>
 <li>中央仓库：Maven团队维护的，存储所有资源的仓库</li>
 <li>私服：部门或公司范围内部存储资源的仓库，从中央仓库获取资源</li>
 </ul>
@@ -357,7 +366,8 @@
 <li>保存具有版权的资源，包含购买或自主研发的jar包</li>
 <li>一定范围内共享资源，仅对内部开放，不对外共享</li>
 </ol>
-<h3 id="2-坐标"><a href="#2-坐标" class="headerlink" title="2. 坐标"></a>2. 坐标</h3><p>坐标：Maven中的坐标用于描述仓库中资源的位置</p>
+<h3 id="2-坐标">2. 坐标</h3>
+<p>坐标：Maven中的坐标用于描述仓库中资源的位置</p>
 <p>主要组成：</p>
 <ul>
 <li>groupId：定义当前Maven项目隶属组织的名称（通常是域名反写，org.mybatis）</li>
@@ -365,31 +375,29 @@
 <li>version：当前项目版本号</li>
 <li>packaging：当前该项目的打包方式</li>
 </ul>
-<p>搜索:<a target="_blank" rel="noopener" href="https://mvnrepository.com/#/">Maven Repository: Search&#x2F;Browse&#x2F;Explore (mvnrepository.com)</a></p>
+<p>搜索:<a target="_blank" rel="noopener" href="https://mvnrepository.com/#/">Maven Repository: Search/Browse/Explore (mvnrepository.com)</a></p>
 <p>作用：使用唯一标识来定位资源的位置，通过该表示可以将资源的识别与下载工作交由机器来完成</p>
 <blockquote>
-<p> 本地仓库的配置，在conf里面的setting中配置</p>
-<p> 阿里云maven:</p>
+<p>本地仓库的配置，在conf里面的setting中配置</p>
+<p>阿里云maven:</p>
  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>aliyunmaven<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>*<span class="hljs-tag">&lt;/<span class="hljs-name">mirrorOf</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>阿里云公共仓库<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>https://maven.aliyun.com/repository/public<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
 </blockquote>
-<h2 id="三-手工制作Maven项目"><a href="#三-手工制作Maven项目" class="headerlink" title="三.手工制作Maven项目"></a>三.手工制作Maven项目</h2><p>Maven工程目录结构：</p>
+<h2 id="三-手工制作Maven项目">三.手工制作Maven项目</h2>
+<p>Maven工程目录结构：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">- java-project<br>	- src<br>		- main<br>			- java<br>			- resources<br>        - test<br>        	- java<br>        	- resources<br>    - pom.xml<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li><code>java</code>文件夹中防止类代码</li>
 <li>在<code>src</code>同层目录中创建<code>pom.xml</code></li>
 </ul>
 <p>Maven项目构建命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="language-bash">首先进入对应的java-project文件夹</span><br>mvn compile		# 编译<br>mvn clean		# 清理编译后的文件<br>mvn test		# 测试<br>mvn package		# 打包，包括了编译和测试<br>mvn install		# 安装到本地仓库<br></code></pre></td></tr></table></figure>
-
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">首先进入对应的java-project文件夹</span><br>mvn compile		# 编译<br>mvn clean		# 清理编译后的文件<br>mvn test		# 测试<br>mvn package		# 打包，包括了编译和测试<br>mvn install		# 安装到本地仓库<br></code></pre></td></tr></table></figure>
 <p>可以插件创建Maven项目</p>
-<h2 id="四-IDEA生成Maven项目"><a href="#四-IDEA生成Maven项目" class="headerlink" title="四.IDEA生成Maven项目"></a>四.IDEA生成Maven项目</h2><p>通过配置在IDEA中的设置进行Maven项目的生成</p>
-<h2 id="五-依赖管理"><a href="#五-依赖管理" class="headerlink" title="五.依赖管理"></a>五.依赖管理</h2><p><strong>1.依赖配置</strong></p>
+<h2 id="四-IDEA生成Maven项目">四.IDEA生成Maven项目</h2>
+<p>通过配置在IDEA中的设置进行Maven项目的生成</p>
+<h2 id="五-依赖管理">五.依赖管理</h2>
+<p><strong>1.依赖配置</strong></p>
 <p>依赖配置：配置当前项目需要的jar包，一个项目可以设置多个依赖</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- 设置当前项目所依赖的所有jar--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>	&lt;!—设置举例的依赖 --&gt;<br>	<span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>		&lt;!—依赖所属群组id--&gt;<br>		<span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>		&lt;!—依赖所属项目id--&gt;<br>		<span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>		&lt;!—依赖版本号--&gt;<br>		<span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.12<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
 <p><strong>2.依赖传递</strong></p>
 <p>依赖传递：使用其他人的资源的时候，那个资源有用到的jar包，当前项目中也能够使用</p>
 <ul>
@@ -407,17 +415,11 @@
 <p>当前项目中配置可选依赖，当其他项目使用当前项目作为资源的时候，其他项目无法看到依赖。</p>
 <p>使用<code>optional</code>关键字</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.12<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">optional</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">optional</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
 <p><strong>4.排除依赖</strong></p>
 <p>排除依赖指主动断开依赖的资源，被排除的依赖无需指定版本（自己不需要）</p>
 <p>当前项目中配置排除依赖，则当前项目中就看不到对应使用资源的依赖</p>
 <p>使用<code>exclusions</code>和<code>exclusion</code>关键字</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.12<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">exclusions</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">exclusion</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.hamcrest<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hamcrest-core<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">exclusion</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">exclusions</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
 <p><strong>5.依赖范围</strong></p>
 <p>依赖范围：使用<code>scope</code>关键字，用来指定依赖的允许使用范围，分为以下的范围：</p>
 <ul>
@@ -434,7 +436,8 @@
 <th>打包</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>compile（默认）</td>
 <td>√</td>
 <td>√</td>
@@ -458,10 +461,10 @@
 <td></td>
 <td>√</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>依赖范围有特殊的传递性：带有依赖范围的资源在进行传递的时候，作用范围会受到影响：</p>
 <img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/%E4%BE%9D%E8%B5%96%E8%8C%83%E5%9B%B4%E4%BC%A0%E9%80%92%E6%80%A7.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="依赖范围传递性">
-
 <p>下面是对scope各种取值的相关解释：</p>
 <ul>
 <li><code>compile</code>：为默认的依赖范围，该依赖在编译、运行和测试时均有效</li>
@@ -469,20 +472,16 @@
 <li><code>runtime</code>：在运行、测试时有效，在编译时无效。例如JDBC驱动实现，项目代码编译仅需要JDBC接口，只有在测试或者运行项目的时候才需要实现接口的具体驱动</li>
 <li><code>test</code>：只在测试时有效</li>
 </ul>
-<h2 id="六-生命周期与插件"><a href="#六-生命周期与插件" class="headerlink" title="六.生命周期与插件"></a>六.生命周期与插件</h2><p>项目构建生命周期：Maven构建生命周期描述的是一次构建过程中经历了多少个事件。Maven对项目构建的生命周期划分为3套</p>
+<h2 id="六-生命周期与插件">六.生命周期与插件</h2>
+<p>项目构建生命周期：Maven构建生命周期描述的是一次构建过程中经历了多少个事件。Maven对项目构建的生命周期划分为3套</p>
 <ul>
 <li>clean：清理工作</li>
 <li>default：核心工作，例如编译，测试，打包，部署等</li>
 <li>site：产生报告，发布站点等</li>
 </ul>
 <img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/clean.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="clean">
-
 <img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/default.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="default">
-
 <img src="/2022/06/27/Maven%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/site.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="site">
-
-
-
 <p>插件：</p>
 <ul>
 <li>Maven生命周期的每一个阶段的具体实现都是由Maven插件来实现的。而Maven实际上是一个依赖插件执行的框架</li>

@@ -325,44 +325,43 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Java中的正则表达式"><a href="#Java中的正则表达式" class="headerlink" title="Java中的正则表达式"></a>Java中的正则表达式</h1><h2 id="相关类"><a href="#相关类" class="headerlink" title="相关类"></a>相关类</h2><p>Java中正则表达式的相关应用主要集中在包<code>java.util.regex</code>中，并且相关的主要类为<code>Pattern</code>和<code>Matcher</code>。</p>
+                <h1>Java中的正则表达式</h1>
+<h2 id="相关类">相关类</h2>
+<p>Java中正则表达式的相关应用主要集中在包<code>java.util.regex</code>中，并且相关的主要类为<code>Pattern</code>和<code>Matcher</code>。</p>
 <ul>
 <li><code>Pattern</code>：Pattern对象是一个正则表达式的编译表示。它不提供公共的构造方法，而是通过一个Pattern的静态方法来获取Pattern对象，该方法接受一个字符串参数，即为对应的正则表达式。</li>
 <li><code>Matcher</code>：Matcher对象则是用来对输入字符串进行匹配操作的。它也不提供公共的构造方法，获取一个Matcher对象需要通过调用Pattern对象的matcher方法来获得。</li>
 </ul>
 <p>在使用过程中，我们通常是通过Pattern的静态方法获取到Pattern对象之后，再通过该对象的matcher方法获取到Matcher对象。之后相关的匹配操作就是通过Matcher对象来完成的。</p>
-<h2 id="常用方法介绍"><a href="#常用方法介绍" class="headerlink" title="常用方法介绍"></a>常用方法介绍</h2><h3 id="是否能匹配"><a href="#是否能匹配" class="headerlink" title="是否能匹配"></a>是否能匹配</h3><p>判断给定的字符串能够匹配正则表达式，使用<code>matches</code>方法。</p>
+<h2 id="常用方法介绍">常用方法介绍</h2>
+<h3 id="是否能匹配">是否能匹配</h3>
+<p>判断给定的字符串能够匹配正则表达式，使用<code>matches</code>方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Pattern</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> Pattern.compile(<span class="hljs-string">&quot;a\\d*b&quot;</span>);<br><span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> pattern.matcher(<span class="hljs-string">&quot;a123b&quot;</span>);<br><br><span class="hljs-type">boolean</span> <span class="hljs-variable">matches</span> <span class="hljs-operator">=</span> matcher.matches();<br>System.out.println(matches); <span class="hljs-comment">// true</span><br><span class="hljs-comment">// 如果提供的字符串为a123bc,则没有匹配，返回false</span><br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>matches()和lookingAt()方法否用来尝试匹配一个输入序列模式。它们的不同是前者要求整个序列都匹配，而后者不需要整个序列都匹配，但还是需要从第一个字符开始匹配。</p>
 </blockquote>
-<h3 id="捕获匹配项"><a href="#捕获匹配项" class="headerlink" title="捕获匹配项"></a>捕获匹配项</h3><p>在给定的字符串中捕获所有的匹配项。</p>
+<h3 id="捕获匹配项">捕获匹配项</h3>
+<p>在给定的字符串中捕获所有的匹配项。</p>
 <blockquote>
 <p>这里的正则表达式<code>(?&lt;=)</code>，<code>(?=)</code>表示需要匹配对应模式，但是不包含在结果中。在进行模式匹配的时候有很大的作用。</p>
 <p>例如下面的例子中的<code>(?&lt;=a)\d*(?=b)</code>，则表示匹配开头为a，结尾为b，中间为数字的字符串，但是实际匹配的结果只返回中间的数字</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Pattern</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> Pattern.compile(<span class="hljs-string">&quot;(?&lt;=a)\\d*(?=b)&quot;</span>);<br><span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> pattern.matcher(<span class="hljs-string">&quot;a123ba345bb213c&quot;</span>);<br><br><span class="hljs-keyword">while</span> (matcher.find()) &#123;<br>    System.out.println(matcher.group());<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>输出结果为：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs">123<br>345<br></code></pre></td></tr></table></figure>
-
 <p>这里的<code>find()</code>方法调用之后，会偏移到下一个匹配。然后调用<code>group()</code>方法返回当前匹配的值。该过程类似于迭代器，表示迭代匹配并获取结果。</p>
-<h3 id="匹配索引"><a href="#匹配索引" class="headerlink" title="匹配索引"></a>匹配索引</h3><p>使用start和end可以获得当前匹配的索引。需要结合<code>find</code>方法一起使用。</p>
+<h3 id="匹配索引">匹配索引</h3>
+<p>使用start和end可以获得当前匹配的索引。需要结合<code>find</code>方法一起使用。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Pattern</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> Pattern.compile(<span class="hljs-string">&quot;a\\d*b&quot;</span>);<br><span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> pattern.matcher(<span class="hljs-string">&quot;a123ba345bb213c&quot;</span>);<br><br><span class="hljs-keyword">while</span> (matcher.find())&#123;<br>    System.out.println(<span class="hljs-string">&quot;start =&quot;</span> + matcher.start());<br>    System.out.println(<span class="hljs-string">&quot;end =&quot;</span> + matcher.end());<br>    System.out.println(<span class="hljs-string">&quot;---&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>输出如下：</p>
 <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">start =0<br><span class="hljs-section">end =5</span><br><span class="hljs-section">---</span><br>start =5<br><span class="hljs-section">end =10</span><br><span class="hljs-section">---</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="文本替换"><a href="#文本替换" class="headerlink" title="文本替换"></a>文本替换</h3><p>文本替换表示将匹配项替换为指定的字符串。相关的方法有<code>replaceFirst</code>和<code>replaceAll</code>方法：</p>
+<h3 id="文本替换">文本替换</h3>
+<p>文本替换表示将匹配项替换为指定的字符串。相关的方法有<code>replaceFirst</code>和<code>replaceAll</code>方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Pattern</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> Pattern.compile(<span class="hljs-string">&quot;(?&lt;=a)\\d*(?=b)&quot;</span>);<br><span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> pattern.matcher(<span class="hljs-string">&quot;a123ba345bb213c&quot;</span>);<br><br><span class="hljs-type">String</span> <span class="hljs-variable">first</span> <span class="hljs-operator">=</span> matcher.replaceFirst(<span class="hljs-string">&quot;|first|&quot;</span>);<br><span class="hljs-type">String</span> <span class="hljs-variable">all</span> <span class="hljs-operator">=</span> matcher.replaceAll(<span class="hljs-string">&quot;|all|&quot;</span>);<br>System.out.println(first);<br>System.out.println(all);<br></code></pre></td></tr></table></figure>
-
 <p>输出如下：</p>
 <figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk">a|first|ba345bb213c<br>a|all|ba|all|bb213c<br></code></pre></td></tr></table></figure>
-
-
-
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<h1>参考文章</h1>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://www.runoob.com/java/java-regular-expressions.html">Java 正则表达式 | 菜鸟教程 (runoob.com)</a></li>
 <li><a target="_blank" rel="noopener" href="https://c.runoob.com/front-end/854/">正则表达式在线测试 | 菜鸟工具 (runoob.com)</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/vip/article/details/105180654">正则表达式如何表示以某字符开头和结尾但不包含本身的匹配_VIP的博客-CSDN博客</a></li>

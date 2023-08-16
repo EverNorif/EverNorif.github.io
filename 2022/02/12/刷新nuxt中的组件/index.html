@@ -324,14 +324,12 @@
             
               <div class="markdown-body">
                 
-                <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在经过一些操作之后，在组件中调用如下刷新操作，但是网页中并没有显示出效果。必须要手动点击刷新按钮之后才能看到效果。</p>
+                <h2 id="问题描述">问题描述</h2>
+<p>在经过一些操作之后，在组件中调用如下刷新操作，但是网页中并没有显示出效果。必须要手动点击刷新按钮之后才能看到效果。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-variable language_">this</span>.<span class="hljs-property">$nuxt</span>.<span class="hljs-title function_">refresh</span>()<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p>可以用一种绑定key到组件上的方法进行解决。当key更改的时候，组件也会刷新。</p>
+<h2 id="问题解决">问题解决</h2>
+<p>可以用一种绑定key到组件上的方法进行解决。当key更改的时候，组件也会刷新。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">refreshKey</span>: <span class="hljs-number">0</span>, <span class="hljs-comment">//用于刷新</span><br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">methods</span>: &#123;<br>    <span class="hljs-title function_">handleCommand</span>(<span class="hljs-params">command</span>) &#123;<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">$cookies</span>.<span class="hljs-title function_">removeAll</span>();<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">refreshKey</span> += <span class="hljs-number">1</span>; <span class="hljs-comment">//在页面跳转之前使用</span><br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">$router</span>.<span class="hljs-title function_">push</span>(&#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home&#x27;</span>&#125;);<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

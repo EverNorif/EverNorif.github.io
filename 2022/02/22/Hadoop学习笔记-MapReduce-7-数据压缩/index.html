@@ -326,19 +326,23 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Hadoop压缩概述"><a href="#Hadoop压缩概述" class="headerlink" title="Hadoop压缩概述"></a>Hadoop压缩概述</h2><p>压缩的优缺点：</p>
+                <h2 id="Hadoop压缩概述">Hadoop压缩概述</h2>
+<p>压缩的优缺点：</p>
 <ul>
 <li>优点：减少磁盘IO、降低磁盘的存储空间</li>
 <li>缺点：增加CPU开销</li>
 </ul>
 <p>压缩原则：</p>
 <ul>
-<li><p>运算密集型的Job，少用压缩</p>
+<li>
+<p>运算密集型的Job，少用压缩</p>
 </li>
-<li><p>IO密集型的Job，多用压缩</p>
+<li>
+<p>IO密集型的Job，多用压缩</p>
 </li>
 </ul>
-<h2 id="MapReduce支持的压缩编码"><a href="#MapReduce支持的压缩编码" class="headerlink" title="MapReduce支持的压缩编码"></a>MapReduce支持的压缩编码</h2><p>压缩算法的对比介绍</p>
+<h2 id="MapReduce支持的压缩编码">MapReduce支持的压缩编码</h2>
+<p>压缩算法的对比介绍</p>
 <table>
 <thead>
 <tr>
@@ -350,7 +354,8 @@
 <th>程序是否需要修改</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>DEFLATE</td>
 <td>√</td>
 <td>DEFALTE</td>
@@ -390,30 +395,36 @@
 <td>×</td>
 <td>不需要</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <ul>
-<li>Gzip压缩<ul>
+<li>Gzip压缩
+<ul>
 <li>优点：压缩率较高</li>
-<li>缺点：不支持Split；压缩&#x2F;解压速度一般</li>
+<li>缺点：不支持Split；压缩/解压速度一般</li>
 </ul>
 </li>
-<li>Bzip2压缩<ul>
+<li>Bzip2压缩
+<ul>
 <li>优点：压缩率高，支持Split</li>
-<li>缺点：压缩&#x2F;解压速度慢</li>
+<li>缺点：压缩/解压速度慢</li>
 </ul>
 </li>
-<li>Lzo压缩<ul>
-<li>优点：压缩&#x2F;解压速度比较快，支持Split</li>
+<li>Lzo压缩
+<ul>
+<li>优点：压缩/解压速度比较快，支持Split</li>
 <li>缺点：压缩率一般；想要支持切片需要额外建立索引</li>
 </ul>
 </li>
-<li>Snappy压缩<ul>
-<li>优点：压缩&#x2F;解压速度块</li>
+<li>Snappy压缩
+<ul>
+<li>优点：压缩/解压速度块</li>
 <li>缺点：不支持Split，压缩率一般</li>
 </ul>
 </li>
 </ul>
-<h2 id="压缩位置选择"><a href="#压缩位置选择" class="headerlink" title="压缩位置选择"></a>压缩位置选择</h2><p>压缩可以在MapReduce的任意阶段启用</p>
+<h2 id="压缩位置选择">压缩位置选择</h2>
+<p>压缩可以在MapReduce的任意阶段启用</p>
 <ul>
 <li>输入端采用压缩：无需显示指定使用的编解码格式，Hadoop自动检查文件的扩展名</li>
 <li>Mapper输出采用压缩：为了减少MapTask和ReduceTask之间的网络IO，重点考虑压缩和解压块LZO、Snappy</li>

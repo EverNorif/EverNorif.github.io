@@ -325,7 +325,9 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h1><h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><p>Cookie是一种客户端的会话技术，它将数据保存在客户端中，以后的每次请求都会携带Cookie数据进行访问。Cookie可以看成是一个存储信息的集合，其中的信息以键值对形式存放，Cookie存放在浏览器端。对于Cookie的使用，我们主要需要关注的是获取Cookie，获取以及设置Cookie中的内容。</p>
+                <h1>Cookie</h1>
+<h2 id="基本使用">基本使用</h2>
+<p>Cookie是一种客户端的会话技术，它将数据保存在客户端中，以后的每次请求都会携带Cookie数据进行访问。Cookie可以看成是一个存储信息的集合，其中的信息以键值对形式存放，Cookie存放在浏览器端。对于Cookie的使用，我们主要需要关注的是获取Cookie，获取以及设置Cookie中的内容。</p>
 <ul>
 <li><code>Cookie cookie = new Cookie(&quot;key&quot;, &quot;value&quot;)</code>：创建Cookie对象并设置数据</li>
 <li><code>response.addCookie(cookie);</code>：发送Cookie到客户端，需要使用response对象</li>
@@ -337,14 +339,17 @@
 <blockquote>
 <p>在Cookie中是不能直接存储中文的，如果需要存储中文，则需要进行转码，将中文转码之后进行存储，需要使用的时候再进行转换得到中文结果。例如可以使用URLEncoder进行转码。</p>
 </blockquote>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>Cookie的实现原理是基于Http协议的，其中会涉及到协议中两个请求头信息，响应头中的set-cookie以及请求头中的cookie。</p>
+<h2 id="原理">原理</h2>
+<p>Cookie的实现原理是基于Http协议的，其中会涉及到协议中两个请求头信息，响应头中的set-cookie以及请求头中的cookie。</p>
 <p>浏览器第一次发送请求到服务器，服务器创建Cookie对象并进行数据设置，返回响应的时候，在响应头的set-cookie进行设置，表示添加的Cookie内容，浏览器接收到响应之后，就会将其中的内容保存到浏览器的Cookie中，后续继续发送请求的时候，会携带浏览器的Cookie，设置在请求头中的cookie字段，服务器通过获取Cookie，就可以维持用户的状态。</p>
 <blockquote>
 <p>在浏览器中查看Cookie的方法：</p>
 <p>第一种方法在浏览器的设置中查看，在Cookie和网站权限中可以查看所有站点的Cookies。</p>
 <p>第二种方法是利用浏览器的控制台程序，选择Application，在其中的Storage模块中，可以查看当前网页存储的Cookies。</p>
 </blockquote>
-<h1 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h1><h2 id="基本使用-1"><a href="#基本使用-1" class="headerlink" title="基本使用"></a>基本使用</h2><p>Session是一种服务端会话跟踪技术，它选择将数据保存在服务端。相比于Cookie来说，存储在服务端的数据更加安全。</p>
+<h1>Session</h1>
+<h2 id="基本使用-2">基本使用</h2>
+<p>Session是一种服务端会话跟踪技术，它选择将数据保存在服务端。相比于Cookie来说，存储在服务端的数据更加安全。</p>
 <p>在JavaEE中提供了HttpSession接口，用来实现一次会话的多次请求之间的数据共享功能，它的主要方法如下：</p>
 <ul>
 <li><code>HttpSession session = request.getSession()</code>：获取Session对象，需要使用到request对象</li>
@@ -353,7 +358,8 @@
 <li><code>void removeAttribute(String name)</code>：根据key，删除键值对</li>
 <li><code>void invalidate()</code>：销毁该Session</li>
 </ul>
-<h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>Session的底层也是基于Cookie实现的。在浏览器和服务器的一次会话中，使用的是同一个Session，而另一个会话使用的是另一个Session。在服务器第一次获取Session对象的时候，该对象会有一个唯一的标识id，在完成其他动作，返回响应的时候，在响应头中会添加一个set-cookie，其中设置的session的id，这样在浏览器端实际上保存了此次会话中对应的Session ID，后续的所有请求它都会带上这个Cookie，而服务器端也就能够知道这个会话应该使用哪个Session。</p>
+<h2 id="原理-2">原理</h2>
+<p>Session的底层也是基于Cookie实现的。在浏览器和服务器的一次会话中，使用的是同一个Session，而另一个会话使用的是另一个Session。在服务器第一次获取Session对象的时候，该对象会有一个唯一的标识id，在完成其他动作，返回响应的时候，在响应头中会添加一个set-cookie，其中设置的session的id，这样在浏览器端实际上保存了此次会话中对应的Session ID，后续的所有请求它都会带上这个Cookie，而服务器端也就能够知道这个会话应该使用哪个Session。</p>
 <p>在服务器正常关闭和启动的过程中，Session中的数据是可以被保存下来的。在服务器正常关闭之后，Tomcat会自动将Session中的数据写入磁盘的文件中，再次启动服务器后，则会将对应的数据从文件进行加载。</p>
 <p>在默认情况下，Session会有超时时间，30分钟后自动销毁，具体时间可以Tomcat配置文件中进行设置，当然我们也可以调用Session对象的invalidate方法进行销毁，在前面的操作中也有提到。</p>
 <blockquote>

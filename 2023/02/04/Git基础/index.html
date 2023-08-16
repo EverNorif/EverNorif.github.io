@@ -326,9 +326,10 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Git基础"><a href="#Git基础" class="headerlink" title="Git基础"></a>Git基础</h1><h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><p>Git是一种开源的分布式版本控制工具，可以有效、高速地处理项目版本管理。Git的整体工作流程可以表示为下图：</p>
+                <h1>Git基础</h1>
+<h2 id="基础概念">基础概念</h2>
+<p>Git是一种开源的分布式版本控制工具，可以有效、高速地处理项目版本管理。Git的整体工作流程可以表示为下图：</p>
 <img src="/2023/02/04/Git%E5%9F%BA%E7%A1%80/Git%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Git工作流程">
-
 <p>图中分别对应到不同的命令，完成不同的功能。</p>
 <ol>
 <li>clone：从远程仓库中克隆代码到本地仓库</li>
@@ -338,35 +339,35 @@
 <li>pull：从远程仓库中抓取内容到本地仓库，并进行合并</li>
 <li>push：将本地仓库中的代码推送到远程仓库</li>
 </ol>
-<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><h3 id="仓库初始化"><a href="#仓库初始化" class="headerlink" title="仓库初始化"></a>仓库初始化</h3><p>首先需要完成Git的下载，Git的下载地址为：<a target="_blank" rel="noopener" href="https://git-scm.com/download">Git - Downloads (git-scm.com)</a>。在安装完成之后，需要设置用户名称和email地址，这也是每次Git提交使用到的用户信息：</p>
+<h2 id="基本命令">基本命令</h2>
+<h3 id="仓库初始化">仓库初始化</h3>
+<p>首先需要完成Git的下载，Git的下载地址为：<a target="_blank" rel="noopener" href="https://git-scm.com/download">Git - Downloads (git-scm.com)</a>。在安装完成之后，需要设置用户名称和email地址，这也是每次Git提交使用到的用户信息：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">git config --global user.name &quot;xxx&quot;<br>git config --global user.email &quot;xxx&quot;<br></code></pre></td></tr></table></figure>
-
 <p>这两条命令完成的是全局配置的修改，全局配置对应到用户目录下的<code>.gitconfig</code>文件。</p>
 <p>接下来可以在一个新路径下创建仓库repository，使用初始化命令：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">git init<br></code></pre></td></tr></table></figure>
-
 <p>创建成功后，会在路径下看到隐藏文件夹<code>.git</code>。</p>
-<h3 id="本地仓库操作"><a href="#本地仓库操作" class="headerlink" title="本地仓库操作"></a>本地仓库操作</h3><p>在Git中，存在仓库，暂存区以及工作区的概念。</p>
+<h3 id="本地仓库操作">本地仓库操作</h3>
+<p>在Git中，存在仓库，暂存区以及工作区的概念。</p>
 <p>Git工作目录下，对于文件的修改都是在工作区中完成的。修改（增删改）后的文件处于工作区，需要先使用add命令将其添加到暂存区中。暂存区相当于提交到仓库之前的缓冲区，其中的内容需要使用commit命令添加到仓库中，此时才算完成了一次提交。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看修改状态（暂存区+工作区）</span><br>git status<br><br><span class="hljs-comment"># 添加文件到暂存区</span><br>git add 文件名|通配符<br>eg: git add .<br><br><span class="hljs-comment"># 提交暂存到本地仓库</span><br>git commit -m <span class="hljs-string">&quot;一些注释message&quot;</span><br><br><span class="hljs-comment"># 查看提交日志</span><br>git <span class="hljs-built_in">log</span> [option]<br> --all: 显示所有分支<br> --pretty=oneline: 将提交信息显示为一行<br> --abbrev-commit: 使得输出的commitId更加简短<br> --graph: 以图的形式显示<br> <br> <span class="hljs-comment"># 查看到已经删除的提交记录</span><br> git reflog<br> <br> <span class="hljs-comment"># 版本回退</span><br> git reset --hard &lt;commitId&gt;<br></code></pre></td></tr></table></figure>
-
 <p>一些时候，我们会有一些文件不需要纳入Git的管理，例如一些日志文件，临时文件等。我们可以在工作目录下创建一个名为<code>.gitignore</code>的文件，在其中列出需要忽略的文件模式。</p>
-<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><p>几乎所有的版本控制系统都以某种形式支持了分支。通过使用分支，可以将工作从开发主线上分离开来，进行Bug修改，新功能开发等。</p>
+<h3 id="分支">分支</h3>
+<p>几乎所有的版本控制系统都以某种形式支持了分支。通过使用分支，可以将工作从开发主线上分离开来，进行Bug修改，新功能开发等。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看本地分支</span><br>git branch<br><br><span class="hljs-comment"># 创建本地分支</span><br>git branch 分支名称<br><br><span class="hljs-comment"># 切换当前分支</span><br>git checkout 分支名称<br>git checkout -b 分支名称: 切换到一个不存在的分支（创建并切换）<br><br><span class="hljs-comment"># 合并内容到当前分支</span><br>git merge 分支名称<br><br><span class="hljs-comment"># 删除分支</span><br><span class="hljs-comment"># 不能删除当前分支，只能删除其他分支</span><br>git branch -d 分支名称: 删除前进行检查<br>git branch -D 分支名称: 强制删除<br></code></pre></td></tr></table></figure>
-
 <p>在进行分支合并的时候，可能会出现分支之间的冲突情况，此时是无法完成分支合并的。需要我们手动在本地完成冲突解决之后，才能进行合并。冲突解决分为三步，首先处理文件中冲突的地方，即决定最终文件内容是什么，之后将解决完冲突的文件加入暂存区（add），最后提交到仓库（commit）。</p>
-<h3 id="远程仓库操作"><a href="#远程仓库操作" class="headerlink" title="远程仓库操作"></a>远程仓库操作</h3><p>操作远程仓库有两种方式，一种是先初始化本地库，然后与已创建的远程库进行对接。另一种是直接从远程仓库克隆代码到本地，直接建立联系。</p>
+<h3 id="远程仓库操作">远程仓库操作</h3>
+<p>操作远程仓库有两种方式，一种是先初始化本地库，然后与已创建的远程库进行对接。另一种是直接从远程仓库克隆代码到本地，直接建立联系。</p>
 <p>我们可以通过命令查看远程仓库：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">git remote<br></code></pre></td></tr></table></figure>
-
 <p>与远程仓库进行对接的命令为：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">git remote add &lt;远端名称&gt; &lt;仓库名称&gt;<br>- 远端名称，默认是origin，取决于远端服务器设置<br>- 仓库路径，需要从远端服务器获取<br></code></pre></td></tr></table></figure>
-
 <p>增加远程仓库之后，我们仍然是先在本地完成相关操作，提交到本地仓库之后，再进行本地仓库和远程仓库之间的操作，主要包括从远程仓库拉取以及推送到远程仓库。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 推送到远程仓库</span><br>git push [-f] [--set-upstream] [远端名称 [本地分支名][:远端分支名]]<br>- 如果远端分支名和本地分支相同，则可以只写本地分支<br>- -f表示强制覆盖<br>- --set-upstream表示推送到远端的同时建立起与远端分支的关联关系<br>- 如果当前分支已经和远端分支关联，则可以直接git push<br><br><span class="hljs-comment"># 查看远端分支与本地分支的关联关系</span><br>git branch -vv<br><br><span class="hljs-comment"># 克隆远程仓库到本地</span><br>git <span class="hljs-built_in">clone</span> &lt;远程仓库路径&gt; [本地目录]<br><br><span class="hljs-comment"># 拉取远程仓库内容</span><br><span class="hljs-comment"># 抓取：将远程仓库中的更新都抓取到本地，但是不进行合并</span><br>git fetch [remote name] [branch name]<br>- 不指定远端名称和分支名，则抓取所有分支<br><span class="hljs-comment"># 拉取：将远程仓库的修改拉到本地并自动进行合并，等同于fetch+merge</span><br>git pull [remote name][branch name]<br></code></pre></td></tr></table></figure>
-
 <p>如果在同一段时间内，不同用户修改了同一个文件上同一行的内容，此时向远程仓库推送的时候会产生合并冲突。此时需要先拉取远程仓库现在的提交，经过合并，在本地解决冲突之后才能推送到远端分支上。推送操作相当于本地分支的内容合并到远程分支上，也需要解决冲突。</p>
-<h1 id="Git-workflow"><a href="#Git-workflow" class="headerlink" title="Git workflow"></a>Git workflow</h1><h2 id="参与远端项目"><a href="#参与远端项目" class="headerlink" title="参与远端项目"></a>参与远端项目</h2><p>首先明确一个工作环境，目前我们存在Remote远程仓库，Local本地Git以及Risk本地磁盘：</p>
+<h1>Git workflow</h1>
+<h2 id="参与远端项目">参与远端项目</h2>
+<p>首先明确一个工作环境，目前我们存在Remote远程仓库，Local本地Git以及Risk本地磁盘：</p>
 <ol>
 <li>首先使用<code>git clone</code>，将远程仓库中的内容克隆到本地</li>
 <li>使用<code>git checkout -b xxx</code>，切换到一个我们新的feature分支上</li>
@@ -392,17 +393,19 @@
 <li>最后再使用<code>git pull origin main</code>，拉取最新合并后的远端代码</li>
 </ol>
 <p>于是一次代码修改提交以及就此完成，我们得到了更新后的最新代码，在此基础上重复该流程，进行下一个功能的开发。</p>
-<h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><p>在进行企业级项目开发的时候，通常需要多人的协作开发，此时需要遵循一定的分支管理模式。GitFlow是其中一种分支管理模式。在GitFlow上有几个生命周期较长的重要分支：</p>
+<h2 id="分支管理">分支管理</h2>
+<p>在进行企业级项目开发的时候，通常需要多人的协作开发，此时需要遵循一定的分支管理模式。GitFlow是其中一种分支管理模式。在GitFlow上有几个生命周期较长的重要分支：</p>
 <ul>
 <li><code>main</code>：main分支，发布分支，其中的commit记录应该是每次发布或者hot fix</li>
 <li><code>dev</code>：开发分支，记录了所有的开发主线，在每次release之前，应当将dev中的内容合并到main当中</li>
 <li><code>feaute</code>：功能分支，每个功能分支都应该从开发分支中生成，开发完成之后合并到开发分支当中</li>
 </ul>
 <p>当然还有一些其他的分支，例如hot-fix，release等。在GitFlow分支管理模式中，对于分支的合并有较为严格的要求。在功能开发的时候，需要从开发分支中生成Feature分支，开发完成之后合并到dev分支当中。main分支的合并权限应当严格控制，只有在进行release的时候才能进行merge。在这种模式下，可以控制发布版本的错误，但是功能的开发到发布会经过较长的时间，因为要经过相对较长的分支合并过程。</p>
-<p>Trunk Based Development是另外一种分支管理的方式。这种分支管理将main分支看作开发分支和发布分支，具体来说，每次进行功能开发，都是从main分支上生成的，开发完成之后Feature也都直接合并到main分支当中。每次发布也都是发布main分支。这种分支管理方式的风格更加快速，适合持续交付和持续集成。由于发布的是main分支，因此需要始终保证main分支能够随时release，这就要求Feature开发的时候，在每次merge之前都能够保证这次的merge能够release。这种保证通常是通过自动测试和构建工具提供的，在提出Pull Request之后，就能自动对代码进行测试和构建，提供一份测试报告，包括是否通过，覆盖率等。这样快速的开发方式也能&#x3D;能够保证每次进行代码review的时候不需要大规模的进行。不过核心点也是需要保证main分支上的代码能够随时release。</p>
-<h1 id="常用解决方案"><a href="#常用解决方案" class="headerlink" title="常用解决方案"></a>常用解决方案</h1><h2 id="在Mac中忽略-DS-Store文件"><a href="#在Mac中忽略-DS-Store文件" class="headerlink" title="在Mac中忽略.DS_Store文件"></a>在Mac中忽略.DS_Store文件</h2><p>在Mac下的每个目录中，都会有一个<code>.DS_Store</code>文件。该文件是用来给Mac存储文件夹的显示信息的，其中包含了一些为系统所需要的元数据。但是这个文件通常不是一个项目必备的，也就不需要将其提交到Git中。在Git中忽略某些文件可以使用<code>.gitignore</code>，我们也可以通过在该文件中添加如下内容表示忽略.DS_Store文件，其中<code>**/</code>表示匹配所有的文件夹</p>
+<p>Trunk Based Development是另外一种分支管理的方式。这种分支管理将main分支看作开发分支和发布分支，具体来说，每次进行功能开发，都是从main分支上生成的，开发完成之后Feature也都直接合并到main分支当中。每次发布也都是发布main分支。这种分支管理方式的风格更加快速，适合持续交付和持续集成。由于发布的是main分支，因此需要始终保证main分支能够随时release，这就要求Feature开发的时候，在每次merge之前都能够保证这次的merge能够release。这种保证通常是通过自动测试和构建工具提供的，在提出Pull Request之后，就能自动对代码进行测试和构建，提供一份测试报告，包括是否通过，覆盖率等。这样快速的开发方式也能=能够保证每次进行代码review的时候不需要大规模的进行。不过核心点也是需要保证main分支上的代码能够随时release。</p>
+<h1>常用解决方案</h1>
+<h2 id="在Mac中忽略-DS-Store文件">在Mac中忽略.DS_Store文件</h2>
+<p>在Mac下的每个目录中，都会有一个<code>.DS_Store</code>文件。该文件是用来给Mac存储文件夹的显示信息的，其中包含了一些为系统所需要的元数据。但是这个文件通常不是一个项目必备的，也就不需要将其提交到Git中。在Git中忽略某些文件可以使用<code>.gitignore</code>，我们也可以通过在该文件中添加如下内容表示忽略.DS_Store文件，其中<code>**/</code>表示匹配所有的文件夹</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">**/.DS_Store<br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>其他的相关匹配含义：</p>
 <ul>
@@ -417,9 +420,9 @@
 <p>每个项目都有一个<code>.gitignore</code>，在每个项目中都这样配置当然是可行的。但是这样的确过于麻烦。我们可以将其配置到全局中。首先可以通过<code>git config --list</code>来查看目前的全局配置，实际上这个配置对应的就是<code>~/.gitconfig</code>文件中的内容。</p>
 <p>为了完成全局配置，我们需要首先创建一个文件<code>~/.gitignore_global</code>，然后在其中添加和上面相同的内容，然后对Git进行全局设置，让其忽略<code>.gitignore_global</code>中的所有文件：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">git config --global core.excludesfile ~/.gitignore_global<br></code></pre></td></tr></table></figure>
-
 <p>这样就将配置设置到了全局，而不需要每个项目都设置一遍了。</p>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<h1>参考资料</h1>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV19e4y1q7JJ">十分钟学会正确的github工作流，和开源作者们使用同一套流程_哔哩哔哩_bilibili</a></li>
 <li><a target="_blank" rel="noopener" href="https://docs.github.com/en">GitHub Documentation</a></li>
 <li><a target="_blank" rel="noopener" href="https://orianna-zzo.github.io/sci-tech/2018-01/mac%E4%B8%ADgit%E5%BF%BD%E7%95%A5.ds_store%E6%96%87%E4%BB%B6/">Mac中Git忽略.DS_Store文件 | ZHENG Zi’ou (orianna-zzo.github.io)</a></li>

@@ -325,7 +325,8 @@
             
               <div class="markdown-body">
                 
-                <h2 id="HBase介绍"><a href="#HBase介绍" class="headerlink" title="HBase介绍"></a>HBase介绍</h2><p>HBase是一个开源的、分布式的、版本化的非关系型数据库（NoSQL），底层利用HDFS提供分布式数据存储。HBase可以对数据进行随机存取和检索，可以存储结构化和半结构化的数据，例如一些网站内容，日志信息等等可以存放在HBase中。</p>
+                <h2 id="HBase介绍">HBase介绍</h2>
+<p>HBase是一个开源的、分布式的、版本化的非关系型数据库（NoSQL），底层利用HDFS提供分布式数据存储。HBase可以对数据进行随机存取和检索，可以存储结构化和半结构化的数据，例如一些网站内容，日志信息等等可以存放在HBase中。</p>
 <ul>
 <li>HBase是BigTable的开源Java版本，底层建立在HDFS之上，提供高可靠，高性能、列存储、可伸缩、实时读写等功能，属于NoSQL</li>
 <li>在HBase中仅能够通过主键和主键的range来进行数据检索，并且仅支持单行事务</li>
@@ -333,40 +334,48 @@
 <li>HBase仅提供简单的数据查询功能，不支持join等复杂操作，不支持复杂事务，相比传统的关系型数据库来说，HBase缺少很多特性，例如不支持带类型的列，不支持二级索引以及高级查询语言等</li>
 <li>HBase中支持的数据类型为：byte[ ]</li>
 </ul>
-<p>HBase应用场景举例：对象存储、时序数据、推荐画像、时空数据、CubeDB OLAP、消息 &#x2F; 订单、爬虫数据存储、海量数据备份、短网址…</p>
+<p>HBase应用场景举例：对象存储、时序数据、推荐画像、时空数据、CubeDB OLAP、消息 / 订单、爬虫数据存储、海量数据备份、短网址…</p>
 <p>HBase的特点：</p>
 <ul>
-<li><p>数据量大：一个表可以有上十亿行，上百万列，并且可以在横向和纵向两个维度插入数据，具有很大的弹性。而HBase采用LSM树作为内部数据存储结构，这种结构会周期性地将较小文件合并成大文件，以减少对磁盘的访问</p>
+<li>
+<p>数据量大：一个表可以有上十亿行，上百万列，并且可以在横向和纵向两个维度插入数据，具有很大的弹性。而HBase采用LSM树作为内部数据存储结构，这种结构会周期性地将较小文件合并成大文件，以减少对磁盘的访问</p>
 </li>
-<li><p>面向列的存储：HBase内部使用面向列（族）的存储和权限控制，列（族）独立检索。其中的每个列是单独存储的。</p>
+<li>
+<p>面向列的存储：HBase内部使用面向列（族）的存储和权限控制，列（族）独立检索。其中的每个列是单独存储的。</p>
 <blockquote>
 <p>行存储的情况：一张表的数据存放在一起，进行数据的插入和更新会相对容易，但是查询操作需要读取所有（大部分）的数据</p>
-<p>列存储的情况：一张表按照列分开存储，查询操作仅需要读取相关列即可，可以大幅降低系统的I&#x2F;O吞吐量</p>
+<p>列存储的情况：一张表按照列分开存储，查询操作仅需要读取相关列即可，可以大幅降低系统的I/O吞吐量</p>
 </blockquote>
 </li>
-<li><p>稀疏存储：对于为空的列，并不会占用存储空间。因此，表可以设计得非常稀疏，在很大程度上节省了存储开销</p>
+<li>
+<p>稀疏存储：对于为空的列，并不会占用存储空间。因此，表可以设计得非常稀疏，在很大程度上节省了存储开销</p>
 </li>
-<li><p>强扩展性：HBase底层为HDFS，支持分布式存储。HBase同样具有横向扩展性，通过增加集群中的服务器数量来提升集群的容量和性能</p>
+<li>
+<p>强扩展性：HBase底层为HDFS，支持分布式存储。HBase同样具有横向扩展性，通过增加集群中的服务器数量来提升集群的容量和性能</p>
 <blockquote>
 <p>HBase表根据Region大小进行分区，分别存放在集群中不同节点上。当添加新的节点时，集群会进行重新调整，在新的节点上启动HBase服务器，动态地实现扩展。</p>
 <p>HBase的扩展是热扩展，可以在不停止现有服务的情况下，动态增减节点。</p>
 </blockquote>
 </li>
-<li><p>高可靠性：HBase运行在HDFS之上，HDFS的多副本存储机制可以让HBase实现出现故障时的自动恢复，同时HBase内部也提供WAL和Replication机制。当集群中的单个节点出现故障的时候，协调服务组件Zookeeper会通知集群的主节点，将故障节点的HLog中的日志信息分发到各个从节点中进行数据恢复</p>
+<li>
+<p>高可靠性：HBase运行在HDFS之上，HDFS的多副本存储机制可以让HBase实现出现故障时的自动恢复，同时HBase内部也提供WAL和Replication机制。当集群中的单个节点出现故障的时候，协调服务组件Zookeeper会通知集群的主节点，将故障节点的HLog中的日志信息分发到各个从节点中进行数据恢复</p>
 <blockquote>
 <p>WAL（Write-Ahead-Log）预写日志：在HBase服务器处理数据插入和删除的过程中用来记录操作内容的日志。在执行操作之前先写入日志，保证数据写入的时候不会因集群异常而导致写入数据的丢失。</p>
 <p>Replication机制：基于日志操作做数据同步。</p>
 </blockquote>
 </li>
 </ul>
-<h2 id="HBase对比"><a href="#HBase对比" class="headerlink" title="HBase对比"></a>HBase对比</h2><h3 id="HBase-vs-RDBMS"><a href="#HBase-vs-RDBMS" class="headerlink" title="HBase vs RDBMS"></a>HBase vs RDBMS</h3><table>
+<h2 id="HBase对比">HBase对比</h2>
+<h3 id="HBase-vs-RDBMS">HBase vs RDBMS</h3>
+<table>
 <thead>
 <tr>
 <th>HBase</th>
 <th>RDBMS</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>数据以表的形式存在</td>
 <td>数据以表的形式存在</td>
 </tr>
@@ -418,10 +427,13 @@
 <td>不支持join等复杂操作</td>
 <td>支持join等复杂操作</td>
 </tr>
-</tbody></table>
-<h3 id="HBase-vs-HDFS"><a href="#HBase-vs-HDFS" class="headerlink" title="HBase vs HDFS"></a>HBase vs HDFS</h3><p>HDFS是一个非常适合存储大型文件的分布式文件系统，但是不是一个通用的文件系统，无法在文件中快速查询某个数据。</p>
+</tbody>
+</table>
+<h3 id="HBase-vs-HDFS">HBase vs HDFS</h3>
+<p>HDFS是一个非常适合存储大型文件的分布式文件系统，但是不是一个通用的文件系统，无法在文件中快速查询某个数据。</p>
 <p>HBase构建在HDFS之上，并为大型表提供快速查找（和更新）的操作。HBase内部将大量数据放在HDFS中名为<code>StoreFiles</code>的索引中，以便进行高速查找。HBase比较适合做快速查询等需求。</p>
-<h3 id="HBase-vs-Hive"><a href="#HBase-vs-Hive" class="headerlink" title="HBase vs Hive"></a>HBase vs Hive</h3><p>Hive是一种数据仓库工具，它的本质相当于将HDFS中已经存储的文件在MySQL中做一个映射，以便使用HQL去管理查询。Hive通常用于数据分析和清洗，因为延迟较高，所以适用于离线的数据分析和清洗。Hive也是基于HDFS和MapReduce的，Hive存储的数据依旧在DataNode上，编写的HQL语句最终转换成MapReduce代码进行执行。</p>
+<h3 id="HBase-vs-Hive">HBase vs Hive</h3>
+<p>Hive是一种数据仓库工具，它的本质相当于将HDFS中已经存储的文件在MySQL中做一个映射，以便使用HQL去管理查询。Hive通常用于数据分析和清洗，因为延迟较高，所以适用于离线的数据分析和清洗。Hive也是基于HDFS和MapReduce的，Hive存储的数据依旧在DataNode上，编写的HQL语句最终转换成MapReduce代码进行执行。</p>
 <p>HBase是一种面向列存储的非关系型数据库，用于存储结构化和非结构化数据，不适合做关联查询等操作。HBase基于HDFS，数据持久化存储的体现形式是HFile，存放在DataNode中，被RegionServer以region等形式进行管理。同时延迟较低，适合接入在线业务使用。</p>
 <p>总结来说，Hive和HBase是两种基于Hadoop的不同技术，Hive是一种类SQL的引擎，运行MapReduce任务；HBase是一种基于HDFS的键值对NoSQL数据库。两种技术可以同时使用，Hive用来进行统计查询，HBase用来进行实时数据查询，数据可以从Hive写入到HBase，或者从HBase写入Hive。</p>
 

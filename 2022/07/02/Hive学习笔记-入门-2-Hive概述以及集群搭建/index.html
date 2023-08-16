@@ -283,7 +283,7 @@
         
         
           <!-- compatible with older versions-->
-          113 分钟
+          112 分钟
         
       </span>
     
@@ -330,7 +330,8 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Hive概述"><a href="#Hive概述" class="headerlink" title="Hive概述"></a>Hive概述</h1><p>Hive是一款建立在Hadoop之上的开源<strong>数据仓库</strong>系统，可以将存储在<strong>HDFS</strong>中的<strong>结构化</strong>、<strong>半结构化</strong>的数据文件<strong>映射为一张数据库表</strong>。之后基于表提供了一种类SQL的查询模型，称为<strong>Hive查询语言（HQL）</strong>，用于访问和分析存储在HDFS中的大型数据集</p>
+                <h1>Hive概述</h1>
+<p>Hive是一款建立在Hadoop之上的开源<strong>数据仓库</strong>系统，可以将存储在<strong>HDFS</strong>中的<strong>结构化</strong>、<strong>半结构化</strong>的数据文件<strong>映射为一张数据库表</strong>。之后基于表提供了一种类SQL的查询模型，称为<strong>Hive查询语言（HQL）</strong>，用于访问和分析存储在HDFS中的大型数据集</p>
 <p>Hive的核心是将HQL转换成MapReduce程序（后续也提供了其他的计算引擎），然后将程序提交的Hadoop集群中执行</p>
 <p>使用Hive的好处：</p>
 <ol>
@@ -340,32 +341,38 @@
 <li>依赖于Hadoop，擅长于存储分析海量数据集</li>
 </ol>
 <p>从功能上来说，数据仓库软件至少需要具备<strong>存储数据</strong>和<strong>分析数据</strong>的能力，Hive作为一款大数据时代的数据仓库软件，当然也具备这两种能力，但是这并不是它自己实现的，而是借助于Hadoop来实现的。<strong>Hive利用HDFS来存储数据，利用MapReduce来查询和分析数据</strong>。而Hive本身最大的意义在于能够<strong>让用户专注于编写HQL，然后让Hive将其转换成MapReduce程序，完成对数据的分析</strong></p>
-<h1 id="Hive架构和组件"><a href="#Hive架构和组件" class="headerlink" title="Hive架构和组件"></a>Hive架构和组件</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>考虑Hive完成的功能，它能够将HDFS上的数据文件映射成为一张表，并在其上提供HQL的查询功能。</p>
+<h1>Hive架构和组件</h1>
+<h2 id="架构">架构</h2>
+<p>考虑Hive完成的功能，它能够将HDFS上的数据文件映射成为一张表，并在其上提供HQL的查询功能。</p>
 <ul>
 <li>数据文件到表的映射，需要<strong>记录文件和表之间的对应关系</strong>，这类数据我们称之为元数据信息（描述数据的数据）。具体来说，元信息中可能需要记录表的位置信息、字段的顺序信息、字段之间的分隔符等</li>
 <li>HQL的查询功能，需要提供SQL的语法解析和编译功能。用户写完SQL之后，Hive需要对语句进行语法校验，并根据记录的元数据信息来解读语句的含义，指定执行计划，并将执行计划转换成MapReduce程序来执行，然后将执行结果封装返回给用户</li>
 </ul>
 <p>总体来说，Hive架构如下：</p>
 <img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E6%9E%B6%E6%9E%84.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Hive架构">
-
 <p>用户编写查询语句之后，Hive对其进行语法解析，语句编译和执行计划优化。在语句编译的过程中，需要使用到元数据，因此需要从存储元数据的数据库中查询对应的信息。之后Hive将语句转换成MapReduce程序后提交给Yarn进行执行，得到结果后返回给用户。</p>
-<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p>Hive的组件主要包括如下的内容，如用户接口、元数据存储、Driver驱动程序、执行引擎等，图中还包括与集群的交互等信息</p>
+<h2 id="组件">组件</h2>
+<p>Hive的组件主要包括如下的内容，如用户接口、元数据存储、Driver驱动程序、执行引擎等，图中还包括与集群的交互等信息</p>
 <img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/Hive%E7%BB%84%E4%BB%B6.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Hive组件">
-
 <ul>
-<li><p>用户接口：包括命令行接口CLI、JDBC&#x2F;ODBC、WebGUI等。其中，Hive中的Thrift服务器允许外部客户端通过网络与Hive进行交互，类似于JDBC或者ODBC协议；WebGUI则是通过浏览器来访问Hive</p>
+<li>
+<p>用户接口：包括命令行接口CLI、JDBC/ODBC、WebGUI等。其中，Hive中的Thrift服务器允许外部客户端通过网络与Hive进行交互，类似于JDBC或者ODBC协议；WebGUI则是通过浏览器来访问Hive</p>
 </li>
-<li><p>元数据存储：Hive的元数据通常是存储在关系数据库如MySQL或者derby中。Hive中的元数据包括表的名字、表的列和分区及其属性、表的属性、表数据所在目录等</p>
+<li>
+<p>元数据存储：Hive的元数据通常是存储在关系数据库如MySQL或者derby中。Hive中的元数据包括表的名字、表的列和分区及其属性、表的属性、表数据所在目录等</p>
 </li>
-<li><p>Driver驱动程序：包括语法解析器、计划编译器、优化器、执行器等，主要完成HQL查询语句的词法分析、语法分析、编译、优化，以及查询计划的生成，生成的查询计划存储在HDFS中，并有执行引擎调用执行</p>
+<li>
+<p>Driver驱动程序：包括语法解析器、计划编译器、优化器、执行器等，主要完成HQL查询语句的词法分析、语法分析、编译、优化，以及查询计划的生成，生成的查询计划存储在HDFS中，并有执行引擎调用执行</p>
 </li>
-<li><p>执行引擎：Hive本身并不处理数据文件，而是通过执行引擎来处理。当前Hive支持MapReduce、Tez、Spark三种执行引擎</p>
+<li>
+<p>执行引擎：Hive本身并不处理数据文件，而是通过执行引擎来处理。当前Hive支持MapReduce、Tez、Spark三种执行引擎</p>
 </li>
 </ul>
 <blockquote>
 <p>Tez：是Apache最新的支持DAG作业的开源计算框架，它可以将多个有依赖的作业转换为一个作业从而大幅提升DAG作业的性能。</p>
 </blockquote>
-<h1 id="Hive数据模型"><a href="#Hive数据模型" class="headerlink" title="Hive数据模型"></a>Hive数据模型</h1><p>Hive中的数据模型类似于关系型数据库的库表结构，在此基础上还有自己特有的模型，Hive中的数据可以在粒度级别上分成三类：Table表、Partition分区和Bucket分桶。</p>
+<h1>Hive数据模型</h1>
+<p>Hive中的数据模型类似于关系型数据库的库表结构，在此基础上还有自己特有的模型，Hive中的数据可以在粒度级别上分成三类：Table表、Partition分区和Bucket分桶。</p>
 <p><strong>Database数据库</strong>：</p>
 <ul>
 <li>Hive作为一个数据仓库，其中也有数据库的概念。每个数据库下有属于自己的表。默认存在数据库为default</li>
@@ -394,13 +401,16 @@
 <blockquote>
 <p>Hive虽然具有RDBMS数据库的外表，包括数据模型、SQL语法都十分相似，但应用场景却完全不同。Hive只适合用来做海量数据的离线分析。Hive的定位是数据仓库，面向分析的OLAP系统。Hive不是大型数据库，也不是要取代MySQL承担业务数据处理。</p>
 </blockquote>
-<h1 id="Hive部署"><a href="#Hive部署" class="headerlink" title="Hive部署"></a>Hive部署</h1><h2 id="元数据和元数据服务"><a href="#元数据和元数据服务" class="headerlink" title="元数据和元数据服务"></a>元数据和元数据服务</h2><p>元数据：Metadata，又称为中介数据、中继数据，指的是描述数据的数据。它主要是用来描述数据的属性，用来支持相关功能，如指示存储位置、历史数据、资源查找、文件记录等</p>
+<h1>Hive部署</h1>
+<h2 id="元数据和元数据服务">元数据和元数据服务</h2>
+<p>元数据：Metadata，又称为中介数据、中继数据，指的是描述数据的数据。它主要是用来描述数据的属性，用来支持相关功能，如指示存储位置、历史数据、资源查找、文件记录等</p>
 <p><strong>Hive Metadata</strong>即Hive中的元数据，其中包含了Hive创建的database、table、表位置、类型、属性、字段顺序、字段类型等元信息。<strong>Hive元数据存储在关系型数据库中</strong>，如Hive内置的Derby，或第三方数据库如MySQL等</p>
 <p><strong>Hive Metastore</strong>即元数据服务，它的作用是管理元数据，对外暴露服务地址，让各种客户端通过连接Metastore服务，再由Metastore去连接MySQL数据库来进行元数据的存取，相当于对元数据的操作有了一个统一的接口</p>
 <blockquote>
 <p>有了Meatstore服务，就可以有多个客户端同时连接，这些客户端不需要知道MySQL数据库的用户名和密码，只需要连接Metastore服务即可，在某种程度上保证了Hive元数据的安全</p>
 </blockquote>
-<h2 id="Hive部署-1"><a href="#Hive部署-1" class="headerlink" title="Hive部署"></a>Hive部署</h2><p>Hive的部署有三种模式，内嵌模式、本地模式和远程模式。三种模式的区分主要在于两点：</p>
+<h2 id="Hive部署">Hive部署</h2>
+<p>Hive的部署有三种模式，内嵌模式、本地模式和远程模式。三种模式的区分主要在于两点：</p>
 <ol>
 <li>Metastore服务是否需要单独配置，单独启动</li>
 <li>Metadata是存储在Hive内置的Derby中，还是第三方的RDBMS如MySQL中</li>
@@ -414,7 +424,8 @@
 <th>远程模式</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Metastore单独配置、启动</td>
 <td>❌</td>
 <td>❌</td>
@@ -426,7 +437,8 @@
 <td>MySQL</td>
 <td>MySQL</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <blockquote>
 <p>Hadoop和Hive之间的版本对应关系可以参考：<a target="_blank" rel="noopener" href="https://hive.apache.org/downloads.html">Downloads (apache.org)</a></p>
 <p>目前集群中使用的Hadoop版本为3.1.3，因此这里选择使用的Hive版本为3.1.2</p>
@@ -434,68 +446,58 @@
 <p>Hive是一款基于Hadoop的数据仓库软件，因此在部署之前，需要保证服务器的基础环境正常，Hadoop集群健康可用。启动Hive之前必须先启动Hadoop集群，需要等待HDFS安全模式关闭之后再启动运行Hive。Hive不是分布式安装运行的软件，其分布式的特征主要是借由Hadoop完成，包括分布式存储、分布式计算等。</p>
 <p>在部署之前，需要将<strong>Hadoop与Hive进行整合</strong>。我们需要在Hadoop中添加相关配置信息，满足Hive在Hadoop上运行，具体信息如下，配置在core-site.xml中，并同步到集群中的其他节点上。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--Hadoop与Hive的整合--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hadoop.proxyuser.syh.hosts<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>*<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hadoop.proxyuser.syh.groups<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>*<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>该处参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/jtotoo/p/15778979.html">错误：hive中beeline连接异常User:*** is not allowed to impersonate - Jtotoo - 博客园 (cnblogs.com)</a></p>
 <p>其中syh可以修改为自己对应的用户</p>
 </blockquote>
-<h3 id="内嵌模式"><a href="#内嵌模式" class="headerlink" title="内嵌模式"></a>内嵌模式</h3><p>内嵌模式的特征就是不需要配置启动Metastore服务，解压安装包初始化即可测试体验Hive。</p>
+<h3 id="内嵌模式">内嵌模式</h3>
+<p>内嵌模式的特征就是不需要配置启动Metastore服务，解压安装包初始化即可测试体验Hive。</p>
 <blockquote>
 <p>Hive3版本需要用户手动进行元数据初始化动作</p>
 </blockquote>
 <p>具体配置过程如下：</p>
 <p>将安装包上传到集群中，然后解压到<code>/opt/module</code>目录下，为了后续方便可以进行名称修改。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">tar -zxvf apache-hive-3.1.2-bin.tar.gz -C /opt/module<br><span class="hljs-built_in">mv</span> apache-hive-3.1.2-bin/ hive-3.1.2<br></code></pre></td></tr></table></figure>
-
 <p>编辑环境变量<code>/etc/profile.d/my_env.sh</code>，在其中添加Hive对应的目录</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#HIVE_HOME</span><br><span class="hljs-built_in">export</span> HIVE_HOME=/opt/module/hive-3.1.2<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HIVE_HOME</span>/bin<br></code></pre></td></tr></table></figure>
-
 <p>之后需要解决hadoop、hive之间的guava版本差异</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> /opt/module/hive-3.1.2<br><span class="hljs-built_in">rm</span> -r lib/guava-19.0.jar<br><span class="hljs-built_in">cp</span> /opt/module/hadoop-3.1.3/share/hadoop/common/lib/guava-27.0-jre.jar ./lib/<br></code></pre></td></tr></table></figure>
-
 <p>然后修改hive环境变量文件<code>hive-env.sh</code>，在其中添加Hadoop的配置，具体位置在<code>$HIVE_HOME/conf</code>目录下，需要将后缀的<code>.template</code>删除，在里面添加如下内容：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">export</span> HADOOP_HOME=/opt/module/hadoop-3.1.3<br><span class="hljs-built_in">export</span> HIVE_CONF_DIR=/opt/module/hive-3.1.2/conf<br><span class="hljs-built_in">export</span> HIVE_AUX_JARS_PATH=/opt/module/hive-3.1.2/lib<br></code></pre></td></tr></table></figure>
-
 <p>配置完成之后，就可以初始化metadata了</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> /opt/module/hive-3.1.2<br>bin/schematool -dbType derby -initSchema<br></code></pre></td></tr></table></figure>
-
 <p>这样，Hive的安装就完成了，同时我们可以启动Hive服务，之后进入的就是类似于mysql中那样的命令行画面</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">bin/hive<br></code></pre></td></tr></table></figure>
-
 <p>（以上的操作是Hive的安装过程，在后续的不同部署方式中也是通用的）</p>
 <blockquote>
 <p>在内嵌模式下，判断是否初始化成功的依据是执行命令之后输出信息和执行命令的当前路径下是否有文件产生。</p>
 <p>在不同的目录启动hive，文件产生在不同的目录下，则隔离了不同用户的操作，不同用户之间的操作不是共享的，这也是内嵌模式不被使用在生产场景下的原因，只适合用来测试。</p>
 </blockquote>
-<h3 id="本地模式"><a href="#本地模式" class="headerlink" title="本地模式"></a>本地模式</h3><p>本地模式的特征就是需要安装数据库MySQL来存储元数据，但是不需要配置Metastore服务，Metastore服务随着hive的启动而启动，也就是可能同时出现多个Metastore服务（同样Hive3版本需要用户手动进行元数据初始化操作）</p>
+<h3 id="本地模式">本地模式</h3>
+<p>本地模式的特征就是需要安装数据库MySQL来存储元数据，但是不需要配置Metastore服务，Metastore服务随着hive的启动而启动，也就是可能同时出现多个Metastore服务（同样Hive3版本需要用户手动进行元数据初始化操作）</p>
 <img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/%E6%9C%AC%E5%9C%B0%E6%A8%A1%E5%BC%8F.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="本地模式">
-
 <p>具体部署过程如下：</p>
 <p>首先需要安装MySQL，具体过程可以参考文章：<a target="_blank" rel="noopener" href="https://evernorif.github.io/2022/07/02/CentOS7%E4%B8%AD%E5%AE%89%E8%A3%85MySQL/">CentOS7中安装MySQL - EverNorif</a></p>
 <p>之后需要安装Hive，大致过程和上面内嵌模式类似，但是有一些不同。</p>
 <p>需要将MySQL JDBC驱动移动到<code>$HIVE_HOME/lib</code>目录下</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">mysql-connector-java-5.1.32.jar<br></code></pre></td></tr></table></figure>
-
 <p>需要在hive的conf目录下新增<code>hive-site.xml</code>文件，其中配置mysql等相关信息。配置信息如下</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 存储元数据mysql相关配置 --&gt;</span><br>    <span class="hljs-comment">&lt;!-- JDBC连接的URL --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionURL<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span> jdbc:mysql://hadoop102:3306/hive?createDatabaseIfNotExist=true<span class="hljs-symbol">&amp;amp;</span>useSSL=false<span class="hljs-symbol">&amp;amp;</span>useUnicode=true<span class="hljs-symbol">&amp;amp;</span>characterEncoding=UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- JDBC连接的Driver --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionDriverName<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>com.mysql.jdbc.Driver<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- JDBC连接的username --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionUserName<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>root<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- JDBC连接的密码 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionPassword<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>123123<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 关闭元数据存储授权  --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.metastore.event.db.notification.api.auth<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 关闭元数据存储版本的验证 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.metastore.schema.verification<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <br>    <span class="hljs-comment">&lt;!-- Hive 默认在 HDFS 的工作目录 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.metastore.warehouse.dir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>/user/hive/warehouse<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <br><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>之后就可以初始化metadata，然后启动hive服务。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">bin/schematool -initSchema -dbType mysql -verbos<br></code></pre></td></tr></table></figure>
-
-<h3 id="远程模式"><a href="#远程模式" class="headerlink" title="远程模式"></a>远程模式</h3><p>远程模式的特点是需要安装MySQL来存储Hive元数据，并且需要手动单独配置启动Metastore服务。</p>
+<h3 id="远程模式">远程模式</h3>
+<p>远程模式的特点是需要安装MySQL来存储Hive元数据，并且需要手动单独配置启动Metastore服务。</p>
 <img src="/2022/07/02/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-2-Hive%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/%E8%BF%9C%E7%A8%8B%E6%A8%A1%E5%BC%8F.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="远程模式">
-
 <p>远程模式的安装也和上面的步骤类似，只有部分细节有所差异。</p>
 <p>首先安装MySQL，然后安装Hive，同样需要上传MySQL JDBC驱动，以及新增<code>hive-site.xml</code>配置MySQL等相关信息，配置信息如下，和本地模式不同的是增加了HiveServer2绑定运行以及远程模式部署Metastore服务的地址。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 存储元数据mysql相关配置 --&gt;</span><br>    <span class="hljs-comment">&lt;!-- JDBC连接的URL --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionURL<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span> jdbc:mysql://hadoop102:3306/hive?createDatabaseIfNotExist=true<span class="hljs-symbol">&amp;amp;</span>useSSL=false<span class="hljs-symbol">&amp;amp;</span>useUnicode=true<span class="hljs-symbol">&amp;amp;</span>characterEncoding=UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- JDBC连接的Driver --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionDriverName<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>com.mysql.jdbc.Driver<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- JDBC连接的username --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionUserName<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>root<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-comment">&lt;!-- JDBC连接的密码 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>javax.jdo.option.ConnectionPassword<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>123123<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 指定HiveServer2连接的host --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.server2.thrift.bind.host<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>hadoop102<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <br>     <span class="hljs-comment">&lt;!-- 指定 hiveserver2 连接的端口号 --&gt;</span><br> 	<span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br> 		<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.server2.thrift.port<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br> 		<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>10000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br> 	<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 远程模式部署metastore 服务地址 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.metastore.uris<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>thrift://hadoop102:9083<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 关闭元数据存储授权  --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.metastore.event.db.notification.api.auth<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 关闭元数据存储版本的验证 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.metastore.schema.verification<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <br>    <span class="hljs-comment">&lt;!-- Hive 默认在 HDFS 的工作目录 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.metastore.warehouse.dir<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>/user/hive/warehouse<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>之后就可以启动运行Hive了。在远程模式下，直接运行Hive服务会报错 ，必须首先启动Hive Metastore服务之后才可以使用Hive。（在使用前还需要初始化metadata）</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">bin/schematool -initSchema -dbType mysql -verbos<br></code></pre></td></tr></table></figure>
-
 <p>启动Hive Metastore服务：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HIVE_HOME</span><br><br><span class="hljs-comment"># 前台启动，使用ctrl+c关闭</span><br>bin/hive --service metastore<br><br><span class="hljs-comment"># 前台启动开启debug日志</span><br>bin/hive --service metastore --hiveconf hive.root.logger=DEBUG,console<br><br><span class="hljs-comment"># 后台启动，进程挂起，关闭使用jps+kill</span><br><span class="hljs-comment"># 输入命令回车执行 再次回车 进程将挂起后台</span><br><span class="hljs-built_in">nohup</span> /export/server/hive/bin/hive --service metastore &amp;<br></code></pre></td></tr></table></figure>
-
-<h1 id="Hive客户端"><a href="#Hive客户端" class="headerlink" title="Hive客户端"></a>Hive客户端</h1><h2 id="客户端介绍"><a href="#客户端介绍" class="headerlink" title="客户端介绍"></a>客户端介绍</h2><p>从Hive远程模式图解中我们可以看到，Hive有两种连接方式的，分别是旧客户端bin&#x2F;hive以及新客户端bin&#x2F;beeline</p>
+<h1>Hive客户端</h1>
+<h2 id="客户端介绍">客户端介绍</h2>
+<p>从Hive远程模式图解中我们可以看到，Hive有两种连接方式的，分别是旧客户端bin/hive以及新客户端bin/beeline</p>
 <p>第一代客户端：<code>$HIVE_HOME/bin/hive</code>，目前已经不推荐使用了。它是一个shellUtil，主要功能是用于以交互式或批处理模式进行Hive查询，以及启动Hive相关的服务，例如metastore</p>
 <p>第二代客户端：<code>$HIVE_HOME/bin/beeline</code>，是一个JDBC客户端，官方推荐使用。与第一代客户端相比，它的性能得到了加强，安全性也得到了提高</p>
 <p>Beeline在嵌入式模式和远程模式下均可以工作。在嵌入模式下，它运行嵌入式Hive，而<strong>远程模式下通过Thrift连接到到单独的HiveServer2服务上</strong>。</p>
@@ -514,29 +516,25 @@
 </ul>
 <p>第二代客户端beeline的启动：需要首先启动metastore服务，然后启动hiveserver2服务</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 后台启动</span><br><span class="hljs-built_in">nohup</span> hive --service metastore &amp;<br><span class="hljs-built_in">nohup</span> hive --service hiveserver2 &amp;<br></code></pre></td></tr></table></figure>
-
 <p>之后就可以通过beeline客户端进行连接，协议的地址为<code>jdbc:hive2://hadoop102:10000</code>，需要登陆对应的用户</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 方式1</span><br>beeline<br><br>beeline&gt; ! connect jdbc:hive2://hadoop102:10000<br>Connecting to jdbc:hive2://hadoop102:10000<br>Enter username <span class="hljs-keyword">for</span> jdbc:hive2://hadoop102:10000: syh<br>Enter password <span class="hljs-keyword">for</span> jdbc:hive2://hadoop102:10000: ******<br>Connected to: Apache Hive (version 3.1.2)<br>Driver: Hive JDBC (version 3.1.2)<br></code></pre></td></tr></table></figure>
-
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 方式2</span><br>beeline -u jdbc:hive2://hadoop102:10000 -n syh<br></code></pre></td></tr></table></figure>
-
-<h2 id="可能出现的问题"><a href="#可能出现的问题" class="headerlink" title="可能出现的问题"></a>可能出现的问题</h2><p>在连接二代客户端的时候可能会出现以下的问题：</p>
+<h2 id="可能出现的问题">可能出现的问题</h2>
+<p>在连接二代客户端的时候可能会出现以下的问题：</p>
 <ul>
 <li>拒绝连接</li>
 </ul>
 <figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs smali">Could<span class="hljs-built_in"> not </span>open connection to the HS2 server.Please<span class="hljs-built_in"> check </span>the server URI<span class="hljs-built_in"> and </span>if<br>the URI is correct,then ask the administrator to<span class="hljs-built_in"> check </span>the server status.<br>Error:Could<span class="hljs-built_in"> not </span>open client transport with JDBC Uri:<br>idbc:hive2://hadoop102:10000:java.net.ConnectException:Connection refused<br>(Connection refused)(state=08S01,code=0)<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>权限不够</li>
 </ul>
 <figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">Failed <span class="hljs-keyword">to</span> <span class="hljs-keyword">open</span> <span class="hljs-keyword">new</span> session: java.lang.RuntimeException: org.apache.hadoop.ipc.<span class="hljs-constructor">RemoteException(<span class="hljs-params">org</span>.<span class="hljs-params">apache</span>.<span class="hljs-params">hadoop</span>.<span class="hljs-params">security</span>.<span class="hljs-params">authorize</span>.AuthorizationException)</span>: User: syh is not allowed <span class="hljs-keyword">to</span> impersonate syh <br></code></pre></td></tr></table></figure>
-
-<p>该问题的解决可以参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/u011495642/article/details/84305944">Beeline连接报错：Could not open client transport with JDBC Uri: jdbc:hive2:&#x2F;&#x2F;localhost:10000&#x2F;default_望隐少年的博客-CSDN博客</a></p>
+<p>该问题的解决可以参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/u011495642/article/details/84305944">Beeline连接报错：Could not open client transport with JDBC Uri: jdbc:hive2://localhost:10000/default_望隐少年的博客-CSDN博客</a></p>
 <p>其中需要注意的点是HiveServer2服务的启动较慢，只有当我们看到10000端口占用之后，服务才启动完毕。需要等到服务启动完毕之后再连接beeline</p>
 <p>我们也可以通过在<code>hive-site.xml</code>中进行相应的配置来提高HiveServer2服务的启动速度</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- hiveserver2的高可用参数，开启此参数可以提高hiveserver2的启动速度 --&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hive.server2.active.passive.ha.enable<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="启动脚本"><a href="#启动脚本" class="headerlink" title="启动脚本"></a>启动脚本</h2><p>可以编写Hive服务启动脚本<code>myHiveService.sh</code>，分别完成以下功能</p>
+<h2 id="启动脚本">启动脚本</h2>
+<p>可以编写Hive服务启动脚本<code>myHiveService.sh</code>，分别完成以下功能</p>
 <ul>
 <li>启动Metastore服务和HiveServer2服务</li>
 <li>查看Metastore服务和HiveServer服务状态</li>
@@ -545,18 +543,18 @@
 <p>脚本启动两个服务之后，需要手动查看服务状态，两个服务都正常启动之后才可以连接客户端</p>
 <p>具体内容如下：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br>HIVE_LOG_DIR=<span class="hljs-variable">$HIVE_HOME</span>/logs<br><span class="hljs-keyword">if</span> [ ! -d <span class="hljs-variable">$HIVE_LOG_DIR</span> ]; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$HIVE_LOG_DIR</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-comment">#检查进程是否运行正常，参数 1 为进程名，参数 2 为进程端口</span><br><span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">check_process</span></span>() &#123;<br>    pid=$(ps -ef 2&gt;/dev/null | grep -v grep | grep -i <span class="hljs-variable">$1</span> | awk <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span>)<br>    ppid=$(netstat -nltp 2&gt;/dev/null | grep <span class="hljs-variable">$2</span> | awk <span class="hljs-string">&#x27;&#123;print $7&#125;&#x27;</span> | <span class="hljs-built_in">cut</span> -d <span class="hljs-string">&#x27;/&#x27;</span> -f 1)<br>    <span class="hljs-built_in">echo</span> <span class="hljs-variable">$pid</span><br>    [[ <span class="hljs-string">&quot;<span class="hljs-variable">$pid</span>&quot;</span> =~ <span class="hljs-string">&quot;<span class="hljs-variable">$ppid</span>&quot;</span> ]] &amp;&amp; [ <span class="hljs-string">&quot;<span class="hljs-variable">$ppid</span>&quot;</span> ] &amp;&amp; <span class="hljs-built_in">return</span> 0 || <span class="hljs-built_in">return</span> 1<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">hive_start</span></span>() &#123;<br>    metapid=$(check_process HiveMetastore 9083)<br>    cmd=<span class="hljs-string">&quot;nohup hive --service metastore &gt;<span class="hljs-variable">$HIVE_LOG_DIR</span>/metastore.log 2&gt;&amp;1 &amp;&quot;</span><br>    [ -z <span class="hljs-string">&quot;<span class="hljs-variable">$metapid</span>&quot;</span> ] &amp;&amp; <span class="hljs-built_in">eval</span> <span class="hljs-variable">$cmd</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Metastroe 服务已启动&quot;</span><br>    server2pid=$(check_process HiveServer2 10000)<br>    cmd=<span class="hljs-string">&quot;nohup hiveserver2 &gt;<span class="hljs-variable">$HIVE_LOG_DIR</span>/hiveServer2.log 2&gt;&amp;1 &amp;&quot;</span><br>    [ -z <span class="hljs-string">&quot;<span class="hljs-variable">$server2pid</span>&quot;</span> ] &amp;&amp; <span class="hljs-built_in">eval</span> <span class="hljs-variable">$cmd</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;HiveServer2 服务已启动&quot;</span><br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">hive_stop</span></span>() &#123;<br>    metapid=$(check_process HiveMetastore 9083)<br>    [ <span class="hljs-string">&quot;<span class="hljs-variable">$metapid</span>&quot;</span> ] &amp;&amp; <span class="hljs-built_in">kill</span> <span class="hljs-variable">$metapid</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Metastore 服务未启动&quot;</span><br>    server2pid=$(check_process HiveServer2 10000)<br>    [ <span class="hljs-string">&quot;<span class="hljs-variable">$server2pid</span>&quot;</span> ] &amp;&amp; <span class="hljs-built_in">kill</span> <span class="hljs-variable">$server2pid</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;HiveServer2 服务未启动&quot;</span><br>&#125;<br><span class="hljs-keyword">case</span> <span class="hljs-variable">$1</span> <span class="hljs-keyword">in</span><br><span class="hljs-string">&quot;start&quot;</span>)<br>    hive_start<br>    ;;<br><span class="hljs-string">&quot;stop&quot;</span>)<br>    hive_stop<br>    ;;<br><span class="hljs-string">&quot;restart&quot;</span>)<br>    hive_stop<br>    <span class="hljs-built_in">sleep</span> 2<br>    hive_start<br>    ;;<br><span class="hljs-string">&quot;status&quot;</span>)<br>    check_process HiveMetastore 9083 &gt;/dev/null &amp;&amp; <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Metastore 服务运行正常&quot;</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Metastore 服务运行异常&quot;</span><br>    check_process HiveServer2 10000 &gt;/dev/null &amp;&amp; <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;HiveServer2 服务运行正常&quot;</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;HiveServer2 服务运行异常&quot;</span><br>    ;;<br>*)<br>    <span class="hljs-built_in">echo</span> Invalid Args!<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;Usage: &#x27;</span>$(<span class="hljs-built_in">basename</span> <span class="hljs-variable">$0</span>)<span class="hljs-string">&#x27; start|stop|restart|status&#x27;</span><br>    ;;<br><span class="hljs-keyword">esac</span><br><br></code></pre></td></tr></table></figure>
-
-<h1 id="Hive初体验"><a href="#Hive初体验" class="headerlink" title="Hive初体验"></a>Hive初体验</h1><p><strong>Hive VS MySQL</strong></p>
+<h1>Hive初体验</h1>
+<p><strong>Hive VS MySQL</strong></p>
 <ul>
 <li>Hive SQL的语法和标准的SQL很类似，使得学习成本降低很多</li>
 <li>Hive底层通过MapReduce执行数据插入动作，速度慢</li>
 </ul>
 <p><strong>Hive表映射</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> test(<br>    id <span class="hljs-type">int</span>, <br>    name <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>), <br>    age <span class="hljs-type">int</span>,<br>    city <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>)<br>) <span class="hljs-type">row</span> format delimited fields terminated <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;,&#x27;</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>Hive应该具有自己特有的数据插入表的方式，即从HDFS文件映射成为表</li>
-<li>想在Hive中创建表，并与结构化文件映射成功，需要注意<ul>
+<li>想在Hive中创建表，并与结构化文件映射成功，需要注意
+<ul>
 <li>创建表时，字段顺序、字段类型需要和文件中保持一致。类型不一致hive会尝试转换，但是不保证成功。不成功显示null</li>
 <li>文件放置在Hive表对应目录下可以映射成功（但是可能不一定需要放在对应目录？）</li>
 <li>建表的时候需要指定内容分隔符（但是可能不一定需要指定？）</li>

@@ -325,45 +325,38 @@
             
               <div class="markdown-body">
                 
-                <h2 id="脚本编写"><a href="#脚本编写" class="headerlink" title="脚本编写"></a>脚本编写</h2><p>目前我们使用的是syh用户。</p>
+                <h2 id="脚本编写">脚本编写</h2>
+<p>目前我们使用的是syh用户。</p>
 <p>我们希望编写一个分发脚本，它能够循环复制文件到所有节点的相同目录之下。并且我们希望脚本在任何路径都能够使用。</p>
 <p>首先，我们将脚本放在syh用户的bin目录下，完整路径为<code>/home/syh/bin</code>，在bin目录中，我们创建xsync文件并写入以下内容：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-comment">#1. 判断参数个数</span><br><span class="hljs-keyword">if</span> [ <span class="hljs-variable">$#</span> -lt 1 ]<br><span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">echo</span> Not Enough Arguement!<br>    <span class="hljs-built_in">exit</span>;<br><span class="hljs-keyword">fi</span><br><span class="hljs-comment">#2. 遍历集群所有机器</span><br><span class="hljs-keyword">for</span> host <span class="hljs-keyword">in</span> hadoop102 hadoop103 hadoop104<br><span class="hljs-keyword">do</span><br>    <span class="hljs-built_in">echo</span> ==================== <span class="hljs-variable">$host</span> ====================<br>    <span class="hljs-comment">#3. 遍历所有目录，挨个发送</span><br>    <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> <span class="hljs-variable">$@</span><br>    <span class="hljs-keyword">do</span><br>        <span class="hljs-comment">#4. 判断文件是否存在</span><br>        <span class="hljs-keyword">if</span> [ -e <span class="hljs-variable">$file</span> ]<br>            <span class="hljs-keyword">then</span><br>            <span class="hljs-comment">#5. 获取父目录</span><br>            pdir=$(<span class="hljs-built_in">cd</span> -P $(<span class="hljs-built_in">dirname</span> <span class="hljs-variable">$file</span>); <span class="hljs-built_in">pwd</span>)<br>            <span class="hljs-comment">#6. 获取当前文件的名称</span><br>            fname=$(<span class="hljs-built_in">basename</span> <span class="hljs-variable">$file</span>)<br>            ssh <span class="hljs-variable">$host</span> <span class="hljs-string">&quot;mkdir -p <span class="hljs-variable">$pdir</span>&quot;</span><br>            rsync -av <span class="hljs-variable">$pdir</span>/<span class="hljs-variable">$fname</span> <span class="hljs-variable">$host</span>:<span class="hljs-variable">$pdir</span><br>        <span class="hljs-keyword">else</span><br>            <span class="hljs-built_in">echo</span> <span class="hljs-variable">$file</span> does not exists!<br>        <span class="hljs-keyword">fi</span><br>    <span class="hljs-keyword">done</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
-
 <p>之后为这个文件添加执行权限：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">chmod +x xsync<br></code></pre></td></tr></table></figure>
-
 <p>之后我们要配置环境变量，仍然使用我们之前创建的my_env.sh文件，在其中增加如下内容：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo vim /etc/profile.d/my_env.sh<br></code></pre></td></tr></table></figure>
-
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#HOME_BIN</span><br><span class="hljs-built_in">export</span> MYBIN_HOME=/home/syh<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$MYBIN_HOME</span>/bin<br></code></pre></td></tr></table></figure>
-
 <p>之后刷新环境变量：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">source /etc/profile<br></code></pre></td></tr></table></figure>
-
 <p>之后将脚本复制到<code>/bin</code>目录下，以便全局调用</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo cp /home/syh/bin/xsync /bin/<br></code></pre></td></tr></table></figure>
-
 <p>这样，如果是使用sudo使用xsync命令的话，则需要使用如下方式</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo ./bin/sxync ...<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="文件分发"><a href="#文件分发" class="headerlink" title="文件分发"></a>文件分发</h2><p>之后我们可以使用刚才编写的xsync脚本来进行文件分发</p>
+<h2 id="文件分发">文件分发</h2>
+<p>之后我们可以使用刚才编写的xsync脚本来进行文件分发</p>
 <p>举例来说，我们将刚才的java文件夹发送出去，在hadoop102下执行</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">xsync /ept/module/jdk1.8.0_212<br></code></pre></td></tr></table></figure>
-
 <p>类似地，我们需要完成<code>/home/syh/bin</code>目录和<code>/opt/module/hadoop-3.1.3</code>目录的分发</p>
-<h2 id="命令使用"><a href="#命令使用" class="headerlink" title="命令使用"></a>命令使用</h2><p>在Linux服务器上进行文件传输会涉及到两个命令</p>
-<h3 id="1-scp安全拷贝"><a href="#1-scp安全拷贝" class="headerlink" title="1.scp安全拷贝"></a>1.scp安全拷贝</h3><p>它的基本语法如下：</p>
+<h2 id="命令使用">命令使用</h2>
+<p>在Linux服务器上进行文件传输会涉及到两个命令</p>
+<h3 id="1-scp安全拷贝">1.scp安全拷贝</h3>
+<p>它的基本语法如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">scp -r $user@$host:$pdir/$fname $user@$host:$pdir/$fname<br></code></pre></td></tr></table></figure>
-
 <p>其中，前者为被拷贝的文件目录，后者是目标文件目录。scp可以完成任意两台服务器之间的文件拷贝，只要用户名密码匹配即可。如果是在本机上的文件目录，则可以不用添加user和host，直接用路径即可。</p>
 <p>scp每次都会完成文件的全部复制操作。</p>
-<h3 id="2-rsync远程同步"><a href="#2-rsync远程同步" class="headerlink" title="2.rsync远程同步"></a>2.rsync远程同步</h3><p>rsync完成的是同步操作，同步即指的是会复制修改不同的文件，而不会全部复制，因此在执行的时候会比scp快一些。它主要用于备份和镜像，具有速度快、避免复制相同内容和支持符号链接的优点。</p>
+<h3 id="2-rsync远程同步">2.rsync远程同步</h3>
+<p>rsync完成的是同步操作，同步即指的是会复制修改不同的文件，而不会全部复制，因此在执行的时候会比scp快一些。它主要用于备份和镜像，具有速度快、避免复制相同内容和支持符号链接的优点。</p>
 <p>基本语法如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">rsync -av $user@$host:$pdir/$fname $user@$host:$pdir/$fname<br></code></pre></td></tr></table></figure>
-
 <p>它与scp命令有类似的特点，区别在于一个是复制，一个是同步。</p>
 
                 

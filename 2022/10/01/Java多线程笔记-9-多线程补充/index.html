@@ -326,7 +326,9 @@
             
               <div class="markdown-body">
                 
-                <h1 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Java中提供ThreadLcoal，用来实现资源对象的线程隔离，让每个线程各用各的资源对象，避免争用引发的线程安全问题。它能够达到<strong>线程内的资源共享，线程间的资源隔离</strong>的效果。ThreadLocal提供的变量在多线程环境下访问时能保证各个线程的变量相对独立于其他线程内的变量，分配在堆内的TLAB（本地线程分配缓冲，Thread Local Allocation Buffer）中。</p>
+                <h1>ThreadLocal</h1>
+<h2 id="概述">概述</h2>
+<p>Java中提供ThreadLcoal，用来实现资源对象的线程隔离，让每个线程各用各的资源对象，避免争用引发的线程安全问题。它能够达到<strong>线程内的资源共享，线程间的资源隔离</strong>的效果。ThreadLocal提供的变量在多线程环境下访问时能保证各个线程的变量相对独立于其他线程内的变量，分配在堆内的TLAB（本地线程分配缓冲，Thread Local Allocation Buffer）中。</p>
 <p>在每个线程需要自己单独实例，实例需要在线程内的多个方法中共享，但又不希望多线程共享的时候，我们可以使用ThreadLocal。</p>
 <p>ThreadLocal的常用方法：</p>
 <table>
@@ -336,7 +338,8 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>ThreadLocal&lt;&gt;()</td>
 <td>创建 ThreadLocal 对象</td>
 </tr>
@@ -356,14 +359,14 @@
 <td>public void remove()</td>
 <td>移除当前线程绑定的局部变量</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>应用举例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadTest</span> &#123;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Resource</span> &#123;<br>    &#125;<br><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Utils</span> &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> ThreadLocal&lt;Resource&gt; resource = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocal</span>&lt;&gt;();<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Resource <span class="hljs-title function_">getResource</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">if</span> (resource.get() == <span class="hljs-literal">null</span>) &#123;<br>                resource.set(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Resource</span>());<br>            &#125;<br>            <span class="hljs-keyword">return</span> resource.get();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++) &#123;<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; &#123;<br>                <span class="hljs-type">Resource</span> <span class="hljs-variable">resource</span> <span class="hljs-operator">=</span> Utils.getResource();<br>                log.debug(resource.toString());<br>            &#125;).start();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>输出如下，这里每个线程都调用了Util的同一个静态方法获取资源，但是得到的资源是各不相同的</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-number">15</span>:<span class="hljs-number">03</span>:<span class="hljs-number">58.973</span> <span class="hljs-selector-attr">[Thread-4]</span> c<span class="hljs-selector-class">.ThreadTest</span> - ThreadTest<span class="hljs-variable">$Resource</span>@<span class="hljs-number">60</span>cbadfa<br><span class="hljs-number">15</span>:<span class="hljs-number">03</span>:<span class="hljs-number">58.973</span> <span class="hljs-selector-attr">[Thread-0]</span> c<span class="hljs-selector-class">.ThreadTest</span> - ThreadTest<span class="hljs-variable">$Resource</span>@a0bfb89<br><span class="hljs-number">15</span>:<span class="hljs-number">03</span>:<span class="hljs-number">58.973</span> <span class="hljs-selector-attr">[Thread-2]</span> c<span class="hljs-selector-class">.ThreadTest</span> - ThreadTest<span class="hljs-variable">$Resource</span>@<span class="hljs-number">6</span>c279cc0<br><span class="hljs-number">15</span>:<span class="hljs-number">03</span>:<span class="hljs-number">58.973</span> <span class="hljs-selector-attr">[Thread-1]</span> c<span class="hljs-selector-class">.ThreadTest</span> - ThreadTest<span class="hljs-variable">$Resource</span>@<span class="hljs-number">136</span>eca69<br><span class="hljs-number">15</span>:<span class="hljs-number">03</span>:<span class="hljs-number">58.973</span> <span class="hljs-selector-attr">[Thread-3]</span> c<span class="hljs-selector-class">.ThreadTest</span> - ThreadTest<span class="hljs-variable">$Resource</span>@<span class="hljs-number">5</span>bf5ce32<br></code></pre></td></tr></table></figure>
-
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>在每个线程内有一个ThreadLocalMap类型的成员变量，用来存储资源对象。真正起到线程隔离作用的是这个ThreadLocalMap，而ThreadLocal起到的作用是用来关联ThreadLocalMap和实际对象：</p>
+<h2 id="原理">原理</h2>
+<p>在每个线程内有一个ThreadLocalMap类型的成员变量，用来存储资源对象。真正起到线程隔离作用的是这个ThreadLocalMap，而ThreadLocal起到的作用是用来关联ThreadLocalMap和实际对象：</p>
 <ul>
 <li>调用set方法，就是以ThreadLocal自己作为key，资源对象作为value，放入当前线程的ThreadLocalMap集合中</li>
 <li>调用get方法，就是以ThreadLocal自己作为key，到当前线程中查找关联的资源值</li>
@@ -372,7 +375,8 @@
 <p>在ThreadLocalMap中，key即ThreadLocal被设计为弱引用。有如下的原因：</p>
 <ol>
 <li>Thread可能需要长时间运行，例如线程池中的线程。如果我们的key不再使用，我们希望能够释放掉它的内存。如果使用强引用，那么就无法释放掉这个key对应的内存空间，即使除了ThreadLocalMap的其他地方都没有引用这个key</li>
-<li>虽然key是弱引用，但是value仍然是强引用。GC能够让key的内存释放，但是后续还需要根据key是否为null来进一步释放值的内存，释放时机如下：<ul>
+<li>虽然key是弱引用，但是value仍然是强引用。GC能够让key的内存释放，但是后续还需要根据key是否为null来进一步释放值的内存，释放时机如下：
+<ul>
 <li>获取key的时候发现key为null</li>
 <li>set key的时候，使用启发式扫描，清除临近的null key，启发次数与元素个数，是否发现null key有关</li>
 <li>调用remove的时候，相当于手动移除，这也是最推荐的一种方式</li>

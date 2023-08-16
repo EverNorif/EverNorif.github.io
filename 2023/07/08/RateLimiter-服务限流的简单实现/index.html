@@ -325,39 +325,37 @@
             
               <div class="markdown-body">
                 
-                <h1 id="RateLimiter"><a href="#RateLimiter" class="headerlink" title="RateLimiter"></a>RateLimiter</h1><p>在限流算法中，典型的有令牌桶和漏桶，RateLimiter类提供了令牌桶的实现以及方便的使用接口。RateLimiter由Google Guava提供，因此在使用之前首先需要引入相关依赖：</p>
+                <h1>RateLimiter</h1>
+<p>在限流算法中，典型的有令牌桶和漏桶，RateLimiter类提供了令牌桶的实现以及方便的使用接口。RateLimiter由Google Guava提供，因此在使用之前首先需要引入相关依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.google.guava<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>guava<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>32.0.1-jre<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><h3 id="acquire"><a href="#acquire" class="headerlink" title="acquire"></a>acquire</h3><p>一个简单的入门例子如下：</p>
+<h2 id="简单使用">简单使用</h2>
+<h3 id="acquire">acquire</h3>
+<p>一个简单的入门例子如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">final</span> <span class="hljs-type">RateLimiter</span> <span class="hljs-variable">rateLimiter</span> <span class="hljs-operator">=</span> RateLimiter.create(<span class="hljs-number">2.0</span>); <span class="hljs-comment">// the num of permit per second</span><br><span class="hljs-type">int</span>[] arr = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>, <span class="hljs-number">0</span>&#125;;<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i : arr) &#123;<br>    rateLimiter.acquire(<span class="hljs-number">2</span>); <span class="hljs-comment">// permit needed</span><br>    System.out.println(i);<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>首先通过工厂方法<code>create</code>创建出一个<code>RateLimiter</code>类。在创建的时候需要给定一个double类型的数字，该值表示每秒钟产生的令牌数量。而进行限流的核心操作则是<code>acquire(int)</code>，该方法表示需要获取令牌才能继续执行，当令牌数不够的时候，会阻塞在该方法上。该方法接受一个int类型的值，表示此次操作需要的令牌数量，默认为1。<code>acquire()</code>返回一个double类型的值，该值表示此次方法阻塞的时间，单位为秒。</p>
 <p>因此上面的示例代码实际的运行效果就是每一秒钟输出数组中的一个值。</p>
 <p>值得注意的一点是，RateLimiter有一个特性就是预先支付令牌，并且所需要等待的时间在下次获取令牌的时候再实际执行，也就是<strong>每次acquire的时候实际上是在偿还上次的令牌</strong>，阻塞对应的时间。这种特性使得RateLimter能够应对突发流量。</p>
 <p>观察如下测试代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RateLimiter</span> <span class="hljs-variable">rateLimiter</span> <span class="hljs-operator">=</span> RateLimiter.create(<span class="hljs-number">2.0</span>);<br>System.out.println(<span class="hljs-string">&quot;get 4 permits: &quot;</span> + rateLimiter.acquire(<span class="hljs-number">4</span>) + <span class="hljs-string">&quot;s&quot;</span>);<br>System.out.println(<span class="hljs-string">&quot;get 1 permits: &quot;</span> + rateLimiter.acquire(<span class="hljs-number">1</span>) + <span class="hljs-string">&quot;s&quot;</span>);<br>System.out.println(<span class="hljs-string">&quot;get 2 permits: &quot;</span> + rateLimiter.acquire(<span class="hljs-number">2</span>) + <span class="hljs-string">&quot;s&quot;</span>);<br></code></pre></td></tr></table></figure>
-
 <p>输出如下：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">get</span> <span class="hljs-number">4</span> permits: <span class="hljs-number">0</span>.<span class="hljs-number">0</span>s<br><span class="hljs-attribute">get</span> <span class="hljs-number">1</span> permits: <span class="hljs-number">1</span>.<span class="hljs-number">997184</span>s<br><span class="hljs-attribute">get</span> <span class="hljs-number">2</span> permits: <span class="hljs-number">0</span>.<span class="hljs-number">493471</span>s<br></code></pre></td></tr></table></figure>
-
 <p>直接观察上面的结果，会发现似乎获取令牌的数目和时间对不上，但是实际上这就是RateLimiter预先支付令牌的特性。</p>
 <p>首先创建RateLimiter对象，该对象每秒钟均匀产生2个令牌，即0.5秒产生一个令牌。执行到第一个acquire方法，由于预先支付令牌，因此首次acquire无需等待直接返回。之后执行到第二个acquire方法，它需要偿还第一个acquire方法所需的4个令牌，因此阻塞接近2秒。接下来到第三个acquire方法，它需要偿还第二个acquire方法所需的1个令牌，因此阻塞接近0.5s。</p>
-<h3 id="tryAcquire"><a href="#tryAcquire" class="headerlink" title="tryAcquire"></a>tryAcquire</h3><p>另一个非常有用的方法是<code>tryAcquire()</code>，该方法包括多种重载实现，不过核心参数只有三个，分别是需要获取的令牌数、超时时间以及时间单位。<code>tryAcquire()</code>返回一个布尔值，该方法在超时时间内执行acquire，如果在时间内获取成功，则返回true，反之则返回false。</p>
+<h3 id="tryAcquire">tryAcquire</h3>
+<p>另一个非常有用的方法是<code>tryAcquire()</code>，该方法包括多种重载实现，不过核心参数只有三个，分别是需要获取的令牌数、超时时间以及时间单位。<code>tryAcquire()</code>返回一个布尔值，该方法在超时时间内执行acquire，如果在时间内获取成功，则返回true，反之则返回false。</p>
 <p>下面是测试代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RateLimiter</span> <span class="hljs-variable">rateLimiter</span> <span class="hljs-operator">=</span> RateLimiter.create(<span class="hljs-number">2.0</span>);<br>System.out.println(rateLimiter.acquire(<span class="hljs-number">4</span>));<br>System.out.println(rateLimiter.tryAcquire(<span class="hljs-number">8</span>, <span class="hljs-number">1</span>, TimeUnit.SECONDS));<br>System.out.println(rateLimiter.acquire(<span class="hljs-number">2</span>));<br>System.out.println(rateLimiter.tryAcquire(<span class="hljs-number">6</span>, <span class="hljs-number">1</span>, TimeUnit.SECONDS));<br></code></pre></td></tr></table></figure>
-
 <p>这里同样需要注意RateLimiter的预先支付令牌的特性。tryAcquire相当于给acquire提供了一个超时时间，因此对于每个tryAcquire方法，我们实际上需要观察上一个acquire所需的令牌数量。测试代码输出如下：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">0.0<br><span class="hljs-literal">false</span><br>1.997894<br><span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
-
 <p>第一次acquire直接返回，消耗0.0秒。接下来执行tryAcquie，它需要偿还第一次acquire申请的4个令牌。由于无法在1秒内获得，因此返回false。接下来执行acquire。由于上面tryAcquire偿还失败，此次acuqire来继续偿还第一次acquire申请的4个令牌，因此消耗大约2秒。最后一次tryAcquire，需要偿还上次acquire申请的两个令牌，能够在一秒之内获得，因此返回ture。</p>
-<h3 id="warmup"><a href="#warmup" class="headerlink" title="warmup"></a>warmup</h3><p>在利用工厂方法完成RateLimiter对象创建的时候，也能够提供额外的参数，使得RateLimiter具备预热功能。RateLimiter的预热指的是带有预热期的平滑限流。它在启动之后会有一段时间的预热期，令牌生成的频率在这段时间内逐步平滑过滤到设置的目标频率。如果没有设置预热的话，则是启动直接达到目标频率。</p>
+<h3 id="warmup">warmup</h3>
+<p>在利用工厂方法完成RateLimiter对象创建的时候，也能够提供额外的参数，使得RateLimiter具备预热功能。RateLimiter的预热指的是带有预热期的平滑限流。它在启动之后会有一段时间的预热期，令牌生成的频率在这段时间内逐步平滑过滤到设置的目标频率。如果没有设置预热的话，则是启动直接达到目标频率。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RateLimiter</span> <span class="hljs-variable">rateLimiter</span> <span class="hljs-operator">=</span> RateLimiter.create(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, TimeUnit.SECONDS);<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>    System.out.println(rateLimiter.acquire());<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>代码运行结果如下：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sh">0.0<br>1.330551<br>0.991947<br>0.661334<br>0.496869<br>0.498878<br>0.494644<br>0.497765<br>0.496662<br>0.496844<br></code></pre></td></tr></table></figure>
-
 <p>在上面的代码中，我们设置了预热期限为3秒，因此在前面几次的acquire中，阻塞的时间逐渐变短，到大约三秒之后，才变为了正常的阻塞时间，即生成令牌的频率变为目标频率。</p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<h1>参考文章</h1>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://www.baeldung.com/guava-rate-limiter">Quick Guide to the Guava - RateLimiter</a></li>
 <li><a target="_blank" rel="noopener" href="https://cidoliu.github.io/2021/02/24/RateLimiter%E8%A7%A3%E8%AF%BB/">RateLimiter 解读</a></li>
 </ol>

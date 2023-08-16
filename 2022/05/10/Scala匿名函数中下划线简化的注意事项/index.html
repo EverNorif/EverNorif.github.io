@@ -325,33 +325,27 @@
             
               <div class="markdown-body">
                 
-                <h2 id="基本使用与原理"><a href="#基本使用与原理" class="headerlink" title="基本使用与原理"></a>基本使用与原理</h2><p>在使用匿名函数的时候，如果参数在函数体中只出现溢出，则参数可以省略，并且后面的参数可以使用下划线<code>_</code>开代替，并且下划线必须按照顺序进行接收，使用下划线的时候必须省略参数列表和箭头<code>=&gt;</code>。</p>
+                <h2 id="基本使用与原理">基本使用与原理</h2>
+<p>在使用匿名函数的时候，如果参数在函数体中只出现溢出，则参数可以省略，并且后面的参数可以使用下划线<code>_</code>开代替，并且下划线必须按照顺序进行接收，使用下划线的时候必须省略参数列表和箭头<code>=&gt;</code>。</p>
 <p>在Scala中，下划线简化函数扩展为原本函数的过程称为eta-expansion，并且其中存在就近扩展原则：下划线<code>_</code>组成的表达式遇到括号<code>()</code>，或者抵达了最顶层则会发生函数的扩展。这里需要注意，单个的下划线并不算是下划线表达式。</p>
 <blockquote>
 <p>eta-expansion：将简化函数扩展为匿名函数，举例来说，<code>_+1</code>扩展为<code>x=&gt;&#123;x+1&#125;</code></p>
 </blockquote>
-<h2 id="注意细节"><a href="#注意细节" class="headerlink" title="注意细节"></a>注意细节</h2><p>1.<strong>多个括号嵌套不用下划线简写</strong></p>
+<h2 id="注意细节">注意细节</h2>
+<p>1.<strong>多个括号嵌套不用下划线简写</strong></p>
 <p>由于下划线表达式遇到括号会发生函数扩展，因此在存在多个括号嵌套的时候可能会发生函数扩展导致的报错。下面举两个常见的错误例子</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).map(<br>    (_ + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span><br>)<br><span class="hljs-comment">// 编译错误，由于 _ + 1 遇到了括号会进行函数扩展，因此map中的参数被扩展为</span><br><span class="hljs-comment">// x =&gt; &#123;x + 1&#125; * 2</span><br><span class="hljs-comment">// 一个匿名函数和2进行乘法，编译器无法判断乘号在这里的操作，因此报错</span><br><span class="hljs-comment">// 修改为没有简化的匿名函数</span><br><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).map(<br>    x =&gt; &#123;(x + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span>&#125;<br>)<br></code></pre></td></tr></table></figure>
-
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).foreach(println) <span class="hljs-comment">// 1.正确</span><br><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).foreach(println(_)) <span class="hljs-comment">// 2.正确</span><br><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).foreach(println(_.toString)) <span class="hljs-comment">// 3.报错</span><br><span class="hljs-comment">// 1.正确，其中传入的println是一个函数</span><br><span class="hljs-comment">// 2.正确，由于单个下划线不是下划线表达式，不会发生函数扩展</span><br><span class="hljs-comment">// 3.报错，_.toString不是单个下划线，会发生函数扩展，因此扩展后得到的是如下代码</span><br><span class="hljs-comment">// println(x=&gt;&#123;x.toString&#125;)，println接收了一个匿名函数作为参数，但是println不接受该类型的参数，因此报错</span><br></code></pre></td></tr></table></figure>
-
-
-
 <p>2.<strong>代码块的返回值和匿名函数混淆</strong></p>
 <p>在使用下划线的场景中，我们最终得到的会是很简化的表达，但是这个简化表达往往可能会误导我们，尤其是容易将代码块的返回值和匿名函数混淆。</p>
 <p>例如下面的代码：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> list = <span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).map(&#123;<br>    println(<span class="hljs-string">&quot;-map-&quot;</span>)<br>    _ + <span class="hljs-number">1</span><br>&#125;)<br>println(list)<br></code></pre></td></tr></table></figure>
-
 <p>我们容易将整个<code>&#123;&#125;</code>代码块中的内容都看作是传入map中的匿名函数的内容。但是实际上，传入map中的参数是一个代码块，而这个代码块的返回值是一个下划线表达式，这个下划线表达式可以扩展为一个匿名函数，因此最终传入map中的函数应该为<code>x=&gt;&#123;x + 1&#125;</code>，在获得代码块的返回值的过程中，会执行依次<code>println(&quot;-map-&quot;)</code>，后面都不会执行了，因此上面代码的输出为</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">-map-<br>List(2, 3, 4, 5)<br></code></pre></td></tr></table></figure>
-
 <p>如果要实现每个元素操作的时候都输出一次<code>-map-</code>，则还是需要使用没有简化的匿名函数</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> list = <span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>).map(num =&gt; &#123;<br>    println(<span class="hljs-string">&quot;-map-&quot;</span>)<br>    num + <span class="hljs-number">1</span><br>&#125;)<br>println(list)<br></code></pre></td></tr></table></figure>
-
 <p>输出结果为</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">-map-<br>-map-<br>-map-<br>-map-<br>List(2, 3, 4, 5)<br></code></pre></td></tr></table></figure>
-
 
                 
               </div>

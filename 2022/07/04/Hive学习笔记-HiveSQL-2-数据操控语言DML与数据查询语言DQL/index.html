@@ -327,13 +327,15 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Hive-SQL-DML"><a href="#Hive-SQL-DML" class="headerlink" title="Hive SQL DML"></a>Hive SQL DML</h1><h2 id="Load-加载数据"><a href="#Load-加载数据" class="headerlink" title="Load 加载数据"></a>Load 加载数据</h2><p>在前面的笔记中我们看到当我们在Hive中建表成功之后，在HDFS上就会创建一个对应的文件夹，我们可以利用<code>hadoop fs -put</code>直接将数据上传到HDFS上，Hive会自动完成表和底层数据的映射。</p>
+                <h1>Hive SQL DML</h1>
+<h2 id="Load-加载数据">Load 加载数据</h2>
+<p>在前面的笔记中我们看到当我们在Hive中建表成功之后，在HDFS上就会创建一个对应的文件夹，我们可以利用<code>hadoop fs -put</code>直接将数据上传到HDFS上，Hive会自动完成表和底层数据的映射。</p>
 <p>这种方式能够达到目标，但是Hive推荐我们使用Load命令来将数据加载到表中。Load命令能够将数据文件移动到Hive表中对应的位置，在过程中不会对数据内容进行任何转换的操作，保持数据原原本本的状态。</p>
 <p>语法规则如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs hive">load data [local] inpath &#x27;filepath&#x27; [overwrite] <br>into table table_name<br>[partition(part_col1=val1, part_col2=val2,...)]<br>[inputformat &#x27;inputformat&#x27; serde &#x27;serde&#x27;]<br></code></pre></td></tr></table></figure>
-
 <ul>
-<li><code>filepath</code>：表示待移动的数据的位置，可以是相对路径、绝对路径和具有schema的完整URI。并且需要结合<code>local</code>关键字来确定数据文件的位置，可能是本地数据文件，HDFS数据文件或者其他文件系统下的文件<ul>
+<li><code>filepath</code>：表示待移动的数据的位置，可以是相对路径、绝对路径和具有schema的完整URI。并且需要结合<code>local</code>关键字来确定数据文件的位置，可能是本地数据文件，HDFS数据文件或者其他文件系统下的文件
+<ul>
 <li>如果没有指定schema，则schema由Hadoop配置文件中的参数<code>fs.default.name</code>指定</li>
 <li><strong>local的本地指的是HiveServer2服务所在的本地Linux文件系统</strong></li>
 </ul>
@@ -351,24 +353,23 @@
 </blockquote>
 <p>在Hive3.0之后，Load提供了新特性，在某些场合下会将Load重写为insert as select。</p>
 <p>具体来说，我们可以利用load来插入分区表。如果在load的时候，表具有分区，但是我们没有在命令中指定分区，则会将load转化为insert as select，并会假定最后一列作为分区列。这样的话就会要求我们文件的实际列数多于表中的列数，因为最后的列会作为分区列。这也是一种动态分区加载的形式</p>
-<h2 id="Insert-插入数据"><a href="#Insert-插入数据" class="headerlink" title="Insert 插入数据"></a>Insert 插入数据</h2><p>在RDBMS中，我们通常使用insert+values的方式来向表中插入数据，并且执行速度都非常快。在Hive中，我们也可以使用insert+values的方式来插入数据，但是指定的速度非常慢，原因在于Hive的底层会使用MapReduce任务来将数据写入Hive表中，因此我们常用的数据加载方式是使用Load命令而不是insert。</p>
+<h2 id="Insert-插入数据">Insert 插入数据</h2>
+<p>在RDBMS中，我们通常使用insert+values的方式来向表中插入数据，并且执行速度都非常快。在Hive中，我们也可以使用insert+values的方式来插入数据，但是指定的速度非常慢，原因在于Hive的底层会使用MapReduce任务来将数据写入Hive表中，因此我们常用的数据加载方式是使用Load命令而不是insert。</p>
 <p>我们更多的使用方法是insert+select，这表示我们将后面查询返回的结果作为内容插入到指定表中，语法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs hive">insert into table table_name<br>[partition(part_col1=val1,...)]<br>select 语句<br><br>-- 或者<br><br>insert overwrite table table_name <br>[partition(part_col1=val1,...)]<br>[if not exists]<br>select 语句<br></code></pre></td></tr></table></figure>
-
 <p>同时Hive中还提供多重插入的功能，Multiple inserts。多重插入指的是一次扫描，多次插入。对应的场景为，我们可能要将一张表中的不同内容插入到不同的表中，按照已有的知识，我们可以使用多个insert+select语句，这样会多次扫描同一张表。<strong>多重插入的思想就是减少扫描的次数，在一次扫描中完成多次的insert操作</strong>，应用举例如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs hive">--多个insert语句<br>insert into table1<br>select col1 from test_table;<br><br>insert into table2<br>select col2 from test_table;<br><br>--多重插入<br>from test_table<br>insert into table table1<br>select col1<br>insert into table table2<br>select col2<br></code></pre></td></tr></table></figure>
-
 <p>前面在分区表中，我们也提到过动态分区加载的手段，也是通过insert+select来完成的，详细的细节可以参考前面的的笔记。</p>
 <p>另外，我们可以利用insert来进行数据的导出，将select查询的结果导出成文件存放在文件系统中，语法如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs hive">insert overwrite [local] directory directory1<br>    [row format row_format] [stored as file_format]<br>select ... from ...<br><br>--其中的row format如下:<br>row format delimited [fields terminated by char [escaped by char]] [collection items terminated by char]<br>[map keys terminated by char] [lines terminated by char]<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>需要注意这里的overwrite会覆盖我们指定的目录</li>
 <li>local表示指定本地文件系统下的目录</li>
 <li>目录可以是完整的指定了scheme的URI，如果没有指定，则同上，使用Hadoop配置变量<code>fs.default.name</code>来决定</li>
 <li>写入文件系统的数据会被序列化为文本，默认列之间使用<code>\001</code>分隔，行之间使用换行符分隔。列也可能是复杂数据类型，则默认会序列化成json的格式。我们也可以在导出的时候自定义指定不同的换行符</li>
 </ul>
-<h2 id="事务表相关操作"><a href="#事务表相关操作" class="headerlink" title="事务表相关操作"></a>事务表相关操作</h2><p>除了Insert之外，常见的DML还有update和delete，但是在前面的笔记中我们也提到，Hive早期是不支持这些操作的，而是在后续的版本迭代中慢慢引入了事务表的支持。在事务表上，我们才可以使用update和delete操作。事务表的背景、创建和局限这里也不再赘述，我们主要关注这些操作的具体原理。</p>
+<h2 id="事务表相关操作">事务表相关操作</h2>
+<p>除了Insert之外，常见的DML还有update和delete，但是在前面的笔记中我们也提到，Hive早期是不支持这些操作的，而是在后续的版本迭代中慢慢引入了事务表的支持。在事务表上，我们才可以使用update和delete操作。事务表的背景、创建和局限这里也不再赘述，我们主要关注这些操作的具体原理。</p>
 <p>Hive的文件存储在HDFS上，但是HDFS并不支持对文件的任意修改，则必须采用另外的手段来达成对应的效果。</p>
 <p>事务的操作，会以HDFS文件作为原始的基础数据，用delta文件夹来保存事务操作，记录增量数据。正在执行的事务，会用一个staging开头的文件夹来维护，执行结束之后，得到delta文件，对应事务执行的结果。每执行一次事务操作，都会得到这样一个delta增量文件夹，当访问Hive数据的时候，会根据HDFS原始数据和delta增量文件进行合并，查询最新的数据。</p>
 <p>delta文件夹的具体命名格式为<code>delta前缀_minID_maxID_stmID</code></p>
@@ -384,32 +385,41 @@
 <li>Minor Compaction：小合并，将一组delta增量文件重写为单个增量文件，默认触发条件为10个delta文件</li>
 <li>Major Compaction：大合并，将一个或多个增量文件以及基础文件重写为新的基础文件，默认触发条件为delta文件相应于基础文件超过10%</li>
 </ul>
-<h1 id="Hive-SQL-DQL"><a href="#Hive-SQL-DQL" class="headerlink" title="Hive SQL DQL"></a>Hive SQL DQL</h1><h2 id="select-语法树"><a href="#select-语法树" class="headerlink" title="select 语法树"></a>select 语法树</h2><p>Hive中的DQL数据查询语言主要指的就是select查询操作，select的语法树如下所示（表名和列名不区分大小写）</p>
+<h1>Hive SQL DQL</h1>
+<h2 id="select-语法树">select 语法树</h2>
+<p>Hive中的DQL数据查询语言主要指的就是select查询操作，select的语法树如下所示（表名和列名不区分大小写）</p>
 <img src="/2022/07/04/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-HiveSQL-2-%E6%95%B0%E6%8D%AE%E6%93%8D%E6%8E%A7%E8%AF%AD%E8%A8%80DML%E4%B8%8E%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80DQL/select%E8%AF%AD%E6%B3%95%E6%A0%91.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="select语法树">
-
-<h2 id="select-基础查询语法"><a href="#select-基础查询语法" class="headerlink" title="select 基础查询语法"></a>select 基础查询语法</h2><p>select中的基础查询语法包括如下关键字：</p>
+<h2 id="select-基础查询语法">select 基础查询语法</h2>
+<p>select中的基础查询语法包括如下关键字：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs hive">select all distinct ...<br>from ...<br>where ...<br>group by ...<br>having ...<br>limit ...<br></code></pre></td></tr></table></figure>
-
 <p>这些基础语法的用法与MySQL中的语法类似，这里只简单介绍一下</p>
 <ul>
-<li><p>默认使用all表示不去重，distinct表示去重</p>
+<li>
+<p>默认使用all表示不去重，distinct表示去重</p>
 </li>
-<li><p>分区裁剪：在查询的时候可以指定分区进行查询，减少全表扫描（可以将分区的虚字段当成普通字段使用）</p>
+<li>
+<p>分区裁剪：在查询的时候可以指定分区进行查询，减少全表扫描（可以将分区的虚字段当成普通字段使用）</p>
 </li>
-<li><p>出现在group by中select的字段，要么是group by分组的字段，要么是被聚合函数应用的字段</p>
+<li>
+<p>出现在group by中select的字段，要么是group by分组的字段，要么是被聚合函数应用的字段</p>
 </li>
-<li><p>where和having的含义与用法与SQL相同</p>
+<li>
+<p>where和having的含义与用法与SQL相同</p>
 </li>
-<li><p>limit用于限制select语句返回的行数</p>
+<li>
+<p>limit用于限制select语句返回的行数</p>
 </li>
-<li><p>执行顺序：from &gt; where &gt; group &gt; having &gt; order &gt; select</p>
+<li>
+<p>执行顺序：from &gt; where &gt; group &gt; having &gt; order &gt; select</p>
 </li>
-<li><p>在select语句中可以使用正则表达式来匹配字段</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">--查询匹配正则表达式的所有字段<br>set hive.support.quoted.identifiers=none;<br>--表示反引号不再解释为其他含义，被解释为正则表达式<br>select `^c.*` from table_name<br>--查询所有以c开头的列字段<br></code></pre></td></tr></table></figure></li>
+<li>
+<p>在select语句中可以使用正则表达式来匹配字段</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">--查询匹配正则表达式的所有字段<br>set hive.support.quoted.identifiers=none;<br>--表示反引号不再解释为其他含义，被解释为正则表达式<br>select `^c.*` from table_name<br>--查询所有以c开头的列字段<br></code></pre></td></tr></table></figure>
+</li>
 </ul>
-<h2 id="select-排序相关语法"><a href="#select-排序相关语法" class="headerlink" title="select 排序相关语法"></a>select 排序相关语法</h2><p>Hive SQL中的排序相关语法在语法树中主要体现为以下关键字：</p>
+<h2 id="select-排序相关语法">select 排序相关语法</h2>
+<p>Hive SQL中的排序相关语法在语法树中主要体现为以下关键字：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">order by<br>cluster by<br>distribute by sort by<br></code></pre></td></tr></table></figure>
-
 <p><strong>order by</strong></p>
 <p>首先是order by语法。Hive SQL中的order by语法也类似于标准SQL中的order by语法，它会对输出的结果进行全局排序。</p>
 <blockquote>
@@ -426,11 +436,9 @@
 <p>这里就会涉及到两个重要的问题，如何划分以及划分成多少个区域</p>
 <p>划分的规则与分桶表相同，利用hash散列函数。而划分成多少个区域则取决于启动的Reduce Task任务的个数。如果我们不指定Reduce Task任务的话，默认情况只启动一个Reduce Task，这种情况就和正序的order by类似；当然我们也可以手动指定Reduce Task的个数</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs hive">--不指定Reduce Task个数，默认为1<br>select * from table_name <br>cluster by col_name<br><br>--手动指定Reduce Task个数<br>set mapreduce.job.reduces=2;<br><br>select * from table_name <br>cluster by col_name<br></code></pre></td></tr></table></figure>
-
 <p><strong>distribute by sort by</strong></p>
 <p>从前面cluster by的介绍可以看出，虽然达到了分区的效果，但是还是有一定的局限性，即分区和排序只能按照同一个字段进行。而distribute by + sort by的效果就是分区和排序按照不同的字段，distribute by指定分区字段，sort by指定排序字段，同时可以指定正序或者倒序字段。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">select * from table_name<br>distribute by col1<br>sort by col2 desc<br></code></pre></td></tr></table></figure>
-
 <p>如果distribute by和sort by指定同一个字段并且使用正序排序，就和cluster by功能相同。</p>
 <blockquote>
 <p>排序相关语法的对比：</p>
@@ -440,23 +448,23 @@
 <li>distribute by + sort by可以看作是升级版的cluster by，分组字段和排序字段可以不同</li>
 </ol>
 </blockquote>
-<h2 id="union-联合查询"><a href="#union-联合查询" class="headerlink" title="union 联合查询"></a>union 联合查询</h2><p>union用于将来自多个select语句的结果合并成为一个结果集，后面可以使用all或者distinct关键字，表示是否删除重复的行。默认行为为distinct</p>
+<h2 id="union-联合查询">union 联合查询</h2>
+<p>union用于将来自多个select语句的结果合并成为一个结果集，后面可以使用all或者distinct关键字，表示是否删除重复的行。默认行为为distinct</p>
 <blockquote>
 <p>SQL中的union默认行为也是distinct</p>
 </blockquote>
 <p>union必须保证每个select语句返回的列数量和名称必须相同</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">select_statement<br>	union [all | distinct]<br>select_statement <br>	union [all | distinct] <br>select_statement ...;<br></code></pre></td></tr></table></figure>
-
 <p>这里需要注意的是，使用union的必须是单个select语句，如果要应用order by，sort by，cluster by，distribute by或limit的话，应该要使用子查询的语法</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">select col1,col2 from (select col1,col2 from table_1 limit 2)  temp1<br>union<br>select col1,col2 from (select col1,col2 from table_2 limit 3) temp2;<br></code></pre></td></tr></table></figure>
-
-<h2 id="CTE使用"><a href="#CTE使用" class="headerlink" title="CTE使用"></a>CTE使用</h2><p>CTE，全称为Common Table Expressions，意为公共表表达式。这是一个临时结果集，从with子句中的指定查询派生而来。CTE定义临时结果集之后，可以当作一个普通的表来使用</p>
+<h2 id="CTE使用">CTE使用</h2>
+<p>CTE，全称为Common Table Expressions，意为公共表表达式。这是一个临时结果集，从with子句中的指定查询派生而来。CTE定义临时结果集之后，可以当作一个普通的表来使用</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs hive">--select语句中的CTE<br>with q1 as (select col1,col2 from table_name where col3 = xxx)<br>select *<br>from q1;<br><br>-- from风格<br>with q1 as (select col1,col2 from table_name where col3 = xxx)<br>from q1<br>select *;<br><br>-- chaining CTEs 链式风格<br>with q1 as (select col1,col2 from table_name where col3 = xxx),<br>     q2 as (select col1,col2 from table_name where col3 = yyy)<br>select * from (select col1 from q2) a;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>CTE仅在单个语句的执行范围内定义</li>
 </ul>
-<h1 id="Hive-SQL-join-连接操作"><a href="#Hive-SQL-join-连接操作" class="headerlink" title="Hive SQL join 连接操作"></a>Hive SQL join 连接操作</h1><p>在Hive中目前支持6中join语法，分别是inner join（内连接）、left join（左连接）、right join（右连接）、full outer join（全外连接）、left semi join（左半开连接）、cross join（交叉连接，也叫做笛卡尔乘积）。<strong>join的条件仍然是使用on来指定</strong></p>
+<h1>Hive SQL join 连接操作</h1>
+<p>在Hive中目前支持6中join语法，分别是inner join（内连接）、left join（左连接）、right join（右连接）、full outer join（全外连接）、left semi join（左半开连接）、cross join（交叉连接，也叫做笛卡尔乘积）。<strong>join的条件仍然是使用on来指定</strong></p>
 <blockquote>
 <p>从Hive 0.13.0开始，支持隐式联接表示法。允许FROM子句连接以逗号分隔的表列表，而省略JOIN关键字。</p>
 <p>从Hive 2.2.0开始，支持ON子句中的复杂表达式，支持不相等连接。在此之前，Hive不支持不是相等条件的联接条件。</p>
@@ -472,20 +480,27 @@
 </blockquote>
 <p>join的使用注意事项：</p>
 <ol>
-<li><p>允许使用复杂的连接表达式，支持非等值连接</p>
+<li>
+<p>允许使用复杂的连接表达式，支持非等值连接</p>
 </li>
-<li><p>同一个查询中可以连接两个以上的表</p>
+<li>
+<p>同一个查询中可以连接两个以上的表</p>
 </li>
-<li><p>如果每个表在连接子句中使用相同的列，则Hive会将多个表上的连接转换成单个MapReduce作业</p>
+<li>
+<p>如果每个表在连接子句中使用相同的列，则Hive会将多个表上的连接转换成单个MapReduce作业</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key1)<br>--由于联接中仅涉及b的key1列，因此被转换为1个MR作业来执行<br>SELECT a.val, b.val, c.val FROM a JOIN b ON (a.key = b.key1) JOIN c ON (c.key = b.key2)<br>--会转换为两个MR作业，因为在第一个连接条件中使用了b中的key1列，而在第二个连接条件中使用了b中的key2列<br>--第一个map / reduce作业将a与b联接在一起，然后将结果与c联接到第二个map / reduce作业中<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>join时最后一个表会通过Reducer进行流式传输，并在其中缓存之前的其他表（相当于是将最后一个表流式传输，进来一个join一个）。因此将大表放置在最后有助于减少Reducer阶段缓存数据所需要的内存（也是我们通常习惯的<strong>小表接大表</strong>）</p>
+<li>
+<p>join时最后一个表会通过Reducer进行流式传输，并在其中缓存之前的其他表（相当于是将最后一个表流式传输，进来一个join一个）。因此将大表放置在最后有助于减少Reducer阶段缓存数据所需要的内存（也是我们通常习惯的<strong>小表接大表</strong>）</p>
 </li>
-<li><p>在join的时候，也可以通过关键字<code>streamtable</code>显式指定需要流式传输的表。如果省略，则Hive将流式传输最右边的表</p>
+<li>
+<p>在join的时候，也可以通过关键字<code>streamtable</code>显式指定需要流式传输的表。如果省略，则Hive将流式传输最右边的表</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs hive">select streamtable(a) a.val, b.val c.val<br>from a join b on (a.key = b.key1)<br>join c on (c.key = b.key1)<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>如果除了一个要连接的表之外的所有表都很小，则可以将其作为仅map作业执行（mapjoin，没有Reduce阶段）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">select mapjoin(b) a.key, a.value <br>from a join b on a.key=b.key<br>--这样就不需要启动reducer，对于a的每个Mapper，b表数据都会被完全读取。<br>--限制是不能执行full/right outer join b<br>--因为full join b或者right outer join b，b表中的一行都要去找所有的a表数据<br></code></pre></td></tr></table></figure></li>
+<li>
+<p>如果除了一个要连接的表之外的所有表都很小，则可以将其作为仅map作业执行（mapjoin，没有Reduce阶段）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs hive">select mapjoin(b) a.key, a.value <br>from a join b on a.key=b.key<br>--这样就不需要启动reducer，对于a的每个Mapper，b表数据都会被完全读取。<br>--限制是不能执行full/right outer join b<br>--因为full join b或者right outer join b，b表中的一行都要去找所有的a表数据<br></code></pre></td></tr></table></figure>
+</li>
 </ol>
 
                 

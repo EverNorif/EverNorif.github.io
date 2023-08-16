@@ -281,7 +281,7 @@
         
         
           <!-- compatible with older versions-->
-          76 分钟
+          75 分钟
         
       </span>
     
@@ -328,15 +328,15 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>前面我们看到的页面都是静态的，任何用户访问到的内容都是相同的，但是实际场景中更多的动态的内容。而Servlet则是JavaWeb中最为核心的内容，它是Java提供的一门动态web资源开发技术。使用Servlet就可以完成动态的效果。</p>
+                <h1>Servlet</h1>
+<h2 id="简介">简介</h2>
+<p>前面我们看到的页面都是静态的，任何用户访问到的内容都是相同的，但是实际场景中更多的动态的内容。而Servlet则是JavaWeb中最为核心的内容，它是Java提供的一门动态web资源开发技术。使用Servlet就可以完成动态的效果。</p>
 <p>Servlet是JavaEE规范之一，也就是一个接口。我们使用Servlet，就是需要定义类来实现Servlet接口，并由Web服务器来运行Servlet。下面我们通过一个案例来快速入门Servlet。</p>
 <p>首先，我们需要创建Maven Web项目，在项目中导入Servlet依赖api：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>javax.servlet<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>javax.servlet-api<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.1.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>provided<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>之后，我们新建一个类，实现Servlet接口，并实现接口中的所有方法。其中，运行的核心方法是service方法。之后在类上使用注解来指定对应访问URL，实现如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(&quot;/hello&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ServletHelloWorld</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Servlet</span> &#123;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">service</span><span class="hljs-params">(ServletRequest servletRequest, ServletResponse servletResponse)</span> <span class="hljs-keyword">throws</span> ServletException, IOException &#123;<br>        System.out.println(<span class="hljs-string">&quot;Servlet Hello World~&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">(ServletConfig servletConfig)</span> <span class="hljs-keyword">throws</span> ServletException &#123;<br><br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> ServletConfig <span class="hljs-title function_">getServletConfig</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br><br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getServletInfo</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">destroy</span><span class="hljs-params">()</span> &#123;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>然后我们就可以启动Tomcat服务，通过浏览器访问对应的路径<code>http://localhost:8080/LearningWeb_war/hello</code>，发现在IDEA控制台上输出了对应的内容，”Servlet Hello World~”。</p>
+<p>然后我们就可以启动Tomcat服务，通过浏览器访问对应的路径<code>http://localhost:8080/LearningWeb_war/hello</code>，发现在IDEA控制台上输出了对应的内容，“Servlet Hello World~”。</p>
 <p>通过上面的小案例，我们可以对Servlet的执行流程进行一个学习。</p>
 <p>首先浏览器发出<code>http://localhost:8080/LearningWeb_war/hello</code>的请求，从请求中可以解析出三部分内容，分别是：</p>
 <ul>
@@ -345,7 +345,8 @@
 <li><code>hello</code>：找到需要访问的项目中对应的Servlet类</li>
 </ul>
 <p>找到对应的类之后，Tomcat服务器就会为这个类创建一个实例对象，然后调用对象中的service方法。service方法中有ServletRequest和ServletResponse两个参数，ServletRequest封装的是请求数据，ServletResponse封装的是响应数据，后期我们可以通过这两个参数实现前后端的数据交互。</p>
-<h2 id="生命周期与方法介绍"><a href="#生命周期与方法介绍" class="headerlink" title="生命周期与方法介绍"></a>生命周期与方法介绍</h2><p>对象的生命周期指的是一个对象从被创建到被销毁的整个过程。Servlet运行在Tomact服务器中，它的对象生命周期主要分为四个阶段：加载和实例化、初始化、请求处理、服务终止。</p>
+<h2 id="生命周期与方法介绍">生命周期与方法介绍</h2>
+<p>对象的生命周期指的是一个对象从被创建到被销毁的整个过程。Servlet运行在Tomact服务器中，它的对象生命周期主要分为四个阶段：加载和实例化、初始化、请求处理、服务终止。</p>
 <ol>
 <li>加载和实例化：默认情况下，当Servlet对象被第一次访问的时候，由容器来创建Servlet对象</li>
 <li>初始化：在Servlet实例化之后，容器调用它的<code>init()</code>方法来进行对象的初始化，完成一些相关工作，如加载配置文件、创建连接等。该方法只会调用一次</li>
@@ -355,7 +356,6 @@
 <blockquote>
 <p>默认情况下，Servlet对象会在第一次访问的时候被容器创建。不过有时候一些Servlet的创建比较耗时，我们可以将创建过程提前到服务器启动的时候，配置方式如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(urlPatterns = &quot;/hello&quot;, loadOnStartup = 1)</span><br></code></pre></td></tr></table></figure>
-
 <p>在注解中增加参数<code>loadOnStratup</code>，它的取值有下面两种情况：</p>
 <ul>
 <li>负整数：表示第一次访问时创建Servlet对象</li>
@@ -370,30 +370,26 @@
 <li><code>String getServletInfo() </code>：用来返回Servlet的相关信息，返回一个String字符串</li>
 <li><code>ServletConfig getServletConfig()</code>：用来返回ServletConfig对象</li>
 </ul>
-<h2 id="Servlet继承体系与HttpServlet"><a href="#Servlet继承体系与HttpServlet" class="headerlink" title="Servlet继承体系与HttpServlet"></a>Servlet继承体系与HttpServlet</h2><p>上面的Servlet类的实现，都是通过实现Servlet接口来完成的，我们需要实现接口中的五个方法，虽然能够完成要求，但是编写起来还是比较繁琐。在实际项目中，我们集中关注的更多是service方法，因此可以使用更加简单的方式来进行Servlet对象的完成。</p>
+<h2 id="Servlet继承体系与HttpServlet">Servlet继承体系与HttpServlet</h2>
+<p>上面的Servlet类的实现，都是通过实现Servlet接口来完成的，我们需要实现接口中的五个方法，虽然能够完成要求，但是编写起来还是比较繁琐。在实际项目中，我们集中关注的更多是service方法，因此可以使用更加简单的方式来进行Servlet对象的完成。</p>
 <p>在Servlet继承体系中，Servlet是顶层的根接口，GenericServlet实现了Servlet，是它的抽象实现类，而HttpServlet又继承了GenericServlet，是一种对HTTP协议封装的Servlet实现类。由于我们对Web进行开发，都是针对HTTP协议的，因此我们可以通过继承<code>HttpServlet</code>来更加方便的实现相关类的编写。我们需要做的就是继承HttpServlet，覆盖其中相应的方法即可，常用的方法是<code>doGet</code>方法以及<code>doPost</code>方法，分别处理不同的请求。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(urlPatterns = &quot;/httpdemo&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HttpServletDemo</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">HttpServlet</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doGet</span><span class="hljs-params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="hljs-keyword">throws</span> ServletException, IOException &#123;<br>        System.out.println(<span class="hljs-string">&quot;get...&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doPost</span><span class="hljs-params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="hljs-keyword">throws</span> ServletException, IOException &#123;<br>        System.out.println(<span class="hljs-string">&quot;post...&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>之后可以访问<code>localhost:8080/LearningWeb_war/httpdemo</code>，这是get请求，也可以使用网页中使用下面的表单进行post请求，表单部分内容如下：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;httpdemo&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>这里的action可以写<code>httpdemo</code>，也可以写全，为<code>/LearningWeb_war/httpdemo</code></li>
 </ul>
-<h2 id="urlPatterns配置"><a href="#urlPatterns配置" class="headerlink" title="urlPatterns配置"></a>urlPatterns配置</h2><p>前面我们一直在使用<code>WebServlet</code>注解来配置我们的Servlet类，其中一个非常重要的参数就是<code>urlPatterns</code>，它决定了通过何种URL能够访问到对应的Servlet类。一个Servlet可以配置多个urlPattern，它以字符串数组的形式传入。</p>
+<h2 id="urlPatterns配置">urlPatterns配置</h2>
+<p>前面我们一直在使用<code>WebServlet</code>注解来配置我们的Servlet类，其中一个非常重要的参数就是<code>urlPatterns</code>，它决定了通过何种URL能够访问到对应的Servlet类。一个Servlet可以配置多个urlPattern，它以字符串数组的形式传入。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(urlPattern = &#123;&quot;/demo1&quot;, &quot;/demo2&quot;&#125;)</span><br></code></pre></td></tr></table></figure>
-
 <p>urlPatterns配置规则主要分为四种，分别是精确匹配、目录匹配、拓展名匹配以及任意匹配</p>
 <p>精确匹配：直接在urlPattern中写好唯一的URL，对应访问路径。</p>
 <p>目录匹配：针对目录的访问都可以访问到该Servlet。例如下面的路径，只要是针对user目录的访问都可以访问到该Servlet，例如<code>/user/aaa</code>，<code>/user/bbb</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(urlPattern = &quot;/user/*&quot;)</span><br></code></pre></td></tr></table></figure>
-
 <p>扩展名匹配：利用扩展名来匹配。注意这里不能以<code>/</code>开头。下面的路径，只要是最后扩展名为<code>.me</code>的访问都可以访问到该Servle，例如<code>/aa.me</code>，<code>/bb.me</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(urlPattern = &quot;*.me&quot;)</span><br></code></pre></td></tr></table></figure>
-
 <p>任意匹配：任意的访问都可以匹配。主要方式有如下两种：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(urlPattern = &quot;/&quot;)</span><br><span class="hljs-meta">@WebServlet(urlPattern = &quot;/*&quot;)</span><br></code></pre></td></tr></table></figure>
-
 <p>这里需要注意<code>/</code>与<code>/*</code>的区别：</p>
 <ol>
 <li>当我们的项目中有Servlet配置了<code>/</code>，它会覆盖掉Tomcat中的DefalutServlet，当其他的urlPattern都匹配不上，就会匹配这个Servlet</li>
@@ -408,16 +404,16 @@
 <p>上面我们都是使用注解的方式来配置Servlet，但是这是从Servlet 3.0版本之后才支持的，在此之前Servlet的配置只支持XML方式。</p>
 <p>利用XML配置Servlet分为两步，第一步是正常编写Servlet类，当然这里不需要无法进行注解配置，第二步是在<code>web.xml</code>中配置该Servlet，配置方式如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- Servlet 全类名 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">servlet</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- servlet的名称，名字任意--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-name</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-name</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--servlet的类全名--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-class</span>&gt;</span>com.web.test.MyHttpServletDemo<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-class</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">servlet</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- Servlet 访问路径 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">servlet-mapping</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- servlet的名称，要和上面的名称一致--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-name</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-name</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- servlet的访问路径--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/test<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">servlet-mapping</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
 </blockquote>
 <hr>
 <p>在前面的service方法中，参数列表还提供了两个参数，分别是ServletRequest对象以及ServletResponse对象，分别对应请求对象以及响应对象，这两个对象分别可以实现对浏览器响应的以及回复的处理，接下来就来进行相关的介绍。</p>
-<h1 id="Request"><a href="#Request" class="headerlink" title="Request"></a>Request</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>Request允许我们获取请求数据。浏览器发送的HTTP请求到达后台服务器Tomcat，Tomcat则会将请求中的数据进行解析，包括请求行、请求头和请求体。解析的结果存入一个对象中，即Requset对象，而我们就可以从Request对象中获取请求的相关参数。</p>
+<h1>Request</h1>
+<h2 id="简介-2">简介</h2>
+<p>Request允许我们获取请求数据。浏览器发送的HTTP请求到达后台服务器Tomcat，Tomcat则会将请求中的数据进行解析，包括请求行、请求头和请求体。解析的结果存入一个对象中，即Requset对象，而我们就可以从Request对象中获取请求的相关参数。</p>
 <p>Requset的继承体系如下，其中我们需要重点关注也是平常使用最多的是其中的HttpServletRequest接口。</p>
 <img src="/2022/10/06/JavaWeb%E7%AC%94%E8%AE%B0-3-Servlet%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/Request%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Request继承体系">
-
-<h2 id="请求解析"><a href="#请求解析" class="headerlink" title="请求解析"></a>请求解析</h2><p>根据HTTP协议，请求数据总共分为三个部分，分别是请求行，请求头和请求体。对于这三部分的内容，HttpRequest中都提供了相关的方法来进行获取。</p>
+<h2 id="请求解析">请求解析</h2>
+<p>根据HTTP协议，请求数据总共分为三个部分，分别是请求行，请求头和请求体。对于这三部分的内容，HttpRequest中都提供了相关的方法来进行获取。</p>
 <p>请求行数据获取：请求行包含三个内容，分别是请求方式、请求资源路径、HTTP协议以及版本，相关的API如下：（举例：<code>get http://localhost:8080/LearningWeb_war/httpdemo</code>）</p>
 <ul>
 <li><code>String getMethod()</code>：获取请求方式（<code>GET</code>）</li>
@@ -428,7 +424,7 @@
 </ul>
 <p>请求头数据获取：请求头中的数据都是以键值对的形式存在的</p>
 <ul>
-<li><code>String getHeader(String name)</code>：传入请求头中的key，返回对应的value，例如我们可以通过<code>req.getHeader(&#39;user-agent&#39;)</code>来获取浏览器的版本信息</li>
+<li><code>String getHeader(String name)</code>：传入请求头中的key，返回对应的value，例如我们可以通过<code>req.getHeader('user-agent')</code>来获取浏览器的版本信息</li>
 </ul>
 <p>请求体数据获取：在使用get方式的时候，请求体是没有数据的，而post请求会将自己的参数存放在请求体中。对于请求体的数据，Request对象提供了两种方式进行获取，分别对应字节输入流和字符输入流</p>
 <ul>
@@ -438,7 +434,8 @@
 <blockquote>
 <p>这里的输入流对象是通过Request对象来获取的，当请求完成之后，Request对象也会被销毁，之后输入流对象也会自动关闭，也不需要我们手动关闭流</p>
 </blockquote>
-<h2 id="参数获取"><a href="#参数获取" class="headerlink" title="参数获取"></a>参数获取</h2><p>在解析HTTP请求的时候，最主要的一个工作就是解析其中的相关请求参数。</p>
+<h2 id="参数获取">参数获取</h2>
+<p>在解析HTTP请求的时候，最主要的一个工作就是解析其中的相关请求参数。</p>
 <p>在实际场景中，我们面对最多的就是get请求和post请求。我们知道，get请求的请求参数被拼接在URL中，我们通过<code>getQueryString()</code>方法可以获取到拼接之后的字符串；post请求的请求参数在请求体中，我们通过<code>getReader()</code>获取字符输入流，也可以得到请求参数。对于这两种情况，我们都可以获得到所有请求参数的原始字符串，经过例如字符串split等处理，就可以得到所需的请求参数。这种方式虽然能够解决需求，但是还是比较麻烦，而Request对象也提供了一种比较方便的方式来获取请求参数，并且统一了get与post请求的参数获取。</p>
 <p>前端传来的参数可以看成组成了一个Map，Request对象为我们提供了如下方法：</p>
 <ul>
@@ -451,7 +448,8 @@
 <p>参数中文乱码问题：如果参数中有中文，可能出现中文乱码问题。乱码问题出现的根本原因在于编码与解码所用的字符集不一致。Tomcat 8以后使用UTF-8来进行编解码，对于post请求出现的中文问题，只需要在请求前设置编码格式相符合即可，而对于get请求的中文问题，Tomcat 8之后已经得到解决。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">req.setCharacterEncoding(<span class="hljs-string">&quot;UTF-8&quot;</span>);<br></code></pre></td></tr></table></figure>
 </blockquote>
-<h2 id="请求转发"><a href="#请求转发" class="headerlink" title="请求转发"></a>请求转发</h2><p>请求转发（forward）是一种在服务器内部的资源跳转方式。举例来说，浏览器发送一个请求给服务器，服务器中的资源A接收到请求，资源A处理完请求后将请求发送给资源B，资源B处理完成之后再将结果响应给浏览器。其中请求从资源A到资源B的过程就叫做请求转发。</p>
+<h2 id="请求转发">请求转发</h2>
+<p>请求转发（forward）是一种在服务器内部的资源跳转方式。举例来说，浏览器发送一个请求给服务器，服务器中的资源A接收到请求，资源A处理完请求后将请求发送给资源B，资源B处理完成之后再将结果响应给浏览器。其中请求从资源A到资源B的过程就叫做请求转发。</p>
 <p>请求转发有如下特点：</p>
 <ol>
 <li>浏览器地址栏的路径不发生变化</li>
@@ -460,18 +458,19 @@
 </ol>
 <p>在Servlet中，可以用下面的方式实现请求转发：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">req.getRequestDispatcher(<span class="hljs-string">&quot;目标资源路径&quot;</span>).forward(req, resp)<br></code></pre></td></tr></table></figure>
-
 <p>在请求转发的过程中，资源之间可以使用Request对象完成数据共享，需要使用到Request对象提供的三个方法：</p>
 <ul>
 <li><code>void setAttribute(String name, Object o)</code>：将键值对数据存储到Request对象域中</li>
 <li><code>Object getAttribute(String name)</code>：根据key来获取值</li>
 <li><code>void removeAttribute(String name)</code>：根据key来删除键值对</li>
 </ul>
-<h1 id="Response"><a href="#Response" class="headerlink" title="Response"></a>Response</h1><h2 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h2><p>Response允许我们设置响应数据。在我们接受到HTTP请求后，完成相关的业务处理，后台就需要将结果即业务数据返回给前端。我们将响应数据封装到Response对象中，后台服务器Tomcat就会解析Response对象，按照响应行+响应头+响应体的格式拼接出最终响应，浏览器解析结果，得到展示内容。</p>
+<h1>Response</h1>
+<h2 id="简介-3">简介</h2>
+<p>Response允许我们设置响应数据。在我们接受到HTTP请求后，完成相关的业务处理，后台就需要将结果即业务数据返回给前端。我们将响应数据封装到Response对象中，后台服务器Tomcat就会解析Response对象，按照响应行+响应头+响应体的格式拼接出最终响应，浏览器解析结果，得到展示内容。</p>
 <p>与Request相同，Response也有类似的继承体系，我们也是重点关注其中的HttpServletResponse接口。</p>
 <img src="/2022/10/06/JavaWeb%E7%AC%94%E8%AE%B0-3-Servlet%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/Reponse%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Reponse继承体系">
-
-<h2 id="响应设置"><a href="#响应设置" class="headerlink" title="响应设置"></a>响应设置</h2><p>HTTP的响应数据同样分成了三部分，分别是响应行、响应头和响应体。对于这三部分的数据，Response都提供了对应的方法来进行设置。</p>
+<h2 id="响应设置">响应设置</h2>
+<p>HTTP的响应数据同样分成了三部分，分别是响应行、响应头和响应体。对于这三部分的数据，Response都提供了对应的方法来进行设置。</p>
 <p>在响应行中，比较常用的就是设置响应状态码，对应的方法如下：</p>
 <ul>
 <li><code>void setStatus(int sc)</code>：设置响应状态码</li>
@@ -489,7 +488,8 @@
 <p>写入内容除了可以普通的纯文本，也可以是html代码。但是返回html的话，要想在浏览器中显示，需要注意设置响应的数据格式以及数据的编码。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">resp.setContentType(<span class="hljs-string">&quot;text/html;charset=utf-8&quot;</span>);<br></code></pre></td></tr></table></figure>
 </blockquote>
-<h2 id="请求重定向"><a href="#请求重定向" class="headerlink" title="请求重定向"></a>请求重定向</h2><p>Response重定向（redirect），是一种资源跳转方式。举例来说，浏览器发送请求给服务器之后，服务器中对应的资源A接收到请求。此时资源A无法处理该请求，则会给浏览器响应一个302的状态码以及一个访问其他资源的路径location，浏览器接收到响应状态302，就会重新发送请求到location对应的访问地址去访问资源B，资源B接收到请求之后进行处理，并最终给浏览器响应结果。</p>
+<h2 id="请求重定向">请求重定向</h2>
+<p>Response重定向（redirect），是一种资源跳转方式。举例来说，浏览器发送请求给服务器之后，服务器中对应的资源A接收到请求。此时资源A无法处理该请求，则会给浏览器响应一个302的状态码以及一个访问其他资源的路径location，浏览器接收到响应状态302，就会重新发送请求到location对应的访问地址去访问资源B，资源B接收到请求之后进行处理，并最终给浏览器响应结果。</p>
 <p>重定向具有如下特点：</p>
 <ol>
 <li>浏览器地址栏路径发生变化</li>
@@ -498,11 +498,6 @@
 </ol>
 <p>在Servlet中，可以用下面的方式来实现重定向，只需要返回302状态码以及对应location位置即可</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">resp.setStatus(<span class="hljs-number">302</span>);<br>resp.setHeader(<span class="hljs-string">&quot;location&quot;</span>, <span class="hljs-string">&quot;目标资源的访问路径&quot;</span>);<br><span class="hljs-comment">// 上面的两行代码也可以进行简化</span><br>resp.sendRedirect(<span class="hljs-string">&quot;目标资源的访问路径&quot;</span>);<br></code></pre></td></tr></table></figure>
-
-
-
-
-
 
                 
               </div>

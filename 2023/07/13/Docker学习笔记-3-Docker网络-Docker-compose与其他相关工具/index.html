@@ -324,22 +324,30 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Docker网络"><a href="#Docker网络" class="headerlink" title="Docker网络"></a>Docker网络</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Docker网络主要包括容器如何进行网络通信和传输，容器之间的互联等相关问题。在后面的语境中，Docker网络根据上下文通常表达一个实体概念，类似于网段，处于同一个Docker网络中的容器相当于处于同一个网段。</p>
+                <h1>Docker网络</h1>
+<h2 id="简介">简介</h2>
+<p>Docker网络主要包括容器如何进行网络通信和传输，容器之间的互联等相关问题。在后面的语境中，Docker网络根据上下文通常表达一个实体概念，类似于网段，处于同一个Docker网络中的容器相当于处于同一个网段。</p>
 <p>可以通过下面的相关命令来对Docker网络进行操作：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看网络(初始情况下会包含三个网络：bridge，host，none)</span><br>docker network <span class="hljs-built_in">ls</span><br><br><span class="hljs-comment"># 查看网络详细数据</span><br>docker network inspect network_name<br><br><span class="hljs-comment"># 创建网络</span><br>docker network create [options] network_name<br><br><span class="hljs-comment"># 删除网络</span><br>docker network <span class="hljs-built_in">rm</span> network_name<br></code></pre></td></tr></table></figure>
-
-<h2 id="网络模式"><a href="#网络模式" class="headerlink" title="网络模式"></a>网络模式</h2><p>在使用<code>docker run</code>命令运行容器的时候，可以通过<code>--network</code>来指定需要使用的网络模式，默认情况下该参数值为bridge。Docker 网络模式总体分为下面四种：</p>
+<h2 id="网络模式">网络模式</h2>
+<p>在使用<code>docker run</code>命令运行容器的时候，可以通过<code>--network</code>来指定需要使用的网络模式，默认情况下该参数值为bridge。Docker 网络模式总体分为下面四种：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">bridge模式：使用--network bridge指定，默认使用docker()<br><br>host模式：使用 --network host指定<br><br>none模式：使用 --network none指定<br><br>container模式：使用 --network container:Name或者容器ID指定<br></code></pre></td></tr></table></figure>
-
-<h3 id="bridge模式"><a href="#bridge模式" class="headerlink" title="bridge模式"></a>bridge模式</h3><p>Docker 服务默认会创建一个 docker0 网桥（其上有一个 docker0 内部接口），该桥接网络的名称为docker0，它在内核层连通了其他的物理或虚拟网卡，这就将所有容器和本地主机都放到同一个物理网络。Docker 默认指定了 docker0 接口的IP地址和子网掩码，让主机和容器之间可以通过网桥相互通信。 在这种情况下主机是默认网关，容器通过主机进行外网的访问。</p>
-<h3 id="host模式"><a href="#host模式" class="headerlink" title="host模式"></a>host模式</h3><p>host模式下，容器直接使用宿主机的IP地址与外界进行通信，不再需要额外进行NAT转换。容器将 不会获得 一个独立的Network Namespace， 而是和宿主机共用一个Network Namespace。 容器将不会虚拟出自己的网卡而是使用宿主机的IP和端口。在这种情况下，指定端口映射将会失效。</p>
-<h3 id="none模式"><a href="#none模式" class="headerlink" title="none模式"></a>none模式</h3><p>none模式表示禁用网络功能，只有lo标识（localhost）</p>
-<h3 id="contianer模式"><a href="#contianer模式" class="headerlink" title="contianer模式"></a>contianer模式</h3><p>在container模式下，新建的容器和已经存在的一个容器共享网络IP配置。新建的容器不会创建自己的网卡，配置自己的IP，而是和指定的另一个容器进行共享。当然在除了网络的其他方面，例如文件系统，进程列表等，两个容器还是相互隔离的。</p>
-<h2 id="自定义网络"><a href="#自定义网络" class="headerlink" title="自定义网络"></a>自定义网络</h2><p>我们可以使用<code>docker network create</code> 来创建自定义网络，然后利用命令<code>    docker run --network network_name</code>在运行容器的使用指定使用自定义网络。自定义网络属于上面的bridge模式，但是自定义网络本身就维护好了主机名和ip的对应关系（ip和域名都能通），相当于在自定义网络中提供了DNS服务。</p>
-<h1 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h1><p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file/compose-file-v3/">Docker-Compose</a>是官方的容器开源项目，负责实现对Docker容器集群的快速编排。容器编排是指对运行容器化工作负载和服务所需的大部分运维工作进行自动化。 这包括软件团队管理容器生命周期所需完成的大量工作，包括置备、部署、扩展（扩展和缩减）、网络连接、负载均衡等。</p>
+<h3 id="bridge模式">bridge模式</h3>
+<p>Docker 服务默认会创建一个 docker0 网桥（其上有一个 docker0 内部接口），该桥接网络的名称为docker0，它在内核层连通了其他的物理或虚拟网卡，这就将所有容器和本地主机都放到同一个物理网络。Docker 默认指定了 docker0 接口的IP地址和子网掩码，让主机和容器之间可以通过网桥相互通信。 在这种情况下主机是默认网关，容器通过主机进行外网的访问。</p>
+<h3 id="host模式">host模式</h3>
+<p>host模式下，容器直接使用宿主机的IP地址与外界进行通信，不再需要额外进行NAT转换。容器将 不会获得 一个独立的Network Namespace， 而是和宿主机共用一个Network Namespace。 容器将不会虚拟出自己的网卡而是使用宿主机的IP和端口。在这种情况下，指定端口映射将会失效。</p>
+<h3 id="none模式">none模式</h3>
+<p>none模式表示禁用网络功能，只有lo标识（localhost）</p>
+<h3 id="contianer模式">contianer模式</h3>
+<p>在container模式下，新建的容器和已经存在的一个容器共享网络IP配置。新建的容器不会创建自己的网卡，配置自己的IP，而是和指定的另一个容器进行共享。当然在除了网络的其他方面，例如文件系统，进程列表等，两个容器还是相互隔离的。</p>
+<h2 id="自定义网络">自定义网络</h2>
+<p>我们可以使用<code>docker network create</code> 来创建自定义网络，然后利用命令<code>	docker run --network network_name</code>在运行容器的使用指定使用自定义网络。自定义网络属于上面的bridge模式，但是自定义网络本身就维护好了主机名和ip的对应关系（ip和域名都能通），相当于在自定义网络中提供了DNS服务。</p>
+<h1>Docker Compose</h1>
+<p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file/compose-file-v3/">Docker-Compose</a>是官方的容器开源项目，负责实现对Docker容器集群的快速编排。容器编排是指对运行容器化工作负载和服务所需的大部分运维工作进行自动化。 这包括软件团队管理容器生命周期所需完成的大量工作，包括置备、部署、扩展（扩展和缩减）、网络连接、负载均衡等。</p>
 <p>Docker Compose允许用户通过一个单独的<code>docker-compose.yml</code>模板文件来将一组相关的容器关联为一个项目，之后可以很容易地使用一条指令来完成项目的构建。在过程中会涉及到两个概念，分别是服务（service）以及项目（project），其中service指的是一个个应用容器实例，而工程指的是由一组关联的应用容器组成的一个完整的业务单元。</p>
 <p>在使用Docker Compose的过程中，首先需要编写Dockerfile定义好各个service并构建出对应的镜像文件，之后使用<code>docker-compose.yml</code>来定义完整的业务单元，安排好整体应用中的各个容器服务，最后执行<code>docker-compose up</code>命令来启动并运行整个应用程序。</p>
-<h1 id="其他相关工具"><a href="#其他相关工具" class="headerlink" title="其他相关工具"></a>其他相关工具</h1><p>该部分简单介绍了其他Docker相关工具，包括Docker轻量级可视化工具Portainer以及Docker容器监控方案。</p>
+<h1>其他相关工具</h1>
+<p>该部分简单介绍了其他Docker相关工具，包括Docker轻量级可视化工具Portainer以及Docker容器监控方案。</p>
 <p><a target="_blank" rel="noopener" href="https://www.portainer.io/">Portainer</a> 是一款轻量级的应用，它提供了图形化界面，用于方便地管理Docker环境，包括单机环境和集群环境。</p>
 <p>Docker容器监控，一个常见的方案是CAdvisor监控收集+InfluxDB存储数据+Grafana展示图表。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/google/cadvisor">CAdvisor</a>是一个容器资源监控工具，可监控的Metric包括容器的内存、CPU、网络IO、磁盘IO等，同时提供了一个Web页面用于查看容器的实时运行状态。CAdvisor默认存储2分钟的数据，并且仅针对单台物理机。但是CAdvisor提供了很多数据集成接口，支持与InfluxDB、Redis、Kafka、Elasticsearch等集成，通过增加相关配置将监控数据发送到这些数据库中。</p>

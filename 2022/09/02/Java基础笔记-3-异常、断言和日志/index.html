@@ -327,9 +327,10 @@
             
               <div class="markdown-body">
                 
-                <h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><h2 id="异常介绍"><a href="#异常介绍" class="headerlink" title="异常介绍"></a>异常介绍</h2><p>Java中异常整体的架构图如下：</p>
+                <h1>异常</h1>
+<h2 id="异常介绍">异常介绍</h2>
+<p>Java中异常整体的架构图如下：</p>
 <img src="/2022/09/02/Java%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0-3-%E5%BC%82%E5%B8%B8%E3%80%81%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97/Java%E5%BC%82%E5%B8%B8%E4%BD%93%E7%B3%BB.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Java异常体系">
-
 <p>在Java中，异常对象都是派生于Throwable类的一个类实例。当然用户也可以创建自己的异常类。所有异常都是由Throwable继承而来，然后分解为两个分支：</p>
 <ol>
 <li>Error（错误）：Java虚拟机无法解决的严重问题，例如JVM系统内部错误，资源耗尽等</li>
@@ -349,19 +350,23 @@
 <li>试图根据给定的字符串查找Class对象，但是这个字符串表示的类并不存在</li>
 </ul>
 <p>在Java语言规范中，将派生于Error类或者RuntimeException类的所有异常称为<strong>非检查型（unchecked）异常</strong>，其他的异常称为<strong>检查型（checked）异常</strong>。所有检查型异常都应该在代码中处理，处理包括捕获或者抛出。</p>
-<h2 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h2><p>当程序中出现了某些“错误”，但是这些错误信息并没有在Throwable子类中进行描述处理，这个时候可以自己设计异常类，用于描述该错误信息。实现自定义异常只需要定义一个派生于Exception的类，或者派生于Exception的某个子类。</p>
+<h2 id="自定义异常">自定义异常</h2>
+<p>当程序中出现了某些“错误”，但是这些错误信息并没有在Throwable子类中进行描述处理，这个时候可以自己设计异常类，用于描述该错误信息。实现自定义异常只需要定义一个派生于Exception的类，或者派生于Exception的某个子类。</p>
 <p>习惯的做法是，自定义的这个类应该包含两个构造器，一个是默认的构造器，另一个是包含详细描述信息的构造器。</p>
 <blockquote>
 <p>Throwable的toString方法会返回一个字符串，其中包含了这个详细信息，同时还提供getMessage()方法，用于获得Throwable对象的详细描述信息。</p>
 </blockquote>
-<h2 id="异常处理机制"><a href="#异常处理机制" class="headerlink" title="异常处理机制"></a>异常处理机制</h2><p>异常处理机制包括捕获和抛出。</p>
+<h2 id="异常处理机制">异常处理机制</h2>
+<p>异常处理机制包括捕获和抛出。</p>
 <p>抛出指的是<code>throws</code>关键字。如果使用抛出来处理异常，那么一个方法应该声明所有可能抛出的检查型异常。</p>
 <blockquote>
 <p>throws和throw的对比：</p>
 <ul>
-<li><p>throws：用来声明一个方法可能产生的所有异常</p>
+<li>
+<p>throws：用来声明一个方法可能产生的所有异常</p>
 </li>
-<li><p>throw：用来抛出一个具体的异常对象</p>
+<li>
+<p>throw：用来抛出一个具体的异常对象</p>
 </li>
 </ul>
 <table>
@@ -372,7 +377,8 @@
 <th>throw</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>意义</td>
 <td>异常处理的一种方式</td>
 <td>手动生成异常对象的关键字</td>
@@ -387,17 +393,16 @@
 <td>异常类型</td>
 <td>异常对象</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 </blockquote>
 <ul>
 <li>注意：子类重写父类的方法的时候，对抛出异常的规定：子类重写的方法，所抛出的异常类型要么和父类抛出的异常一致，要么是父类抛出异常类型的子类型</li>
 </ul>
 <p>捕获指的是<code>try-catch-finally</code>。在代码中捕获了该异常，就无需继续抛出了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span>&#123;<br>    <span class="hljs-comment">// 代码可能有异常</span><br>&#125;<span class="hljs-keyword">catch</span>(Exception e)&#123;<br>    <span class="hljs-comment">// 当异常发生的时候，系统将异常封装成Exception对象e，传递给catch</span><br>&#125;<span class="hljs-keyword">finally</span>&#123;<br>    <span class="hljs-comment">// 无论是否发生异常，finally代码块都需要执行</span><br>    <span class="hljs-comment">// 通常将关闭和释放资源的代码放在这里</span><br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>多个异常的捕获</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span>&#123;<br><br>&#125;<span class="hljs-keyword">catch</span>(FileNotFoundException | UnknownHostException e)&#123;<br><br>&#125;<span class="hljs-keyword">catch</span>(IOException e)&#123;<br><br>&#125;<span class="hljs-keyword">finally</span>&#123;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>捕获多个异常的时候，异常变量隐含为final变量</li>
 <li>可以在catch子句中再次抛出异常，这通常用来改变异常的类型</li>
@@ -407,18 +412,18 @@
 <p>堆栈轨迹（Stack Trace）是程序执行过程中某个特定点上所有挂起方法调用的一个列表。</p>
 <p>可以调用Throwable类的printStackTrace方法访问堆栈轨迹的文本描述信息</p>
 </blockquote>
-<h2 id="try-with-resources"><a href="#try-with-resources" class="headerlink" title="try-with-resources"></a>try-with-resources</h2><p>在finally语句中我们一般执行一些清除资源的流程，try-with-resources语句也能够达到相同的效果。它的最简语法如下：</p>
+<h2 id="try-with-resources">try-with-resources</h2>
+<p>在finally语句中我们一般执行一些清除资源的流程，try-with-resources语句也能够达到相同的效果。它的最简语法如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span>(<span class="hljs-type">Resource</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> ...)&#123;<br>	work with res<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>上面的代码，在try代码块执行完毕之后，会自动调用<code>res.close()</code>方法。当然这要求我们使用的资源类都实现了<code>AutoCloseable</code>接口，在这个接口中提供的方法<code>void close() throws Exception</code></p>
 <ul>
 <li>在括号中也可以指定多个资源，即使用多个语句定义资源，语句之间使用分号<code>;</code>分开</li>
 <li>try-with-resources语句本身也可以有catch子句和finally子句</li>
 <li>如果try块抛出异常，close方法也抛出异常，那么原来的异常会重新抛出，而close方法抛出的异常会被抑制。这些异常会被自动捕获，并由addSuppreseed方法增加到原来的异常。调用getSuppressed方法，可以生成从close方法抛出并抑制的异常数组</li>
 </ul>
-<h1 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h1><p>断言机制允许在测试期间向代码中插入一些检查，而在生产代码中会自动删除这些检查。断言对应的关键字是<code>assert</code>：</p>
+<h1>断言</h1>
+<p>断言机制允许在测试期间向代码中插入一些检查，而在生产代码中会自动删除这些检查。断言对应的关键字是<code>assert</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">assert</span> condition;<br><br><span class="hljs-keyword">assert</span> condition: expression;<br></code></pre></td></tr></table></figure>
-
 <p>上面两个语句都会计算条件，如果结果为false，则抛出一个AssertionError异常。在第二种形式中，表达式expression将传入AssertionError对象的构造器，转化成一个消息字符串。</p>
 <blockquote>
 <p>表达式的唯一目的是产生一个消息字符串。AssertionError对象并不存储具体的表达式值。</p>
@@ -430,7 +435,9 @@
 <li>断言检查只是在开发和测试阶段才会打开</li>
 </ul>
 <p>我们不应该使用断言向程序的其他部分通知错误，不应该利用断言与程序用户沟通问题。断言只应该用于在测试阶段确定程序内部错误的位置。</p>
-<h1 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h1><h2 id="日志优点"><a href="#日志优点" class="headerlink" title="日志优点"></a>日志优点</h2><p>在一些简单的场景下，我们会使用<code>System.out.println</code>来进行一些输出，观察程序的行为。但是这个输出语句毕竟不是专门用来解决日志问题，日志API相比于它，会有更多的优点：</p>
+<h1>日志</h1>
+<h2 id="日志优点">日志优点</h2>
+<p>在一些简单的场景下，我们会使用<code>System.out.println</code>来进行一些输出，观察程序的行为。但是这个输出语句毕竟不是专门用来解决日志问题，日志API相比于它，会有更多的优点：</p>
 <ul>
 <li>可以很容易地取消其全部日志记录，或者仅仅取消某个级别以下的日志</li>
 <li>可以很容易地禁止日志记录</li>
@@ -440,13 +447,12 @@
 <li>应用程序可以使用多个日志记录器</li>
 <li>日志系统的配置由配置文件控制</li>
 </ul>
-<h2 id="标准Java日志框架"><a href="#标准Java日志框架" class="headerlink" title="标准Java日志框架"></a>标准Java日志框架</h2><p>标准Java日志框架需要引入的包为<code>java.util.logging</code></p>
+<h2 id="标准Java日志框架">标准Java日志框架</h2>
+<p>标准Java日志框架需要引入的包为<code>java.util.logging</code></p>
 <p>下面是一个基本的日志使用方式。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 获取全局日志记录器，调用info方法记录日志 </span><br>Logger.getGlobal().info(<span class="hljs-string">&quot;something...&quot;</span>);<br><br><span class="hljs-comment">// 取消日志记录</span><br>Logger.getGlobal().setLevel(Level.OFF);<br></code></pre></td></tr></table></figure>
-
 <p>在一个专业的应用程序中，我们不应该将所有的日志都记录到一个全局的日志记录器中，因此我们可以定义自己的日志记录器，使用<code>getLogger</code>方法创建或者获取日志记录器</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">myLogger</span> <span class="hljs-operator">=</span> Logger.getLogger(<span class="hljs-string">&quot;xxx.yyy.zzz&quot;</span>);<br></code></pre></td></tr></table></figure>
-
 <p>日志记录器的名称具有层次结构，父子日志记录器会共享某些属性，如日志级别等。</p>
 <p>通常会有下面7个日志级别：</p>
 <ul>

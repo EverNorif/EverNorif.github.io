@@ -324,41 +324,45 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Docker镜像"><a href="#Docker镜像" class="headerlink" title="Docker镜像"></a>Docker镜像</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Docker Image镜像是一种轻量级的、可执行的独立软件包，它包含了运行某个软件所需要的所有内容。应用程序和配置依赖被打包好形成一个可交付的运行环境，这个打包好的运行环境就是Image镜像文件，通过Image镜像文件才能生成Docker容器实例。</p>
+                <h1>Docker镜像</h1>
+<h2 id="简介">简介</h2>
+<p>Docker Image镜像是一种轻量级的、可执行的独立软件包，它包含了运行某个软件所需要的所有内容。应用程序和配置依赖被打包好形成一个可交付的运行环境，这个打包好的运行环境就是Image镜像文件，通过Image镜像文件才能生成Docker容器实例。</p>
 <p>Docker镜像是分层构建的，其中使用了UnionFS（联合文件系统）。UnionFS是一种分层、轻量级、高性能的文件系统。它将对文件系统的修改看作一次次的提交，最终的状态则是一层层叠加之后的结果。同时UnionFS支持将不同目录挂载到同一个虚拟文件系统下。UnionFS是Docker Image的基础，Image可以通过分层来进行继承，基于基础镜像，可以制作各种具体的应用镜像。Image分层的一个最大好处就是能够做到共享资源，方便复用和迁移。</p>
 <p>Docker镜像是分层的文件系统，其中最底层是启动层BootFS（Boot File System），其中主要包含了BootLoader以及Kernel，BootLoader主要用于引导加载文件系统，该层与典型的Unix系统是一致的。当加载完成之后，整个Kernel就都存放在内存当中了。此时内存的使用权就会从BootFS转交给Kernel，系统也会卸载BootFS。</p>
-<p>而在BootFS之上是RootFS层，包含的就是典型 Linux 系统中的 &#x2F;dev, &#x2F;proc, &#x2F;bin, &#x2F;etc 等标准目录和文件。rootfs就是各种不同的操作系统发行版，比如Ubuntu，Centos等等。  </p>
+<p>而在BootFS之上是RootFS层，包含的就是典型 Linux 系统中的 /dev, /proc, /bin, /etc 等标准目录和文件。rootfs就是各种不同的操作系统发行版，比如Ubuntu，Centos等等。</p>
 <p>在Docker的分层结构当中，又可以分为镜像层和容器层，这两种类型最大的区别就是镜像层是只读的，而容器层是可写的。当从一个镜像中启动出容器之后，一个新的可写的容器层就会被加载到现有分层结构的最顶层，之后所有的针对容器的修改都会记录到该层中。而在容器层之下的其他所有层次，则都属于镜像层，都是只读的。</p>
-<h2 id="commit-amp-push"><a href="#commit-amp-push" class="headerlink" title="commit &amp; push"></a>commit &amp; push</h2><p>前面提到容器层可以进行修改，我们可以将修改后的容器重新打包成为一个镜像，这就需要使用到commit命令。下面的命令可以将contianer_id对应的容器提交成为一个新的镜像，新的镜像为target_image:tag。</p>
+<h2 id="commit-push">commit &amp; push</h2>
+<p>前面提到容器层可以进行修改，我们可以将修改后的容器重新打包成为一个镜像，这就需要使用到commit命令。下面的命令可以将contianer_id对应的容器提交成为一个新的镜像，新的镜像为target_image:tag。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 提交容器副本使之成为一个新的镜像</span><br>docker commit -m=<span class="hljs-string">&quot;commit message&quot;</span> -a=<span class="hljs-string">&quot;author&quot;</span> container_id target_image:tag<br></code></pre></td></tr></table></figure>
-
 <p>生成的新镜像目前只在本地存在，可以通过push命令将本地镜像推送到Docker仓库中。当然还可以部署私有仓库，此时需要借助Docker Registry镜像，相关操作可以参考官方文档<a target="_blank" rel="noopener" href="https://docs.docker.com/registry/deploying/">Deploy a registry server | docker docs</a>，或者相关博客<a target="_blank" rel="noopener" href="https://www.baeldung.com/ops/docker-private-registry">A Guide to Docker Private Registry | Baeldung</a>。</p>
 <blockquote>
 <p>虚悬镜像，danling image，指的是仓库名，标签都是<code>&lt;none&gt;</code>的镜像。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看虚悬镜像</span><br>docker image <span class="hljs-built_in">ls</span> -f dangling=<span class="hljs-literal">true</span><br><br><span class="hljs-comment"># 删除虚悬镜像</span><br>docker image prune <br></code></pre></td></tr></table></figure>
 </blockquote>
-<h1 id="容器数据卷"><a href="#容器数据卷" class="headerlink" title="容器数据卷"></a>容器数据卷</h1><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>一个容器如果被删除了，那么容器内部的数据也都被删除了。但是在一些场景下，我们希望容器内部的数据能够被保存下来，这就需要使用到容器数据卷，起到一个数据备份的效果。</p>
+<h1>容器数据卷</h1>
+<h2 id="使用">使用</h2>
+<p>一个容器如果被删除了，那么容器内部的数据也都被删除了。但是在一些场景下，我们希望容器内部的数据能够被保存下来，这就需要使用到容器数据卷，起到一个数据备份的效果。</p>
 <p>容器数据卷的挂载在容器启动的时候完成，通过<code>-v</code>属性。下面的命令可以挂载一个容器数据卷：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 启动一个容器，并且完成数据卷挂载</span><br>docker run -it -privileged=<span class="hljs-literal">true</span> -v /宿主机绝对路径目录:/容器内目录 image_name[:tag]<br></code></pre></td></tr></table></figure>
-
 <blockquote>
-<p>–privileged&#x3D;true表示扩大容器的权限，否则可能出现无法操作对应目录的情况。</p>
+<p>–privileged=true表示扩大容器的权限，否则可能出现无法操作对应目录的情况。</p>
 </blockquote>
 <p>该命令完成的功能是在启动容器的时候完成数据卷挂载，如果不使用数据卷，则容器内的目录是虚拟出来的，与宿主机是隔离的；如果使用了数据卷，那么容器内的对应目录直接映射到了宿主机的对应目录，能够达到一个类似双向绑定的效果。容器内目录改动能够传到宿主机中，反之亦然。并且此时如果我们删除了容器，相关数据仍然能够在宿主机中查看到。</p>
 <p>如果挂载了数据卷，我们可以通过<code>docker inspect</code>命令在详细信息中查看到。</p>
 <p>在挂载数据卷的时候，可以通过相关属性来配置容器对应该目录的读写权限，默认是读写权限都具备，当然也可以配置成只读。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 默认读写权限都具备 (read/write)</span><br>-v /宿主机绝对路径目录:/容器内目录:rw<br><span class="hljs-comment"># 配置成只读权限 (read only)</span><br>-v /宿主机绝对路径目录:/容器内目录:ro<br></code></pre></td></tr></table></figure>
-
 <p>另外，容器数据卷可以在容器之间进行继承，通过<code>--volumes-from</code>属性完成。此时启动的容器与父容器除了具有相同的数据卷规则之外没有任何联系，一方的删除并不会导致另一方数据卷规则失效。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 在启动容器的时候继承父容器的容器数据卷规则</span><br>docker run -it --privileged=<span class="hljs-literal">true</span> --volumes-from 父容器 --name xxx image_name[:tag]<br></code></pre></td></tr></table></figure>
-
-<h2 id="卷挂载"><a href="#卷挂载" class="headerlink" title="卷挂载"></a>卷挂载</h2><p>在使用数据卷的时候，我们也可以只提供容器内的路径，而不提供宿主机的路径，这种挂载方式被称为卷挂载Volume Mount。</p>
+<h2 id="卷挂载">卷挂载</h2>
+<p>在使用数据卷的时候，我们也可以只提供容器内的路径，而不提供宿主机的路径，这种挂载方式被称为卷挂载Volume Mount。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">-v [name:]/容器内路径 <br><span class="hljs-comment"># name可选，它代替了宿主机路径，作为新的参数传递</span><br></code></pre></td></tr></table></figure>
-
 <p>卷挂载只提供容器内路径，但是可以传入一个name来代替之前的宿主机路径。如果没有name，则属于匿名挂载；如果提供了name，则属于具名挂载。</p>
 <p>虽然卷挂载不提供宿主机目录，但是实际上还是有这个概念的。在卷挂载的情况下，对应的宿主机目录都是<code>/var/lib/docker/volumes/xxx</code>。如果是匿名挂载，后面的名字就是一串哈希值；如果是具名挂载，后面的名字就是指定的name。</p>
-<h1 id="DockerFile"><a href="#DockerFile" class="headerlink" title="DockerFile"></a>DockerFile</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>想要获取一个Image镜像，可以通过从仓库中拉取，也可以通过DockerFile来进行构建。DockerFile就是用来构建Docker镜像的文本文件，是由一条条构建镜像所需的参数构成的脚本。首先编写一个DockerFile文件，之后可以通过<code>docker build</code> 命令来构建镜像。</p>
-<h2 id="保留字介绍"><a href="#保留字介绍" class="headerlink" title="保留字介绍"></a>保留字介绍</h2><blockquote>
+<h1>DockerFile</h1>
+<h2 id="简介-2">简介</h2>
+<p>想要获取一个Image镜像，可以通过从仓库中拉取，也可以通过DockerFile来进行构建。DockerFile就是用来构建Docker镜像的文本文件，是由一条条构建镜像所需的参数构成的脚本。首先编写一个DockerFile文件，之后可以通过<code>docker build</code> 命令来构建镜像。</p>
+<h2 id="保留字介绍">保留字介绍</h2>
+<blockquote>
 <p>命令的详细介绍可以参考官方文档<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/builder/">Dockerfile reference</a></p>
 </blockquote>
 <p>首先有一些基础知识：</p>
@@ -372,7 +376,6 @@
 <p><code>MANINTAINER</code>：指定镜像维护者的姓名和邮箱地址。</p>
 <p><code>RUN</code>：在容器<strong>构建</strong>过程中需要运行的命令，命令可以用两种形式进行书写。</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># shell格式，等同于在终端操作的shell命令</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> yum -y install vim</span><br><br><span class="hljs-comment"># exec格式，类似于python中subprocess</span><br><span class="hljs-comment"># RUN [&quot;可执行文件&quot;, &quot;arg1&quot;, &quot;arg2&quot;]</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> [<span class="hljs-string">&quot;./test.sh&quot;</span>, <span class="hljs-string">&quot;arg1&quot;</span>, <span class="hljs-string">&quot;arg2&quot;</span>]</span><br></code></pre></td></tr></table></figure>
-
 <p><code>EXPOSE</code>：指定当前容器向外暴露的端口。</p>
 <p><code>WORKDIR</code>：指定在创建容器之后，终端默认登陆进来的工作目录。</p>
 <p><code>USER</code>：指定该镜像该以哪个用户去执行，一般不指定，默认为root用户。</p>
@@ -386,13 +389,11 @@
 <p>因此，我们可以利用CMD来达到可变参数的目的：</p>
 <p>假设有如下的Dockerfile，然后利用该Dockerfile构建出镜像，假设名为<code>nginx:test</code>。</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> nginx<br><br><span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;nginx&quot;</span>, <span class="hljs-string">&quot;-c&quot;</span>]</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;/etc/nginx/nginx.conf&quot;</span>]</span><br></code></pre></td></tr></table></figure>
-
 <p>于是在利用docker run运行镜像的时候，可以通过是否提供命令行参数来达到控制参数的目的：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 不提供命令参数</span><br>docker run nginx:<span class="hljs-built_in">test</span><br><span class="hljs-comment"># 容器内部相当于运行</span><br>nginx -c /etc/nginx/nginx.conf<br><br><span class="hljs-comment"># 提供命令参数</span><br>docker run nginx:<span class="hljs-built_in">test</span> /etc/nginx/new.conf<br><span class="hljs-comment"># 容器内部相当于运行</span><br>nginx -c /etc/nginx/new.conf<br></code></pre></td></tr></table></figure>
-
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>下面的案例Dockerfile完成了从centos基础镜像出发，设置好java8的环境。</p>
+<h2 id="案例">案例</h2>
+<p>下面的案例Dockerfile完成了从centos基础镜像出发，设置好java8的环境。</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 需要在Dockerfile的同级目录中准备jdk8的压缩包</span><br><span class="hljs-keyword">FROM</span> centos<br>  <br><span class="hljs-keyword">ENV</span> MYPATH /usr/local <br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> <span class="hljs-variable">$MYPATH</span> </span><br>  <br><span class="hljs-comment">#安装vim编辑器 </span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> yum -y install vim </span><br><span class="hljs-comment">#安装java8及lib库 </span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> yum -y install glibc.i686 </span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">mkdir</span> /usr/local/java </span><br><span class="hljs-comment">#ADD 是相对路径jar,把jdk-8u171-linux-x64.tar.gz添加到容器中,安装包必须要和Dockerfile文件在同一位置 </span><br><span class="hljs-keyword">ADD</span><span class="language-bash"> jdk-8u171-linux-x64.tar.gz /usr/local/java/ </span><br><span class="hljs-comment">#配置java环境变量 </span><br><span class="hljs-keyword">ENV</span> JAVA_HOME /usr/local/java/jdk1.<span class="hljs-number">8.0</span>_171 <br><span class="hljs-keyword">ENV</span> JRE_HOME $JAVA_HOME/jre <br><span class="hljs-keyword">ENV</span> CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH <br><span class="hljs-keyword">ENV</span> PATH $JAVA_HOME/bin:$PATH <br>  <br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">80</span> <br> <br><span class="hljs-keyword">CMD</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-variable">$MYPATH</span> </span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success--------------ok&quot;</span> </span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> /bin/bash </span><br></code></pre></td></tr></table></figure>
-
 <p>之后运行docker build命令进行镜像构建：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 在Dockerfile同级目录下运行命令</span><br>docker build -t new_image:tag<br></code></pre></td></tr></table></figure>
 

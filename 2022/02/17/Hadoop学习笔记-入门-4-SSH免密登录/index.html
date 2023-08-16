@@ -325,7 +325,8 @@
             
               <div class="markdown-body">
                 
-                <h2 id="公钥和私钥原理"><a href="#公钥和私钥原理" class="headerlink" title="公钥和私钥原理"></a>公钥和私钥原理</h2><p>这里ssh使用的是rsa的加密。</p>
+                <h2 id="公钥和私钥原理">公钥和私钥原理</h2>
+<p>这里ssh使用的是rsa的加密。</p>
 <p><strong>非对称加密</strong> 非对称加密算法中，有两个密钥：公钥和私钥。它们是一对，如果用公钥进行加密，只有用对应的私钥才能解密；如果用私钥进行加密，只有用对应的公钥才能解密。  非对称加密算法实现机密信息的交换过程为：甲方生成一对密钥并将其中一个作为公钥向其他方公开；得到该公钥的乙方使用该密钥对机密信息进行加密后发送给甲方；甲方再用自己的另一个专用密钥对加密后的信息进行解密。</p>
 <p>简要来说：</p>
 <ol>
@@ -336,12 +337,11 @@
 <li>B返回给A的数据使用A的公钥进行加密</li>
 <li>A接收到返回数据之后，使用私钥进行解密</li>
 </ol>
-<h2 id="配置免密登录"><a href="#配置免密登录" class="headerlink" title="配置免密登录"></a>配置免密登录</h2><p>配置免密登录很简单，首先需要生成公钥和私钥</p>
+<h2 id="配置免密登录">配置免密登录</h2>
+<p>配置免密登录很简单，首先需要生成公钥和私钥</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh-keygen -t rsa<br></code></pre></td></tr></table></figure>
-
 <p>之后将公钥拷贝到需要免密登录的目标机器上</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">ssh-copy-id hadoop102<br>ssh-copy-id hadoop103<br>ssh-copy-id hadoop104<br></code></pre></td></tr></table></figure>
-
 <p>其中，自己到自己的ssh也需要配置。</p>
 <blockquote>
 <p>在这一步中，我们会完成如下的免密配置：</p>
@@ -350,7 +350,8 @@
 <p>在hadoop104上，使用syh用户配置对其他服务器的免密登录；</p>
 <p>在hadoop102上，使用root用户配置对其他服务器的免密登录。</p>
 </blockquote>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<h2 id="参考文章">参考文章</h2>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/25912483/answer/2287241608">https://www.zhihu.com/question/25912483/answer/2287241608</a></li>
 </ol>
 

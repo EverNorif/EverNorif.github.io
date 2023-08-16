@@ -325,25 +325,26 @@
             
               <div class="markdown-body">
                 
-                <h1 id="JSP"><a href="#JSP" class="headerlink" title="JSP"></a>JSP</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>JSP，全称为Java Server Pages，即Java服务端页面。这是一种动态网页技术，在里面我们既可以定义HTML、JS、CSS等静态内容，还可以定义Java代码的动态内容。可以认为JSP &#x3D; HTML + Java。我们可以认为JSP使得我们可以在代码中定义可以执行的Java代码。</p>
+                <h1>JSP</h1>
+<h2 id="概述">概述</h2>
+<p>JSP，全称为Java Server Pages，即Java服务端页面。这是一种动态网页技术，在里面我们既可以定义HTML、JS、CSS等静态内容，还可以定义Java代码的动态内容。可以认为JSP = HTML + Java。我们可以认为JSP使得我们可以在代码中定义可以执行的Java代码。</p>
 <p>使用JSP，首先需要导入相关的依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>javax.servlet.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>jsp-api<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>provided<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>然后在新建的Web项目中，webapp下新建后缀名为<code>.jsp</code>的文件，在其中写入以下代码，其中HTML部分即为正常的HTML代码，而Java部分的代码使用标签<code>&lt;% %&gt;</code>进行包裹。在访问对应链接后，页面上会出现对应内容，在控制台上也会输出对应内容。</p>
 <figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;html&gt;<br>    &lt;head&gt;<br>        &lt;title&gt;Title&lt;/title&gt;<br>    &lt;/head&gt;<br>    &lt;body&gt;<br>        &lt;h1&gt;JSP,Hello World&lt;/h1&gt;<br>        &lt;%<br>        System.out.println(<span class="hljs-string">&quot;hello,jsp~&quot;</span>);<br>        %&gt;<br>    &lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
-
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>在JSP出现之前，我们可以通过Servlet中的response对象获取到输出流对应，然后利用write方法向其中写入html代码，同时结合Java代码处理的逻辑进行数据处理，最后返回相应的结合了数据与页面的html内容。这种方式的缺点非常明显，就是十分不方便。我们需要手动进行html字符串的拼接，书写繁多的write语句，整体的可读性和便利性都不高。</p>
+<h2 id="原理">原理</h2>
+<p>在JSP出现之前，我们可以通过Servlet中的response对象获取到输出流对应，然后利用write方法向其中写入html代码，同时结合Java代码处理的逻辑进行数据处理，最后返回相应的结合了数据与页面的html内容。这种方式的缺点非常明显，就是十分不方便。我们需要手动进行html字符串的拼接，书写繁多的write语句，整体的可读性和便利性都不高。</p>
 <p>而JSP技术在此基础上进行改进，JSP本质上还是一个Servlet。浏览器第一次访问jsp页面的时候，Tomcat会将对应的<code>.jsp</code>文件转化为一个Servlet，然后再将这个Servlet编译成对应的字节码文件，执行该字节码文件，向外提供服务。</p>
 <p>这个生成的Servlet类继承了<code>HttpJspBase</code>，间接继承了<code>HttpServlet</code>。生成的Servlet类中，一个重要方法为<code>_jspService()</code>，它就是每次访问jsp的时候自动执行的方式。而在这个方法中，会将我们之前在JSP中书写的html代码都使用<code>out.write()</code>进行写入，而Java代码则原封不动放入。也就是说，JSP自动帮助我们完成了字符串拼接工作，一定程度上提高了便利性。</p>
-<h2 id="JSP脚本"><a href="#JSP脚本" class="headerlink" title="JSP脚本"></a>JSP脚本</h2><p>JSP脚本就是我们在JSP页面中定义的Java代码，这些代码需要利用对应的标签进行包裹。之前我们使用的是最普通的标签，<code>&lt;% %&gt;</code>，实际上JSP一共提供了三类脚本标签。</p>
+<h2 id="JSP脚本">JSP脚本</h2>
+<p>JSP脚本就是我们在JSP页面中定义的Java代码，这些代码需要利用对应的标签进行包裹。之前我们使用的是最普通的标签，<code>&lt;% %&gt;</code>，实际上JSP一共提供了三类脚本标签。</p>
 <p><code>&lt;% ... %&gt;</code>：被该标签包裹的Java代码，会直接原封不动的放入<code>_jspService()</code>方法中。</p>
 <figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;%<br>	System.out.println(<span class="hljs-string">&quot;jsp...&quot;</span>);<br>	<span class="hljs-type">int</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>%&gt;<br></code></pre></td></tr></table></figure>
-
-<p><code>&lt;%= ... %&gt;</code>：被该标签包裹的内容，会被放入<code>out.print()</code>方法中，作为参数传入，一般可以用来进行数据的展示。例如下面的代码，假设局部变量str的值为”Hello”，则最终会在页面中展示一个被<code>&lt;h1&gt;</code>包裹的Hello。</p>
+<p><code>&lt;%= ... %&gt;</code>：被该标签包裹的内容，会被放入<code>out.print()</code>方法中，作为参数传入，一般可以用来进行数据的展示。例如下面的代码，假设局部变量str的值为&quot;Hello&quot;，则最终会在页面中展示一个被<code>&lt;h1&gt;</code>包裹的Hello。</p>
 <figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;h1&gt;&lt;%=str%&gt;&lt;/h1&gt;<br></code></pre></td></tr></table></figure>
-
 <p><code>&lt;%! ... %&gt;</code>：被该标签包裹的内容，会被放在<code>_jspService()</code>方法之外，被类直接包含，作为类的成员变量或者是成员方法。</p>
-<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>JSP虽然一定程度上解决了直接使用Servlet返回html代码的复杂性问题，但是它自己也有不少的缺点：</p>
+<h2 id="缺点">缺点</h2>
+<p>JSP虽然一定程度上解决了直接使用Servlet返回html代码的复杂性问题，但是它自己也有不少的缺点：</p>
 <ol>
 <li>书写起来虽然不用大量的write，但是Java代码与HTML结合的方式书写起来也比较复杂</li>
 <li>JSP中的Java代码需要使用标签进行包裹，并且一个代码块还可以继续进行拆分，可读性也并不是很高</li>

@@ -326,19 +326,22 @@
             
               <div class="markdown-body">
                 
-                <h2 id="HDFS概述"><a href="#HDFS概述" class="headerlink" title="HDFS概述"></a>HDFS概述</h2><ol>
+                <h2 id="HDFS概述">HDFS概述</h2>
+<ol>
 <li>HDFS是一种分布式文件系统，用于存储文件</li>
 <li>它适合一次写入，多次读取的场景</li>
 <li>优点：高容错性、适合处理大数据、廉价服务器</li>
 <li>缺点：不适合低延时数据访问、不能高效对大量小文件进行存储、不支持并发写入和文件随机修改，仅允许数据追加</li>
-<li>组成架构：使用主从式的分布式架构<ul>
+<li>组成架构：使用主从式的分布式架构
+<ul>
 <li>NameNode</li>
 <li>DataNode</li>
 <li>Secondary NameNode</li>
 <li>Client</li>
 </ul>
 </li>
-<li><strong>文件块大小</strong>：分块存储，文件块的大小通过<code>dfs.blocksize</code>来指定，在Hadoop2.x和3.x中，默认是128M，在1.x中默认是64M<ul>
+<li><strong>文件块大小</strong>：分块存储，文件块的大小通过<code>dfs.blocksize</code>来指定，在Hadoop2.x和3.x中，默认是128M，在1.x中默认是64M
+<ul>
 <li>文件块设置的大小与磁盘传输的速率有关，如果传输速率更快，达到200M上下的话，可以将块大小设置成256M</li>
 <li>HDFS块设置的太小的话，会增加寻址的时间</li>
 <li>HDFS块设置的太大的话，不能充分利用分布式系统并行计算的能力，效率降低</li>

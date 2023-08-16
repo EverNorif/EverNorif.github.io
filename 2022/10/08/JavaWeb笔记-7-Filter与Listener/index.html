@@ -327,23 +327,25 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Filter，过滤器，或者称为拦截器，它可以将对资源的请求进行拦截，统一处理之后再放行，进行后续的请求。这使得Filter能够完成一些通用的操作，例如权限控制、统一编码处理、敏感字符处理等操作。</p>
+                <h1>Filter</h1>
+<h2 id="概述">概述</h2>
+<p>Filter，过滤器，或者称为拦截器，它可以将对资源的请求进行拦截，统一处理之后再放行，进行后续的请求。这使得Filter能够完成一些通用的操作，例如权限控制、统一编码处理、敏感字符处理等操作。</p>
 <p>Filter的使用也是接口的实现。首先需要定义类，实现Filter接口，重写其中的方法。其中重要的方法是<code>doFilter</code>，它表示当前过滤器需要执行的逻辑。之后利用注解来配置Filter拦截资源的路径。放行方法为<code>filterChain.doFilter(servletRequest, servletResponse)</code>，如果不执行，则表示当前访问被阻止，无法访问后续资源。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebFilter(&quot;/*&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FilterDemo</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Filter</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">(FilterConfig filterConfig)</span> <span class="hljs-keyword">throws</span> ServletException &#123;<br><br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doFilter</span><span class="hljs-params">(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)</span> <span class="hljs-keyword">throws</span> IOException, ServletException &#123;<br>        System.out.println(<span class="hljs-string">&quot;do filter...&quot;</span>);<br>        filterChain.doFilter(servletRequest, servletResponse); <span class="hljs-comment">// 放行</span><br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">destroy</span><span class="hljs-params">()</span> &#123;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>Filter的执行流程如下图所示：</p>
 <img src="/2022/10/08/JavaWeb%E7%AC%94%E8%AE%B0-7-Filter%E4%B8%8EListener/Filter%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Filter执行流程">
-
 <p>浏览器向某个URL发起请求，如果该URL对应的资源上配置了Filter，执行完Filter放行前逻辑后，进行放行，访问对应的资源，之后返回Filter，执行放行后的逻辑，最终得到response的响应。可以将放行操作理解为一个方法调用，调用了后续资源访问的方法。</p>
-<h2 id="使用细节"><a href="#使用细节" class="headerlink" title="使用细节"></a>使用细节</h2><p>在使用Filter的时候，需要配置对应的资源拦截路径，与Servlet的路径设置类似，这里的路径配置也有如下四种方式：</p>
+<h2 id="使用细节">使用细节</h2>
+<p>在使用Filter的时候，需要配置对应的资源拦截路径，与Servlet的路径设置类似，这里的路径配置也有如下四种方式：</p>
 <ul>
 <li>拦截具体的资源：<code>/index.jsp</code>，访问index.jsp的时候会被拦截</li>
-<li>目录拦截：<code>/user/*</code>，访问&#x2F;user下的所有资源时会被拦截</li>
+<li>目录拦截：<code>/user/*</code>，访问/user下的所有资源时会被拦截</li>
 <li>后缀名拦截：<code>*.jsp</code>，访问后缀名为jsp的资源时，会被拦截</li>
 <li>拦截所有：<code>/*</code>，访问所有资源都会被拦截</li>
 </ul>
 <p>我们也可以连续使用多个拦截器，形成Filter的链。既然形成了链，就会有执行顺序的区分。默认情况下，会按照过滤器类名的字符串自然顺序进行排序，决定调用Filter的先后顺序。</p>
-<h1 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h1><p>Listener表示监听器，也是JavaWeb的三大组件之一。监听器会监听application、session以及request三个对象的创建、销毁、属性修改动作，在对应动作发生的时候，会触发响应的代码执行。</p>
+<h1>Listener</h1>
+<p>Listener表示监听器，也是JavaWeb的三大组件之一。监听器会监听application、session以及request三个对象的创建、销毁、属性修改动作，在对应动作发生的时候，会触发响应的代码执行。</p>
 <blockquote>
 <p>request、session都可以代表一个域，而application则是ServletContext类型的对象，它代表整个Web应用。在服务器启动的时候，Tomcat会自动创建该对象，在服务器关闭的时候则会自动销毁该对象。</p>
 </blockquote>
@@ -356,7 +358,8 @@
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>ServletContext监听</td>
 <td>ServletContextListener</td>
 <td>监听ServletContext对象的创建和销毁</td>
@@ -396,7 +399,8 @@
 <td>ServletRequestAttributeListener</td>
 <td>监听Request对象中属性的增删改</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 
                 
               </div>

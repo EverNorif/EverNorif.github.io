@@ -44,6 +44,8 @@
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
 
+  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.15.2/katex.min.css" />
+
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
@@ -278,7 +280,7 @@
         
         
           <!-- compatible with older versions-->
-          59 分钟
+          60 分钟
         
       </span>
     
@@ -325,7 +327,8 @@
             
               <div class="markdown-body">
                 
-                <h2 id="数据读取流程"><a href="#数据读取流程" class="headerlink" title="数据读取流程"></a>数据读取流程</h2><p>HBase的核心模块是Region Server。Region Server的主要构成部分是HLog和Region块，HLog中记录该Region的操作日志，Region中存储实际数据。一个Region对象由多个Store组成，每个Store对应当前分区中的一个列族，每个Store包含若干个StoreFile文件，StoreFile文件对应HDFS中的HFile文件。</p>
+                <h2 id="数据读取流程">数据读取流程</h2>
+<p>HBase的核心模块是Region Server。Region Server的主要构成部分是HLog和Region块，HLog中记录该Region的操作日志，Region中存储实际数据。一个Region对象由多个Store组成，每个Store对应当前分区中的一个列族，每个Store包含若干个StoreFile文件，StoreFile文件对应HDFS中的HFile文件。</p>
 <p>读取数据需要知道这个数据存储在哪个Region上，之后找到对应的Region Server。这些信息存储在meta表中，而meta表也是HBase中存储的一张表，同样被存放在某个Region中。因此首先需要获取meta表。找到meta表之后就可以查询到Region的位置，之后就可以到相应的服务器上查找数据。</p>
 <p>整个读取流程如下：</p>
 <ol>
@@ -335,10 +338,12 @@
 <li>首先从MemStore中查询数据，再去BlockCache中查询数据，最后找到StoreFile</li>
 </ol>
 <blockquote>
-<p>BlockCache是HBase实现的缓存机制，用于缓存从HDFS中读出的数据。HBase提供了两种不同的BlockCache实现来缓存从HDFS读取的数据：默认的堆上LruBlockCache和通常是堆外的BucketCache。<br> 默认情况下，所有用户表都启用块缓存，这意味着任何读取操作都将加载LRU缓存。</p>
+<p>BlockCache是HBase实现的缓存机制，用于缓存从HDFS中读出的数据。HBase提供了两种不同的BlockCache实现来缓存从HDFS读取的数据：默认的堆上LruBlockCache和通常是堆外的BucketCache。<br>
+默认情况下，所有用户表都启用块缓存，这意味着任何读取操作都将加载LRU缓存。</p>
 <p>可以将MemStore理解为一级缓存，BlockCache理解为二级缓存。</p>
 </blockquote>
-<h2 id="数据写入流程"><a href="#数据写入流程" class="headerlink" title="数据写入流程"></a>数据写入流程</h2><p>HBase的数据存储分为如下几个阶段：</p>
+<h2 id="数据写入流程">数据写入流程</h2>
+<p>HBase的数据存储分为如下几个阶段：</p>
 <ol>
 <li>客户端拿到一个Row Key，需要知道这个Row Key存放在哪个Region中</li>
 <li>根据Zookeeper获取到hbase:meta表，根据命名空间，表名，行键来查询对应的Region信息，查询到对应的Region服务器</li>
@@ -346,15 +351,15 @@
 <li>MemStore快写满了的时候（默认128M），或者内存中数据已经连续存放超过一定时间，会自动由后台程序将MemStore中的内容flush刷写到HDFS中的HFile中</li>
 <li>当数据量较大的时候，会产生很多的StoreFile，这样对高效读取不利。HBase会将这些小的StoreFIle合并，一般3-10个文件合并成一个更大的StoreFile。</li>
 </ol>
-<h3 id="MemStore溢写以及StoreFile合并"><a href="#MemStore溢写以及StoreFile合并" class="headerlink" title="MemStore溢写以及StoreFile合并"></a>MemStore溢写以及StoreFile合并</h3><p>当MemStore中写入的值变多，会触发溢写操作（flush）进行文件的溢写，成为一个StoreFile。</p>
-<p>当溢写的文件过多的时候，会触发文件的合并操作（Compact），合并有两种方式（Major、Minor）。StoreFile的Compact操作需要对HBase的数据进行多次的重新读写，在这个过程中会产生大量的I&#x2F;O。Compact利用提前的I&#x2F;O操作来换取后续读性能的提高。</p>
+<h3 id="MemStore溢写以及StoreFile合并">MemStore溢写以及StoreFile合并</h3>
+<p>当MemStore中写入的值变多，会触发溢写操作（flush）进行文件的溢写，成为一个StoreFile。</p>
+<p>当溢写的文件过多的时候，会触发文件的合并操作（Compact），合并有两种方式（Major、Minor）。StoreFile的Compact操作需要对HBase的数据进行多次的重新读写，在这个过程中会产生大量的I/O。Compact利用提前的I/O操作来换取后续读性能的提高。</p>
 <p><strong>flush触发条件</strong>：</p>
 <ul>
 <li>当MemStore中数据达到128M，触发Region级别溢写flush</li>
 <li>当MemStore的存活时间超过一小时，触发RegionServer级别溢写flush</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.memstore.flush.size<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>134217728<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.regionserver.optionalcacheflushinterval<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>3600000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>Region级别溢写：一个Store溢写，在同一个Region中的所有Store都需要溢写。</p>
 <p>RegionServer级别溢写：Region服务器中保存的所有Store对应的MenStore都进行溢写。</p>
@@ -363,7 +368,7 @@
 <ul>
 <li>Minor Compact是小范围轻量级合并，用来对部分文件进行合并操作（默认是3-10个文件）</li>
 <li>会清除过期数据（TTL），但是不做多版本数据的清理工作</li>
-<li>Minor Compact的过程一般较快，I&#x2F;O相对较低，并且可以设置闲时和忙时</li>
+<li>Minor Compact的过程一般较快，I/O相对较低，并且可以设置闲时和忙时</li>
 </ul>
 <p>触发条件：</p>
 <ul>
@@ -371,9 +376,6 @@
 <li>Minor Compact有一个最小合并数量，默认为3。在Store中的尚未处于Compact阶段的StoreFile数量大于等于3的时候需要做Compact</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hstore.compaction.min<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>3<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">final</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">final</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
 <p><strong>Major Compact</strong>：</p>
 <ul>
 <li>Major Compact是全局范围重量级合并，用来对一个Region内部的所有StoreFile执行合并操作，最终合并出一个StoreFile文件</li>
@@ -385,11 +387,11 @@
 <li>如果在所有StoreFile中，时间戳最小的那个StoreFile的时间间隔大于Major Compact的时间间隔（默认7天），则触发Major Compact</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.majorcompaction<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>604800000<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <blockquote>
-<p>7 day &#x3D; 168 h &#x3D; 604800 s &#x3D; 604800000 ms</p>
+<p>7 day = 168 h = 604800 s = 604800000 ms</p>
 </blockquote>
-<h3 id="In-Memory-Compaction"><a href="#In-Memory-Compaction" class="headerlink" title="In-Memory Compaction"></a>In-Memory Compaction</h3><p>In-Memory Compaction在HBase 2.x版本后新增的一个步骤。相比于默认的MenStore溢写区别在于实现了在内存中进行合并（Compact），核心思想是尽量延长内存中数据的生命周期，来减少总的IO开销。</p>
+<h3 id="In-Memory-Compaction">In-Memory Compaction</h3>
+<p>In-Memory Compaction在HBase 2.x版本后新增的一个步骤。相比于默认的MenStore溢写区别在于实现了在内存中进行合并（Compact），核心思想是尽量延长内存中数据的生命周期，来减少总的IO开销。</p>
 <p>在MemStore中，数据以段（Segment）为单位进行存储，MemStore中包含了多个Segment。</p>
 <ul>
 <li>数据写入时，首先写入到的是Active Segment中，也就是当前可以写入的Segment段</li>
@@ -413,24 +415,25 @@
 </ul>
 <p>可以在<code>hbase-site.xml</code>中配置默认In-Memory Compact的方式</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.compacting.memstore.type<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span> <br>    <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>&lt;none|basic|eager|adaptive&gt;<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>也可以在创建表的时候指定</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">create &quot;MY_TABLE&quot;, &#123;NAME =&gt; &quot;C1&quot;, IN_MEMORY_COMPACTION =&gt; &quot;BASIC&quot;&#125;<br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="WAL机制"><a href="#WAL机制" class="headerlink" title="WAL机制"></a>WAL机制</h2><p>在分布式环境下，用户必须要考虑系统出错的情形。HBase采取WAL，即预写日志的方式来保证系统发生故障的时候能够恢复到正常状态。</p>
+<h2 id="WAL机制">WAL机制</h2>
+<p>在分布式环境下，用户必须要考虑系统出错的情形。HBase采取WAL，即预写日志的方式来保证系统发生故障的时候能够恢复到正常状态。</p>
 <p>在每个Region Server都有一个HLog文件，这是一种预写文件，用来记录该Region Server执行过的操作。用户更新数据必须先被记录在日志中才能被写入MemStore缓存。只有当缓存内容对应的日志已经成功写入磁盘之后，缓存内容才能被写入磁盘。</p>
 <p>在日志写入HLog文件的过程中，执行的都是追加写。并且同一个Region Server服务器的Region对象共用一个HLog，这样在记录日志的时候，只需要不断地把日志记录追加到单个日志文件中，而不需要同时打开、写入多个日志文件中，因此减少了磁盘寻址次数，提高对表的写操作性能。</p>
 <p>而Zookeeper会实时监控每个Region Server的状态，当某个Region服务器发生故障时，Zookeeper会通知Master，Master会首先去处理该故障服务器上遗留的HLog文件。由于同一个Region服务器的所有Region对象共用一个HLog，所以这个遗留的HLog文件会包含来自多个Region对象的日志记录。系统根据每条日志记录所属的Region对象对HLog数据进行拆分，并分别存放到相应的Region对象目录下，再将失效的Region重新分配到可用的Region服务器中，并在对应的Region服务器中进行日志回放，将日志记录中的数据写入到MemStore然后刷新到磁盘的StoreFile文件中，完成数据恢复。</p>
-<h2 id="Region管理"><a href="#Region管理" class="headerlink" title="Region管理"></a>Region管理</h2><p>每个Region只能分配给一个Region Server。在Master中记录了当前有哪些可用的Region Server，以及当前Region的分配情况。当需要分配新的Region的时候，Master会选择一个可用的Region Server进行分配。</p>
+<h2 id="Region管理">Region管理</h2>
+<p>每个Region只能分配给一个Region Server。在Master中记录了当前有哪些可用的Region Server，以及当前Region的分配情况。当需要分配新的Region的时候，Master会选择一个可用的Region Server进行分配。</p>
 <p>当Region Server上线时，会在Zookeeper的Server目录下建立代表自己的ZNode。Master通过订阅机制，使用Zookeeper来跟踪Region Server的状态，当Zookeeper的Server目录下文件出现新增或者删除操作，Master可以得到来自Zookeeper的实时通知，这样一旦一个Region Server上线，Master就可以马上得到对应消息。</p>
 <p>当Region Server下线时，它和Zookeeper的会话就会断开，Zookeeper会自动释放代表这台Region Server的文件上的独占锁。Master也可以通过监听得到这个信息，即该Region Server无法继续提供服务。此时Master会删除Zookeeper的Server目录下对应的ZNode，并将这台Region Server上的Region分配给其他存活节点。（Region最终还是会对应到HDFS上的一个文件，而HDFS存在副本机制）</p>
 <p>当一个Region中的数据逐渐变多，直到达到某一个阈值之后，会自动进行分裂。这个Region会等分成两个Region，并分配到不同的Region Server中，原本的Region则会下线。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml">&lt;-- Region最大文件大小为10G --&gt;<br><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>hbase.hregion.max.filesize<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>10737418240<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">final</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">final</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>hbase-default.xml<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-<p>以上过程即为自动分区。当Region达到一定大小会自动进行分区，分区大小的计算公式如下：<br>$$<br>Min( R^2 \times \text{hbase.hregion.memstore.flush.size}, \text{hbase.hregion.max.filesize})<br>$$<br>其中R为同一个表中，在同一个Region Server中Region的个数。</p>
-<h2 id="Master工作机制"><a href="#Master工作机制" class="headerlink" title="Master工作机制"></a>Master工作机制</h2><p>Master在启动的时候：</p>
+<p>以上过程即为自动分区。当Region达到一定大小会自动进行分区，分区大小的计算公式如下：</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>M</mi><mi>i</mi><mi>n</mi><mo stretchy="false">(</mo><msup><mi>R</mi><mn>2</mn></msup><mo>×</mo><mtext>hbase.hregion.memstore.flush.size</mtext><mo separator="true">,</mo><mtext>hbase.hregion.max.filesize</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">Min( R^2 \times \text{hbase.hregion.memstore.flush.size}, \text{hbase.hregion.max.filesize})
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1141em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mord mathnormal">in</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">hbase.hregion.memstore.flush.size</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">hbase.hregion.max.filesize</span></span><span class="mclose">)</span></span></span></span></span></p>
+<p>其中R为同一个表中，在同一个Region Server中Region的个数。</p>
+<h2 id="Master工作机制">Master工作机制</h2>
+<p>Master在启动的时候：</p>
 <ul>
 <li>从Zookeeper上获取唯一一个代表Active Master的锁，用来阻止其他备用节点成为Master</li>
 <li>Master扫描Zookeeper上的Server父节点，获得当前可用的Region Server列表，之后与每个Region Server通信，获得当前已经分配的Region和Region Server的对应关系</li>
@@ -441,8 +444,10 @@
 <blockquote>
 <p>Master中保存的都是冗余信息，上线之后可以从系统其他地方收集得到。</p>
 </blockquote>
-<h2 id="相关数据结构"><a href="#相关数据结构" class="headerlink" title="相关数据结构"></a>相关数据结构</h2><h3 id="LSM树"><a href="#LSM树" class="headerlink" title="LSM树"></a>LSM树</h3><p>传统的关系型数据库，一般都选择使用B+树来作为索引结构，而在大数据场景下，数据库的存储引擎选择的是LSM树，即日志结构合并树（Log Structured Merge Tree）。</p>
-<p>使用LSM树的主要目标是快速建立索引，B+树在写入压力较大的时候，需要大量的磁盘随机I&#x2F;O，严重影响创建索引的速度，不适合使用在写入操作非常频繁的场景中。而LSM树通过磁盘的顺序写，来实现较高的性能。</p>
+<h2 id="相关数据结构">相关数据结构</h2>
+<h3 id="LSM树">LSM树</h3>
+<p>传统的关系型数据库，一般都选择使用B+树来作为索引结构，而在大数据场景下，数据库的存储引擎选择的是LSM树，即日志结构合并树（Log Structured Merge Tree）。</p>
+<p>使用LSM树的主要目标是快速建立索引，B+树在写入压力较大的时候，需要大量的磁盘随机I/O，严重影响创建索引的速度，不适合使用在写入操作非常频繁的场景中。而LSM树通过磁盘的顺序写，来实现较高的性能。</p>
 <p>LSM树是一种存储策略，不同部分采用不同的数据结构。</p>
 <p>LSM树的主要思想就是划分不同等级的结构。在插入记录的时候，先写日志，插入到内存当中。内存中的结构成为C0树，而当内存中的数据达到一定阈值，或者经过一段时间间隔，C0树合并到磁盘的C1树中，C1中的数据进一步合并到C2中，依次类推。</p>
 <p>C0结构在内存中，可以使用B树、红黑树、跳表等结构（HBase中使用跳表），而磁盘中的结构使用B+树。</p>
@@ -463,7 +468,8 @@
 <li>C0层是在内存中的数据结构，查询效率较高。由于数据分布在不同的层结构当中，所以一次查询可能需要跨多层进行查询，读取速度较慢</li>
 <li>因此LSM树结构程序适合于大量写入，少量查询的场景</li>
 </ul>
-<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>在HBase中存储着海量数据，要判断某个Row Key或者某个列是否存在，可以使用布隆过滤器。</p>
+<h3 id="布隆过滤器">布隆过滤器</h3>
+<p>在HBase中存储着海量数据，要判断某个Row Key或者某个列是否存在，可以使用布隆过滤器。</p>
 <blockquote>
 <p>判断一个元素是否在一个集合当中，可以使用哈希表来判断。在集合较小的情况下，哈希表是可行并且高效的，但是在数据量非常大的情况下，内存中无法存放这样一张哈希表，则无法适用。</p>
 </blockquote>
@@ -474,7 +480,8 @@
 <li>如果K个位置上均为1：则value可能存在</li>
 <li>如果K个位置上存在一个不为1：则value一定不存在</li>
 </ul>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<h2 id="参考文章">参考文章</h2>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3ecd112c009e">HBase中BlockCache的设计综述 - 简书 (jianshu.com)</a></li>
 <li><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/6533.html">HBase WAL机制 (biancheng.net)</a></li>
 </ol>
@@ -649,7 +656,6 @@
 
   
   
-
 
 
 
@@ -844,49 +850,6 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  
-      <script>
-        if (!window.MathJax) {
-          window.MathJax = {
-            tex    : {
-              inlineMath: { '[+]': [['$', '$']] }
-            },
-            loader : {
-              load: ['ui/lazy']
-            },
-            options: {
-              renderActions: {
-                insertedScript: [200, () => {
-                  document.querySelectorAll('mjx-container').forEach(node => {
-                    let target = node.parentNode;
-                    if (target.nodeName.toLowerCase() === 'li') {
-                      target.parentNode.classList.add('has-jax');
-                    }
-                  });
-                }, '', false]
-              }
-            }
-          };
-        } else {
-          MathJax.startup.document.state(0);
-          MathJax.texReset();
-          MathJax.typeset();
-          MathJax.typesetPromise();
-        }
-
-        Fluid.events.registerRefreshCallback(function() {
-          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
-            MathJax.startup.document.state(0);
-            MathJax.texReset();
-            MathJax.typeset();
-            MathJax.typesetPromise();
-          }
-        });
-      </script>
-    
-
-  <script  src="https://lib.baomitu.com/mathjax/3.2.0/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

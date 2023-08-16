@@ -265,7 +265,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          648 字
+          640 字
         
       </span>
     
@@ -324,22 +324,24 @@
             
               <div class="markdown-body">
                 
-                <h2 id="默认组织方式"><a href="#默认组织方式" class="headerlink" title="默认组织方式"></a>默认组织方式</h2><p>Flask默认的目录结构如下：</p>
+                <h2 id="默认组织方式">默认组织方式</h2>
+<p>Flask默认的目录结构如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">- app.py<br>- static<br>	- js<br>    - css<br>    - img<br>- templates<br>	- index.html<br></code></pre></td></tr></table></figure>
-
 <p>静态文件就放在static文件夹下，可以通过网址直接访问。网址类似于<code>http://localhost/static/xxxx</code>。</p>
-<h2 id="自定义组织方式"><a href="#自定义组织方式" class="headerlink" title="自定义组织方式"></a>自定义组织方式</h2><p>在app实例化的时候对这些组织方式进行相应的配置</p>
+<h2 id="自定义组织方式">自定义组织方式</h2>
+<p>在app实例化的时候对这些组织方式进行相应的配置</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 可对实例、配置模板文件路径、静态文路径进行配置</span><br>app = Flask(__name__,static_folder=<span class="hljs-string">&#x27;xxx&#x27;</span>,static_url_path=<span class="hljs-string">&#x27;xxx&#x27;</span>,template_folder=<span class="hljs-string">&#x27;xxx&#x27;</span>)<br> <br>static_folder = <span class="hljs-string">&#x27;static&#x27;</span><br> <br>static_url_path = <span class="hljs-literal">None</span>, <br> <br>template_folder = <span class="hljs-string">&#x27;templates&#x27;</span><br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>static_folder表示静态文件存放的目录，默认是当前项目中的static目录</li>
-<li>static_url_path表示远程访问静态文件的时候的前缀，默认不写则与static_folder同名<ul>
-<li>如果该项设置为<code>&#39;&#39;</code>，而其他保持默认情况，则url中访问<code>/img/test.png</code>，实际访问的是<code>/static/img/test.png</code>文件</li>
+<li>static_url_path表示远程访问静态文件的时候的前缀，默认不写则与static_folder同名
+<ul>
+<li>如果该项设置为<code>''</code>，而其他保持默认情况，则url中访问<code>/img/test.png</code>，实际访问的是<code>/static/img/test.png</code>文件</li>
 </ul>
 </li>
 <li>template表示模板目录，默认是当前项目中的templates 目录</li>
 </ul>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<h2 id="参考文章">参考文章</h2>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/JSYhq/article/details/88619573#/">Flask—静态资源配置_HuQi-CSDN博客_flask静态资源</a></li>
 </ol>
 

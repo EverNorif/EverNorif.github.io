@@ -277,7 +277,7 @@
         
         
           <!-- compatible with older versions-->
-          36 分钟
+          35 分钟
         
       </span>
     
@@ -324,7 +324,9 @@
             
               <div class="markdown-body">
                 
-                <h1 id="安全认证"><a href="#安全认证" class="headerlink" title="安全认证"></a>安全认证</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。Kubernetes通过对各种使用它服务的客户端进行认证和鉴权，以此来保证集群的安全性。</p>
+                <h1>安全认证</h1>
+<h2 id="简介">简介</h2>
+<p>Kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。Kubernetes通过对各种使用它服务的客户端进行认证和鉴权，以此来保证集群的安全性。</p>
 <p>在Kubernetes集群中，客户端通常分为两类：</p>
 <ul>
 <li><code>User Account</code>：一般是独立于Kubernetes之外的其他服务管理的用户账号。</li>
@@ -336,14 +338,16 @@
 <li>Authorization（鉴权）： 判断用户是否有权限对访问的资源执行特定的动作</li>
 <li>Admission Control（准入控制）：用于补充授权机制以实现更加精细的访问控制功能</li>
 </ul>
-<h2 id="认证管理"><a href="#认证管理" class="headerlink" title="认证管理"></a>认证管理</h2><p>Kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了三种客户端身份认证方式：</p>
+<h2 id="认证管理">认证管理</h2>
+<p>Kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了三种客户端身份认证方式：</p>
 <ul>
 <li>HTTP Base认证：通过用户名+密码的方式认证</li>
 <li>HTTP Token认证：通过一个Token来识别合法用户</li>
 <li>HTTPS证书认证：基于CA根证书签名的双向数字证书认证方式</li>
 </ul>
 <p>Kubernetes允许同时配置多种认证方式，只要其中任意一个方式认证通过即可。</p>
-<h2 id="鉴权管理"><a href="#鉴权管理" class="headerlink" title="鉴权管理"></a>鉴权管理</h2><p>认证管理用于明确用户的身份，接下来的鉴权管理则用于判断某个用户是否有某种权限。</p>
+<h2 id="鉴权管理">鉴权管理</h2>
+<p>认证管理用于明确用户的身份，接下来的鉴权管理则用于判断某个用户是否有某种权限。</p>
 <p>每个发送到ApiServer的请求都带上了用户和资源的信息：比如发送请求的用户、请求的路径、请求的动作等，授权就是根据这些信息和授权策略进行比较，如果符合策略，则认为授权通过，否则会返回错误。</p>
 <p>Api Server目前支持以下几种授权策略：</p>
 <ul>
@@ -366,7 +370,8 @@
 <li>RoleBinding、ClusterRoleBinding：用于将角色（权限）赋予给对象</li>
 </ul>
 <p>资源的定义提高了可复用性，例如一些同类用户具有相同的权限，此时在进行权限赋予的时候就可以直接复用同一个Role Resource。</p>
-<h2 id="准入控制"><a href="#准入控制" class="headerlink" title="准入控制"></a>准入控制</h2><p>来自客户端的请求在通过了前面的认证和授权之后，还需要经过准入控制处理，ApiServer才会进行处理。准入控制是一个可配置的控制器列表，可以通过在ApiServer上通过命令行设置选择执行哪些准入控制器。</p>
+<h2 id="准入控制">准入控制</h2>
+<p>来自客户端的请求在通过了前面的认证和授权之后，还需要经过准入控制处理，ApiServer才会进行处理。准入控制是一个可配置的控制器列表，可以通过在ApiServer上通过命令行设置选择执行哪些准入控制器。</p>
 <p>只有当所有的准入控制器都检查通过之后，ApiServer才会执行该请求，否则返回拒绝。当前可配置的Admission Control准入控制如下：</p>
 <ul>
 <li><code>AlwaysAdmit</code>：允许所有请求</li>
@@ -384,26 +389,21 @@
 <li><code>DefaultTolerationSeconds</code>：这个插件为那些没有设置forgiveness tolerations并具有notready:NoExecute和unreachable:NoExecute两种taints的Pod设置默认的“容忍”时间，为5min</li>
 <li><code>PodSecurityPolicy</code>：这个插件用于在创建或修改Pod时决定是否根据Pod的security context和可用的PodSecurityPolicy对Pod的安全策略进行控制</li>
 </ul>
-<h1 id="DashBoard"><a href="#DashBoard" class="headerlink" title="DashBoard"></a>DashBoard</h1><p>命令行工具kubectl提供了几乎所有操作Kubernetes集群的功能，但是操作门槛还是有些高。因此，为了提供更丰富的用户体验，Kubernetes还开发了一个基于Web的DashBoard，用户可以使用Dashboard来部署容器化的应用，监控应用的状态，执行故障排查以及管理Kubernetes中各种资源等。官方DashBoard的项目地址为<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard">kubernetes&#x2F;dashboard: General-purpose web UI for Kubernetes clusters</a>。下面简单介绍这个DashBoard的使用方式。</p>
+<h1>DashBoard</h1>
+<p>命令行工具kubectl提供了几乎所有操作Kubernetes集群的功能，但是操作门槛还是有些高。因此，为了提供更丰富的用户体验，Kubernetes还开发了一个基于Web的DashBoard，用户可以使用Dashboard来部署容器化的应用，监控应用的状态，执行故障排查以及管理Kubernetes中各种资源等。官方DashBoard的项目地址为<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard">kubernetes/dashboard: General-purpose web UI for Kubernetes clusters</a>。下面简单介绍这个DashBoard的使用方式。</p>
 <p>首先需要从官网下载配置文件<code>recommended.yaml</code>，这里面描述了DashBoard运行所需的资源。实际上DashBoard整体也是一个运行在Kubernetes集群中的服务，需要各种Resource的支持。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml<br></code></pre></td></tr></table></figure>
-
 <p>得到配置文件之后，我们需要进行一些修改。主要修改的是其中名为kubernetes-dashboard的Service，修改内容为增加下面具有注释的两行。因为默认情况下该Service的type为ClusterIP，无法在集群外访问，因此这里需要将其改为NodePort，同时完成端口映射。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kubernetes-dashboard</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kubernetes-dashboard</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">NodePort</span>  <span class="hljs-comment"># change to NodePort</span><br>  <span class="hljs-attr">ports:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">443</span><br>      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8443</span><br>      <span class="hljs-attr">nodePort:</span> <span class="hljs-number">30009</span>  <span class="hljs-comment"># expose nodePort</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span><br></code></pre></td></tr></table></figure>
-
 <p>之后，可以运行apply命令生成相关资源。可以发现所有资源都位于<code>kubernetes-dashboard</code>名称空间下。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl apply -f recommended.yaml<br></code></pre></td></tr></table></figure>
-
-<p>此时我们已经可以访问<code>https://localhost:30009/</code>来进入DashBoard，不过此时它会提示我们输入Token。因此我们还需要创建相关User，获取Token。下面的步骤均参考官方文档：<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">dashboard&#x2F;docs&#x2F;user&#x2F;access-control&#x2F;creating-sample-user.md at master · kubernetes&#x2F;dashboard</a>。</p>
+<p>此时我们已经可以访问<code>https://localhost:30009/</code>来进入DashBoard，不过此时它会提示我们输入Token。因此我们还需要创建相关User，获取Token。下面的步骤均参考官方文档：<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">dashboard/docs/user/access-control/creating-sample-user.md at master · kubernetes/dashboard</a>。</p>
 <p>首先我们需要创建一个用户<code>admin-user</code>，并为其赋予相关的权限。这两个动作对应Kubernetes中的两个Resource，因此准备如下配置文件，这里命名为<code>admin-user.yaml</code>：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">admin-user</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kubernetes-dashboard</span><br><br><span class="hljs-meta">---</span><br><span class="hljs-meta"></span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRoleBinding</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">admin-user</span><br><span class="hljs-attr">roleRef:</span><br>  <span class="hljs-attr">apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span><br>  <span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">cluster-admin</span><br><span class="hljs-attr">subjects:</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">admin-user</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kubernetes-dashboard</span><br></code></pre></td></tr></table></figure>
-
 <p>之后利用apply命令创建资源，这样就可以创建出admin-user用户并且为其授予权限。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl apply -f admin-user.yaml<br></code></pre></td></tr></table></figure>
-
 <p>然后利用下面的命令生成Token：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">kubectl create token admin-user -n kubernetes-dashboard<br></code></pre></td></tr></table></figure>
-
 <p>该命令会在控制台上输出一长串字符串，即Token。访问<code>https://localhost:30009/</code>，在登录页面上输入获取的Token，即可登录成功。</p>
 
                 

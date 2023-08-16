@@ -326,20 +326,21 @@
             
               <div class="markdown-body">
                 
-                <h1 id="RequestMapping注解"><a href="#RequestMapping注解" class="headerlink" title="@RequestMapping注解"></a>@RequestMapping注解</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在控制器方法中，我们会使用<code>@RequestMapping</code>注解来说明该方法匹配的请求路径，该注解的功能也就是将请求和处理请求的控制器方法进行关联，建立起映射关系。SpringMVC接收到指定的请求之后，就会在映射关系中找到对应的控制器方法来处理这个请求。</p>
+                <h1>@RequestMapping注解</h1>
+<h2 id="介绍">介绍</h2>
+<p>在控制器方法中，我们会使用<code>@RequestMapping</code>注解来说明该方法匹配的请求路径，该注解的功能也就是将请求和处理请求的控制器方法进行关联，建立起映射关系。SpringMVC接收到指定的请求之后，就会在映射关系中找到对应的控制器方法来处理这个请求。</p>
 <p><code>@RequestMapping</code>注解可以用来标识一个类，也可以用来标识一个方法</p>
 <ul>
 <li>标识类：设置请求路径的初始信息</li>
 <li>标识方法：设置请求路径的具体信息</li>
 </ul>
 <p>如果一个控制器被该注解标识了，那么它的方法对应的实际完整路径应该要加上类注解中的路径。</p>
-<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><p>下面介绍<code>@RequestMapping</code>中的相关属性。</p>
+<h2 id="属性">属性</h2>
+<p>下面介绍<code>@RequestMapping</code>中的相关属性。</p>
 <p>首先是value属性。<code>@RequestMapping</code>注解的value属性用来指定匹配的请求地址。这是一个字符串数组，表示该请求方法能够匹配多个请求地址。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(value=&#123;&quot;/test1&quot;,&quot;/test2&quot;&#125;)</span><br></code></pre></td></tr></table></figure>
-
 <p>method属性表示通过请求的请求方式来进行匹配。这是一个RequestMethod类型的数组，表示该请求方法能够匹配的请求对应的请求方式。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(</span><br><span class="hljs-meta">    value = &quot;test&quot;, </span><br><span class="hljs-meta">    method = &#123;RequestMethod.GET, RequestMethod.POST&#125;</span><br><span class="hljs-meta">)</span><br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>结合请求方式的不同，SpringMVC中提供了一系列基于<code>@RequestMapping</code>的派生注解，用来处理不同的请求，如下所示，基本都能见名知义：</p>
 <ul>
@@ -358,7 +359,6 @@
 </ol>
 <p>例如下面的例子，能够被响应的请求，应该满足参数必须携带username，不能携带password，必须携带age且值为18，可以携带email，如果携带了值不能为<code>haha@haha.com</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(</span><br><span class="hljs-meta">    value = &quot;/test&quot;,</span><br><span class="hljs-meta">    params = &#123;&quot;username&quot;, &quot;!password&quot;, &quot;age=18&quot;, &quot;email!=haha@haha.com&quot;&#125;</span><br><span class="hljs-meta">)</span><br></code></pre></td></tr></table></figure>
-
 <p>headers属性和params属性基本类似，它通过请求的请求头信息来匹配。该属性也是一个字符串类型的数组，也可以通过上面相同的四种表达式来决定约束条件。</p>
 <blockquote>
 <p>SpringMVC支持ant风格的路径，具体如下：</p>
@@ -369,21 +369,23 @@
 </ul>
 <p>但是在使用的过程中需要注意，在url中，<code>?</code>是请求链接和参数的分隔符，不能被匹配；<code>/</code>表示一层新的目录，不能被匹配。</p>
 </blockquote>
-<h2 id="路径占位符"><a href="#路径占位符" class="headerlink" title="路径占位符"></a>路径占位符</h2><p>SpringMVC同样支持路径的占位符，简单来说就是通过参数形式解析链接中的值。这种方式在获取REST方式的请求参数时非常方便。REST方式的请求中会将请求参数作为路径的一部分，举例来说，我们利用可以结合参数访问如下请求<code>/testRest?id=123&amp;username=root</code>，这也是我们一开始接触的方式，即路径与参数分离，而采用REST方式的话，请求可能就是<code>/testRest/123/root</code>。</p>
+<h2 id="路径占位符">路径占位符</h2>
+<p>SpringMVC同样支持路径的占位符，简单来说就是通过参数形式解析链接中的值。这种方式在获取REST方式的请求参数时非常方便。REST方式的请求中会将请求参数作为路径的一部分，举例来说，我们利用可以结合参数访问如下请求<code>/testRest?id=123&amp;username=root</code>，这也是我们一开始接触的方式，即路径与参数分离，而采用REST方式的话，请求可能就是<code>/testRest/123/root</code>。</p>
 <p>通过路径的占位符，我们可以获取REST方式请求中的参数：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testRest/&#123;id&#125;/&#123;username&#125;&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testRest</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> String id, <span class="hljs-meta">@PathVariable(&quot;username&quot;)</span> String name)</span> &#123;<br>    System.out.println(id);<br>    System.out.println(name);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br><span class="hljs-comment">// 访问/testRest/123/root</span><br><span class="hljs-comment">// 输出123 root</span><br></code></pre></td></tr></table></figure>
-
 <p>在路径中设置占位符之后，我们需要获取对应的值。通过注解<code>@PathVariable</code>，我们可以将路径中参数与形参进行绑定，之后就可以在代码中使用。我们可以在注解中指定要匹配路径中的哪一部分，如果没有指定，则默认按照形参名来匹配。</p>
 <blockquote>
 <p>注意这里我们获取的不是实际意义上的参数，只是解析了路径中的内容作为我们的参数，实际意义上的参数还是指的整个链接中<code>?</code>后面的内容，这也是我们后面要介绍的内容。</p>
 </blockquote>
-<h1 id="请求参数获取"><a href="#请求参数获取" class="headerlink" title="请求参数获取"></a>请求参数获取</h1><h2 id="参数获取"><a href="#参数获取" class="headerlink" title="参数获取"></a>参数获取</h2><p>下面我们介绍在SpringMVC中如何获取请求参数。主要指的是利用<code>&amp;</code>拼接的参数，即get请求携带参数的样式。如果是post请求，请求体中的参数如果满足形式与get请求参数相同，也能够被解析。</p>
-<h3 id="通过ServletAPI获取"><a href="#通过ServletAPI获取" class="headerlink" title="通过ServletAPI获取"></a>通过ServletAPI获取</h3><p>在JavaWeb中我们可以通过ServletAPI来获取请求参数，这里自然也可以。要使用相关对象，我们可以在控制器方法中增加对应类型的形参，如下所示。此时，<code>HttpServletRequest</code>类型的参数就表示封装了当前请求请求报文的对象，然后我们就可以通过对应方法获取到对应参数：</p>
+<h1>请求参数获取</h1>
+<h2 id="参数获取">参数获取</h2>
+<p>下面我们介绍在SpringMVC中如何获取请求参数。主要指的是利用<code>&amp;</code>拼接的参数，即get请求携带参数的样式。如果是post请求，请求体中的参数如果满足形式与get请求参数相同，也能够被解析。</p>
+<h3 id="通过ServletAPI获取">通过ServletAPI获取</h3>
+<p>在JavaWeb中我们可以通过ServletAPI来获取请求参数，这里自然也可以。要使用相关对象，我们可以在控制器方法中增加对应类型的形参，如下所示。此时，<code>HttpServletRequest</code>类型的参数就表示封装了当前请求请求报文的对象，然后我们就可以通过对应方法获取到对应参数：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testParam1&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testParam1</span><span class="hljs-params">(HttpServletRequest request)</span> &#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;id&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">username</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;username&quot;</span>);<br>    System.out.println(id);<br>    System.out.println(username);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="通过形参获取"><a href="#通过形参获取" class="headerlink" title="通过形参获取"></a>通过形参获取</h3><p>SpringMVC既然是对Servlet进行封装，那么自然是提供了更加方便的方式来获取请求参数。我们可以在控制器方法的形参位置，设置和请求参数同名的形参。这样当浏览器发送请求，匹配到对应方法的时候，在DispathcerServlet中就会将请求参数赋值给相应的形参：</p>
+<h3 id="通过形参获取">通过形参获取</h3>
+<p>SpringMVC既然是对Servlet进行封装，那么自然是提供了更加方便的方式来获取请求参数。我们可以在控制器方法的形参位置，设置和请求参数同名的形参。这样当浏览器发送请求，匹配到对应方法的时候，在DispathcerServlet中就会将请求参数赋值给相应的形参：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testParam2&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testParam2</span><span class="hljs-params">(Integer id, <span class="hljs-meta">@RequestParam(&quot;username&quot;)</span> String name)</span> &#123;<br>    System.out.println(id);<br>    System.out.println(name);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>默认情况下，我们可以通过设置同名形参来获取对应请求参数，而通过<code>@RequestParam</code>注解，我们可以指定更多的映射方式。</p>
 <p><code>@RequestParam</code>注解可以为请求参数和控制器方法的形参创建映射，其中一共有三个属性：</p>
 <ul>
@@ -405,13 +407,13 @@
 <li><code>@CookieValue</code>：为Cookei数据和控制器方法形参创建映射</li>
 </ul>
 <p>注解的使用方式与<code>@RequestParam</code>基本相同，这里就不再多进行描述。</p>
-<h3 id="通过实体类获取"><a href="#通过实体类获取" class="headerlink" title="通过实体类获取"></a>通过实体类获取</h3><p>在请求参数过多的时候，如果全部写在形参中会非常繁琐。我们可以在控制器方法的形参位置设置一个实体类类型的形参，这样如果请求参数和实体类的属性名能够匹配的话，DispatcherServlet就会调用属性的set方法为其赋值。</p>
+<h3 id="通过实体类获取">通过实体类获取</h3>
+<p>在请求参数过多的时候，如果全部写在形参中会非常繁琐。我们可以在控制器方法的形参位置设置一个实体类类型的形参，这样如果请求参数和实体类的属性名能够匹配的话，DispatcherServlet就会调用属性的set方法为其赋值。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/testParam3&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">testParam3</span><span class="hljs-params">(User user)</span> &#123;<br>    System.out.println(user);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h2 id="乱码问题解决"><a href="#乱码问题解决" class="headerlink" title="乱码问题解决"></a>乱码问题解决</h2><p>如果我们的是通过链接中参数进行传递，则不会出现中文乱码问题。但是如果我们的参数是通过post请求的请求体进行传递的，则会出现乱码问题。</p>
+<h2 id="乱码问题解决">乱码问题解决</h2>
+<p>如果我们的是通过链接中参数进行传递，则不会出现中文乱码问题。但是如果我们的参数是通过post请求的请求体进行传递的，则会出现乱码问题。</p>
 <p>乱码问题的解决也非常简单，只需要在<code>web.xml</code>中配置SpringMVC提供的编码过滤器<code>CharacterEncodingFilter</code>即可：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--配置SpringMVC的编码过滤器--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">filter</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>CharacterEncodingFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-class</span>&gt;</span>org.springframework.web.filter.CharacterEncodingFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-class</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">init-param</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-name</span>&gt;</span>encoding<span class="hljs-tag">&lt;/<span class="hljs-name">param-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-value</span>&gt;</span>UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">param-value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">init-param</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">init-param</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-name</span>&gt;</span>forceEncoding<span class="hljs-tag">&lt;/<span class="hljs-name">param-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">param-value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">param-value</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">init-param</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">filter</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">filter-mapping</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>CharacterEncodingFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/*<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">filter-mapping</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <blockquote>
 <p>注意，SpringMVC处理编码的过滤器一定要配置在其他过滤器的前面，否则是没有效果的。</p>
 </blockquote>

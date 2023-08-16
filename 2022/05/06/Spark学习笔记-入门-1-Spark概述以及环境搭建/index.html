@@ -328,7 +328,8 @@
             
               <div class="markdown-body">
                 
-                <h2 id="Spark概述"><a href="#Spark概述" class="headerlink" title="Spark概述"></a>Spark概述</h2><p>Spark是一种基于内存的、快速、可扩展的大数据分析<strong>计算</strong>引擎。</p>
+                <h2 id="Spark概述">Spark概述</h2>
+<p>Spark是一种基于内存的、快速、可扩展的大数据分析<strong>计算</strong>引擎。</p>
 <p>Hadoop的MapReduce框架和Spark框架都是数据处理引擎，它们之间当然存在一些不同之处。Hadoop的MapReduce框架设计初衷并不是为了满足循环迭代式的数据流处理，因此在许多并行运行的数据可复用场景（例如机器学习、图挖掘算法、交互式数据挖掘算法等）中存在计算效率问题。Spark在传统的MapReduce计算框架的基础上，利用其计算过程的优化大大加快了数据分析、挖掘的运行和读写速度，并将数据单元缩小到更适合并行计算和重复使用的RDD计算模型上。</p>
 <ul>
 <li>Spark和Hadoop的根本差异式多个作业之间的数据通信问题，Spark多个作业之间的数据通信式基于内存的，而Hadoop是基于磁盘的。</li>
@@ -340,7 +341,6 @@
 </blockquote>
 <p>Spark由以下核心模块构成：</p>
 <img src="/2022/05/06/Spark%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-Spark%E6%A6%82%E8%BF%B0%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/Spark%E6%A0%B8%E5%BF%83%E6%A8%A1%E5%9D%97.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Spark核心模块">
-
 <ul>
 <li><strong>Spark Core</strong>： Spark Core中提供了Spark中最基础与最核心的功能，Spark其他的功能如Spark SQL、Spark Streaming、Spark MLlib和Spark GraphX都是在Spark Core的基础上进行扩展的</li>
 <li><strong>Spark SQL</strong>： Spark SQL是Spark用来操作结构化数据的组件，通过Spark SQL，用户可以使用SQL或者Apache Hive版本的HQL来查询数据</li>
@@ -348,63 +348,66 @@
 <li><strong>Spark MLlib</strong>： MLlib是Spark提供的一个机器学习算法库。其中不仅提供了模型评估、数据导入等额外的功能，还提供了一些更底层的机器学习原语</li>
 <li><strong>Spark GraphX</strong>： GraphX是Spark面向图计算提供的框架与算法库</li>
 </ul>
-<h2 id="Word-Count项目搭建"><a href="#Word-Count项目搭建" class="headerlink" title="Word Count项目搭建"></a>Word Count项目搭建</h2><p>上面是简要介绍了一些Spark的相关知识，下面可以通过一个入门案例Word Count来开启Spark的学习之路。</p>
-<h3 id="项目环境搭建"><a href="#项目环境搭建" class="headerlink" title="项目环境搭建"></a>项目环境搭建</h3><p>首先我们需要搭建项目的环境。使用IDEA创建对应的Maven环境。由于Spark的底层编写使用的是Scala，后续我们也会使用Scala来进行相关的开发，所以创建项目的时候需要实现Scala的相关配置，详情可以参考另一篇有关Scala的学习笔记 <a href="/2022/04/29/Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-Scala%E7%AE%80%E4%BB%8B/" title="Scala学习笔记-入门(1)-Scala简介">Scala学习笔记-入门(1)-Scala简介</a></p>
+<h2 id="Word-Count项目搭建">Word Count项目搭建</h2>
+<p>上面是简要介绍了一些Spark的相关知识，下面可以通过一个入门案例Word Count来开启Spark的学习之路。</p>
+<h3 id="项目环境搭建">项目环境搭建</h3>
+<p>首先我们需要搭建项目的环境。使用IDEA创建对应的Maven环境。由于Spark的底层编写使用的是Scala，后续我们也会使用Scala来进行相关的开发，所以创建项目的时候需要实现Scala的相关配置，详情可以参考另一篇有关Scala的学习笔记 <a href="/2022/04/29/Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%85%A5%E9%97%A8-1-Scala%E7%AE%80%E4%BB%8B/" title="Scala学习笔记-入门(1)-Scala简介">Scala学习笔记-入门(1)-Scala简介</a></p>
 <p>配置完Scala相关环境之后，还需要引入对应的Maven依赖。这里使用的版本是Spark-3.1.3，依赖如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.spark<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spark-core_2.12<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.1.3<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>这里在选择版本的时候需要注意Scala和Spark之间的版本匹配，我们可以参考Maven中的相关说明： <a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/org.apache.spark/spark-core">Maven Repository: org.apache.spark » spark-core (mvnrepository.com)</a></p>
 <p>这里使用的版本是Spark-3.1.3，对应使用的Scala版本为2.12.15</p>
-<h3 id="Word-Count实现"><a href="#Word-Count实现" class="headerlink" title="Word Count实现"></a>Word Count实现</h3><p>Word Count是大数据学科中最常见的案例，我们在项目目录下的<code>data</code>目录中准备了一些文件，其中是以空格分隔的单词。</p>
+<h3 id="Word-Count实现">Word Count实现</h3>
+<p>Word Count是大数据学科中最常见的案例，我们在项目目录下的<code>data</code>目录中准备了一些文件，其中是以空格分隔的单词。</p>
 <p>下面是Word Count的一种实现</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建Spark运行配置对象</span><br><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>).setAppName(<span class="hljs-string">&quot;WordCount&quot;</span>)<br><br><span class="hljs-comment">// 创建Spark上下文环境对象</span><br><span class="hljs-keyword">val</span> context = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br><br><span class="hljs-comment">// 业务操作</span><br><span class="hljs-comment">// 1.读取文件，获取的是一行一行的信息，得到多行lines，每行line是字符串</span><br><span class="hljs-keyword">val</span> lines = context.textFile(<span class="hljs-string">&quot;data&quot;</span>)<br><br><span class="hljs-comment">// 2.将每个字符串进行拆分并扁平化，得到words</span><br><span class="hljs-keyword">val</span> words = lines.flatMap(_.split(<span class="hljs-string">&quot; &quot;</span>))<br><br><span class="hljs-comment">// 3.将words按照内容进行分组，便于统计</span><br><span class="hljs-keyword">val</span> wordsGroup = words.groupBy(word =&gt; word)<br><br><span class="hljs-comment">// 4.统计每个分组内的个数</span><br><span class="hljs-keyword">val</span> resList1 = wordsGroup.map(kv =&gt; &#123;<br>    <span class="hljs-keyword">val</span> word = kv._1<br>    <span class="hljs-keyword">val</span> list = kv._2<br>    (word, list.size)<br>&#125;)<br><span class="hljs-comment">// 还可以使用模式匹配</span><br><span class="hljs-keyword">val</span> resList2 = wordsGroup.map(&#123;<br>    <span class="hljs-keyword">case</span> (str, strings) =&gt; (str, strings.size)<br>&#125;)<br><br><span class="hljs-comment">// 5.打印内容</span><br>resList2.foreach(println)<br><br><span class="hljs-comment">// 关闭Spark连接</span><br>context.stop()<br></code></pre></td></tr></table></figure>
-
 <p>这里使用的Spark环境是临时创建的，使用后会被删除。在使用Spark的时候，首先需要获取对应的配置对象，创建Spark上下文对象，之后利用相关API执行业务逻辑，最后关闭Spark连接。</p>
 <blockquote>
 <p>这里在运行的时候可能会出现下面的报错信息：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">Scala signature package has wrong version expected: 5.0 found: 5.2 in packag<br></code></pre></td></tr></table></figure>
-
 <p>如果出现这种情况，可能是由于Scala的版本问题。引入的Spark-Core依赖可能同时支持Scala 2.12和2.13，如果本地Scala的版本是2.12，那么选择一个只支持2.12的版本例如Spark-Core 3.1.3可以解决该问题</p>
 </blockquote>
 <p>Word Count还可以利用下面的逻辑实现，这种逻辑更加类似于MapRuduce的二阶段实现：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-comment">// 创建Spark运行配置对象</span><br><span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">&quot;local[*]&quot;</span>).setAppName(<span class="hljs-string">&quot;WordCount&quot;</span>)<br><br><span class="hljs-comment">// 创建Spark上下文环境对象</span><br><span class="hljs-keyword">val</span> context = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)<br><br><span class="hljs-comment">// 业务操作</span><br><span class="hljs-comment">// 1.读取文件，获取的是一行一行的信息，得到多行lines，每行line是字符串</span><br><span class="hljs-keyword">val</span> lines = context.textFile(<span class="hljs-string">&quot;data&quot;</span>)<br><br><span class="hljs-comment">// 2.将每个字符串进行拆分并扁平化，得到words</span><br><span class="hljs-keyword">val</span> words = lines.flatMap(_.split(<span class="hljs-string">&quot; &quot;</span>))<br><br><span class="hljs-comment">// 3.将words转换数据结构 word =&gt; (word, 1)</span><br><span class="hljs-keyword">val</span> wordsAndOne = words.map((_, <span class="hljs-number">1</span>))<br><br><span class="hljs-comment">// 4.将转换后的数据按照相同的单词进行分组聚合</span><br><span class="hljs-keyword">val</span> wordsGroup = wordsAndOne.groupBy(_._1)<br><span class="hljs-keyword">val</span> wordsAndCount = wordsGroup.map(kv=&gt;&#123;<br>    <span class="hljs-keyword">val</span> list = kv._2<br>    list.reduce((v1, v2)=&gt;&#123;<br>        (v1._1, v1._2 + v2._2)<br>    &#125;)<br>&#125;)<br><br><span class="hljs-comment">// 5.将数据聚合结果采集到内存当中</span><br><span class="hljs-keyword">val</span> resList = wordsAndCount.collect()<br><br><span class="hljs-comment">// 6.打印内容</span><br>resList.foreach(println)<br><br><span class="hljs-comment">// 关闭Spark连接</span><br>context.stop()<br></code></pre></td></tr></table></figure>
-
 <p>可以看到，在上面的业务逻辑中，我们使用的是在原生Scala中也存在的一些集合高级操作。而Spark提供给我们一些更加方便好用的API，例如上面的步骤4，将集合按照相同单词进行聚合的操作可以调用如下的API：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> wordsAndCount = wordsAndOne.reduceByKey(_ + _)<br></code></pre></td></tr></table></figure>
-
 <p>该操作可以按照key对后续的value进行操作，类似于MapReduce框架中Reducer进行的操作</p>
-<h3 id="日志输出"><a href="#日志输出" class="headerlink" title="日志输出"></a>日志输出</h3><p>在执行过程中，会产生大量的执行日志。为了更好地查看程序的执行结果，可以在项目的resources目录中创建<code>log4j.properties</code>文件，并添加日志配置信息：</p>
+<h3 id="日志输出">日志输出</h3>
+<p>在执行过程中，会产生大量的执行日志。为了更好地查看程序的执行结果，可以在项目的resources目录中创建<code>log4j.properties</code>文件，并添加日志配置信息：</p>
 <figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">log4j.rootCategory</span>=<span class="hljs-string">ERROR, console</span><br><span class="hljs-attr">log4j.appender.console</span>=<span class="hljs-string">org.apache.log4j.ConsoleAppender</span><br><span class="hljs-attr">log4j.appender.console.target</span>=<span class="hljs-string">System.err</span><br><span class="hljs-attr">log4j.appender.console.layout</span>=<span class="hljs-string">org.apache.log4j.PatternLayout</span><br><span class="hljs-attr">log4j.appender.console.layout.ConversionPattern</span>=<span class="hljs-string">%d&#123;yy/MM/dd HH:mm:ss&#125; %p %c&#123;1&#125;: %m%n</span><br><span class="hljs-comment"># Set the default spark-shell log level to ERROR. When running the spark-shell,</span><br><span class="hljs-attr">the</span><br><span class="hljs-comment"># log level for this class is used to overwrite the root logger&#x27;s log level, so</span><br><span class="hljs-attr">that</span><br><span class="hljs-comment"># the user can have different defaults for the shell and regular Spark apps.</span><br><span class="hljs-attr">log4j.logger.org.apache.spark.repl.Main</span>=<span class="hljs-string">ERROR</span><br><span class="hljs-comment"># Settings to quiet third party logs that are too verbose</span><br><span class="hljs-attr">log4j.logger.org.spark_project.jetty</span>=<span class="hljs-string">ERROR</span><br><span class="hljs-attr">log4j.logger.org.spark_project.jetty.util.component.AbstractLifeCycle</span>=<span class="hljs-string">ERROR</span><br><span class="hljs-attr">log4j.logger.org.apache.spark.repl.SparkIMain$exprTyper</span>=<span class="hljs-string">ERROR</span><br><span class="hljs-attr">log4j.logger.org.apache.spark.repl.SparkILoop$SparkILoopInterpreter</span>=<span class="hljs-string">ERROR</span><br><span class="hljs-attr">log4j.logger.org.apache.parquet</span>=<span class="hljs-string">ERROR</span><br><span class="hljs-attr">log4j.logger.parquet</span>=<span class="hljs-string">ERROR</span><br><span class="hljs-comment"># SPARK-9183: Settings to avoid annoying messages when looking up nonexistent</span><br><span class="hljs-attr">UDFs</span> <span class="hljs-string">in SparkSQL with Hive support</span><br><span class="hljs-attr">log4j.logger.org.apache.hadoop.hive.metastore.RetryingHMSHandler</span>=<span class="hljs-string">FATAL</span><br><span class="hljs-attr">log4j.logger.org.apache.hadoop.hive.ql.exec.FunctionRegistry</span>=<span class="hljs-string">ERROR</span><br></code></pre></td></tr></table></figure>
-
-
-
-<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>Spark作为一个数据处理框架和计算引擎，被设计成能够在常见的集群环境中运行。在工作中主流的环境为Yarn，不过容器式环境也逐渐流行。</p>
-<h3 id="Local模式"><a href="#Local模式" class="headerlink" title="Local模式"></a>Local模式</h3><h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>该Local模式不同于之前在IDEA中使用的模式。在IDEA中，我们的环境在使用完成之后会被删除，被称为开发环境。而这个Local模式的资源始终存在。这里，Local模式指的是不需要其他任何节点资源就可以在本地执行Spark代码的环境。</p>
+<h2 id="环境">环境</h2>
+<p>Spark作为一个数据处理框架和计算引擎，被设计成能够在常见的集群环境中运行。在工作中主流的环境为Yarn，不过容器式环境也逐渐流行。</p>
+<h3 id="Local模式">Local模式</h3>
+<h4 id="配置">配置</h4>
+<p>该Local模式不同于之前在IDEA中使用的模式。在IDEA中，我们的环境在使用完成之后会被删除，被称为开发环境。而这个Local模式的资源始终存在。这里，Local模式指的是不需要其他任何节点资源就可以在本地执行Spark代码的环境。</p>
 <p>首先从官网下载对应的Spark文件，这里对应版本下载得到文件：<code>spark-3.1.3-bin-hadoop3.2.tgz</code>，然后将文件上传到集群当中，解压到对应路径中</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">tar -zxvf spark-3.1.3-bin-hadoop3.2.tgz -C /opt/module<br></code></pre></td></tr></table></figure>
-
 <p>为了方便，可以将对应文件夹的名称改为<code>spark-3.1.3</code></p>
-<h4 id="命令行工具"><a href="#命令行工具" class="headerlink" title="命令行工具"></a>命令行工具</h4><p>之后，进入对应下载的Spark路径下，执行如下指令：</p>
+<h4 id="命令行工具">命令行工具</h4>
+<p>之后，进入对应下载的Spark路径下，执行如下指令：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">bin/spark-shell<br></code></pre></td></tr></table></figure>
-
 <p>可以进入<strong>命令行工具</strong>中。在启用命令行的时候，可以输入网址进行Web UI监控页面的访问，使用端口为4040。（hadoop102:4040）</p>
 <p>可以在data目录下准备对应的<code>word.txt</code>文件，之后用一个简单的word count代码来进行测试</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">scala&gt; </span><span class="language-bash">sc.textFile(<span class="hljs-string">&quot;data/word.txt&quot;</span>).flatMap(_.split(<span class="hljs-string">&quot; &quot;</span>)).map((_, 1)).reduceByKey(_+_).collect()</span><br>res0: Array[(String, Int)] = Array((Hello, 2), (Scala, 1), (Spark, 1))<br></code></pre></td></tr></table></figure>
-
-<h4 id="提交应用"><a href="#提交应用" class="headerlink" title="提交应用"></a>提交应用</h4><p>也可以采用jar包的形式提交应用运行，下面的命令提交了存在于examples文件夹中的一个示例程序，完成的功能是圆周率Π的计算</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">scala&gt; </span><span class="language-bash">sc.textFile(<span class="hljs-string">&quot;data/word.txt&quot;</span>).flatMap(_.<span class="hljs-built_in">split</span>(<span class="hljs-string">&quot; &quot;</span>)).map((_, <span class="hljs-number">1</span>)).reduceByKey(_+_).collect()</span><br>res0: Array[(String, Int)] = Array((Hello, 2), (Scala, 1), (Spark, 1))<br></code></pre></td></tr></table></figure>
+<h4 id="提交应用">提交应用</h4>
+<p>也可以采用jar包的形式提交应用运行，下面的命令提交了存在于examples文件夹中的一个示例程序，完成的功能是圆周率Π的计算</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">bin/spark-submit \<br>--class org.apache.spark.examples.SparkPi \<br>--master local[2] \<br>./examples/jars/spark-examples_2.12-3.1.3.jar\<br>10<br></code></pre></td></tr></table></figure>
-
 <ul>
-<li><p><code>--class</code>：表示要执行程序主类</p>
+<li>
+<p><code>--class</code>：表示要执行程序主类</p>
 </li>
-<li><p><code>--master</code>：表示部署模式，默认为本地模式，其中的数字表示分配的虚拟CPU核数量</p>
+<li>
+<p><code>--master</code>：表示部署模式，默认为本地模式，其中的数字表示分配的虚拟CPU核数量</p>
 </li>
-<li><p><code>./examples/jars/spark-examples_2.12-3.13.jar</code>：运行的应用类所在的jar包位置</p>
+<li>
+<p><code>./examples/jars/spark-examples_2.12-3.13.jar</code>：运行的应用类所在的jar包位置</p>
 </li>
-<li><p><code>10</code>：程序的入口参数，用于设定当前应用的任务数量</p>
+<li>
+<p><code>10</code>：程序的入口参数，用于设定当前应用的任务数量</p>
 </li>
 </ul>
-<h3 id="Standalone模式"><a href="#Standalone模式" class="headerlink" title="Standalone模式"></a>Standalone模式</h3><h4 id="配置-1"><a href="#配置-1" class="headerlink" title="配置"></a>配置</h4><p>Standalone指的是独立部署模式，即只使用Spark自身节点运行的集群模式。Spark的Standalone模式是经典的主从模式，规划如下：</p>
+<h3 id="Standalone模式">Standalone模式</h3>
+<h4 id="配置-2">配置</h4>
+<p>Standalone指的是独立部署模式，即只使用Spark自身节点运行的集群模式。Spark的Standalone模式是经典的主从模式，规划如下：</p>
 <table>
 <thead>
 <tr>
@@ -414,39 +417,37 @@
 <th>hadoop104</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>角色（进程）</td>
 <td>Worker、Master</td>
 <td>Worker</td>
 <td>Worker</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>使用独立部署模式需要修改对应的配置文件。</p>
 <blockquote>
 <p>Spark的配置文件都存在于<code>$SPARK_HOME</code>下的conf文件夹中，并且在初始情况下，所有的配置文件的最后后缀都是<code>.template</code>，如果需要对应的配置文件生效，需要删除该后缀</p>
 </blockquote>
 <p>修改<code>workers</code>文件，将其中的localhost修改为Worker节点：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">hadoop102<br>hadoop103<br>hadoop104<br></code></pre></td></tr></table></figure>
-
 <p>修改<code>spark-env.sh</code>文件，添加JAVA_HOME环境变量以及集群对应的Master节点，默认采用7077端口进行通信</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">export JAVA_HOME=/opt/module/jdk1.8.0_212<br><br>SPARK_MASTER_HOST=hadoop102<br>SPARK_MASTER_PORT=7077<br></code></pre></td></tr></table></figure>
-
 <p>将完成的配置文件目录<code>conf</code>进行分发</p>
 <p>之后可以启动集群查看效果</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sbin/start-all.sh<br></code></pre></td></tr></table></figure>
-
 <p>可以查看Master资源监控Web UI界面（hadoop102:8080）</p>
-<h4 id="提交应用-1"><a href="#提交应用-1" class="headerlink" title="提交应用"></a>提交应用</h4><p>与上面的命令类似，唯一需要改动的地方就是部署模式</p>
+<h4 id="提交应用-2">提交应用</h4>
+<p>与上面的命令类似，唯一需要改动的地方就是部署模式</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">bin/spark-submit \<br>--class org.apache.spark.examples.SparkPi \<br>--master spark://hadoop102:7077 \<br>./examples/jars/spark-examples_2.12-3.1.3.jar \<br>10<br></code></pre></td></tr></table></figure>
-
-<h4 id="配置历史服务"><a href="#配置历史服务" class="headerlink" title="配置历史服务"></a>配置历史服务</h4><p>前面会看到，如果spark-shell停掉之后，集群监控的4040页面就看不到历史任务的运行情况，所以在开发的时候都需要配置历史服务器来记录任务运行情况。</p>
+<h4 id="配置历史服务">配置历史服务</h4>
+<p>前面会看到，如果spark-shell停掉之后，集群监控的4040页面就看不到历史任务的运行情况，所以在开发的时候都需要配置历史服务器来记录任务运行情况。</p>
 <p>修改<code>spark-defaults.conf</code>文件，配置日志存储路径</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xml">spark.eventLog.enabled	true<br>spark.eventLog.dir		hdfs://hadoop102:8020/spark-history<br></code></pre></td></tr></table></figure>
-
 <p>这里配置的是HDFS文件系统中的位置，需要保证该处的<code>spark-history</code>目录存在，因此需要启动HDFS集群后进行创建</p>
 <p>之后修改<code>spark-env.sh</code>文件，添加日志配置：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">export SPARK_HISTORY_OPTS=&quot;<br>-Dspark.history.ui.port=18080 <br>-Dspark.history.fs.logDirectory=hdfs://hadoop102:8020/spark-history <br>-Dspark.history.retainedApplications=30&quot;<br></code></pre></td></tr></table></figure>
-
 <ul>
 <li>参数1：指定Web UI的访问端口为18080</li>
 <li>参数2：指定历史服务器的日志存储路径</li>
@@ -454,11 +455,10 @@
 </ul>
 <p>修改完成之后分发配置文件目录<code>conf</code></p>
 <p>重启集群和历史服务查看效果（HDFS集群也要启动）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">HADOOP_HOME</span><br>sbin/start-dfs.sh<br></code></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">SPARK_HOME</span><br>sbin/start-all.sh<br>sbin/start-history-server.sh<br></code></pre></td></tr></table></figure>
-
-<h4 id="配置高可用"><a href="#配置高可用" class="headerlink" title="配置高可用"></a>配置高可用</h4><p>在没有高可用的情况下，Master节点仅有一个，存在单点故障问题。为了解决单点故障问题，需要在集群中配置多个Master节点，一旦处于活动状态的Master发生故障，由备用的Master提供服务，保证作业继续执行。高可用一般采用Zookeeper设置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">HADOOP_HOME</span><br>sbin/start-dfs.sh<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">SPARK_HOME</span><br>sbin/start-all.sh<br>sbin/start-history-server.sh<br></code></pre></td></tr></table></figure>
+<h4 id="配置高可用">配置高可用</h4>
+<p>在没有高可用的情况下，Master节点仅有一个，存在单点故障问题。为了解决单点故障问题，需要在集群中配置多个Master节点，一旦处于活动状态的Master发生故障，由备用的Master提供服务，保证作业继续执行。高可用一般采用Zookeeper设置</p>
 <table>
 <thead>
 <tr>
@@ -468,46 +468,45 @@
 <th>hadoop104</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>角色</td>
 <td>Master、Zookeeper、Worker</td>
 <td>Master、Zookeeper、Worker</td>
 <td>Zookeeper、Worker</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>修改<code>spark-env.sh</code></p>
 <p>注释如下内容：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="language-bash">SPARK_MASTER_HOST=hadoop102</span><br><span class="hljs-meta">#</span><span class="language-bash">SPARK_MASTER_PORT=7077</span><br></code></pre></td></tr></table></figure>
-
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">SPARK_MASTER_HOST=hadoop102</span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">SPARK_MASTER_PORT=7077</span><br></code></pre></td></tr></table></figure>
 <p>添加如下内容：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">SPARK_MASTER_WEBUI_PORT=8989<br><br>export SPARK_DAEMON_JAVA_OPTS=&quot;<br>-Dspark.deploy.recoveryMode=ZOOKEEPER <br>-Dspark.deploy.zookeeper.url=hadoop102,hadoop103,hadoop104<br>-Dspark.deploy.zookeeper.dir=/spark&quot;<br></code></pre></td></tr></table></figure>
-
 <p>分发配置文件目录<code>conf</code></p>
 <p>之后启动集群，同时还要启动Zookeeper。此时仍然只有一个Master。需要在另一台非Master的机器例如hadoop103上单独启动Master</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta"># </span><span class="language-bash">SPARK_HOME</span><br>sbin/start-master.sh<br></code></pre></td></tr></table></figure>
-
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">SPARK_HOME</span><br>sbin/start-master.sh<br></code></pre></td></tr></table></figure>
 <p>在高可用情况下的应用提交</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">bin/spark-submit \<br>--class org.apache.spark.examples.SparkPi \<br>--master spark://hadoop102:7077, hadoop103:7077 \<br>./examples/jars/spark-examples_2.12-3.13.jar \<br>10<br></code></pre></td></tr></table></figure>
-
-<h3 id="Yarn模式"><a href="#Yarn模式" class="headerlink" title="Yarn模式"></a>Yarn模式</h3><h4 id="配置-2"><a href="#配置-2" class="headerlink" title="配置"></a>配置</h4><p>独立部署（Standalone）模式由 Spark 自身提供计算资源，无需其他框架提供资源。这种方式降低了和其他第三方资源框架的耦合性，独立性非常强。但是Spark主要是计算框架，而不是资源调度框架，Spark本身提供的资源调度并不是它的强项，因此可以选择继承其他专业的资源调度框架，例如Yarn</p>
+<h3 id="Yarn模式">Yarn模式</h3>
+<h4 id="配置-3">配置</h4>
+<p>独立部署（Standalone）模式由 Spark 自身提供计算资源，无需其他框架提供资源。这种方式降低了和其他第三方资源框架的耦合性，独立性非常强。但是Spark主要是计算框架，而不是资源调度框架，Spark本身提供的资源调度并不是它的强项，因此可以选择继承其他专业的资源调度框架，例如Yarn</p>
 <p>在学习Hadoop的过程中，我们已经完成了Yarn集群的配置，这里就不再赘述，参考之前的配置流程即可。</p>
 <p>修改<code>spark-env.sh</code>，添加Yarn配置文件的位置</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">YARN_CONF_DIR=/opt/module/hadoop-3.1.3/etc/hadoop<br></code></pre></td></tr></table></figure>
-
-<h4 id="提交应用-2"><a href="#提交应用-2" class="headerlink" title="提交应用"></a>提交应用</h4><p>提交应用同样需要修改部署模式</p>
+<h4 id="提交应用-3">提交应用</h4>
+<p>提交应用同样需要修改部署模式</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">bin/spark-submit \<br>--class org.apache.spark.examples.SparkPi \<br>--master yarn \<br>--deploy-mode cluster \<br>./examples/jars/spark-examples_2.12-3.1.3.jar \<br>10<br></code></pre></td></tr></table></figure>
-
 <p>（这里的deploy-mode还可以选择 client，可能需要配置历史服务，配置方式同前面一致）</p>
 <p>提交完成之后可以在对应的Web页面查看日志（hadoop103:8088）</p>
-<h3 id="容器模式"><a href="#容器模式" class="headerlink" title="容器模式"></a>容器模式</h3><p>（待补充…）</p>
-<h3 id="Windows模式"><a href="#Windows模式" class="headerlink" title="Windows模式"></a>Windows模式</h3><p>Spark提供了在Windows系统下启动本地集群的方式，可以直接在Windows中使用。</p>
+<h3 id="容器模式">容器模式</h3>
+<p>（待补充…）</p>
+<h3 id="Windows模式">Windows模式</h3>
+<p>Spark提供了在Windows系统下启动本地集群的方式，可以直接在Windows中使用。</p>
 <p>将文件解压到对应的位置，里面的目录同虚拟机中完全一致。<code>sbin/start-shell.cmd</code>可以启动Spark本地环境</p>
 <p>提交应用也是类似的操作</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">spark-submit --class org.apache.spark.examples.SparkPi --master <br>local[2] ../examples/jars/spark-examples_2.12-3.0.0.jar 10<br></code></pre></td></tr></table></figure>
-
-
-
-<h3 id="部署模式对比"><a href="#部署模式对比" class="headerlink" title="部署模式对比"></a>部署模式对比</h3><table>
+<h3 id="部署模式对比">部署模式对比</h3>
+<table>
 <thead>
 <tr>
 <th>模式</th>
@@ -517,7 +516,8 @@
 <th>应用场景</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Local</td>
 <td>1</td>
 <td>无</td>
@@ -538,15 +538,18 @@
 <td>Hadoop</td>
 <td>混合部署</td>
 </tr>
-</tbody></table>
-<h3 id="使用端口说明"><a href="#使用端口说明" class="headerlink" title="使用端口说明"></a>使用端口说明</h3><ul>
+</tbody>
+</table>
+<h3 id="使用端口说明">使用端口说明</h3>
+<ul>
 <li>Spark查看当前Spark-shell运行任务情况端口号：4040</li>
 <li>Spark Master内部通信服务端口号：7077</li>
 <li>Standalone模式下，Spark Master Web端口号：8080</li>
 <li>Spark历史服务器端口号：18080</li>
 <li>Hadoop Yarn任务运行情况查看端口号：8088</li>
 </ul>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<h2 id="参考文章">参考文章</h2>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34319644/article/details/115555522">spark 与 scala 的对应版本查看_孙砚秋的博客-CSDN博客_spark与scala版本对应</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43867016/article/details/118576270">scala signature package has wrong version expected: 5.0 found: 5.2 in package.class问题记录_盐水鱼的博客-CSDN博客</a></li>
 </ol>

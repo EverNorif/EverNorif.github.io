@@ -325,20 +325,22 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Gson"><a href="#Gson" class="headerlink" title="Gson"></a>Gson</h1><h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>Gson是Google提供的一个Java库，它可以用来在Java对象以及Json数据之间进行转换，即可以Java对象转化成一个json的表示形式，也可以将json字符串转化为对应等效的Java对象。</p>
-<h2 id="相关使用"><a href="#相关使用" class="headerlink" title="相关使用"></a>相关使用</h2><p>首先需要引入相关的Maven依赖：</p>
+                <h1>Gson</h1>
+<h2 id="简述">简述</h2>
+<p>Gson是Google提供的一个Java库，它可以用来在Java对象以及Json数据之间进行转换，即可以Java对象转化成一个json的表示形式，也可以将json字符串转化为对应等效的Java对象。</p>
+<h2 id="相关使用">相关使用</h2>
+<p>首先需要引入相关的Maven依赖：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.google.code.gson<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>gson<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.9.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
 <p>Gson的解析功能主要是通过Gson对象来完成的。而Gson对象的生成有两种方式，一种是直接new生成一个对象，另一种是通过GsonBuilder来构建一个Gson对象。前者相当于提供一个默认的Gson的对象，而后者可以提供更多的配置，通过调用配置方法来进行设置，最后调用<code>create</code>方法来创建出Gson对象。</p>
 <p>有了Gson对象之后，我们就可以调用其中的核心方法，分别是将对象转化为字符串的<code>toJson()</code>以及将字符串转化为对象的<code>fromJson()</code>。下面是简单的使用举例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Gson</span> <span class="hljs-variable">gson</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Gson</span>();<br><span class="hljs-type">String</span> <span class="hljs-variable">json</span> <span class="hljs-operator">=</span> gson.toJson(<span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>(<span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-number">18</span>));<br>System.out.println(json); <span class="hljs-comment">// &#123;&quot;name&quot;:&quot;xxx&quot;,&quot;age&quot;:18&#125;</span><br><br><span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> gson.fromJson(<span class="hljs-string">&quot;&#123;\&quot;name\&quot;:\&quot;xxx\&quot;,\&quot;age\&quot;:18&#125;&quot;</span>, User.class);<br>System.out.println(user.getName()); <span class="hljs-comment">// xxx</span><br>System.out.println(user.getAge()); <span class="hljs-comment">// 18</span><br></code></pre></td></tr></table></figure>
-
 <p>对于这里转换的类与对象，官方文档中有如下的几点提示：</p>
 <ol>
 <li>在类中允许使用<code>private</code>的属性，这也是推荐使用的方式</li>
 <li>不需要使用注解来指示包含或者不包含哪些字段，默认会包含当前类以及所有super class中的所有字段</li>
 <li><code>transient</code>修饰的字段不会被json序列化或者反序列化</li>
-<li>空值的处理逻辑分为<code>toJson</code>和<code>fromJson</code>，默认如下：<ul>
+<li>空值的处理逻辑分为<code>toJson</code>和<code>fromJson</code>，默认如下：
+<ul>
 <li><code>toJson</code>：空值跳过，不输出</li>
 <li><code>fromJson</code>：空值处理为类中的null</li>
 </ul>
@@ -347,23 +349,20 @@
 </ol>
 <p>数组和集合则可以使用如下的操作：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Gson</span> <span class="hljs-variable">gson</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Gson</span>();<br>String[] strArr = &#123;<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-string">&quot;d&quot;</span>, <span class="hljs-string">&quot;e&quot;</span>&#125;;<br><span class="hljs-type">String</span> <span class="hljs-variable">json</span> <span class="hljs-operator">=</span> gson.toJson(strArr);<br>System.out.println(json);<br><br>String[] strings = gson.fromJson(<span class="hljs-string">&quot;[\&quot;a\&quot;,\&quot;b\&quot;,\&quot;c\&quot;,\&quot;d\&quot;,\&quot;e\&quot;]&quot;</span>, String[].class);<br><br><span class="hljs-keyword">for</span> (String string : strings) &#123;<br>    System.out.println(string);<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>集合的相关使用如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Gson</span> <span class="hljs-variable">gson</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Gson</span>();<br><br>Integer[] ints = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>&#125;;<br>Collection&lt;Integer&gt; lists = Arrays.asList(ints);<br><span class="hljs-type">String</span> <span class="hljs-variable">json</span> <span class="hljs-operator">=</span> gson.toJson(lists);<br>System.out.println(json);<br><br><span class="hljs-type">Type</span> <span class="hljs-variable">collectionType</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TypeToken</span>&lt;Collection&lt;Integer&gt;&gt;()&#123;&#125;.getType();<br><span class="hljs-comment">// Collection list1 = gson.fromJson(&quot;[1,2,3,4,5]&quot;, lists.getClass());</span><br><span class="hljs-comment">// 这样使用会直接报错</span><br>Collection&lt;Integer&gt; list2 = gson.fromJson(<span class="hljs-string">&quot;[1,2,3,4,5]&quot;</span>,collectionType);<br></code></pre></td></tr></table></figure>
-
 <p>注意这里的反序列化中类型Type的指定。由于在Java中存在泛型擦除的特性，我们无法直接通过<code>getClass</code>获取到指定的Class对象，而是需要通过其他方式获取到对应的Type。Type本身是一个接口，无法直接通过new得到，这就需要使用到Gson提供的一个<code>TypeToken</code>工具。这里需要注意的是，TypeToken的构造方法被protected修饰，在IDEA中无法通过智能提示选中，我们需要手动import对应的路径<code>import com.google.gson.reflect.TypeToken;</code></p>
 <p>TypeToken的使用就是上面的一行代码。在TypeToken中提供一个getType()方法，我们需要通过这个方法来获取到Type。但是由于TypeToken的构造方法是protected的，限定了只能由子类来访问。因此我们这里实际上是构造了一个匿名内部类，这个内部类继承了TypeToken，从而能够初始化，然后调用getType()。</p>
 <p>当然不只是集合，在其他使用到泛型的地方，也都需要利用上面类似的方式来进行泛型类型的指定，例如我们构造了一个泛型的类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Foo</span> &lt;T&gt;&#123;<br>    T value;<br>&#125;<br></code></pre></td></tr></table></figure>
-
 <p>之后我们需要进行json的序列化和反序列化。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Gson</span> <span class="hljs-variable">gson</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Gson</span>();<br><br><span class="hljs-type">Type</span> <span class="hljs-variable">type</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TypeToken</span>&lt;Foo&lt;User&gt;&gt;() &#123;&#125;.getType();<br><br>Foo&lt;User&gt; foo = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Foo</span>&lt;&gt;(<span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>(<span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-number">18</span>));<br><span class="hljs-type">String</span> <span class="hljs-variable">json</span> <span class="hljs-operator">=</span> gson.toJson(foo, type);<br>System.out.println(json);<br><br>Foo&lt;User&gt; foo1 = gson.fromJson(<span class="hljs-string">&quot;&#123;\&quot;value\&quot;:&#123;\&quot;name\&quot;:\&quot;xxx\&quot;,\&quot;age\&quot;:18&#125;&#125;&quot;</span>, type);<br>System.out.println(foo1);<br></code></pre></td></tr></table></figure>
-
 <p>在Gson中，<code>toJson(obj)</code>在默认情况下会调用<code>obj.getClass()</code>来获取类型信息。但是有时候由于泛型擦除无法获取到对应的类型信息，此时我们可以通过上面的方式来获取到对应的Type，然后直接在方法内部指定。</p>
 <blockquote>
 <p>在Scala中也可以使用Gson，不过在Scala中我们可以直接利用classof来获取对应的类型，包括泛型。</p>
 </blockquote>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<h1>参考文章</h1>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangmx1993328/article/details/84385548">Google Gson API 介绍与使用</a></li>
 <li><a target="_blank" rel="noopener" href="https://sites.google.com/site/gson/gson-user-guide">Gson User Guide</a></li>
 </ol>
