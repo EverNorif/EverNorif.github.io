@@ -24,7 +24,7 @@
 <meta property="og:description" content="Pytorch是目前非常流行的深度学习框架。本篇主要参考官方quick start完成Pytroch的快速入门。主要介绍了Pytorch使用的基础流程、Tensor的基础使用、Dataset&#x2F;DataLoader概念和Model构建等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-16T13:17:34.000Z">
-<meta property="article:modified_time" content="2023-08-16T13:27:26.886Z">
+<meta property="article:modified_time" content="2023-08-17T13:01:39.126Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Pytorch">
@@ -458,7 +458,7 @@ target="_blank" rel="noopener" href="https://pytorch.org/vision/stable/transform
 <p>我们可以从模型对于某个feature的一次处理来理解代码。从前向传播forward方法出发，在这种情况下，x就是一个由<code>28*28</code>的图片转化而来的<code>(28, 28)</code>的Tensor。在前向传播中，首先通过一个Flatten层将Tensor拍平为<code>(784)</code>，之后经过一个线性层Linear降低维度为<code>(512)</code>，之后依次经过ReLU、线性层、ReLU、线性层，此时Tensor的shape已经降低为<code>(10)</code>了。最后返回这个Tensor。</p>
 <p>对于上面出现的一些基本模块，这里不再进行介绍，不过需要提一下<code>nn.Sequential()</code>方法，这个方法可以将多个Module按照顺序组织在一起，返回一个新的Module。</p>
 <h1 id="autograd">AutoGrad</h1>
-<p>在训练神经网络的过程中，最常用的算法是反向传播，该算法通过计算参数相对于损失函数的梯度值来进行参数的更新。Pytorch通过内置的<code>torch.autpgrad</code>梯度计算引擎来计算梯度，它支持任何计算图的梯度自动计算。</p>
+<p>在训练神经网络的过程中，最常用的算法是梯度下降，该算法通过计算参数相对于损失函数的梯度值来进行参数的更新。这个过程中最为复杂的一步就是梯度的计算，Pytorch通过内置的<code>torch.autpgrad</code>梯度计算引擎来计算梯度，它支持任何计算图的梯度自动计算。（反向传播是一种计算梯度的方式）</p>
 <p>Tensor自身具有一个<code>requires_grad</code>属性，表示是否需要计算它的梯度。我们可以在创建的时候指定该属性，也可以通过<code>x.requires_grad_(True)</code>来设置。在训练过程中，我们调用模型损失（标量）的<code>backward</code>方法，pytorch就会自动进行梯度计算，此时可以通过<code>.grad</code>属性来查看对应的梯度。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">loss.backward()<br><span class="hljs-built_in">print</span>(w.grad)<br><span class="hljs-built_in">print</span>(b.grad)<br></code></pre></td></tr></table></figure>
 <p>在有些时候，我们不希望Pytorch计算梯度，只希望网络进行前向传播，那么此时可以使用<code>torch.no_grad()</code>with
@@ -466,7 +466,7 @@ target="_blank" rel="noopener" href="https://pytorch.org/vision/stable/transform
 <blockquote>
 <p>不计算梯度的原因可能是我们希望冻结参数，又或者是希望加速计算。</p>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">with</span> torch.no_grad():<br>  //...<br>  <br>z = torch.matmul(x, w)+b<br>z_det = z.detach()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">with</span> torch.no_grad():<br>  <span class="hljs-comment"># ...</span><br>  <br>z = torch.matmul(x, w)+b<br>z_det = z.detach()<br></code></pre></td></tr></table></figure>
 <h1 id="model-save-and-load">Model Save and Load</h1>
 <p>模型的保存和加载分为两种方式。第一种方式是仅保存模型的参数权重，在加载的时候需要先创建出具有相同结构的Model实例，然后再将对应参数加载到模型当中；第二种情况是直接将整个模型进行保存，包括Model的结构和参数，在使用的时候也是直接加载即可。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 方式一: save model params</span><br><span class="hljs-comment"># save</span><br>torch.save(model_save.state_dict, <span class="hljs-string">&quot;xxx.pth&quot;</span>)<br><span class="hljs-comment"># load</span><br>model_load = xxx <span class="hljs-comment"># model define 注意model使用的device要和保存的时候一致</span><br>model_load.load_state_dict(torch.load(<span class="hljs-string">&quot;xxx.pth&quot;</span>))<br><br><span class="hljs-comment"># 方式二: save model</span><br><span class="hljs-comment"># save</span><br>torch.save(model_save, <span class="hljs-string">&quot;xxx.pth&quot;</span>)<br><span class="hljs-comment"># load</span><br>model_load = torch.load(<span class="hljs-string">&quot;xxx.pth&quot;</span>)<br></code></pre></td></tr></table></figure>
