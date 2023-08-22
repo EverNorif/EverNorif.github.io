@@ -1,0 +1,1423 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="长篇预警。本篇主要围绕支持向量机SVM进行介绍，包括线性SVM和非线性SVM。在线性SVM中，分为硬间隔最大化和软间隔最大化两种情况；在非线形SVM中，则引入了核函数技巧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础(7)-支持向量机SVM与核技巧">
+<meta property="og:url" content="http://example.com/2023/08/22/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-7-%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BASVM%E4%B8%8E%E6%A0%B8%E6%8A%80%E5%B7%A7/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="长篇预警。本篇主要围绕支持向量机SVM进行介绍，包括线性SVM和非线性SVM。在线性SVM中，分为硬间隔最大化和软间隔最大化两种情况；在非线形SVM中，则引入了核函数技巧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-22T13:05:09.000Z">
+<meta property="article:modified_time" content="2023-08-22T13:20:44.425Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="监督学习">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>机器学习基础(7)-支持向量机SVM与核技巧 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="机器学习基础(7)-支持向量机SVM与核技巧"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-22 21:05" pubdate>
+          2023年8月22日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          18k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          153 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习基础(7)-支持向量机SVM与核技巧</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="线性支持向量机">线性支持向量机</h1>
+<h2
+id="硬间隔最大化线性可分支持向量机">硬间隔最大化（线性可分支持向量机）</h2>
+<h3 id="背景引入">背景引入</h3>
+<p>回顾目前我们学过的算法，其中感知机PLA算法利用误分类的点进行迭代修正，最终求得分离超平面。不过PLA最终得到的答案与初始值以及学习的过程有关，也就是说最终的得到的分离超平面有很多，对于线性可分的数据集来说，这些超平面都能满足分离的要求。但是这些结果相互之间是存在好坏之分的。<strong>一种评判依据就是训练集中的点到分离超平面的最近距离，我们称之为间隔（margin）</strong>。直观上来说，我们希望这个间隔越大越好。对于训练数据集找到间隔最大的超平面意味着我们有充分大的确信度对训练数据进行分类。这是说我们得到的超平面不仅能够将正负实例分开，而且对于最难分开的实例点（离平面最近的点）也有足够大的确信度将它们分开。而这也正是支持向量机（Support
+Vector Machine，SVM）的思想所在。</p>
+<p>因此我们可以正式进行问题描述，此时的输入空间为<span
+class="math inline">\(X\)</span>；输出空间为<span
+class="math inline">\(Y = \{+1,-1\}\)</span>；训练集为<span
+class="math inline">\(D=\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，并且假设训练集线性可分；假设空间<span
+class="math inline">\(H\)</span>有如下的形式，其中参数向量为<span
+class="math inline">\(w\)</span>，偏置项为<span
+class="math inline">\(b\)</span>，<span
+class="math inline">\(\hat{w}\)</span>表示扩充后的<span
+class="math inline">\(w\)</span>，<span
+class="math inline">\(\hat{x}\)</span>表示扩充后的<span
+class="math inline">\(x\)</span>： <span class="math display">\[
+h(x) = sign(w\cdot x+ b) = sign(w^Tx+b) = sign(\hat{w}^T\hat{x})
+\]</span>
+硬间隔最大化的线性支持向量机要求满足间隔最大化，同时对所有的训练集都正确划分，即有如下的目标。相比于感知机，这里增加了间隔最大化的要求。
+<span class="math display">\[
+\begin{aligned}
+&amp;\max_w \quad margin(w,b)\\
+\text{其中:} \quad &amp; margin(w,b) = \min_{i=1,...,N}
+distance(x_i,w,b)\\
+\text{并且需要满足:} \quad &amp; y_i(w^Tx_i+b) &gt; 0 ,i=1,2,...,N
+\end{aligned}
+\]</span></p>
+<blockquote>
+<p>线性支持向量机对应训练集线性可分，不允许错分对应硬间隔。</p>
+</blockquote>
+<h3 id="间隔计算">间隔计算</h3>
+<p>上面我们初步定义了SVM需要优化的目标，其中需要计算样本点<span
+class="math inline">\(x_i\)</span>到超平面<span
+class="math inline">\(w^Tx+b=0\)</span>的距离。</p>
+<p>在超平面的方程中，<span
+class="math inline">\(w\)</span>为超平面的法向量。我们现在需要计算向量<span
+class="math inline">\(x\)</span>到这个超平面的距离，考虑在超平面上的一个点<span
+class="math inline">\(x^{&#39;}\)</span>，则它满足<span
+class="math inline">\(w^Tx^{&#39;} = -b\)</span>。向量<span
+class="math inline">\(x\)</span>到超平面的距离，可以通过向量<span
+class="math inline">\(x-x^{&#39;}\)</span>在法向量<span
+class="math inline">\(w\)</span>上的投影长度进行计算，而投影又可以通过向量内积进行计算，因此有：
+<span class="math display">\[
+distance(x,w,b) = |\frac{w^T}{||w||}(x-x^{&#39;})| =
+\frac{1}{||w||}|w^Tx+b|
+\]</span> 而由于对于这个超平面来说，所有的点满足<span
+class="math inline">\(y_i(w^Tx_i+b)&gt;0\)</span>，因此我们可以借助<span
+class="math inline">\(y_i\in\{+1,-1\}\)</span>来脱去绝对值，即： <span
+class="math display">\[
+distance(x_i,w,b)=\frac{1}{||w||}y_i(w^Tx_i+b)
+\]</span> 实际上，关于间隔（距离），有函数间隔和几何间隔的概念。</p>
+<p>在超平面<span
+class="math inline">\(w^Tx+b=0\)</span>确定的情况下，<span
+class="math inline">\(|w^Tx+b|\)</span>能够相对地表示点<span
+class="math inline">\(x\)</span>距离超平面的远近，而<span
+class="math inline">\(w^T+b\)</span>的符号与类标记<span
+class="math inline">\(y\)</span>的符号是否一致能够表示分类是否正确，所以可以用<span
+class="math inline">\(y(w^Tx+b)\)</span>来表示分类的正确性以及确信度，而这就是函数间隔（function
+margin）的概念。</p>
+<p>而继续考虑超平面，在成比例变化<span
+class="math inline">\(w,b\)</span>的条件下，超平面没有发生变化，但是函数间隔会成比例变化。因此我们可以对<span
+class="math inline">\(w\)</span>进行某些约束，例如可以进行规范化，使得<span
+class="math inline">\(||w||=1\)</span>，此时的函数间隔就是几何间隔（geometric
+margin），实际上也就是我们刚得到的点到超平面的距离。</p>
+<h3 id="原始模型描述">原始模型描述</h3>
+<p>经过距离计算之后，我们的优化目标就可以写成下面的形式： <span
+class="math display">\[
+\begin{aligned}
+&amp;\max_w \quad margin(w,b)\\
+\text{其中:} \quad &amp; margin(w,b) = \min_{i=1,...,N}
+\frac{1}{||w||}y_i(w^Tx_i+b)\\
+\text{并且需要满足:} \quad &amp; y_i(w^Tx_i+b) &gt; 0 ,i=1,2,...,N\\
+\end{aligned}
+\]</span> 注意到我们等比例放缩<span
+class="math inline">\(w,b\)</span>，超平面本身并不会发生变化。因此我们可以等比例缩放，使得<strong>离超平面最近的点</strong><span
+class="math inline">\((x_j,y_j)\)</span>，对应有<span
+class="math inline">\(y_j(w^Tx_j+b)=1\)</span>。此时则有： <span
+class="math display">\[
+margin(w,b) = \frac{1}{||w||}
+\]</span> 同时根据margin的概念，有： <span class="math display">\[
+\frac{1}{||w||}y_i(w^Tx_i+b) \ge \frac{1}{||w||}\\
+y_i(w^Tx_i+b)-1\ge 0,i=1,2,...,N
+\]</span>
+另一方面，我们需要最大化margin，实际上可以转化为最小化倒数，并且进行平方，增加系数都不会影响最优化的结果，即我们可以进行如下的最优化转换：
+<span class="math display">\[
+\max_{w,b} \frac{1}{||w||}  
+\rightleftharpoons \min_{w,b} \frac{1}{2}||w||^2 =\min_{w,b}
+\frac{1}{2}w^Tw
+\]</span>
+至此，我们就推导得到了<strong>硬边界最大化的线性支持向量机</strong>模型（也叫做<strong>线性可分支持向量机</strong>）的原始描述：</p>
+<p>输入空间为<span class="math inline">\(X\)</span>；输出空间为<span
+class="math inline">\(Y = \{+1,-1\}\)</span>；训练集为<span
+class="math inline">\(D=\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，且有<span
+class="math inline">\(x_i \in X, y_i \in
+Y\)</span>，并且训练集<strong>线性可分</strong>；假设空间<span
+class="math inline">\(H\)</span>有如下的形式，其中参数向量为<span
+class="math inline">\(w\)</span>，偏置项为<span
+class="math inline">\(b\)</span>，<span
+class="math inline">\(\hat{w}\)</span>表示扩充后的<span
+class="math inline">\(w\)</span>，<span
+class="math inline">\(\hat{x}\)</span>表示扩充后的<span
+class="math inline">\(x\)</span>： <span class="math display">\[
+h(x) = sign(w\cdot x+ b) = sign(w^Tx+b) = sign(\hat{w}^T\hat{x})
+\]</span> 优化目标是一个带限制的优化问题： <span class="math display">\[
+\text{优化目标 :}\quad\min_{w,b} \frac{1}{2}w^Tw\\
+\text{限制条件 :}\quad y_i(w^Tx_i+b)\ge1,i=1,2,...,N
+\]</span>
+这个问题实际上是一个凸二次规划问题。求解凸二次规划问题的方法有很多，这里不具体介绍凸二次规划问题的求解方法，总之我们通过其中任意一种就可以得到最终的解，从而得到分离超平面。</p>
+<blockquote>
+<p>从直觉来看，我们会认为支持向量机的分类效果更好，经过优化目标推导之后，可以看出支持向量机和正则化的思想有些类似，正则化的目标是将<span
+class="math inline">\(E_{in}\)</span>最小化，同时对模型的复杂度增加限制条件<span
+class="math inline">\(w^Tw\le C\)</span>。而SVM的目标是<span
+class="math inline">\(w^Tw\)</span>的最小化，而条件是<span
+class="math inline">\(y_i(w^Tx_i+b)\ge 1\)</span>，即保证了<span
+class="math inline">\(E_{in} =
+0\)</span>。可以说，SVM和正则化的目标和限制条件分别对调了，考虑的内容是类似的，效果也相近。</p>
+</blockquote>
+<h3 id="支持向量">支持向量</h3>
+<p>在线性可分的情况下，训练数据集的样本点中，与分离超平面距离最近的样本点的实例称为支持向量（Support
+Vector）。更具体地说，支持向量是使约束条件等号成立的点，即： <span
+class="math display">\[
+y_i(w\cdot x_i+b)-1=0
+\]</span> 对于<span
+class="math inline">\(y_i=+1\)</span>的正例点，支持向量落在超平面<span
+class="math inline">\(H_1:w\cdot x + b = 1\)</span>上；而对于<span
+class="math inline">\(y_i = -1\)</span>的负例点，支持向量落在超平面<span
+class="math inline">\(H_2:w\cdot
+x+b=-1\)</span>上。注意到这两个超平面相互平行，并且没有实例点能够落在它们中间，即在<span
+class="math inline">\(H_1,H_2\)</span>之间形成了一条长带，而我们最终要得到的分离超平面与它们平行，并且位于它们的中央，<span
+class="math inline">\(H_1,H_2\)</span>之间的距离就是间隔。</p>
+<p>在决定分离超平面的时候，实际上只有支持向量起作用，而其他实例点并不起作用。如果移动支持向量，将改变所求的解，而其他向量在间隔边界之外的改变甚至删除，并不会改变最终的解。这也就是为什么这个模型称为支持向量机，它最终的结果是由较少但是很重要的训练样本决定的。</p>
+<h3 id="对偶问题描述">对偶问题描述</h3>
+<p>我们已经看到了线性支持向量机硬间隔最大化的原始形式，现在则可以应用拉格朗日对偶性来得到原始问题的对偶问题，通过求解对偶问题得到原始问题的最优解。我们将在下面看到，对偶问题往往更加容易求解，同时对偶问题的形式自然引入核函数，为后续的非线性支持向量机作铺垫。拉格朗日对偶性的说明在记录在后文附加参考中。</p>
+<p>我们可以先将原始问题表达为广义拉格朗日的极小极大问题，原始问题的优化目标为<span
+class="math inline">\(\min_{w,b} \frac{1}{2}
+w^Tw\)</span>，约束条件为<span class="math inline">\(1-y_i(w^Tx_i+b) \le
+0\)</span>，引入拉格朗日乘子<span
+class="math inline">\(\alpha_i\ge0\)</span>，则有拉格朗日表达式为：
+<span class="math display">\[
+L(w,b,\alpha) = \frac{1}{2}w^Tw + \sum_{i=1}^N\alpha_i[1-y_i(w^Tx_i+b)]
+\]</span> 对应的极小极大问题就是： <span class="math display">\[
+\min_{w,b}\max_{\alpha;\alpha_i\ge 0} \frac{1}{2}w^Tw +
+\sum_{i=1}^N\alpha_i[1-y_i(w^Tx_i+b)]
+\]</span> 对偶问题的形式就是： <span class="math display">\[
+\max_{\alpha;\alpha_i\ge 0} \min_{w,b} \frac{1}{2}w^Tw +
+\sum_{i=1}^N\alpha_i[1-y_i(w^Tx_i+b)]
+\]</span>
+我们可以对对偶问题继续进行形式上的转化。首先令拉格朗日函数的梯度为0：
+<span class="math display">\[
+\begin{aligned}
+\bigtriangledown_wL(w,b,\alpha)&amp; = w - \sum_{i=1}^N \alpha_iy_ix_i =
+0\\
+\bigtriangledown_wL(w,b,\alpha)&amp; = -\sum_{i=1}^N \alpha_iy_i=0\\
+\text{可以得到:}&amp;\\
+w &amp;= \sum_{i=1}^N \alpha_iy_ix_i\\
+\sum_{i=1}^N &amp;\alpha_iy_i=0
+\end{aligned}
+\]</span> 将得到的两个表达式代入拉格朗日函数的极小中，可以得到： <span
+class="math display">\[
+\begin{aligned}
+\min_{w,b}L(w,b,\alpha) &amp;= \frac{1}{2} \sum_{i=1}^N\sum_{j=1}^N
+\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) + \sum_{i=1}^N \alpha_i -
+\sum_{i=1}^N\alpha_iy_i[(\sum_{j=1}^N\alpha_jy_jx_j)\cdot x_i]
+\\&amp; \quad- b\sum_{j=1}^N\alpha_iy_i \\
+&amp;= -\frac{1}{2} \sum_{i=1}^N\sum_{j=1}^N
+\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) + \sum_{i=1}^N\alpha_i
+\end{aligned}
+\]</span> 这一步相当于我们利用拉格朗日乘子消去了式子中的<span
+class="math inline">\(w,b\)</span>，这样关于<span
+class="math inline">\(w,b\)</span>的极小问题就可以直接写为： <span
+class="math display">\[
+\min_{w,b}L(w,b,\alpha) =-\frac{1}{2} \sum_{i=1}^N\sum_{j=1}^N
+\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) + \sum_{i=1}^N\alpha_i
+\]</span>
+对偶问题接下来还需要求解极大，通过增加负号我们可以将极大问题转化为极小问题：
+<span class="math display">\[
+\begin{aligned}
+\text{对偶问题:} &amp;\quad \max_{\alpha} \min_{w,b}L(w,b,\alpha)\\
+\text{等价于:} &amp;\quad \min_{\alpha}\{-[\min_{w,b}L(w,b,\alpha)]\}\\
+\text{带入表达式:} &amp;\quad \min_{\alpha} \frac{1}{2}
+\sum_{i=1}^N\sum_{j=1}^N \alpha_i\alpha_jy_iy_j(x_i\cdot x_j) -
+\sum_{i=1}^N\alpha_i
+\end{aligned}
+\]</span>
+至此对偶问题就可以进一步转化为等价的形式，这也是<strong>线性可分支持向量机的对偶问题描述</strong>：
+<span class="math display">\[
+\begin{aligned}
+\min_{\alpha} \frac{1}{2} \sum_{i=1}^N\sum_{j=1}^N
+\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) - \sum_{i=1}^N\alpha_i \\
+s.t.\quad \sum_{i=1}^N \alpha_iy_i = 0,\alpha_i\ge0;i=1,2,...,N
+\end{aligned}
+\]</span>
+我们引入对偶问题的目的是希望能够通过求解对偶问题来得到原始问题的解。但是这是有前提的，即两个问题的最优解相同。综合考虑原始问题和对偶问题，有<span
+class="math inline">\(f(w),1-y_i(w^Tx_i+b)\)</span>为凸函数，且存在<span
+class="math inline">\(w,b\)</span>使得所有的<span
+class="math inline">\(1-y_i(w^Tx_i+b) &lt;
+0\)</span>成立，因此有两个问题的最优解相同（详见附加参考），我们可以通过求解对偶问题来得到原始问题的解。</p>
+<h3 id="对偶问题求解">对偶问题求解</h3>
+<p>对偶问题同样是一个凸二次规划问题，并且是关于拉格朗日系数<span
+class="math inline">\(\alpha\)</span>的。我们可以通过相关算法求得最优解<span
+class="math inline">\(\alpha^*\)</span>。而这一部分主要在于如何通过对偶问题的最优解<span
+class="math inline">\(\alpha^*\)</span>得到原始问题的最优解<span
+class="math inline">\(w^*,b^*\)</span>。</p>
+<p>假设<span
+class="math inline">\((w^*,b^*,\alpha^*)\)</span>为对偶问题的最优解（同时也是原始问题的最优解），则此时最优解会满足KKT条件。
+<span class="math display">\[
+\begin{aligned}
+【梯度为0条件】&amp;\bigtriangledown_wL(w^*,b^*,\alpha^*) = w^* -
+\sum_{i=1}^N \alpha^*_iy_ix_i = 0\\
+&amp;\bigtriangledown_wL(w^*,b^*,\alpha^*) = -\sum_{i=1}^N
+\alpha^*_iy_i=0\\
+【最优解存在条件】&amp;\alpha_i^*[1-y_i(w^{*T}x_i+b^*)] = 0, \quad
+i=1,2,...,N\\
+【拉格朗日乘子条件】&amp;\alpha_i^* \ge 0,\quad i=1,2,...,N\\
+【原始问题约束】&amp;1-y_i(w^{*T}x_i+b^*) \le 0, \quad i=1,2,...,N\\
+\end{aligned}
+\]</span> 其中可以得到： <span class="math display">\[
+w^* = \sum_{i=1}^N \alpha_i^*y_ix_i
+\]</span> 而在拉格朗日乘子当中必定存在<span
+class="math inline">\(\alpha^*_j &gt;0\)</span>，否则<span
+class="math inline">\(w^* =
+0\)</span>，而0并不满足最优解的条件。因此，最优解<span
+class="math inline">\(w^*\)</span>可以表示为某些拉格朗日乘子<span
+class="math inline">\(\alpha^*_j\)</span>的和对应样本点数据<span
+class="math inline">\((x_j,y_j)\)</span>的线性组合，其中<span
+class="math inline">\(\alpha^*_j&gt;0\)</span>。同时考虑上面的最优解存在条件，由于<span
+class="math inline">\(\alpha^*_j &gt;0\)</span>，则必然有： <span
+class="math display">\[
+1-y_j(w^{*T}x_j + b^*) = 0
+\]</span> 带入<span
+class="math inline">\(w^*\)</span>的表达式，且注意到<span
+class="math inline">\(1 = y_j^2\)</span>，则有： <span
+class="math display">\[
+b^* = y_j - \sum_{i=1}^{N}\alpha_i^*y_i(x_i\cdot x_j)
+\]</span> 带入最优解<span
+class="math inline">\(w^*,b^*\)</span>，得到最终的分类决策函数如下，这也是<strong>线性可分支持向量机的对偶形式</strong>：
+<span class="math display">\[
+h(x) = sign(\sum_{i=1}^N\alpha^*_iy_i(x\cdot x_i) + b^*)
+\]</span> 从这个表达式中我们可以看出，分类决策函数只依赖于输入<span
+class="math inline">\(x\)</span>和训练样本输入的内积。同时观察<span
+class="math inline">\(w^*,b^*\)</span>的求解，可以看到它们即仅依赖于训练数据中对应于<span
+class="math inline">\(\alpha_j^*&gt;0\)</span>的样本点<span
+class="math inline">\((x_j,y_j)\)</span>，而其他的样本点对<span
+class="math inline">\(w^*,b^*\)</span>没有影响。这些点就是支持向量。更进一步，支持向量<span
+class="math inline">\((x_j,y_j)\)</span>需要满足对应的<span
+class="math inline">\(\alpha_j^*&gt;0\)</span>，也就有<span
+class="math inline">\(1-y_j(w^{*}\cdot x_j + b^*) =
+0\)</span>。这表明了支持向量一定在间隔边界上，对应了在原始问题中支持向量的定义。</p>
+<blockquote>
+<p>联想到感知机算法中，最终的最优解<span
+class="math inline">\(w\)</span>也能够表示为某种线性组合的形式，其中有贡献的是在训练过程中被误分类的那些点。SVM的最优解也表示为某种线性组合的形式，其中有贡献的是支持向量。</p>
+</blockquote>
+<h2 id="软间隔最大化线性支持向量机">软间隔最大化（线性支持向量机）</h2>
+<h3 id="背景引入-1">背景引入</h3>
+<p>线性可分的支持向量机要求训练集是线性可分的，对于线性不可分的训练数据来说是不适用的，因为此时不等式约束不能完全成立。但是大多情形下，训练数据集是线性不可分的，所以我们希望能够将它扩展到线性不可分的问题上。为了达到这个目的，我们需要修改硬间隔最大化，使其成为软间隔最大化。</p>
+<p>具体来说，我们并不会要求每个点都能够被完美分开，而是允许它们犯错，并且对每个样本点<span
+class="math inline">\((x_i,y_i)\)</span>都引入一个对应的松弛变量<span
+class="math inline">\(\xi_i\ge
+0\)</span>，它表示每个点犯错误的程度，松弛变量越小，代表点犯错误的程度越小；松弛变量越大，代表点犯错误的程度越大，甚至会越过边界。这样样本点满足的条件就可以转化为：
+<span class="math display">\[
+y_i(w^Tx_i + b) \ge 1 - \xi_i
+\]</span>
+引入了松弛变量，我们的优化目标也需要进行改进，我们应该将松弛变量也纳入优化目标中，尽可能最小化松弛变量带来的代价，即可以得到如下的优化目标：
+<span class="math display">\[
+\min_{w,b,\xi} \frac{1}{2} w^Tw + C\sum_{i=1}^N \xi_i
+\]</span> 其中我们引入一个<span
+class="math inline">\(C&gt;0\)</span>的系数，一般称之为惩罚参数，它用来控制两项的比例。在目标优化函数中，前项表示尽可能使间隔最大，后项表示使误分类的代价尽可能小，而<span
+class="math inline">\(C\)</span>就是用来调和二者的系数。</p>
+<h3 id="原始模型描述-1">原始模型描述</h3>
+<p>于是，我们可以对<strong>软间隔最大化的线性支持向量机</strong>模型（也叫<strong>线性支持向量机</strong>）进行描述：</p>
+<p>输入空间为<span class="math inline">\(X\)</span>；输出空间为<span
+class="math inline">\(Y = \{+1,-1\}\)</span>；训练集为<span
+class="math inline">\(D=\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，且有<span
+class="math inline">\(x_i \in X, y_i \in
+Y\)</span>，并且训练集<strong>线性不可分</strong>；假设空间<span
+class="math inline">\(H\)</span>有如下的形式，其中参数向量为<span
+class="math inline">\(w\)</span>，偏置项为<span
+class="math inline">\(b\)</span>，<span
+class="math inline">\(\hat{w}\)</span>表示扩充后的<span
+class="math inline">\(w\)</span>，<span
+class="math inline">\(\hat{x}\)</span>表示扩充后的<span
+class="math inline">\(x\)</span>： <span class="math display">\[
+h(x) = sign(w\cdot x+ b) = sign(w^Tx+b) = sign(\hat{w}^T\hat{x})
+\]</span> 优化目标是一个带限制的优化问题： <span class="math display">\[
+\begin{aligned}
+\text{优化目标 :} &amp;\quad\min_{w,b} \frac{1}{2}w^Tw +
+C\sum_{i=1}^N\xi_i\\
+\text{限制条件 :} &amp;\quad y_i(w^Tx_i+b)\ge1 - \xi_i,i=1,2,...,N\\
+\quad &amp;\quad\xi_i\ge 0,i=1,2,...,N
+\end{aligned}
+\]</span>
+这个问题同样也是一个凸二次规划问题，可以通过相关方法求得问题的解。同时可以知道的是，<span
+class="math inline">\(w\)</span>的解是唯一的，而<span
+class="math inline">\(b\)</span>的解可能不唯一，而是存在于一个区间中。与线性可分支持向量机相比，线性支持向量机可以应用在线性不可分的数据上，因此它具有更广的适用性。</p>
+<h3 id="对偶问题描述-1">对偶问题描述</h3>
+<p>与硬间隔最大化的推导过程一样，在软间隔最大化中，我们同样可以先根据原始问题得到等价的广义拉格朗日的极小极大问题描述，之后得到对应的对偶问题描述，并且可以推导出对偶问题的等价形式。</p>
+<p>对于软间隔最大化的原始问题，它的拉格朗日函数如下： <span
+class="math display">\[
+L(w,b,\xi,\alpha,\beta) = \frac{1}{2} w^Tw + C\sum_{i=1}^N \xi_i +
+\sum_{i=1}^N\alpha_i[1-\xi_i - y_i(w^Tx_i + b)] - \sum_{i=1}^N\beta_i
+\xi_i
+\]</span> 得到原始问题的等价极小极大描述： <span class="math display">\[
+\min_{w,b,\xi;\xi_i\ge0}\max_{\alpha,\beta;\alpha_i\ge0 ,\beta_i\ge 0}
+L(w,b,\xi,\alpha, \beta)
+\]</span> 对偶问题则是： <span class="math display">\[
+\max_{\alpha,\beta;\alpha_i\ge0 ,\beta_i\ge 0}\min_{w,b,\xi;\xi_i\ge0}
+L(w,b,\xi,\alpha, \beta)
+\]</span> 令拉格朗日函数对<span
+class="math inline">\(w,b,\xi\)</span>的偏导分别为0，即： <span
+class="math display">\[
+\begin{aligned}
+\bigtriangledown _wL (w,b,\xi,\alpha,\beta) &amp;= w - \sum_{i=1}^N
+\alpha_i y_ix_i = 0 \\
+\bigtriangledown _bL (w,b,\xi,\alpha,\beta) &amp;=
+-\sum_{i=1}^N\alpha_iy_i = 0\\
+\bigtriangledown _\xi L(w,b,\xi,\alpha,\beta) &amp;= \sum_{i=1}^N C -
+\sum_{i=1}^N\alpha_i - \sum_{i=1}^N\beta_i = 0\\
+\end{aligned}
+\]</span> 则可以得到： <span class="math display">\[
+\begin{aligned}
+&amp;w = \sum_{i=1}^N\alpha_iy_ix_i\\
+&amp;\sum_{i=1}^N \alpha_iy_i = 0 \\
+&amp;C - \alpha_i - \beta_i = 0
+\end{aligned}
+\]</span> 将这三个式子带入原始的拉格朗日函数的极小中，则可以消去<span
+class="math inline">\(w,b,C\)</span>： <span class="math display">\[
+\begin{aligned}
+\min_{w,b,\xi}L(w,b,\xi,\alpha,\beta) &amp;=
+\frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N \alpha_i\alpha_jy_iy_j(x_i\cdot x_j)
++ C\sum_{i=1}^N\xi_i + \sum_{i=1}^N\alpha_i -
+\sum_{i=1}^N\alpha_i\xi_i  \\
+&amp; \quad- \sum_{i=1}^N\alpha_iy_ib-
+\sum_{i=1}^N\sum_{j=1}^N\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) -
+\sum_{i=1}^N\beta_i\xi_i \\
+&amp; = -\frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N
+\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) + \sum_{i=1}^N \alpha_i
+\end{aligned}
+\]</span> 可以看到上面的式子只和<span
+class="math inline">\(\alpha\)</span>有关，<span
+class="math inline">\(\beta\)</span>被消除了，因此对偶问题就可以描述如下：
+<span class="math display">\[
+\begin{aligned}
+\max_{\alpha} \quad &amp;-\frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N
+\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) + \sum_{i=1}^N \alpha_i \\
+s.t. \quad &amp;\sum_{i=1}^N\alpha_iy_i = 0,C - \alpha_i - \beta_j = 0,
+\\
+&amp;  \alpha_i \ge 0, \beta_i \ge 0, i = 1,2,...,N
+\end{aligned}
+\]</span></p>
+<p>增加负号将极大化转化为极小化，同时可以利用其中的等式约束<span
+class="math inline">\(C = \alpha_i + \beta_i\)</span>来消去<span
+class="math inline">\(\beta_i\)</span>的约束，得到最终的<strong>线性支持向量机的对偶问题描述</strong>：
+<span class="math display">\[
+\begin{aligned}
+\min_{\alpha} \frac{1}{2} \sum_{i=1}^N\sum_{j=1}^N
+\alpha_i\alpha_jy_iy_j(x_i\cdot x_j) - \sum_{i=1}^N\alpha_i \\
+s.t.\quad \sum_{i=1}^N \alpha_iy_i = 0,0 \le\alpha_i\le C;i=1,2,...,N
+\end{aligned}
+\]</span>
+对比之前线性可分支持向量机的对偶问题描述，可以发现这里唯一的不同之处在于约束条件中<span
+class="math inline">\(\alpha_i\)</span>增加了上限<span
+class="math inline">\(C\)</span>。于是我们也可以证明对偶问题和原始问题有相同的最优解。</p>
+<h3 id="对偶问题求解-1">对偶问题求解</h3>
+<p>接下来则可以利用KKT条件来计算最优解的形式，同样假设最优解为<span
+class="math inline">\((w^*,b^*,\xi^*,\alpha^*,\beta^*)\)</span>，于是有：
+<span class="math display">\[
+\begin{aligned}
+【梯度为0条件】
+&amp;\bigtriangledown_{w} L(w^*,b^*,\xi^*,\alpha^*,\beta^*) = w^* -
+\sum_{i=1}^N \alpha^*_i y_i x_i =  0 \\
+&amp;\bigtriangledown_bL(w^*,b^*,\xi^*,\alpha^*,\beta^*)
+=  -\sum_{i=1}^N \alpha^*_iy_i=0\\
+&amp;\bigtriangledown_\xi L(w^*,b^*,\alpha^*) = C - \alpha_i^* -
+\beta_i^*=0\\
+【最优解存在条件】
+&amp;\alpha_i^*[1 - \xi_i^*-y_i(w^{*T}x_i+b^*)] = 0,
+\quad \beta_i^* \xi_i^*  = 0\\
+【拉格朗日乘子条件】
+&amp;\alpha_i^* \ge 0, \quad \beta_i^* \ge 0\\
+【原始问题约束】
+&amp;1-y_i(w^{*T}x_i+b^*) \le 0,\quad \xi_i^* \ge 0\\
+\end{aligned}
+\]</span> 可以根据上面的式子推导得出： <span class="math display">\[
+\begin{aligned}
+w^* &amp;= \sum_{i=1}^N\alpha_i^*y_ix_i\\
+b^* &amp;= y_i - \sum_{i=1}^N \alpha^* y_i(x_i \cdot x_j)
+\end{aligned}
+\]</span> 其中<span
+class="math inline">\(b^*\)</span>的计算需要选择<span
+class="math inline">\(\alpha^*\)</span>的一个分量<span
+class="math inline">\(\alpha^*_j\)</span>满足（<span
+class="math inline">\(0 &lt; \alpha^*_j &lt;
+C\)</span>）计算得出。理论上解可能不唯一。</p>
+<h3 id="支持向量-1">支持向量</h3>
+<p>在线性不可分的情况下，对应<span class="math inline">\(\alpha_i^* &gt;
+0\)</span>的样本点<span
+class="math inline">\((x_i,y_i)\)</span>的实例<span
+class="math inline">\(x_i\)</span>被称为支持向量，此时的支持向量的情况更加复杂，它可能在间隔的边界上，也坑在间隔之间，还可能被误分类：</p>
+<ul>
+<li><span class="math inline">\(0&lt;\alpha_i^* &lt; C\)</span>，则<span
+class="math inline">\(\xi_i =
+0\)</span>：支持向量正好落在间隔边界上</li>
+<li><span class="math inline">\(\alpha_i^* = C,0 &lt; \xi_i &lt;
+1\)</span>：支持向量被分类正确</li>
+<li><span class="math inline">\(\alpha_i^* = C,\xi_i =
+1\)</span>：支持向量在分离超平面上</li>
+<li><span class="math inline">\(\alpha_i^* = C,\xi_i &gt;
+1\)</span>：支持向量被分类错误</li>
+</ul>
+<p>同样的，在所有的训练集样本点中，只有支持向量会对最后的结果产生影响。可以想见的是，支持向量的数量越多，表示模型就可能越复杂，越有可能造成过拟合。因此支持向量的数量在SVM模型选择中也是比较重要的，通常我们会选择支持向量较少的模型，然后在剩下的模型中使用交叉验证，比较选择最佳模型。</p>
+<h3 id="合页损失函数">合页损失函数</h3>
+<p>实际上，线性支持向量机还可以从另一个角度来理解，就是优化如下的目标函数：
+<span class="math display">\[
+\sum_{i=1}^{N}[1-y_i(w\cdot x_i + b)_+] + \lambda ||w||^2
+\]</span>
+目标函数的第二项则是正则项，使用的是参数向量的L2范数。目标函数的第一项是损失函数，通常被称为合页损失函数（Hinge
+Loss Function）： <span class="math display">\[
+L(y(w\cdot x + b)) = [1 - y(w\cdot x + b)]_+
+\]</span> 其中下标<span class="math inline">\(+\)</span>表示取正函数：
+<span class="math display">\[
+[z]_+ =
+\begin{cases}
+z, \quad z&gt;0\\
+0, \quad z \le 0
+\end{cases}
+\]</span> 从直觉上看，这种方式将<span
+class="math inline">\([1-y_i(w\cdot x_i +
+b)]_+\)</span>看作每个样本点的损失。当样本点<span
+class="math inline">\((x_i,y_i)\)</span>被正确分类且函数间隔大于1时，损失为0；否则损失为<span
+class="math inline">\(1 - y_i(w\cdot x_i +b)\)</span>。</p>
+<p>这种理解可以从线性支持向量机的原始问题描述进行推导得来。线性支持向量机的原始问题描述如下：
+<span class="math display">\[
+\begin{aligned}
+\text{优化目标 :}\quad&amp;\min_{w,b} \frac{1}{2}w^Tw +
+C\sum_{i=1}^N\xi_i\\
+\text{限制条件 :}\quad&amp; y_i(w\cdot x_i+b)\ge1 - \xi_i,i=1,2,...,N\\
+\quad \quad&amp;\xi_i\ge 0,i=1,2,...,N
+\end{aligned}
+\]</span> 令<span class="math inline">\([1 - y_i(w\cdot x_i + b)]_+ =
+\xi_i\)</span>，则有<span class="math inline">\(\xi_i \ge
+0\)</span>成立，且有<span class="math inline">\(\xi_i \ge 1 - y_i(w\cdot
+x_i + b)\)</span>，即这样能够满足两个限制条件。再取<span
+class="math inline">\(\lambda = \frac{1}{2C} &gt;
+0\)</span>，则有优化目标为： <span class="math display">\[
+\begin{aligned}
+&amp;\min_{w,b} \frac{1}{2} w^Tw + \frac{1}{2\lambda} \sum_{i=1}^N
+[1-y_i(w\cdot x_i + b)]_+\\
+&amp;\text{等价于}\\
+&amp;\min_{w,b} \sum_{i=1}^N[1 - y_i(w\cdot x_i + b)]_+ \lambda ||w||^2
+\end{aligned}
+\]</span> 而这恰好就是利用合页损失函数的形式。</p>
+<p>从这个角度理解，我们追求的间隔最大化等价于正则化，一定程度上起到了防止过拟合的作用。</p>
+<h1 id="非线性支持向量机">非线性支持向量机</h1>
+<h2 id="特征空间转换">特征空间转换</h2>
+<p>在此之前，我们讨论的都是线性分类模型，而另一类非常普遍的问题则是非线性分类问题。看名字就知道，我们需要使用非线性模型才能很好地处理非线性分类问题。一般来说，对于一个二分类问题，如果能够使用输入空间中的一个超平面将正负例分开，则这个问题是线性可分问题。而如果需要使用输入空间中的一个超曲面才能够完成认为，则这个问题是非线性可分问题。</p>
+<p>解决非线性问题的一种常用方法是特征空间转换。具体来说，我们可以使用某种变换将输入<span
+class="math inline">\(x\)</span>从输入空间变换到特征空间中，然后在特征空间中利用线性模型来处理。假设原来的输入空间为<span
+class="math inline">\(X\)</span>，转换后的特征空间为<span
+class="math inline">\(Z\)</span>，则我们需要的是一个这样的映射，它将<span
+class="math inline">\(x \in X\)</span>映射为<span
+class="math inline">\(z\in Z\)</span>： <span class="math display">\[
+z = \phi(x)
+\]</span></p>
+<h2 id="核技巧与核函数">核技巧与核函数</h2>
+<p>但是通常情况下，特征空间<span
+class="math inline">\(Z\)</span>一般是高维空间，甚至可能是无限维的，在这样的空间中进行向量运算，会带来很高的复杂度。因此我们希望能够找到稍微简单的方式来进行特征空间中的计算。这就引出核技巧的思想。</p>
+<p>首先介绍核函数的概念。假设原始输入空间为<span
+class="math inline">\(X\)</span>，特征空间为<span
+class="math inline">\(Z\)</span>，存在一个<span class="math inline">\(X
+\rightarrow Z\)</span>的映射<span
+class="math inline">\(\phi\)</span>，如果对于所有的<span
+class="math inline">\(x_1,x_2 \in X\)</span>，函数<span
+class="math inline">\(K(x_1,x_2)\)</span>都能满足下面的条件，则我们称函数<span
+class="math inline">\(K(x_1,x_2)\)</span>为核函数。其中计算的是映射后的内积。
+<span class="math display">\[
+K(x_1,x_2) = \phi(x_1)\cdot\phi(x_2)
+\]</span> 原本按照正常的流程，我们先定义一个映射<span
+class="math inline">\(\phi\)</span>，然后将每个输入<span
+class="math inline">\(x\in X\)</span>映射为<span class="math inline">\(z
+\in Z\)</span>，之后在特征空间<span
+class="math inline">\(Z\)</span>中进行内积运算，即先进行转换再计算内积。而核技巧的想法是，既然特征空间中的计算比较复杂，那就不定义映射<span
+class="math inline">\(\phi\)</span>，而是直接定义核函数<span
+class="math inline">\(K(x_1,x_2)\)</span>。核函数的计算结果是映射后特征向量的内积，但是核函数本身是关于<span
+class="math inline">\(x_1,x_2\in
+X\)</span>的函数，在输入空间中完成计算，这样就一定程度上降低了运算的复杂度。</p>
+<p>可以看到对于一个给定的核函数<span
+class="math inline">\(K(x_1,x_2)\)</span>来说，特征空间与映射函数的取法并不唯一，可以取不同的特征空间，在同一个特征空间中也可以取不同的映射。<strong>而定义核函数的好处在于我们不需要关注具体的映射<span
+class="math inline">\(\phi\)</span>，只需要关注一个函数是否是合法的核函数即可</strong>。如果已知映射函数<span
+class="math inline">\(\phi\)</span>，我们可以根据定义直接得到核函数。而更常见的情况是，我们需要在不知道具体映射函数<span
+class="math inline">\(\phi\)</span>的前提下判断一个关于<span
+class="math inline">\(x_1,x_2\)</span>的函数是否是核函数。</p>
+<p>通常所说的核函数是正定核函数。在数学上可以证明，假设<span
+class="math inline">\(K(x_1,x_2)\)</span>是定义在<span
+class="math inline">\(X\times
+X\)</span>上的对称函数，如果对于任意的<span class="math inline">\(x_i
+\in X，i=1，2,...,m\)</span>，<span
+class="math inline">\(K(x_1,x_2)\)</span>对应的Gram矩阵 <span
+class="math display">\[
+K = [K(x_i,x_j)]_{m\times m}
+\]</span> 是半正定矩阵，则<span
+class="math inline">\(K(x_1,x_2)\)</span>是正定核函数，也就是我们需要的核函数。</p>
+<p>这个定义能够帮助我们来构造核函数。不过对于一个具体的核函数来说，检测它是否为正定核函数并不容易，因为需要对任意有限输入集<span
+class="math inline">\(\{x_1,x_2,...,x_m\}\)</span>来验证<span
+class="math inline">\(K\)</span>对应的Gram矩阵是否是半正定的。因此在实际情况中，我们往往会应用已有的核函数。</p>
+<h2 id="常用核函数">常用核函数</h2>
+<p>多项式核函数定义如下： <span class="math display">\[
+K(x_1,x_2) = (x_1 \cdot x_2 + 1)^P
+\]</span> 高斯核函数定义如下： <span class="math display">\[
+K(x_1,x_2) = \exp(- \frac{||x_1-x_2||^2}{2\sigma^2})
+\]</span></p>
+<h2 id="非线性支持向量机-1">非线性支持向量机</h2>
+<p>在之前线性支持向量机中，无论是目标函数还是决策函数，最终都只会涉及到输入实例与其他实例之间的内积，即<span
+class="math inline">\(x \cdot
+x_i\)</span>。我们可以很自然地在其上应用核函数，将其替换为<span
+class="math inline">\(K(x,x_i)\)</span>，这样，对偶问题的目标函数就变为了：
+<span class="math display">\[
+\frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \alpha_i\alpha_jy_iy_j K(x_i,x_j)
+- \sum_{i=1}^N \alpha_i
+\]</span> 而决策函数也对应变为： <span class="math display">\[
+\begin{aligned}
+f(x) &amp;=  sign(\sum_{i=1}^N\alpha^*_iy_i\phi(x_i)\cdot \phi(x) +
+b^*)\\
+&amp;=sign(\sum_{i=1}^N\alpha^*_iy_iK(x_i,x) + b^*)
+\end{aligned}
+\]</span> 这也就是非线性支持向量机的思想。这样做相当于将原始输入<span
+class="math inline">\(x_i\)</span>，都经过映射变为特征空间中的<span
+class="math inline">\(\phi(x)\)</span>，之后在特征空间中学习线性向量机。当映射函数是非线性函数的时候，最终学习到的含有核函数的支持向量机就是一个非线性的模型。<strong>通过核技巧，使得学习隐式地在特征空间中完成，而无需显式地定义特征空间与映射函数。</strong></p>
+<blockquote>
+<p>这里可以应用核函数的关键在于我们最终的<span
+class="math inline">\(w^*\)</span>能够表示成输入实例<span
+class="math inline">\(x_i\)</span>的某种线性组合。事实上，对于L2正则化的线性模型，如果它的最小化问题形式能够形式为：
+<span class="math display">\[
+\min_{w} \frac{1}{N} \sum_{i=1}^N err(y_i,w^Tx_i) + \lambda w^Tw
+\]</span> 则最终最优化的<span
+class="math inline">\(w^*\)</span>就能够表示为： <span
+class="math display">\[
+w^* = \sum_{i=1}^N \beta_ix_i
+\]</span>
+由此，我们实际上也可以将核技巧用在线性回归，Logistic回归中。</p>
+</blockquote>
+<h1 id="阶段总结">阶段总结</h1>
+<p>整个SVM的学习过程，我们首先从PLA的多解出发，希望从中选择较好的分类模型，从而得到硬间隔最大化的策略。之后优化目标，推导了原始问题，再根据拉格朗日对偶性得到对偶问题。根据定理，发现对偶问题与原始问题有相同的最优解，于是可以通过解对偶问题得到原始问题的解。这便是硬间隔最大化的线性支持向量机。</p>
+<p>硬间隔最大化要求所有实例点都需要被划分正确，也就是线性可分的情况。一种常见的情况是实例点基本线性可分，于是引入软间隔最大化，对每个实例点的错误程度引入<span
+class="math inline">\(\xi_i\)</span>，同时优化目标增加尽可能最小化所有实例点错误程度之和。根据优化目标以及拉格朗日对偶性，同样可以得到原始问题和对偶问题，它们也具有相同的最优解，这就是软间隔最大化的线性支持向量机。</p>
+<p>这两种方式仍然只是线性模型，无法处理线性不可分的情况。注意到模型中无论是优化目标函数还是最终的决策函数，都只涉及实例之间的内积，所以可以很自然地使用核技巧，将输入空间中的线性不可分问题转化为特征空间中的线性可分问题，之后在特征空间中使用线性支持向量机，同时核函数的存在一定程度上控制了计算的复杂度，这就是非线性支持向量机。</p>
+<h1 id="附加参考">附加参考</h1>
+<h2 id="凸二次规划问题">凸二次规划问题</h2>
+<p>凸优化问题指的是如下的约束最优化问题： <span class="math display">\[
+\begin{aligned}
+\min_{w} &amp;\quad f(w)\\
+s.t. &amp; \quad g_i(w) \le 0, i=1,2,...,k\\
+&amp;\quad h_i(w) = 0, i=1,2,...,l
+\end{aligned}
+\]</span> 其中，目标函数<span
+class="math inline">\(f(w)\)</span>和约束函数<span
+class="math inline">\(g_i(w)\)</span>都是<span
+class="math inline">\(R^n\)</span>上的连续可微的凸函数，约束函数<span
+class="math inline">\(h_i(w)\)</span>是<span
+class="math inline">\(R^n\)</span>上的仿射函数。（仿射函数<span
+class="math inline">\(f(x)\)</span>指的是满足<span
+class="math inline">\(f(x) = a\cdot x +b\)</span>的函数）</p>
+<p>更近一步，如果目标函数<span
+class="math inline">\(f(w)\)</span>是二次函数且约束函数<span
+class="math inline">\(g_i(w)\)</span>是仿射函数的时候，上面的凸最优化问题就成为了凸二次规划问题。数学上可以证明，凸二次规划问题具有全局最优解，并且有许多最优化算法可以用于这一问题的求解。</p>
+<h2 id="拉格朗日对偶性">拉格朗日对偶性</h2>
+<h3 id="原始问题">原始问题</h3>
+<p>假设<span
+class="math inline">\(f(x),c_i(x),h_j(x)\)</span>是定义在<span
+class="math inline">\(R^n\)</span>上的连续可微函数，则考虑如下的最优化问题，我们称为原始问题，记原始问题为<span
+class="math inline">\(P\)</span>，原始问题的最优解为<span
+class="math inline">\(p^*\)</span>： <span class="math display">\[
+\begin{aligned}
+\min_{x\in R^n} &amp;\quad f(x)\\
+s.t. &amp; \quad c_i(x) \le 0, i=1,2,...,k\\
+&amp;\quad h_j(x) = 0, j=1,2,...,l
+\end{aligned}
+\]</span> 为求解这一优化问题，我们可以引入拉格朗日函数： <span
+class="math display">\[
+L(x,\alpha,\beta) = f(x) + \sum_{i=1}^k \alpha_ic_i(x) +
+\sum_{j=1}^{l}\beta_jh_j(x)
+\]</span> 其中<span
+class="math inline">\(\alpha_i,\beta_j\)</span>为拉格朗日乘子，并且<span
+class="math inline">\(\alpha_i \ge 0\)</span>。构造优化目标<span
+class="math inline">\(\theta(x)\)</span>如下： <span
+class="math display">\[
+\theta(x) = \max_{\alpha,\beta;\alpha_i\ge 0} L(x,\alpha,\beta)
+\]</span> 这是一个关于拉格朗日乘子的优化目标函数，是一个关于<span
+class="math inline">\(x\)</span>的函数。考虑<span
+class="math inline">\(c_i(x),h_j(x)\)</span>，如果对于某个<span
+class="math inline">\(x\)</span>来说，存在<span
+class="math inline">\(c_{i&#39;}(x) &gt; 0\)</span>或者<span
+class="math inline">\(h_{j&#39;}(x) \ne 0\)</span>，即<span
+class="math inline">\(x\)</span>不满足原始问题的约束条件，则函数<span
+class="math inline">\(\theta(x)\)</span>的值就是<span
+class="math inline">\(+\infty\)</span>。而如果不存在，也就是<span
+class="math inline">\(x\)</span>均满足原始问题的约束条件，则我们肯定可以取<span
+class="math inline">\(\alpha_i=0\)</span>，使得<span
+class="math inline">\(\theta(x) = \max_{\alpha,\beta;\alpha_i\ge 0}
+L(x,\alpha,\beta) = f(x) + 0 + 0 =
+f(x)\)</span>。也就是说，优化目标<span
+class="math inline">\(\theta(x)\)</span>有如下性质，其中假设原始问题为<span
+class="math inline">\(P\)</span>： <span class="math display">\[
+\theta_P(x) =
+\begin{cases}
+f(x),\quad  x 满足原始问题P的约束\\
++\infty, \quad  不满足原始问题P的约束
+\end{cases}
+\]</span> 这样的话，我们继续考虑针对<span
+class="math inline">\(x\)</span>极小化<span
+class="math inline">\(\theta_P(x)\)</span>，即： <span
+class="math display">\[
+\min_{x} \theta_P(x) = \min_{x} \max_{\alpha,\beta;\alpha_i\ge 0}
+L(x,\alpha,\beta)
+\]</span> 这个问题与原始问题是等价的，即它们具有相同的解。问题<span
+class="math inline">\(\min_{x} \max_{\alpha,\beta;\alpha_i\ge 0}
+L(x,\alpha,\beta)\)</span>被称为广义拉格朗日函数的极小极大问题，也就是说我们将原始问题<span
+class="math inline">\(P\)</span>表示为等价的广义拉格朗日的极小极大问题，它们具有相同的解，也就是：
+<span class="math display">\[
+p^* = \min_{x} \theta_P(x)
+\]</span></p>
+<h3 id="对偶问题">对偶问题</h3>
+<p>原始问题被表示为广义拉格朗日极小极大问题，它的对偶问题则是广义拉格朗日极大极小问题。</p>
+<p>首先定义一个关于<span
+class="math inline">\(\alpha,\beta\)</span>的函数： <span
+class="math display">\[
+\theta_D(\alpha,\beta) = \min_{x} L(x,\alpha,\beta)
+\]</span> 之后对这个函数进行极大化，即： <span class="math display">\[
+\max_{\alpha,\beta;\alpha_i\ge0} \theta_D(\alpha,\beta)
+= \max_{\alpha,\beta;\alpha_i\ge0}\min_{x} L(x,\alpha,\beta)
+\]</span>
+于是我们可以广义拉格朗日极大极小问题表示为一个约束最优化问题，记该问题的最优解为<span
+class="math inline">\(d^*\)</span>： <span class="math display">\[
+\begin{aligned}
+\max_{\alpha,\beta} \theta_D(\alpha,\beta)
+&amp;= \max_{\alpha,\beta}\min_{x} L(x,\alpha,\beta)\\
+s.t. \quad &amp; \alpha_i \ge 0,i=1,2,...,k
+\end{aligned}
+\]</span> 这样我们就给出了原始问题的对偶问题形式。</p>
+<h3 id="原始问题和对偶问题的关系">原始问题和对偶问题的关系</h3>
+<p>假设原始问题和对偶问题的最优解都存在，则对偶问题的最优解一定会小于等于原始问题的最优解，即<span
+class="math inline">\(d^* \le
+p^*\)</span>。这个关系很容易证明，首先，对于任意的<span
+class="math inline">\(x,\alpha,\beta\)</span>，都有： <span
+class="math display">\[
+\theta_D(\alpha, \beta) = \min_xL(x,\alpha,\beta) \le L(x,\alpha,\beta)
+\le \max_{\alpha,\beta} L(x,\alpha,\beta) = \theta_P(x)
+\]</span> 也就是： <span class="math display">\[
+\theta_D(\alpha, \beta) \le  \theta_P(x)
+\]</span> 于是有： <span class="math display">\[
+d* = \max_{\alpha,\beta;\alpha_i\ge0}\theta_D(\alpha,\beta) \le \min_{x}
+\theta_P(x) = p^*
+\]</span> 不过在某些条件下，两个问题的最优解相等，并且都在同一个<span
+class="math inline">\((x^*,\alpha^*,\beta^*)\)</span>上取得最优解。此时可以通过求解对偶问题来得到原始问题的最优解。下面介绍一种特殊的情形，原始问题和对偶问题的最优解相同。</p>
+<p>如果函数<span
+class="math inline">\(f(x),c_i(x)\)</span>是凸函数，<span
+class="math inline">\(h_j(x)\)</span>是仿射函数，且不等式约束<span
+class="math inline">\(c_i(x)\)</span>均为严格可行（即存在<span
+class="math inline">\(x\)</span>，对所有的<span
+class="math inline">\(c_i(x)\)</span>都有<span
+class="math inline">\(c_i(x) &lt;
+0\)</span>），则原始问题和对偶问题的最优解相同。并且<span
+class="math inline">\((x^*,\alpha^*,\beta^*)\)</span>为最优解的充要条件是<span
+class="math inline">\((x^*,\alpha^*,\beta^*)\)</span>满足Karush-Kuhn-Tucker（KKT）条件，具体如下：
+<span class="math display">\[
+\begin{aligned}
+【梯度为0条件】&amp;\bigtriangledown_{x} L(x^*,\alpha^*,\beta^*) = 0 \\
+【最优解存在条件】&amp;\alpha_i^*c_i(x^*) = 0, \quad i=1,2,...,k\\
+【拉格朗日乘子条件】&amp;\alpha_i^* \ge 0,\quad i=1,2,...,k\\
+【原始问题约束】&amp;c_i(x^*) \le 0, \quad i=1,2,...,k\\
+【原始问题约束】&amp;h_j(x^*) = 0,\quad j=1,2,...,l
+\end{aligned}
+\]</span>
+其中最优解存在条件也被称为KKT的对偶互补条件，两数相乘为0，意味着至少有一方为0。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" class="category-chain-item">基础理论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a>
+      
+        <a href="/tags/%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/">#监督学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>机器学习基础(7)-支持向量机SVM与核技巧</div>
+      <div>http://example.com/2023/08/22/机器学习基础-7-支持向量机SVM与核技巧/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月22日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/" title="机器学习基础(6)-线性回归与Logistic回归">
+                        <span class="hidden-mobile">机器学习基础(6)-线性回归与Logistic回归</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,917 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了机器学习中的过拟合、正则化以及Validation验证的概念。过拟合指的是模型在训练集上效果好，但是泛化能力差；正则化是结构风险最小化的实现，增加对模型复杂度，通常被用来解决过拟合问题；Validation验证则可以辅助完成在机器学习中可能遇到的各种选择问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础(4)-过拟合,正则化与Validation验证">
+<meta property="og:url" content="http://example.com/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-4-%E8%BF%87%E6%8B%9F%E5%90%88-%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%8EValidation%E9%AA%8C%E8%AF%81/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了机器学习中的过拟合、正则化以及Validation验证的概念。过拟合指的是模型在训练集上效果好，但是泛化能力差；正则化是结构风险最小化的实现，增加对模型复杂度，通常被用来解决过拟合问题；Validation验证则可以辅助完成在机器学习中可能遇到的各种选择问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-4-%E8%BF%87%E6%8B%9F%E5%90%88-%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%8EValidation%E9%AA%8C%E8%AF%81/LearningCurve.png">
+<meta property="article:published_time" content="2023-08-19T12:51:33.000Z">
+<meta property="article:modified_time" content="2023-08-22T12:52:18.920Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-4-%E8%BF%87%E6%8B%9F%E5%90%88-%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%8EValidation%E9%AA%8C%E8%AF%81/LearningCurve.png">
+  
+  
+  
+  <title>机器学习基础(4)-过拟合,正则化与Validation验证 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="机器学习基础(4)-过拟合,正则化与Validation验证"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-19 20:51" pubdate>
+          2023年8月19日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          48 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习基础(4)-过拟合,正则化与Validation验证</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="过拟合">过拟合</h1>
+<h2 id="现象描述">现象描述</h2>
+<p>在之前机器学习可行性的说明中，我们看到了一张经验损失<span
+class="math inline">\(E_{in}\)</span>，期望损失<span
+class="math inline">\(E_{out}\)</span>以及VC
+Dimension的变化图，其中随着VC
+Dimension的增大，我们发现经验损失在逐渐降低，而期望损失先降低后增大。这也就是说，随着模型逐渐变得复杂，虽然我们能够在训练集上做的很好，但是在训练集之外的数据表现还是很糟糕，也就是泛化能力差。这种情形我们称之为过拟合。相对的，当模型比较简单的时候，经验损失和期望损失都较高，这种情形称之为欠拟合。一般来说，欠拟合只需要增加模型复杂度或者增加训练数据，解决起来相对简单。我们这里仅考虑过拟合的现象。</p>
+<p>通常来说，影响过拟合的因素有三个：</p>
+<ul>
+<li>模型复杂度过高，VC Dimension过大</li>
+<li>数据中存在较多的噪声noise</li>
+<li>训练样本的数量N不够</li>
+</ul>
+<p>VC
+Dimension对过拟合现象的描述已经可以通过图像表示，接下来我们关注噪声和样本数量对过拟合的影响。首先考虑样本数量，假设我们有上帝视角，直到真实的映射函数是一个10次多项式的形式，那么我们自然会想到利用一个也是10次多项式的假设空间。但是这也会存在一个问题，我们可以通过Learning
+Curve图像来观察。Learning
+Curve图像是误差随着样本数量变化的曲线，其中左图表示我们选择的假设空间<span
+class="math inline">\(H_{2}\)</span>最多能够表示2次多项式，而右图表示假设空间<span
+class="math inline">\(H_{10}\)</span>最多能够表示10次多项式。</p>
+<img src="/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-4-%E8%BF%87%E6%8B%9F%E5%90%88-%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%8EValidation%E9%AA%8C%E8%AF%81/LearningCurve.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Learning Curve">
+<p>直觉上来说，我们认为既然真实的目标函数是一个10次多项式，那么我们也用10次多项式的假设空间进行学习，应该能够得到一个很好的结果。但是实际上，效果与训练集数据的数目<span
+class="math inline">\(N\)</span>是由很大关系的。对比<span
+class="math inline">\(H_2\)</span>和<span
+class="math inline">\(H_{10}\)</span>，我们可以发现的确<span
+class="math inline">\(H_{10}\)</span>能够最终做到很好，也就是<span
+class="math inline">\(E_{in}\)</span>和<span
+class="math inline">\(E_{out}\)</span>都能做到不错，但是这是建立在足够<span
+class="math inline">\(N\)</span>的基础上的，但是如果<span
+class="math inline">\(N\)</span>不足以支撑<span
+class="math inline">\(H_{10}\)</span>做到较低的<span
+class="math inline">\(E_{out}\)</span>，那么它的效果可能还不如较简单的模型<span
+class="math inline">\(H_2\)</span>。<strong>总结来说，在这种情况下，数据量不足导致较复杂模型的表现不如简单模型</strong>，复杂模型的<span
+class="math inline">\(E_{in}\)</span>较低，但是<span
+class="math inline">\(E_{out}\)</span>比较高，也就是过拟合的表现。</p>
+<p>接下来我们考虑噪声对过拟合的影响。通常，我们可以认为噪声服从正态分布。假如一个模型很强大，它在训练集上将<span
+class="math inline">\(E_{in}\)</span>做的很好，但是这个训练集中是存在较多噪声的，这也就是说模型将噪声也学进结果里面了，在没有规律的地方硬学出了规律，自然会导致泛化能力不足。而实际上还有另一种情况，就是真实的目标函数就是很复杂，而我们使用的假设空间不足以描述这么复杂的函数。这样，从真实函数中得到的训练集，尽管其中没有噪声，但是对于较弱的假设空间来说，它所带来的影响同噪声没有什么区别。不过这种噪声并不是随机产生的，而是与真实函数有关，因此我们将它称为deterministic
+noise，确定性误差。而之前那种真实的误差，则称为stochastic
+noise，随机误差。</p>
+<p>总结来说，有三个方面的因素会影响过拟合。分别是过高的模型复杂度，较多的噪声（包括确定性误差以及随机误差）以及不足的训练集样本数。</p>
+<h2 id="解决方法">解决方法</h2>
+<p>过拟合的影响因素主要有三个，而解决过拟合的方法自然也能够从这三个因素出发。</p>
+<p><strong>对于过高的模型复杂度，我们通常会选择从简单的模型出发进行训练，然后逐步提高模型的复杂度</strong>。对于一个机器学习问题来说，如果我们能够用简单且效果不错的模型解决，那么我们就不要去选择更加复杂的模型，这也符合哲学中的“奥卡姆剃刀原则”。另一种解决方式正则化，它用来控制模型的复杂度，接下来会进行详细说明。</p>
+<p><strong>对于较多的噪声，我们可以在训练之前进行数据清洗，尽量减少噪声在训练集中的比例</strong>。</p>
+<p>对于不足的训练集样本数，那我们就增加训练集样本数就好了。当然更多的情况是我们没办法直接得到更多的训练集样本，此时可以考虑从已有的训练集出发，通过合理的方式得到更多的数据。这里需要注意的是，新样本的产生一定要合理，否则会破坏机器学习的假设，即训练集来自于真实存在的目标函数的假设。</p>
+<h1 id="正则化">正则化</h1>
+<h2 id="概念引入">概念引入</h2>
+<p><strong>正则化（Regularization）</strong>是一种控制模型复杂度的方法，通常用来解决过拟合问题。</p>
+<p>仍然考虑上面的场景，我们分别用10阶多项式假设空间<span
+class="math inline">\(H_{10}\)</span>以及2阶多项式假设空间<span
+class="math inline">\(H_{2}\)</span>进行模型训练，在数据量较少的情况下，2阶多项式表现更好。但是我们并不想放弃<span
+class="math inline">\(H_{10}\)</span>假设空间，因为2阶多项式假设空间表征能力有限。所以我们现在的目标就是怎么样增加一定的限制，在保留<span
+class="math inline">\(H_{10}\)</span>表征能力的同时，控制<span
+class="math inline">\(H_{10}\)</span>复杂度的同时，让<span
+class="math inline">\(H_{10}\)</span>的表现尽可能向<span
+class="math inline">\(H_{2}\)</span>靠近。</p>
+<p>对于一个模型来说，我们最终需要得到一个参数向量<span
+class="math inline">\(w\)</span>。一个给定参数向量<span
+class="math inline">\(w\)</span>对应到一个确切的模型。因此参数向量一定程度能够表征模型的复杂度。<span
+class="math inline">\(H_{10}\)</span>的假设空间可以对应11维的向量<span
+class="math inline">\(w=[w_0,w_1,...,w_{10}]^T\)</span>，而<span
+class="math inline">\(H_2\)</span>的假设空间可以对应3维的向量<span
+class="math inline">\(w=[w_0,w_1,w_2]^T\)</span>，并且始终有<span
+class="math inline">\(H_2 \subseteq
+H_{10}\)</span>的关系存在，我们可以限制<span
+class="math inline">\(w_3=w_4=...=w_{10}=0\)</span>，此时则有<span
+class="math inline">\(H_2=H_{10}\)</span>。</p>
+<p>但是这个限制实际上较为严格，我们限制<span
+class="math inline">\(H_{10}\)</span>的高阶部分权重均为0，那既然如此不如直接使用<span
+class="math inline">\(H_2\)</span>。因此我们可以适当放宽限制，例如让<span
+class="math inline">\(H_{10}\)</span>的任意8个权重为0，即<span
+class="math inline">\(\sum_{i=0}^{10}I[(w_i \neq 0)] \le
+3\)</span>，也就是限定参数向量中不为0的维度个数，而并不一定要限定高阶部分权重为0。不过这种条件会带来另外的问题，就是它不好优化。因此我们考虑一种容易求解的更加宽松的条件，即：
+<span class="math display">\[
+\sum_{i=0}^{10}w_i^2  = ||w||^2 \le C
+\]</span>
+这个限制条件的含义是权重的平方和大小不超过一个给定的常数C，这个常数C用来限制参数向量。可以想见的是，C的值越大，限定范围越大，即限定条件越宽松，反之则越严格。因此，对于我们需要解决的机器学习问题来说，最终就会对应到一个带限制条件的最优化问题，优化目标如下，其中的限制是上面的不等式。
+<span class="math display">\[
+\min_{w} E_{in} = \frac{1}{N} \sum_{i=1}^{N}L(w,x_i,y_i) \\
+\text{并且需要满足：} \sum_{i=0}^{10}w_i^2  = ||w||^2 \le C
+\]</span> 限制条件的几何含义是，权重向量<span
+class="math inline">\(w\)</span>被限制在一个半径为<span
+class="math inline">\(\sqrt{C}\)</span>球内，球外的<span
+class="math inline">\(w\)</span>都不在我们的考虑范围内。在这个限制条件下，我们进行梯度下降，每一步实际上都是更加靠近无限制的目标<span
+class="math inline">\(w_{no-limit}\)</span>，只不过在限制条件下，我们的<span
+class="math inline">\(w\)</span>只能在球内移动，也就是移动方向必须垂直当前<span
+class="math inline">\(w\)</span>所在位置的法向量。因此最终的结果一定在这个球的表面上，即满足<span
+class="math inline">\(||w||^2 = C\)</span>。（如果<span
+class="math inline">\(w_{no-limit}\)</span>直接在球的内部，那就可以直接梯度下降得到答案，相当于没有限制，这里不考虑这种情况）</p>
+<p>所以优化问题可以继续转化为带等式约束的最优化问题： <span
+class="math display">\[
+\text{优化目标}:\min_{w} E_{in}(w) = \frac{1}{N}
+\sum_{i=1}^{N}L(w,x_i,y_i)
+\\
+\text{约束条件}: ||w||^2 - C = 0
+\]</span>
+带等式约束的最优化问题可以使用拉格朗日乘数法来解决，引入辅助变量<span
+class="math inline">\(\lambda\)</span>以及辅助函数<span
+class="math inline">\(L&#39;(w,\lambda)\)</span>： <span
+class="math display">\[
+L&#39;(w,\lambda) =  E_{in}(w) + \lambda (w^Tw-C)
+\]</span></p>
+<p>则极值点需要满足： <span class="math display">\[
+\bigtriangledown _{w} E_{in}(w) + 2\lambda w = 0
+\]</span> 类比我们无限制的最优化问题，我们需要最优化的目标是<span
+class="math inline">\(\min_w E_{in}(w)\)</span>，需要满足的条件是<span
+class="math inline">\(\bigtriangledown _w E_{in}(w)=
+0\)</span>。而对于带限制的最优化问题，我们需要满足的条件是<span
+class="math inline">\(\bigtriangledown _{w} E_{in}(w) + 2\lambda w =
+0\)</span>，可以类比得到最优化的目标是<span class="math inline">\(\min_w
+E_{in}(w) + \lambda w^Tw = E_{in}(w) + \lambda
+||w||^2\)</span>。因此我们最终将问题转化为如下的描述，对应给定的假设空间<span
+class="math inline">\(H\)</span>，需要找到一个参数向量<span
+class="math inline">\(w\)</span>，最小化下面的目标： <span
+class="math display">\[
+\min_w E_{in}(w) + \lambda ||w||^2
+\]</span> 其中<span
+class="math inline">\(\lambda\)</span>是预先给定的常数。实际上这就是正则化做的事情。与之前不带正则化的机器学习相比，只是在优化目标中增加了一个正则项。</p>
+<h2 id="与vc-theory的关系">与VC Theory的关系</h2>
+<p>考虑正则化与VC Theory之间的关系。我们可以将增加的正则化项记作<span
+class="math inline">\(\Omega(w)\)</span>，它用来表示给定的单个模型的复杂度。经过正则化之后的损失可以记作<span
+class="math inline">\(E_{reg}(w)\)</span>，则有： <span
+class="math display">\[
+E_{reg}(w) = E_{in}(w) + \Omega(w)
+\]</span> 而VC不等式表示如下，其中<span
+class="math inline">\(\Omega(H)\)</span>表示整个假设空间的复杂度。 <span
+class="math display">\[
+E_{out}(w) \le E_{in}(w) + \Omega(H)
+\]</span>
+单个模型的复杂度包含于整个假设空间的复杂度中，因此可以看出<span
+class="math inline">\(E_{reg}\)</span>相比于<span
+class="math inline">\(E_{in}\)</span>来说，更加接近于<span
+class="math inline">\(E_{out}\)</span>，因此能够更好地代表它，从而能够降低过拟合的风险。</p>
+<h2 id="正则化项">正则化项</h2>
+<p>上面的正则化我们是针对多项式假设空间的，而事实上，正则化的思想可以应用在所有的机器学习算法中，用来防止过拟合。我们在基础的经验损失上增加正则化项，表示对模型复杂度的惩罚。并且引入<span
+class="math inline">\(\lambda\)</span>来表示惩罚的力度，<span
+class="math inline">\(\lambda\)</span>越大，表示惩罚越大，对模型的限制越高。一般来说，<span
+class="math inline">\(\lambda\)</span>取较小的值就能够达到良好的拟合效果，过大过小都会有问题。不过究竟取什么值，还需要根据具体训练数据和模型进行分析和调试。</p>
+<p>上面推导出的正则化项是利用了参数向量的L2范数，常用的正则化项还有参数向量的L1范数等。</p>
+<p>那么在实际的使用中，正则化项<span
+class="math inline">\(\Omega(w)\)</span>该选择如何的形式呢。常见的选择方式有三种。第一种是目标导向的，即在任务中有很直接的方式告诉我们模型复杂度该如何衡量。第二种是选择常用的正则化项，例如L2范数、L1范数等。第三种是选择一个便于优化的正则化项。</p>
+<h1 id="validation验证">Validation验证</h1>
+<h2 id="概念引入-1">概念引入</h2>
+<p>在机器学习中，我们会遇到很多的选择问题。首先我们需要选择使用什么模型，假设空间<span
+class="math inline">\(H\)</span>是什么，学习算法<span
+class="math inline">\(A\)</span>是什么，学习率<span
+class="math inline">\(\eta\)</span>也需要确定，正则化项<span
+class="math inline">\(\Omega(w)\)</span>需要确定，对应的<span
+class="math inline">\(\lambda\)</span>也需要确定。我们需要做多方面的选择，不同的选择搭配，有不同的机器学习效果。而我们希望的就是能够找到一个最合适的选择搭配，得到一个优秀的结果模型，产生最佳的效果。</p>
+<p>重新描述选择问题，就是说我们现在一共有<span
+class="math inline">\(M\)</span>种候选模型（广义上的模型，表示上面各种选择的一种搭配），然后目标是从中选择一个模型作为最终的结果模型。我们很自然的就想到以目标为导向，哪个模型在测试集上表现最好，我们就选择哪个模型。但是很不幸的是，测试集是我们拿不到的数据。那我们就考虑从拿得到的数据即训练集中进行评估。但是如果用训练集进行训练，然后又用训练集进行评估，会存在偷窥数据作弊的嫌疑。在使用数据的过程中，我们应该要非常的谨慎，防止偷看数据。</p>
+<p>如果我们综合上面两种思路，就可以得到验证Validation的思想。简单来说就是将训练集进行划分，划分为新训练集和验证集。模型在新训练集上完成训练后，在验证集上进行评估，评估结果就作为模型效果。最后我们就可以选择一个模型效果最好的作为结果模型。</p>
+<h2 id="交叉验证">交叉验证</h2>
+<p>交叉验证的思想在之前的笔记中已经有记载，下面的内容与之前相同。</p>
+<p>在给定样本数据充足的情况下，进行模型选择的方法是将数据集随机切分成三个部分，分别是训练集、验证集和测试集。训练集用来训练模型，验证集用于对模型的选择，而测试集用于最终对学习方法的评估。在从不同的假设空间<span
+class="math inline">\(H\)</span>，学习到的不同复杂度的模型中，选择对验证集有最小预测误差的模型。如果数据量充足，这种方式是有效的，但是在许多实际情况中，我们的数据并不充足。此时可以采用交叉验证方法，它的基本思想是重复地利用数据，将给定的数据进行切分，切分后的数据集组合为训练集和测试机，在此基础上反复训练、测试和模型选择。</p>
+<p>1.简单交叉验证</p>
+<p>首先随机将数据分为两部分训练集和测试集（例如7：3），用训练集在各种条件下训练模型，从而得到不同模型。在测试集上评估各个模型的误差，选择测试误差最小的模型。</p>
+<p>通过这种方式选择出来的模型告诉我们这个模型（模型+策略+算法）面对这个问题能够得到好的效果，但是这个模型有没有达到目前的极限呢？由于我们使用的训练集是给定数据的一部分，而在大部分情况下，训练数据越多，我们能够得到越好的效果。因此在实际操作的时候，<strong>一般会将选择出来的模型，在原本给定的所有数据上重新进行训练，以期能够得到更好的结果</strong>。</p>
+<p>2.K折交叉验证</p>
+<p>首先随机将数据分为K个互不相交，大小相同的子集。依次选择其中K-1个子集的数据训练模型，选择剩下一个子集的数据测试模型。这个过程重复K次，可以得到K个测试结果，以平均测试误差作为该模型的测试误差，选择对应误差最小的模型。</p>
+<p>3.留一交叉验证</p>
+<p>K折交叉验证中K =
+N的特殊情况，N为样本总数。这种方法往往在数据缺乏的情况下使用。它的时间复杂度相对较高，因为对于一个模型来说，需要在相差不大的数据上重复训练N次。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" class="category-chain-item">基础理论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>机器学习基础(4)-过拟合,正则化与Validation验证</div>
+      <div>http://example.com/2023/08/19/机器学习基础-4-过拟合-正则化与Validation验证/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-5-%E4%BA%8C%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E4%B8%8E%E6%84%9F%E7%9F%A5%E6%9C%BA%E6%A8%A1%E5%9E%8B/" title="机器学习基础(5)-二分类问题与感知机模型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">机器学习基础(5)-二分类问题与感知机模型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-3-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/" title="机器学习基础(3)-梯度下降">
+                        <span class="hidden-mobile">机器学习基础(3)-梯度下降</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

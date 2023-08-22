@@ -1,0 +1,993 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="二分类问题是机器学习中常见的问题，它要求最终的输出只有两种。而感知机是一种用于二分类的基础线性分类模型，同时还属于监督学习、在线学习。本篇主要介绍了感知机模型的概念、学习策略和学习算法，最后介绍了算法可行性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础(5)-二分类问题与感知机模型">
+<meta property="og:url" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-5-%E4%BA%8C%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E4%B8%8E%E6%84%9F%E7%9F%A5%E6%9C%BA%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="二分类问题是机器学习中常见的问题，它要求最终的输出只有两种。而感知机是一种用于二分类的基础线性分类模型，同时还属于监督学习、在线学习。本篇主要介绍了感知机模型的概念、学习策略和学习算法，最后介绍了算法可行性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-20T12:54:49.000Z">
+<meta property="article:modified_time" content="2023-08-22T13:01:56.358Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="监督学习">
+<meta property="article:tag" content="线性模型">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>机器学习基础(5)-二分类问题与感知机模型 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="机器学习基础(5)-二分类问题与感知机模型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-20 20:54" pubdate>
+          2023年8月20日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          45 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习基础(5)-二分类问题与感知机模型</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="感知机模型">感知机模型</h1>
+<p>感知机（perceptron）是一种二分类的线性分类模型，其输入为实例的特征向量，输出为实例的类别，取值为<span
+class="math inline">\(\{+1,
+-1\}\)</span>。感知机学习旨在求出将训练数据进行线性划分的分离超平面，它也是神经网络与支持向量机的基础。</p>
+<p>感知机的模型如下。输入空间为<span class="math inline">\(X\subseteq
+R^n\)</span>，输入空间和特征空间相同；输出空间为<span
+class="math inline">\(Y=\{+1,-1\}\)</span>。感知机的输入<span
+class="math inline">\(x\)</span>是表示实例的特征向量，输出<span
+class="math inline">\(y\)</span>表示实例的类别，感知机即为如下的函数：
+<span class="math display">\[
+f(x) = sign(w\cdot x+b)
+\]</span> 其中<span class="math inline">\(w\)</span>和<span
+class="math inline">\(b\)</span>是感知机模型的参数，<span
+class="math inline">\(w\)</span>被称为权重weight，<span
+class="math inline">\(b\)</span>被称为偏置bias，sign为符号函数，<span
+class="math inline">\(w\cdot x\)</span>为内积计算。</p>
+<p>从几何上考虑，输入的<span
+class="math inline">\(x\)</span>是特征空间中的一个点，感知机模型的假设空间则是定义在特征空间中的所有线性分类器，每个线性分类器对应特征空间中的一个超平面S，而参数向量<span
+class="math inline">\(w\)</span>是超平面S的法向量，<span
+class="math inline">\(b\)</span>是超平面S的截距。该超平面将特征空间划分为两个部分，位于两个部分的点分别对应不同的输出，+1和-1，即正类和负类。</p>
+<p>考虑机器学习的分类，感知机所属的类别为：</p>
+<ul>
+<li>监督学习</li>
+<li>非概率模型，线性模型</li>
+<li>在线学习</li>
+</ul>
+<h1 id="感知机学习策略">感知机学习策略</h1>
+<p>确定了模型之后，需要确定策略，即定义（经验）损失函数并将损失函数最小化。</p>
+<p>感知机的损失函数被定义为<strong>误分类点</strong>到超平面S的距离，任一点<span
+class="math inline">\(x_i\)</span>到超平面的距离为： <span
+class="math display">\[
+\frac{1}{||w||}|w\cdot x_i + b|
+\]</span> 在我们有的数据集<span
+class="math inline">\((x_i,y_i)\)</span>中，<span
+class="math inline">\(y_i\in Y =
+\{+1,-1\}\)</span>。考虑数据集中误分类的数据<span
+class="math inline">\((x_i, y_i)\)</span>，有下面的推导成立： <span
+class="math display">\[
+当w\cdot x_i + b&gt;0时：y_i = -1
+\\
+当w\cdot x_i + b&lt;0时：y_i = +1
+\]</span> 从而对于误分类的数据<span
+class="math inline">\((x_i,y_i)\)</span>，它到超平面S的距离为： <span
+class="math display">\[
+-y_i\frac{1}{||w||}(w\cdot x_i + b)
+\]</span> 不考虑系数<span
+class="math inline">\(1/||w||\)</span>，我们可以得到感知机的经验风险函数：
+<span class="math display">\[
+L(w,b) = -\sum_{x_i\in M}y_i(w\cdot x_i + b)
+\]</span>
+其中M表示误分类点的集合。因此感知机的学习策略是经验风险最小化，也就是让上面经验风险函数最小。</p>
+<h1 id="感知机学习算法">感知机学习算法</h1>
+<p>感知机学习算法（Perceptron Learning
+Algorithm，PLA）具体包括原始形式和对偶形式。</p>
+<h2 id="原始形式">原始形式</h2>
+<p>感知机学习算法是误分类驱动的，具体采用<strong>随机梯度下降法</strong>。首先仍选一个超平面，对应参数为<span
+class="math inline">\(w_0,b_0\)</span>。然后用梯度下降法不断地极小化目标函数。极小化过程中不是一次使得M中所有误分类点的梯度下降，而是<strong>随机选取一个误分类点</strong>，使其梯度下降。考虑损失函数的梯度，有：
+<span class="math display">\[
+\bigtriangledown _wL(w,b) = -\sum_{x_i\in M}y_ix_i
+\\
+\bigtriangledown _bL(w,b) = -\sum_{x_i\in M}y_i
+\]</span> 每次随机选取一个误分类点<span
+class="math inline">\((x_i,y_i)\)</span>，对参数<span
+class="math inline">\(w,b\)</span>进行更新： <span
+class="math display">\[
+w\leftarrow w - \eta(-y_ix_i) = w+\eta y_ix_i
+\\
+b\leftarrow b - \eta(-y_i) = b+\eta y_i
+\]</span> 因此，感知机学习算法的原始形式如下：</p>
+<ul>
+<li>输入：训练数据集<span class="math inline">\(T =
+{(x_1,y_1),...,(x_N,y_N)}\)</span>；学习率<span
+class="math inline">\(\eta\ (0 &lt; \eta \le 1)\)</span></li>
+<li>输出：参数<span
+class="math inline">\(w,b\)</span>，结果感知机模型<span
+class="math inline">\(f(x) = sign(w\cdot x+b)\)</span></li>
+</ul>
+<ol type="1">
+<li><p>首先选取初值<span class="math inline">\(w_0,b_0\)</span></p></li>
+<li><p>在训练集中选取数据<span
+class="math inline">\((x_i,y_i)\)</span></p></li>
+<li><p>如果有<span class="math inline">\(y_i(w\cdot x_i+b)\le
+0\)</span>，则表示这个点是一个误分类的点，则进行如下的参数更新： <span
+class="math display">\[
+w\leftarrow w+\eta y_ix_i
+\\
+b\leftarrow  b+\eta y_i
+\]</span></p></li>
+<li><p>重复执行步骤2，3，直到训练集中没有误分类的点</p></li>
+</ol>
+<p>从直观上理解上面的算法，每次找到一个误分类的点，则调整参数<span
+class="math inline">\(w,b\)</span>的值，使得超平面向误分类点进行移动，以减少该误分类点与平面之间的距离。每次都这样调整，直到所有的点都能够被正确分类。不过需要注意的是，<strong>感知机学习算法受初值影响，也受过程影响</strong>。由于采用不同的初值或者选用不同的误分类点，得到的解也会不同。</p>
+<h2 id="对偶形式">对偶形式</h2>
+<p>对偶形式的基本思想：将<span
+class="math inline">\(w,b\)</span>表示为<span
+class="math inline">\(x_i,y_i\)</span>的线性组合，通过求解对应的系数来求得<span
+class="math inline">\(w,b\)</span>。下面来介绍这种思想的合理性。</p>
+<p>首先我们可以考虑假设初值均为0，即<span
+class="math inline">\(w_0=0,b_0=0\)</span>。之后，对于误分类的点，同样有如下的更新方式：
+<span class="math display">\[
+w\leftarrow w+\eta y_ix_i
+\\
+b\leftarrow  b+\eta y_i
+\]</span>
+假设整个过程一共修改了n次参数，那么这n次修改会对应到不同的点上，具体对应关系与实际过程中误分类的情况以及选取误分类点的情况有关。整个过程迭代结束后，我们可以得到下面的等式：
+<span class="math display">\[
+w = \sum_{i=1}^{N}\alpha_iy_ix_i\\
+b = \sum_{i=1}^{N}\alpha_iy_i
+\]</span> 其中，对应系数<span class="math inline">\(\alpha_i =
+n_i\eta\)</span>，<span class="math inline">\(n_i\)</span>表示点<span
+class="math inline">\((x_i,y_i)\)</span>在整个过程中被误分类的次数。这也就说，我们最终学习得到的参数可以被表示成<span
+class="math inline">\(x_i,y_i\)</span>的线性组合，对应的系数就是<span
+class="math inline">\(\alpha_i\)</span>，且系数的值一定是非负数。从这里也可以看出，最终参数结果与实例点的更新次数有关。如果一个实例点的更新次数越多，意味着它距离分离超平面越近，从而越难被分类正确，从而对学习结果影响越大。</p>
+<p>因此，对偶形式的感知机学习算法如下：</p>
+<ul>
+<li>输入：训练数据集<span class="math inline">\(T =
+{(x_1,y_1),...,(x_N,y_N)}\)</span>；学习率<span
+class="math inline">\(\eta\ (0 &lt; \eta \le 1)\)</span></li>
+<li>输出：参数<span
+class="math inline">\(\alpha,b\)</span>，结果感知机模型<span
+class="math inline">\(f(x) = sign(\sum_{j=1}^{N}\alpha_jy_jx_j\cdot
+x+b)\)</span></li>
+</ul>
+<ol type="1">
+<li><p>首先选取初值<span
+class="math inline">\(\alpha_0=0,b_0=0\)</span></p></li>
+<li><p>在训练集中选取数据<span
+class="math inline">\((x_i,y_i)\)</span></p></li>
+<li><p>如果有<span
+class="math inline">\(y_i(\sum_{j=1}^{N}\alpha_jy_jx_j\cdot x_i+b)\le
+0\)</span>，则表示这个点是一个误分类的点，则进行如下的参数更新： <span
+class="math display">\[
+\alpha \leftarrow \alpha +\eta
+\\
+b\leftarrow  b+\eta y_i
+\]</span></p></li>
+<li><p>重复执行步骤2，3，直到训练集中没有误分类的点</p></li>
+</ol>
+<p>在上面的过程中，实例之间进行的操作仅有内积，因此可以预先将训练集中实例之间的内积计算出来并以矩阵的形式进行存储，我们可以通过index直接取值得到对应的内积结果。而这个矩阵就是所谓的Gram矩阵：
+<span class="math display">\[
+G = [x_i \cdot x_j]_{N \times N}
+\]</span></p>
+<h1 id="算法可行性">算法可行性</h1>
+<p>感知机算法能够发挥作用的前提是数据集线性可分。我们很容易知道，如果是线性不可分的数据集，我们是无法通过一个超平面进行划分的，从而感知机算法也无法发挥作用。不过感知机算法在线性可分的数据集上一定能够起效吗，下面就来正面感知机算法的可行性，即通过有限次的迭代，算法一定能够收敛。</p>
+<p>这里为了方便叙述，可以将偏执<span
+class="math inline">\(b\)</span>并入权重<span
+class="math inline">\(w\)</span>，对应同时将输入向量进行扩充，加入常数1。此时有<span
+class="math inline">\(\hat{w}=(w^T,b)^T,\hat{x}=(x^T,1)^T\)</span>，增加上标hat表示对向量的扩充。则感知机的模型就变为了<span
+class="math inline">\(f(x)=sign(\hat{w}\cdot \hat{x})\)</span>。</p>
+<p>假设感知机在训练集上的误分类次数为k，那么我们需要证明的是k上界存在。</p>
+<p>首先由于数据集线性可分，所以一定存在一个超平面<span
+class="math inline">\(\hat{w_{opt}}\)</span>能够将训练集完全正确地分开，其中<span
+class="math inline">\(||\hat{w_{opt}} =
+1||\)</span>且训练集中的点都恰好不在这个面上。根据距离计算公式以及正负类的输出，可以得到如下的结果：
+<span class="math display">\[
+y_i(\hat{w_{opt}}\cdot \hat{x_{i}}) = y_i(w_{opt}\cdot x_i+b_{opt}) &gt;
+0
+\]</span> 取<span class="math inline">\(\gamma = \min_i\{
+y_i(w_{opt}\cdot x_i+b_{opt}) \} &gt; 0\)</span>，则有： <span
+class="math display">\[
+y_i(\hat{w_{opt}}\cdot \hat{x_{i}}) = y_i(w_{opt}\cdot x_i+b_{opt})\ge
+\gamma &gt; 0
+\tag{1}
+\]</span> 假设在第k-1次更新过后，参数向量为<span
+class="math inline">\(\hat{w_{k-1}}\)</span>，而第k次更新参数向量，采用的误分类点为<span
+class="math inline">\((x_i,y_i)\)</span>，那么对于这个误分类点，它应该满足：
+<span class="math display">\[
+y_i(\hat{w_{k-1}} \cdot \hat{x_i}) = y_i(w_{k-1}\cdot x_i + b_{k-1}) \le
+0
+\tag{2}
+\]</span> 而第k次更新如下： <span class="math display">\[
+\hat{w_k} = \hat{w_{k-1}} + \eta y_i\hat{x_i}
+\]</span> 这样，我们就可以进行如下推导： <span class="math display">\[
+\begin{aligned}
+\hat{w_{opt}} \cdot \hat{w_{k}} &amp;= \hat{w_{opt}} \cdot(\hat{w_{k-1}}
++ \eta y_i\hat{x_i})
+\\
+&amp;=\hat{w_{opt}}\cdot \hat{w_{k-1}} + \eta y_i(\hat{w_{opt}}\cdot
+\hat{x_{i}})
+\\
+&amp;\ge \hat{w_{opt}}\cdot \hat{w_{k-1}} + \eta \gamma
+\quad using (1)
+\\
+&amp;\ge \hat{w_{opt}}\cdot \hat{w_{k-2}} + 2\eta \gamma
+\\
+&amp;\ge ...\ge k\eta \gamma
+\end{aligned}
+\tag{3}
+\]</span> 同时我们取<span class="math inline">\(R=\max_{1\le i\le N}
+||\hat{x_i}||\)</span>，则有如下推导</p>
+<p><span class="math display">\[
+\begin{aligned}
+||\hat{w_{k}}||^2 &amp;= ||\hat{w_{k-1}} +\eta y_i\hat{x_i}||^2
+\\
+&amp;=||\hat{w_{k-1}}||^2 + 2\eta y_i (\hat{w_{k-1}}\cdot \hat{x_i}) +
+\eta^2y_i^2||\hat{x_i}||^2
+\\
+&amp;\le ||\hat{w_{k-1}}||^2  + \eta^2||\hat{x_i}||^2
+\quad using (2)
+\\
+&amp;\le ||\hat{w_{k-1}}||^2  + \eta^2R^2
+\\
+&amp;\le ||\hat{w_{k-2}}||^2  + 2\eta^2R^2
+\\
+&amp;\le ... \le k\eta^2R^2
+\end{aligned}
+\tag{4}
+\]</span></p>
+<p>综合上面两个不等式(3)和(4)，则有：</p>
+<p><span class="math display">\[
+\begin{aligned}
+k\eta\gamma \le \hat{w_{opt}} \cdot \hat{w_{k}} &amp;
+\le ||\hat{w_{opt}}||\  || \hat{w_{k}}||
+\le || \hat{w_{k}}||
+\le \sqrt{k}\eta R
+\\
+k\eta\gamma &amp;\le \sqrt{k}\eta R
+\\
+k &amp;\le (\frac{R}{\gamma})^2
+\end{aligned}
+\]</span></p>
+<p>综上所述，感知机的误分类次数k是存在上界的，且上界为<span
+class="math inline">\((R/\gamma)^2\)</span>，且其中<span
+class="math inline">\(R=\max_{1\le i\le N} ||\hat{x_i}||\)</span>，<span
+class="math inline">\(\gamma = \min_i\{ y_i(w_{opt}\cdot x_i+b_{opt}) \}
+&gt;
+0\)</span>。这也就说，经过有限次搜索，一定可以找到将训练数据完全正确划分开的分离超平面。</p>
+<blockquote>
+<p>感知机算法对于线性可分的数据集是有效的，但是如果想要在线性不可分的数据集上应用感知机算法，则需要对要求进行放宽。我们不强求对所有的实例点都满足正确分类，而是容忍有错误点，最终的模型应该让错误点的个数最少。不过这个问题是一个NP难问题。</p>
+<p>我们将原始的感知机学习算法进行修改，称为Packet
+Algorithm。它的流程与PLA类似，每次对错误点进行修正。只不过在进行更新的时候，会计算当前分类错误点的个数，并与之前的结果进行比较，取效果更好的超平面作为当前选择。经过n次迭代之后，得到最终结果，这应该是一个相对较好的分离超平面。</p>
+<p>Packet
+Algorithm是感知机算法应用在非线性可分数据集上的一种修改。但是如果两种算法都应用在线性可分的数据集上，Packet
+Algorithm的效率会低一些，因为它在每次迭代中都需要计算当前情况下所有的误分类点的个数，而原始感知机算法在每次迭代中只关注一个误分类点。</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" class="category-chain-item">基础理论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a>
+      
+        <a href="/tags/%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/">#监督学习</a>
+      
+        <a href="/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/">#线性模型</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>机器学习基础(5)-二分类问题与感知机模型</div>
+      <div>http://example.com/2023/08/20/机器学习基础-5-二分类问题与感知机模型/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/" title="机器学习基础(6)-线性回归与Logistic回归">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">机器学习基础(6)-线性回归与Logistic回归</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-4-%E8%BF%87%E6%8B%9F%E5%90%88-%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%8EValidation%E9%AA%8C%E8%AF%81/" title="机器学习基础(4)-过拟合,正则化与Validation验证">
+                        <span class="hidden-mobile">机器学习基础(4)-过拟合,正则化与Validation验证</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

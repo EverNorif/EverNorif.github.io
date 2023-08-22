@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="几乎所有的机器学习算法最终都会归结于对某个目标函数进行优化。如果这个问题有解析解，那么可以很容易计算出来，但是大多数情况下问题是没有解析解的，因此需要利用某种方式求得对应的数值解。一种最为常用的方法就是梯度下降。本篇主要介绍了梯度下降的基本思想以及相关变体。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础(3)-梯度下降">
+<meta property="og:url" content="http://example.com/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-3-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="几乎所有的机器学习算法最终都会归结于对某个目标函数进行优化。如果这个问题有解析解，那么可以很容易计算出来，但是大多数情况下问题是没有解析解的，因此需要利用某种方式求得对应的数值解。一种最为常用的方法就是梯度下降。本篇主要介绍了梯度下降的基本思想以及相关变体。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-19T12:41:00.000Z">
+<meta property="article:modified_time" content="2023-08-22T12:48:55.830Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="梯度下降">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>机器学习基础(3)-梯度下降 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="机器学习基础(3)-梯度下降"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-19 20:41" pubdate>
+          2023年8月19日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          45 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习基础(3)-梯度下降</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="梯度下降">梯度下降</h1>
+<p>对于机器学习来说，我们有它的三要素，分别是模型、策略以及算法。其中的策略方面，我们会定义损失函数，而几乎所有的机器学习算法，最终都会归结于求某个目标函数的极值（一般是损失函数的最小值）。这对应到最优化问题，而在机器学习中，常用的最优化方法就是梯度下降。</p>
+<p>首先考虑存在一个假设空间<span
+class="math inline">\(H\)</span>，训练集为<span
+class="math inline">\(D(|D|
+=N)\)</span>。机器学习需要学习得到的目标函数为<span
+class="math inline">\(y =
+f(x)\)</span>，一个具体的目标函数对应一组特定的参数<span
+class="math inline">\(w\)</span>。考虑损失函数Loss
+Function，它可以表示成<span
+class="math inline">\(L(y,f(x))\)</span>。由于<span
+class="math inline">\(f(x)\)</span>的确定需要<span
+class="math inline">\(w\)</span>的参与，所以损失函数表示成<span
+class="math inline">\(L(w,x,y)\)</span>。于是我们的策略就是如下的最优化问题：
+<span class="math display">\[
+\min_{w} \frac{1}{N}\sum_{i=1}^{N}L(w,x_i,y_i)
+\]</span> 这个最优化问题是说，我们需要选取一个参数向量<span
+class="math inline">\(w\)</span>使得损失函数在训练集上的平均损失最小。此时，整体的优化目标函数看作是关于<span
+class="math inline">\(w\)</span>的函数，如果我们能够找到在某个<span
+class="math inline">\(w\)</span>上，上面式子的梯度（导数）为0，则表示找到了一个极值点。这里的优化目标函数记作<span
+class="math inline">\(L(w)\)</span>，它和损失函数<span
+class="math inline">\(L(w,x,y)\)</span>有如下关系，注意区分不同的表述。
+<span class="math display">\[
+L(w) = \frac{1}{N}\sum_{i=1}^{N}L(w,x_i,y_i)
+\]</span>
+找到一个极值点就像在山谷中找到一个最低点。梯度下降的思想在于，通过迭代向下，每次选取当前最优的下降方向迈出一小步，经过多轮迭代之后，就能够达到谷底。对于当前位置来说，下降的最优方向就是当前的梯度方向。同时我们还需要考虑当前下降的步长是多少，所以还需要引入学习率（Learning
+Rate）的概念，通常使用<span
+class="math inline">\(\eta\)</span>来表示。</p>
+<p>我们用<span class="math inline">\(w^{i}\)</span>表示经过第<span
+class="math inline">\(i\)</span>次参数更新后参数向量<span
+class="math inline">\(w\)</span>的值，那么初始值就是<span
+class="math inline">\(w^0\)</span>，而梯度下降每次的参数更新就可以表示成下面的过程：
+<span class="math display">\[
+w^{n+1} \leftarrow  w^{n} - \eta \bigtriangledown L(w)
+\]</span>
+在梯度下降的过程中，我们会多次重复上面的过程，直到优化目标函数的值收敛不变。不过这是一种理想情况，很多时候是走不到梯度严格为0的地方的，所以一般的停止条件是经过足够多轮数的迭代，从而我们认为此时的优化目标已经足够小了。</p>
+<p>当然我们可以直觉地考虑，如果学习率<span
+class="math inline">\(\eta\)</span>设置得过大，有可能我们会在最低点附近反复横跳，错失损失函数的最小值；而如果设置得过小，则有可能需要迭代非常多的次数才能够找到最小值，消耗较多的时间。因此在实际过程中，选择一个合适的学习率是非常重要的。</p>
+<h1 id="不同的梯度下降方法">不同的梯度下降方法</h1>
+<h2 id="标准梯度下降">标准梯度下降</h2>
+<p>标准的梯度下降在每一次参数更新中，需要考虑训练集中所有的数据，计算损失函数<span
+class="math inline">\(L(w,x,y)\)</span>在<strong>每个数据</strong><span
+class="math inline">\(x_i\in
+D\)</span>上的梯度<strong>之后进行平均</strong>，以此作为一次梯度更新的值。</p>
+<p>这种算法每次都在遍历了整个训练集之后才对参数进行更新，因此下降方向是最优的方向。但是也是由于每一轮都需要遍历整个训练集，所以在时间和效率上花费较大。</p>
+<h2 id="mini-batch-梯度下降">Mini-Batch 梯度下降</h2>
+<p>标准的梯度下降每次更新梯度都需要遍历整个训练集，但是很多时候通过整个训练集计算出来的梯度，与通过部分训练集计算出来的梯度相差并不是很多，于是我们可以在每次更新参数的时候，随机从样本中抽取<span
+class="math inline">\(M\)</span>个样本进行梯度的计算，从而进行参数更新。这种方式叫做Mini-Batch
+梯度下降，<span class="math inline">\(M\)</span>被称为batch
+size。相比于标准梯度下降来说，能够提高算法的运行速度。</p>
+<p>当然在实际使用的时候，我们不会每次更新都随机挑选<span
+class="math inline">\(M\)</span>个样本。我们会首先将所有的训练集划分成一个个batch，<span
+class="math inline">\(batch\
+size=M\)</span>。之后进行迭代，每次迭代的时候看一个batch，并进行参数更新update。过程依次进行，直到看过所有的batch之后，我们称为经过了一个epoch。之后重新从第一个batch开始，进行下一次的参数更新。我们也可以引入Shuffle操作，主要目的在于将batch的分割变得随机化，使得在每一次epoch中，batch的内容都是与上一次epoch不同的。</p>
+<h2 id="随机梯度下降sgd">随机梯度下降SGD</h2>
+<p>在Mini-Batch 梯度下降中，极端地如果batch
+size为1，也就是每次更新参数的时候只从训练集中随机选取一个样本进行梯度计算，这种方式被称为<strong>随机梯度下降</strong>（Stochastic
+Gradient
+Descent，SGD）。由于每次仅仅计算在一个样本上的梯度，SGD的速度要比Mini-Batch
+梯度下降还要高，但是也因为仅使用一个样本梯度方向来表示整个数据上的梯度方向，下降路径很容易受到噪声的影响。看起来就像醉汉走路一样，变得歪歪斜斜。</p>
+<h2 id="momentum-梯度下降">Momentum 梯度下降</h2>
+<p>Momentum
+梯度下降对参数更新的方式进行调整。Momentum意为动量，这种方法参考了物理学中的概念。我们每次更新参数时，并不仅仅参考当前的梯度方向<span
+class="math inline">\(g=\bigtriangledown
+L(w)\)</span>，还参考之前的方向<span
+class="math inline">\(m\)</span>​.（类似于矢量相加的效果）： <span
+class="math display">\[
+\begin{aligned}
+\text{初始参数为：} &amp;  w ^0 \\
+\text{movement为：} &amp;m^0 = 0 \text{(上一步没有移动)}  \\
+\text{计算梯度：}   &amp;g^0\\
+\\
+\text{进行第一次移动：}&amp;  m^1 = \lambda m^0 - \eta g^0  \\
+\text{第一次参数更新：}&amp; w ^1 = w ^0 + m^1  \\
+\\
+\text{梯度计算：}   &amp;g^1\\
+\text{movement为：} &amp;  m^2 = \lambda m^1 - \eta g^1\\
+\text{第二次参数更新：}&amp;  w ^2 = w ^1 + m^2\\
+\end{aligned}
+\]</span> 这里引入了新的参数<span
+class="math inline">\(\lambda\)</span>，同学习率一样，需要我们事先进行确定。该参数的含义表示我们应该对过往的动量方向给予多少的重视度。</p>
+<p>上面的计算过程进行迭代，又可以得到m的一系列连续的表达式： <span
+class="math display">\[
+\begin{aligned}
+m^0 &amp;= 0 \\
+m^1 &amp;= -\eta g^0 \\
+m^2 &amp;= -\lambda \eta g^0 - \eta g^1 \\
+m^3 &amp;= -\lambda ^2 \eta g^0 - \lambda \eta g^1 - \eta g^2 \\
+...
+\end{aligned}
+\]</span>
+这也就是说，在每次进行参数更新的时候，都是考虑从前所有的梯度，使用从前的梯度的某种线性组合来进行更新。这种优化方式并不会立刻改变梯度优化的方向，而是通过积累一点点变化的。这种优化方式的好处在于通过不同训练样本求梯度的时候，始终都会增大最优方向上的梯度值，因此可以减少许多震荡。</p>
+<h2 id="adagrad-梯度下降">AdaGrad 梯度下降</h2>
+<p>从直觉上考虑，当我们远离谷底的时候，我们应该使我们的步长尽量大一些，以便于快速接近谷底。而当我们靠近谷底的时候，步长应该尽量变小，因为如果在谷底附近步长仍然很大的话，容易导致优化目标函数的值在山谷中来回震荡。所以实际上在整个学习过程中，学习率不应该使一成不变的。在训练过程中，应该对不同情况进行学习率的调整，即对学习率进行客制化，做到学习率的调整（Adaptive
+Learning
+Rate）。从总体上把握，在梯度较小的地方，我们希望学习率较大；在梯度较大的地方，我们需要学习率较小。</p>
+<p>为了调整，考虑参数<span
+class="math inline">\(w\)</span>的更新过程，将更新过程改进为： <span
+class="math display">\[
+w^{t+1} = w ^t -\frac{\eta}{\sigma ^t} g^t
+\]</span> 这里的上标t表示更新参数的次数，式子中，<span
+class="math inline">\(\sigma^t\)</span>即为我们用于客制化学习率的参数向量，这一参数如何计算得来也有多种方式。一种方法是利用方均根（Root
+Mean Square）来计算<span class="math inline">\(\sigma\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+w^1 \leftarrow w^0 - \frac{\eta}{\sigma ^0} g^0
+\quad
+\sigma^0 &amp;= \sqrt{(g^0)^2} = ||g^0|| \\
+w^2 \leftarrow w^1 - \frac{\eta}{\sigma ^1} g^1
+\quad
+\sigma^1 &amp;= \sqrt{\frac{1}{2}[(g^0)^2+(g^1)^2]} \\
+w^3 \leftarrow w^2 - \frac{\eta}{\sigma ^2} g^2
+\quad
+\sigma^2 &amp;= \sqrt{\frac{1}{3}[(g^0)^2+(g^1)^2+(g^2)^2]} \\
+&amp;... \\
+w^{t+1} \leftarrow w^t - \frac{\eta}{\sigma ^t} g^t
+\quad
+\sigma^t &amp;= \sqrt{\frac{1}{t+1}\sum \limits^{t}_{i=0}(g^i)^2} \\
+\end{aligned}
+\]</span> 这样设置，对于某一个参数<span
+class="math inline">\(w_i\)</span>的更新，假如这个参数所处的地方比较平坦，梯度都比较小，那么设置的学习率就会更大；反之如果参数所处的地方比较陡峭，梯度较大，那么设置的学习率就会更小。这种动态调整学习率的方法，对应的方法就是Adagrad
+梯度下降。</p>
+<h2 id="rmsprop">RMSProp</h2>
+<p>上面的Adagrad梯度下降方法也存在某种局限性，它考虑当前的位置的时候，过往的梯度都具有相同的重要性。而RMSProp方法在Adagrad方法的基础上进行更新，改进其中<span
+class="math inline">\(\sigma\)</span>的计算方式，得到如下方法：</p>
+<p><span class="math display">\[
+\begin{aligned}
+w^1 \leftarrow w^0 - \frac{\eta}{\sigma ^0} g^0
+\quad
+\sigma^0 &amp;= \sqrt{(g^0)^2} = ||g^0|| \\
+w^2 \leftarrow w^1 - \frac{\eta}{\sigma ^1} g^1
+\quad
+\sigma^1 &amp;= \sqrt{\alpha(\sigma^0)^2 + (1 - \alpha)(g^1)^2} \\
+w^3 \leftarrow w^2 - \frac{\eta}{\sigma ^2} g^2
+\quad
+\sigma^2 &amp;= \sqrt{\alpha(\sigma^1)^2 + (1 - \alpha)(g^2)^2} \\
+&amp;... \\
+w^{t+1} \leftarrow w^t - \frac{\eta}{\sigma ^t} g^t
+\quad
+\sigma^t &amp;= \sqrt{\alpha(\sigma^{t-1})^2 + (1 - \alpha)(g^t)^2} \\
+\end{aligned}
+\]</span> 其中引入的参数<span
+class="math inline">\(\alpha\)</span>来进行调整，范围为<span
+class="math inline">\(0 &lt; \alpha &lt; 1\)</span>。</p>
+<p>在这种方法中，<span
+class="math inline">\(\sigma\)</span>同样考虑了之前所有的梯度<span
+class="math inline">\(g\)</span>，但是与之前考虑所有的梯度具有相同的重要性不一样，这种方法可以利用参数<span
+class="math inline">\(\alpha\)</span>来调整当前梯度的重要性，因此可以设置对梯度地变化更加敏感。</p>
+<h2 id="adam-梯度下降">Adam 梯度下降</h2>
+<p>Adam在上面一些梯度下降方法的基础上，进行改进，有如下的更新方式，其中<span
+class="math inline">\(\beta_1,\beta_2\)</span>都是接近1的数，<span
+class="math inline">\(\epsilon\)</span>是为了防止除以0，<span
+class="math inline">\(g_t\)</span>表示当前轮次的梯度。在Adam原论文以及一些深度学习框架中，默认值为<span
+class="math inline">\(\beta_1=0.9,\beta_2=0.999,\epsilon=10^{-8},\eta=0.001\)</span>：
+<span class="math display">\[
+\begin{aligned}
+m_t &amp;= \beta_1 m_{t-1} + (1-\beta_1)g_t\\
+v_t &amp;= \beta_2 v_{t-1} + (1-\beta_2)g^2_t\\
+\hat{m}_t&amp;=\frac{m_{t-1}}{1-{\beta}^{t-1}_1} \\
+\hat{v}_t&amp;=\frac{v_{t-1}}{1-{\beta}^{t-1}_2} \\
+{w}_{t+1}&amp;={w}_t-\frac{\eta}{\sqrt{\hat{v_t}}+\epsilon}m_t \\
+\end{aligned}
+\]</span> 整个过程可以分解为如下的步骤：</p>
+<p>首先<span class="math inline">\(m_t\)</span>与<span
+class="math inline">\(v_t\)</span>分别表示对梯度以及梯度的平方进行滑动平均，使得每次的更新都与历史值相关。之后的<span
+class="math inline">\(\hat{m}_t\)</span>与<span
+class="math inline">\(\hat{v}_t\)</span>是对初期滑动平均偏差较大的一个修正，叫做
+bias correction，当<span
+class="math inline">\(t\)</span>越来越大时，<span
+class="math inline">\(1−β^t_1\)</span>和<span
+class="math inline">\(1−β^t_2\)</span> 都趋近于 1，这时 bias correction
+的任务也就完成了。之后对参数进行更新，更新方式就和最后一行表示的相同。这里每轮的学习率都是变化的，与<span
+class="math inline">\(\hat{v}_t\)</span>相关，同时更新使用的不是梯度<span
+class="math inline">\(g\)</span>而是<span
+class="math inline">\(m\)</span>，有类似于Momentum的思想。</p>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/112416130">详解梯度下降法（干货篇）</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/42689565">机器学习中的最优化算法总结</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/68468520">梯度下降算法（Gradient
+Descent)的原理和实现步骤</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/wuliytTaotao/p/11101652.html">Adam和学习率衰减（learning
+rate decay） - wuliytTaota</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" class="category-chain-item">基础理论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a>
+      
+        <a href="/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/">#梯度下降</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>机器学习基础(3)-梯度下降</div>
+      <div>http://example.com/2023/08/19/机器学习基础-3-梯度下降/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/19/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-4-%E8%BF%87%E6%8B%9F%E5%90%88-%E6%AD%A3%E5%88%99%E5%8C%96%E4%B8%8EValidation%E9%AA%8C%E8%AF%81/" title="机器学习基础(4)-过拟合,正则化与Validation验证">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">机器学习基础(4)-过拟合,正则化与Validation验证</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/18/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-2-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8F%AF%E8%A1%8C%E6%80%A7/" title="机器学习基础(2)-机器学习可行性">
+                        <span class="hidden-mobile">机器学习基础(2)-机器学习可行性</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,1050 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了机器学习中常见的线性回归以及Logisitic回归，其中线性回归主要用来解决回归问题，而Logisitc回归面向分类问题。同时还介绍了由二分类问题如何扩展到多分类问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础(6)-线性回归与Logistic回归">
+<meta property="og:url" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了机器学习中常见的线性回归以及Logisitic回归，其中线性回归主要用来解决回归问题，而Logisitc回归面向分类问题。同时还介绍了由二分类问题如何扩展到多分类问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/sigmoid.png">
+<meta property="og:image" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/err%E5%AF%B9%E6%AF%94.png">
+<meta property="article:published_time" content="2023-08-20T13:02:33.000Z">
+<meta property="article:modified_time" content="2023-08-22T13:03:31.223Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="监督学习">
+<meta property="article:tag" content="线性模型">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/sigmoid.png">
+  
+  
+  
+  <title>机器学习基础(6)-线性回归与Logistic回归 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="机器学习基础(6)-线性回归与Logistic回归"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-20 21:02" pubdate>
+          2023年8月20日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          57 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习基础(6)-线性回归与Logistic回归</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="线性回归">线性回归</h1>
+<h2 id="模型描述">模型描述</h2>
+<p>在机器学习中，一个最常见的模型就是线性回归模型。这个模型的输入是一个多维的向量<span
+class="math inline">\(x\in X\)</span>，而输出是一个实数<span
+class="math inline">\(y\in R\)</span>，整个模型可以描述如下： <span
+class="math display">\[
+y = h(x) = w^Tx + b = \hat{w}^T \hat{x}
+\]</span> 其中的<span
+class="math inline">\(w\)</span>为参数向量，模型可以看作是参数向量与输入向量的内积结果。这里可以将偏置项<span
+class="math inline">\(b\)</span>统一到参数向量中，将参数向量扩充为<span
+class="math inline">\(\hat{w}\)</span>。为了简单起见，如果没有特殊说明，后续的参数向量<span
+class="math inline">\(w\)</span>实际上指的都是扩充后的<span
+class="math inline">\(\hat{w}\)</span>。从几何角度来看，如果输入空间是一维空间，则线性回归的目标是找到一条直线，使得样本集中的点更加接近它。如果输入空间是高维空间，则目标是找到一个（超）平面。</p>
+<p>损失函数通常使用的是平方误差，即： <span class="math display">\[
+L(w,x_i,y_i) = (y_i - y)^2 = (y_i-w^Tx_i)^2
+\]</span>
+在使用平方误差的基础上，这里的线性回归问题与统计学中的线性回归问题是相同的，我们可以通过最小二乘法来解决该问题。</p>
+<h2 id="最小二乘法">最小二乘法</h2>
+<p>假设我们的训练集的容量为N，即<span class="math inline">\(D =
+\{x_1,x_2,...,x_N\}\)</span>，同时每个<span
+class="math inline">\(x_i\)</span>都是一个<span
+class="math inline">\(d\)</span>维向量。考虑我们的优化目标，让模型在训练集上达到最小的平方误差，即：
+<span class="math display">\[
+\min_{w}E_{in}(w) = \min_{w} \frac{1}{N}\sum_{i=1}^{N}(x_i^Tw-y_i)^2
+\]</span> 这里的参数向量<span
+class="math inline">\(w\)</span>是扩充后的向量，<span
+class="math inline">\(x_i\)</span>也增加了常数维度，此时是一个<span
+class="math inline">\(d+1\)</span>维向量。与上面的损失函数表示方式不同，这里交换了<span
+class="math inline">\(x\)</span>与<span
+class="math inline">\(w\)</span>的位置，这是为了后续的矩阵化处理，并不会影响结果的正确性。</p>
+<p>对于上面的式子，我们可以使用矩阵来简化<span
+class="math inline">\(E_{in}\)</span>的表达方式： <span
+class="math display">\[
+\begin{aligned}
+E_{in}(w)
+&amp;= \frac{1}{N}\sum_{i=1}^{N}(x_i^Tw-y_i)^2\\
+&amp;= \frac{1}{N} ||
+\begin{bmatrix}
+x_1^Tw-y_1\\
+x_2^Tw-y_2\\
+...\\
+x_N^Tw-y_N
+\end{bmatrix}
+||^2 \\
+&amp;=\frac{1}{N}||
+\begin{bmatrix}
+x_1^T\\
+x_2^T\\
+...\\
+x_N^T
+\end{bmatrix}
+w-
+\begin{bmatrix}
+y_1\\
+y_2\\
+...\\
+y_N
+\end{bmatrix}
+||^2\\
+&amp;=\frac{1}{N}||Xw-Y||^2
+\end{aligned}
+\]</span> 于是有<span
+class="math inline">\(E_{in}(w)=\frac{1}{N}||Xw-Y||^2\)</span>。其中<span
+class="math inline">\(X\)</span>是一个<span
+class="math inline">\(N\times(d+1)\)</span>的矩阵，每一行是训练集中扩充后的输入向量<span
+class="math inline">\(x_i\)</span>；<span
+class="math inline">\(w\)</span>是一个<span
+class="math inline">\((d+1)\times1\)</span>的矩阵，每一行是一个对应的参数；<span
+class="math inline">\(Y\)</span>是一个<span
+class="math inline">\(N\times1\)</span>的矩阵，每一行是训练集中对应的结果<span
+class="math inline">\(y_i\)</span>。</p>
+<p>我们想要找到一个<span class="math inline">\(w\)</span>使得<span
+class="math inline">\(E_{in}(w)\)</span>达到最小值，也就是找到在函数梯度为0的地方对应的<span
+class="math inline">\(w\)</span>。即<span
+class="math inline">\(\bigtriangledown E_{in}(w) =
+0\)</span>。下面我们可以计算<span
+class="math inline">\(E_{in}(w)\)</span>的梯度： <span
+class="math display">\[
+\begin{aligned}
+E_{in}(w) &amp;= \frac{1}{N}||Xw-Y||^2 =
+\frac{1}{N}(w^TX^TXw-2w^TX^TY+Y^TY)\\
+\bigtriangledown E_{in}(w) &amp;= \frac{1}{N}(2X^TXw-2X^TY) =
+\frac{2}{N}(X^TXw-X^TY)
+\end{aligned}
+\]</span> 于是如果想要梯度为0，也就是： <span class="math display">\[
+X^TXw=X^TY
+\]</span> 如果<span
+class="math inline">\(X^TX\)</span>可逆，我们可以得到对应的<span
+class="math inline">\(w=(X^TX)^{-1}X^TY\)</span>。实际上，如果<span
+class="math inline">\(X^TX\)</span>不可逆，数学上仍然可以找到一个解析解。也就是说，对于线性回归问题，在使用平方误差的前提下，我们可以直接计算出最优参数向量<span
+class="math inline">\(w\)</span>的解析解。</p>
+<blockquote>
+<p>我们可以从几何意义上来考虑最小二乘法的含义。</p>
+<p>首先我们的原始目的在于最小化<span
+class="math inline">\(Xw-Y\)</span>。如果我们能够找到一个<span
+class="math inline">\(w\)</span>，能够满足<span
+class="math inline">\(Xw-Y=0\)</span>，那么也就是找到了一条直线（一个超平面）能够完全拟合给定的数据点。但是通常给定的数据不会刚好能够完全拟合，因此需要另寻途径。不过我们仍然可以考虑上面这种想法背后的含义。如果<span
+class="math inline">\(Xw-Y=0\)</span>即<span
+class="math inline">\(Xw=Y\)</span>，它表示如果将<span
+class="math inline">\(Y\)</span>看作是一个<span
+class="math inline">\(N\)</span>维的向量，我们能够使用<span
+class="math inline">\(D=\{x_1,x_2,...,x_N\}\)</span>的线性组合来表示<span
+class="math inline">\(Y\)</span>向量，也就是<span
+class="math inline">\(Y\)</span>恰好落在<span
+class="math inline">\(D=\{x_1,x_2,...,x_N\}\)</span>所张成的空间中。当然这种情况出现的可能性很小，对应给定的数据通常不会刚好能够完全拟合。</p>
+<p>在最小二乘法中，考虑的是等式<span
+class="math inline">\(X^TXw=X^TY\)</span>，相当于在<span
+class="math inline">\(Xw=Y\)</span>的两端同时施加一个线性空间变换，线性变换对应的矩阵维<span
+class="math inline">\(X^T\)</span>，它是一个<span
+class="math inline">\((d+1)\times N\)</span>的矩阵，表示从<span
+class="math inline">\(N\)</span>维空间中的一个超平面变换到<span
+class="math inline">\(d+1\)</span>维空间，此时再考虑变换后的<span
+class="math inline">\(Y\)</span>。这一过程的含义是，如果在<span
+class="math inline">\(N\)</span>维空间中，<span
+class="math inline">\(Y\)</span>不能落在<span
+class="math inline">\(D=\{x_1,x_2,...,x_N\}\)</span>张成的空间，那就考虑<span
+class="math inline">\(Y\)</span>在该空间上的投影<span
+class="math inline">\(Y&#39;\)</span>。投影<span
+class="math inline">\(Y&#39;\)</span>与向量<span
+class="math inline">\(Y\)</span>的距离在一定程度上也就能度量整体的损失。</p>
+</blockquote>
+<h1 id="logistic回归">Logistic回归</h1>
+<h2 id="模型描述-1">模型描述</h2>
+<p>考虑这样一个场景，我们仍然考虑一个二分类问题，但是对于给定的输入，我们要求的输出并不是它是A类还是不是A类，而是希望输出它是A类的概率。具体来说，对于输入<span
+class="math inline">\(x\)</span>，我们希望输出的<span
+class="math inline">\(y\in[0,1]\)</span>，可以看成被分到A类的概率，即<span
+class="math inline">\(y=P(f(x)=A|x)\)</span>。</p>
+<p>模型的构建可以参考线性回归模型。在线性回归模型中，对于输入<span
+class="math inline">\(x\)</span>，我们可以得到一个在实数域上的输出<span
+class="math inline">\(y\)</span>，如果能够在此基础上，将输出<span
+class="math inline">\(y\)</span>映射到<span
+class="math inline">\([0,1]\)</span>的范围，我们就可以得到符合上面场景的模型。实际上，Logistic回归就是使用这样的思想，它使用的函数为sigmoid函数（又称Logistic
+函数），它有如下的定义以及图像：</p>
+<img src="/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/sigmoid.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="sigmoid">
+<p>于是我们可以重新描述Logistic回归模型。我们的输入为一个多维向量<span
+class="math inline">\(x\in X\)</span>，输出为<span
+class="math inline">\(y\in[0,1]\)</span>，参数向量为<span
+class="math inline">\(w\)</span>，则有如下的描述： <span
+class="math display">\[
+y =h(x) =  sigmoid(w^Tx+b) = \frac{1}{1+\exp(\hat{w}\hat{x})}
+\]</span> 与线性回归一样，这里同样可以进行输入向量<span
+class="math inline">\(x\)</span>以及参数向量<span
+class="math inline">\(w\)</span>的扩充，以增加上标的符号表示扩充后的向量。注意这里提供的训练集为<span
+class="math inline">\(D=\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，且其中<span
+class="math inline">\(y_i \in\{+1,-1\}\)</span>。</p>
+<h2 id="损失函数">损失函数</h2>
+<p>Logistic回归的输出是一个在<span
+class="math inline">\([0,1]\)</span>范围内的实数，我们说这个实数<span
+class="math inline">\(y\)</span>可以看作是将当前输入<span
+class="math inline">\(x_i\)</span>分为+1的概率。考虑极大似然的思想，对于我们最终的模型<span
+class="math inline">\(h(x)\)</span>来说，训练集出现的可能性<span
+class="math inline">\(P_{target}\)</span>是最大的。考虑样本点<span
+class="math inline">\((x_i,y_i)\)</span>，这个样本点出现的可能性的计算分为两个部分，第一部分是<span
+class="math inline">\(x_i\)</span>出现的概率，记为<span
+class="math inline">\(P(x_i)\)</span>，第二部分是<span
+class="math inline">\(x_i\)</span>对应输出为<span
+class="math inline">\(y_i\)</span>的概率，记为<span
+class="math inline">\(P(y_i|x_i)\)</span>。考虑我们模型输出<span
+class="math inline">\(h(x)\)</span>的含义，有如下的表达式成立： <span
+class="math display">\[
+P(y|x) = \begin{cases}
+h(x) ,\quad y = +1\\
+1-h(x), \quad y = -1
+\end{cases}
+\]</span> 所以样本点出现的可能性为： <span class="math display">\[
+P((x,y)) =
+\begin{cases}
+P(x)h(x) ,\quad y = +1\\
+P(x)(1-h(x)), \quad y = -1
+\end{cases}
+\]</span> 而由于我们的模型最外层是sigmoid函数，使得模型具有性质<span
+class="math inline">\(1-h(x) =
+h(-x)\)</span>，因此上面样本点出现的可能性可以转化为下面的表示： <span
+class="math display">\[
+\begin{aligned}
+P((x,y))
+&amp;=
+\begin{cases}
+P(x)h(x)=P(x)h(1\times x) ,\quad y = +1\\
+P(x)(1-h(x))=P(x)h(-x)=P(x)h(-1\times x), \quad y = -1
+\end{cases}
+\\
+&amp;=P(x)h(yx)
+\end{aligned}
+\]</span> 因此模型的优化目标是最大化<span
+class="math inline">\(P_{target}\)</span>，且有： <span
+class="math display">\[
+P_{target} =\prod_{i=1}^{N}P((x_i,y_i)) = \prod_{i=1}^{N}P(x)h(yx)
+\]</span>
+而通常情况下，我们希望处理的更多是连加而非连乘的形式，因此我们可以对上面的<span
+class="math inline">\(P_{target}\)</span>进行取对数的操作来将连加转化为连乘，并引入平均数操作<span
+class="math inline">\(1/N\)</span>。同时增加负号，将最大化变成最小化，由此模型的优化目标就转化成了下面的形式：
+<span class="math display">\[
+\min_{w} \frac{1}{N} \sum_{i=1}^{N} -\log(h(y_ix_i))
+\]</span> 同时将<span
+class="math inline">\(h(x)\)</span>的表达式进行带入，那么就会转化为下面的形式：
+<span class="math display">\[
+\min_{w} \frac{1}{N} \sum_{i=1}^{N} \log(1 + \exp{(-y_iw^Tx_i)})
+\]</span>
+实际上，后面的log项对应的是一个损失函数，叫做<strong>交叉熵（Cross
+Entropy）损失函数</strong>，即： <span class="math display">\[
+\text{cross entropy}(w,x,y) = log(1+\exp(-ywx))
+\]</span>
+其中log的底数并没有强制的要求，不同的底数最终仅相差一个系数。</p>
+<h2 id="优化算法">优化算法</h2>
+<p>有了上面的优化目标，我们就可以进行算法的描述。同样可以使用梯度下降法来进行。其中的关键在于优化目标函数的梯度计算。这里为了计算方便，取自然对数。
+<span class="math display">\[
+\begin{aligned}
+E_{in}(w) &amp;= \frac{1}{N} \sum_{i=1}^{N} \ln(1 +
+\exp{(-y_iw^Tx_i)})\\
+记&amp;y_iw^Tx_i = A\\
+\bigtriangledown E_{in}(w) &amp;= \frac{1}{N} \sum_{i=1}^{N}
+\frac{e^{-A}}{1+e^{-A}}(-A)&#39;\\
+&amp;= \frac{1}{N} \sum_{i=1}^{N} sigmoid(-y_iw^Tx_i)(-y_ix_i)
+\end{aligned}
+\]</span> 于是可以得到优化过程如下：</p>
+<p>1.首先初始化<span class="math inline">\(w_0\)</span></p>
+<p>2.计算梯度<span class="math inline">\(\bigtriangledown
+E_{in}(w)\)</span>，方式如上面的公式</p>
+<p>3.迭代更新参数向量<span class="math inline">\(w\)</span> <span
+class="math display">\[
+w \leftarrow w - \eta \bigtriangledown E_{in}(w)
+\]</span></p>
+<blockquote>
+<p>通常我们可以使用线性回归在训练集<span
+class="math inline">\(D\)</span>上直接计算出对应的解析解<span
+class="math inline">\(w_{线性回归}\)</span>，并以此作为Logistic回归的初始化<span
+class="math inline">\(w_0\)</span>。</p>
+</blockquote>
+<h1 id="解决线性分类问题">解决线性分类问题</h1>
+<p>重新考虑原始的线性分类问题，在原始的线性分类中，对模型的评估标准是分类错误点的个数。但是这个问题的求解是NP-Hard问题。我们已经学习了线性回归以及Logistic回归，那么能否使用线性回归或者Logistic回归来解决线性分类问题呢。一个很直觉的想法是利用线性回归求得一个分数之后，与某个阈值threshold进行比较，如果大于阈值则认为是+1类，否则认为是-1类。而我们在介绍Logistic回归的时候，也是用二分类问题进行引入的。利用Logistic回归求得输入对应是+1类的概率，如果大于0.5则认为是+1类，否则认为是-1类。当然这是我们直觉的想法，不过实际上也是能够有效果的。</p>
+<p>那么为什么线性回归和Logistic回归能够用在线性分类上呢。考虑三种方式的损失函数，线性分类对应的损失函数为0/1损失，线性回归对应的损失函数为平方损失，而Logistic对应的损失函数为交叉熵损失（这里底数取2）。令<span
+class="math inline">\(w^Tx=s\)</span>（这个计算像是通过输入向量以及参数向量计算出某个分数score）：</p>
+<p>对于线性分类来说，有： <span class="math display">\[
+\begin{aligned}
+h(x) &amp;= sign(s)\\
+err_{0/1}(s,y) &amp;= I[sign(s) \neq y ]\\
+&amp;=I[sign(ys) \neq 1],I为指示函数\\
+\end{aligned}
+\]</span> 对于线性回归来说，有： <span class="math display">\[
+\begin{aligned}
+h(x) &amp;= s\\
+err_{sqr}(s,y) &amp;= (s-y)^2 = (ys - 1)^2\\
+\end{aligned}
+\]</span> 对于Logistic回归来说，有： <span class="math display">\[
+\begin{aligned}
+h(x) &amp;= sigmoid(s)\\
+err_{ce}(s,y) &amp;=ln(1+exp(-ys))
+\end{aligned}
+\]</span> 我们也可以作出它们的函数图像：</p>
+<img src="/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/err%E5%AF%B9%E6%AF%94.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="err对比">
+<p>通过函数图像我们可以发现，始终有下面的不等式成立： <span
+class="math display">\[
+err_{0/1}\le err_{sqr}\\
+err_{0/1}\le err_{ce}
+\]</span> 重新考虑线性分类，我们说它能够机器学习，则需要VC
+Bound表达式的存在： <span class="math display">\[
+E_{out-线性分类} \le E_{in-线性分类} + \Omega_1(N,H,\delta)
+\]</span> 又因为<span class="math inline">\(err_{0/1}\le
+err_{sqr}\)</span>，所以有<span class="math inline">\(E_{in-线性分类}
+\le E_{in-线性回归}\)</span>，所以有： <span class="math display">\[
+\begin{aligned}
+E_{out-线性分类}
+&amp; \le E_{in-线性分类} + \Omega_1(N,H,\delta)\\
+&amp;\le E_{in-线性回归} + \Omega_2(N,H,\delta)
+\end{aligned}
+\]</span>
+这表示当我们使用线性回归来进行线性分类的时候，仍然可以解决问题，对应的<span
+class="math inline">\(E_{out}\)</span>仍然存在上界，只不过这个上界变得更加宽松了。对于利用Logistic回归来解决线性分类问题也具有相同的解释。</p>
+<h1 id="多分类问题">多分类问题</h1>
+<p>上面的讨论都是二分类的情况，而多分类的情况可以由基本的二分类拓展得到。</p>
+<h2 id="one-versus-all">One-Versus-All</h2>
+<p>对于多分类问题，我们可以将其想象为多个二分类问题。对于每个类别<span
+class="math inline">\(M\)</span>，我们都可以将训练集划分为两部分，分别是属于类别<span
+class="math inline">\(M\)</span>以及不属于这个类别。通过这样的数据，我们就可以训练一个关于类别<span
+class="math inline">\(M\)</span>的二分类模型。对于每个类别我们都可以做这样的动作，如果一共有<span
+class="math inline">\(m\)</span>个类别，那么我们就可以训练出<span
+class="math inline">\(m\)</span>个不同的二分类模型。在最终输出的时候，这些二分类模型分别得到<span
+class="math inline">\(m\)</span>个输出。如果二分类输出的是01是否这类的答案，可能会出现冲突的情况，此时我们可以使用Logistic回归来做二分类，得到概率的输出，最终选择概率最高的那个作为分类结果。</p>
+<p>这种多分类的处理方式，我们称之为One-Versus-All（OVA）。它的优点是简单高效，缺点是会存在数据不平衡的方式。考虑存在<span
+class="math inline">\(m\)</span>个类别，如果对于多分类来说数据分布是均匀的，那么我们在训练每个二分类模型的时候，正类数据占1份，负类数据占<span
+class="math inline">\(m-1\)</span>份。数据不平衡会影响后续的分类效果。</p>
+<h2 id="one-versus-one">One-Versus-One</h2>
+<p>OVA的方式由于数据不平衡，可能会影响分类效果。那我们考虑在训练二分类的时候，使用平衡的数据。具体来说，我们每次只取<span
+class="math inline">\(m\)</span>个类中的2个类别的数据进行二分类模型的训练，例如AB两类。这样我们得到的模型能做到的事情就是将输入分成A类或者B类。对所有可能的2类取样进行二分类模型的训练，这样我们就可以得到<span
+class="math inline">\(\binom{m}{2}\)</span>个二分类模型。对于给定的输入，我们分别调用这<span
+class="math inline">\(\binom{m}{2}\)</span>个模型，对应得到<span
+class="math inline">\(\binom{m}{2}\)</span>个输出，然后就可以通过投票的方式得到最终的输出。</p>
+<p>这种多分类的处理方式，我们称之为One-Versus-One（OVO）。这种方式避免了出现数据不均衡，在训练二分类模型的时候也更加高效，因为训练数据减少了，每次仅需要进行两个类别的比较。但是这种方式需要训练的模型更多，时间复杂度和空间复杂度可能都比较高。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" class="category-chain-item">基础理论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a>
+      
+        <a href="/tags/%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/">#监督学习</a>
+      
+        <a href="/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/">#线性模型</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>机器学习基础(6)-线性回归与Logistic回归</div>
+      <div>http://example.com/2023/08/20/机器学习基础-6-线性回归与Logistic回归/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/22/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-7-%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BASVM%E4%B8%8E%E6%A0%B8%E6%8A%80%E5%B7%A7/" title="机器学习基础(7)-支持向量机SVM与核技巧">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">机器学习基础(7)-支持向量机SVM与核技巧</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-5-%E4%BA%8C%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E4%B8%8E%E6%84%9F%E7%9F%A5%E6%9C%BA%E6%A8%A1%E5%9E%8B/" title="机器学习基础(5)-二分类问题与感知机模型">
+                        <span class="hidden-mobile">机器学习基础(5)-二分类问题与感知机模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
