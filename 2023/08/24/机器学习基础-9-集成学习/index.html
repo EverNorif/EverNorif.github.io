@@ -1,0 +1,1175 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了集成学习的概念。集成学习是一种思想，意在结合多种模型以达到更好的效果。集成学习的典型方式包括Bagging、Boosting、Stacking和Blending。Bagging方式代表算法是随机森林、Boosting方式代表算法是AdaBoost和提升树。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础(9)-集成学习">
+<meta property="og:url" content="http://example.com/2023/08/24/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-9-%E9%9B%86%E6%88%90%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了集成学习的概念。集成学习是一种思想，意在结合多种模型以达到更好的效果。集成学习的典型方式包括Bagging、Boosting、Stacking和Blending。Bagging方式代表算法是随机森林、Boosting方式代表算法是AdaBoost和提升树。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-24T12:21:21.000Z">
+<meta property="article:modified_time" content="2023-08-24T12:25:19.899Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>机器学习基础(9)-集成学习 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="机器学习基础(9)-集成学习"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-24 20:21" pubdate>
+          2023年8月24日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          107 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习基础(9)-集成学习</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="集成学习">集成学习</h1>
+<h2 id="概念描述">概念描述</h2>
+<p>在通常的情况下，我们在解决某种问题的时候，会选择一个合适的模型进行应用，完成后续的工作。针对某个问题，可能会有多种模型都能够满足应用需求，于是我们会进行模型的选择，例如使用交叉验证等方法，从中选择一个最优的模型。而另一种可能的方式是可以综合考虑这些模型，让每个模型都参与到最终的决策过程中。由于整个过程有多个模型集成参与，这种方式被称作集成学习。集成学习的思想就是综合多个模型，希望能够达到任何单一模型达不到的更好的效果。</p>
+<p>这里每个单一模型，我们通常称之为弱学习算法，而模型集成的过程，就是将这些弱学习算法进行综合，以期得到一个强学习算法。如果用一句俗语来说，就是“三个臭皮匠顶个诸葛亮”。</p>
+<p>重新描述集成学习的背景，当前我们需要解决某个问题，同时手上有一批训练数据集<span
+class="math inline">\(D\)</span>，我们希望通过某种方式得到多种模型，之后综合这些模型得到最终的决策（输出）过程。因此在集成学习中，有两个非常关键的步骤，<strong>一个是如何得到多种模型，另一个则是如何综合这些模型</strong>。</p>
+<p>第一个关键步骤，获得多种模型。这里的模型指的并不是某个模型概念，而是训练过后的模型。我们可以选择不同的模型在训练集上进行训练，得到多种模型，<strong>此时称为异质集成，每个模型称为组件学习器或个体学习器</strong>；也可以选择某个模型，然后在不同的训练集上进行训练，或者采用不同的参数，这样得出也是多种模型，<strong>此时称为同质集成，每个模型称为基学习器或基学习算法</strong>。当然也可以综合这两种方式。</p>
+<p>第二个关键步骤，综合多种模型。对于某个特定的输入<span
+class="math inline">\(x\)</span>，多种模型会得到多种输出。我们可以对这多种模型进行权重分配，权重高的模型对最终的结果应该有较强的影响。举例来说，针对分类问题，我们可以采用少数服从多数的投票方式给出最终分类结果。而针对回归问题，则可以使用加权平均的方式得到最终输出。当然这些方式仅是举例说明，实际应用中不会局限于这些方式。</p>
+<h2 id="典型方式">典型方式</h2>
+<p>集成学习有四个重要概念，分别是Bagging，Boosting，Blending以及Stacking。它们的侧重方面有所不同，Bagging/Boosting通过抽取不同的数据来完成同质集成，强调抽取数据的策略；Blending/Stacking则强调弱学习器输出（综合多种模型）的策略，而不在意是同质还是异质。</p>
+<h3 id="bagging">Bagging</h3>
+<p>Bagging的全称为Bootstrap
+Aggregating。它从原始的训练集中有放回地抽取一部分数据训练一个基学习器，之后重复这一步骤，得到多种模型。一般会随机采集和训练集样本数<span
+class="math inline">\(N\)</span>一样个数的样本。这样得到的采样集和训练集样本的个数相同，但是样本内容不同。这些模型之间不存在强依赖关系，只是训练使用的数据不同，可以同时生成。</p>
+<h3 id="boosting">Boosting</h3>
+<p>Boosting的思想同样是希望通过不同的数据来训练出不同的模型，不过它是通过改变训练数据的权值分布完成的。并且在这种方式中，个体学习器之间存在强依赖关系，每次训练数据权值的改变都需要依赖于上一个模型的结果，需要串行生成。</p>
+<h3 id="stacking">Stacking</h3>
+<p>Stacking关注的是如何综合多种模型。假设现在已经有了训练好的<span
+class="math inline">\(m\)</span>个模型，我们自然可以使用前面说的加权平均等简单的方式来得到最终输出，而Stacking的思想是再训练一个模型来完成这一综合的过程。模型综合的过程可以看作是接收<span
+class="math inline">\(m\)</span>个输入，得到1个输出的过程，因此我们完全可以通过已训练好的模型来构建新的训练集，再训练出完成结果综合的模型。此时新的训练集是在原来训练集的基础上生成的。</p>
+<p>前面的<span
+class="math inline">\(m\)</span>个模型被称为子模型，最后的一个模型被称为元模型（高阶模型）。元模型通常使用线性模型，它通过训练，可以得到一个比人为定义权重更为合理的权重集合。</p>
+<h3 id="blending">Blending</h3>
+<p>Blending的整体流程与Stacking类似，只是在模型训练以及新训练集的生成上有所不同。Blending首先将原始训练集划分为小训练集以及验证集，然后在小训练集上训练出<span
+class="math inline">\(m\)</span>个模型，这<span
+class="math inline">\(m\)</span>个模型在验证集的基础上生成新训练集，用于最终一个元模型的训练。这种方式避开了信息泄露的问题，前后两个阶段使用的数据是不同的。</p>
+<h1 id="bagging-1">Bagging</h1>
+<h2 id="概念描述-1">概念描述</h2>
+<p>Bagging是并行式集成学习最著名的代表，它通过Bootstrap采样的方式来获取不同的训练集，从而训练出不同的模型。具体来说，给定包含<span
+class="math inline">\(N\)</span>个样本的数据集，我们可以通过有放回的抽样，从中抽取出大小为<span
+class="math inline">\(N\)</span>的采样集。由于是有放回的抽样，在采样集中，初始样本可能在其中多次出现，也可能从未出现，这些在采样集中从未出现的样本被称为袋外样本（Out
+Of
+Bag）。对于某个模型来说，它使用采样集进行训练之后，可以使用袋外样本进行验证。</p>
+<blockquote>
+<p>对于某个样本<span
+class="math inline">\((x_i,y_i)\)</span>来说，它成为袋外样本的概率如下：
+<span class="math display">\[
+(1-\frac{1}{N})^N = \frac{1}{(1 + \frac{1}{N-1})^N} \approx \frac{1}{e}
+\approx 0.368
+\]</span></p>
+</blockquote>
+<p>基于不同的采样集，我们得到多个基学习器，再将这些基学习器进行结合。Bagging中通常对分类任务使用简单投票法，对回归任务使用简单平均法。</p>
+<p>相比于单独使用基学习器，Bagging的方式多出了采样和投票（平均）过程的复杂度。不过考虑到这些过程的复杂度通常较小，所以Bagging也是一个比较高效的集成学习算法。</p>
+<h2 id="随机森林">随机森林</h2>
+<p>随机森林（Random
+Forest）是Bagging的一个扩展变体，它在Bagging的基础上使用决策树作为基学习器，并且引入了更多的随机性。具体地说，Bagging在生成采样集的过程中，有随机性；而随机森林在选择最优划分属性特征的时候，并不是从全部属性中进行选择，而是从一个随机特征集中进行选择。假设在决策树中，属性集合的大小为<span
+class="math inline">\(d\)</span>。传统决策树会在这<span
+class="math inline">\(d\)</span>个属性中按照某种标准（信息增益、信息增益比、基尼系数）选择一个最优属性作为划分属性。而随机森林做的则是首先从<span
+class="math inline">\(d\)</span>个属性中随机选择<span
+class="math inline">\(k \le d\)</span>个属性，再从这个<span
+class="math inline">\(k\)</span>个属性中选择一个最优属性作为划分属性。此时，参数<span
+class="math inline">\(k\)</span>控制了随机性的引入程度。如果<span
+class="math inline">\(k=d\)</span>，则与传统决策树相同；如果<span
+class="math inline">\(k=1\)</span>，则表示随机选择一个属性进行划分。一般情况下，推荐值为<span
+class="math inline">\(k = \log_2 d\)</span>。</p>
+<p>在集成学习中，一个目标就是产生独立且差异较大的模型，这样能够使得最终的集成结果获得更好的效果。而在随机森林中，基学习器的多样性不仅来自于Bagging采样的不同，同时也来自决策树内的属性扰动，这就使得个体学习器之间的差异度进一步提升，最终集成的泛化性能也能进一步提升。</p>
+<h1 id="boosting-1">Boosting</h1>
+<h2 id="概念描述-2">概念描述</h2>
+<p>Boosting的思想是通过改变训练样本的权重来学习多个基学习器，然后再将这些基学习器进行线性组合，提高性能。Boosting首先从弱学习算法出发，反复学习，每次学习之后，根据结果进行权值的修改，逐步得到一系列弱分类器，然后组合这些弱分类器，最终构成一个强分类器。</p>
+<p>数据的权值分布最终会反映到优化函数中，假设训练数据集为<span
+class="math inline">\(D =
+\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，对应的权值分布为<span
+class="math inline">\(\{w_1,w_2,...,w_N\}\)</span>，则最终的优化目标经验风险如下，其中<span
+class="math inline">\(\text{Error}\)</span>表示所使用的损失函数。 <span
+class="math display">\[
+\frac{1}{N} \sum_{i=1}^N w_i \cdot \text{Error}(y_i,h(x_i))
+\]</span>
+对于Boosting来说，它关注两个关键问题，一个是在每一轮中如何改变训练数据的权值分布，另一个是如何将弱分类器组合成一个强分类器。AdaBoost是Boosting的一个典型代表。对于第一个问题，AdaBoost的做法是提高那些被前一轮弱分类器错误分类样本的权值，而降低那些被正确分类样本的权值，被错分的样本能够得到更大的关注。而对于第二个问题，AdaBoost采用加权多数表决的方式。其中，误差率小的弱分类器能够得到更大的权重，从而在表决中能够起到较大的作用。</p>
+<h2 id="adaboost">AdaBoost</h2>
+<h3 id="算法描述">算法描述</h3>
+<p>标准的AdaBoost算法用来解决二分类问题。假设给定的训练数据集为<span
+class="math inline">\(T =
+\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，其中<span
+class="math inline">\(x_i \in X \subseteq R^n\)</span>，<span
+class="math inline">\(y_i \in
+\{+1,-1\}\)</span>。AdaBoost需要完成的是从训练数据中学习一系列弱分类器，最终将这些弱分类器线性组合成一个强分类器。</p>
+<p>首先初始化训练数据的权值分布为： <span class="math display">\[
+D_1 = (w_{1,1},w_{1,2},...,w_{1,N}),\quad w_{1,i} = \frac{1}{N},\quad
+i=1,2,...,N
+\]</span>
+这一步假设训练数据集具有均匀的权值分布，没有任何偏向，初始的训练样本在基本分类器的学习中作用相同。之后在<span
+class="math inline">\(D_1\)</span>上学习基本分类器，得到<span
+class="math inline">\(G_1(x)\)</span>，这就相当于在原始数据上进行学习。</p>
+<p>AdaBoost在每一轮中需要进行基分类器的学习，计算得到基分类器在最终分类器中的权重之后，根据学习结果进行权值分布的修改。考虑当前进行到第<span
+class="math inline">\(m\)</span>轮，我们首先需要使用具有权值分布<span
+class="math inline">\(D_m\)</span>的训练数据集进行基分类器的学习，得到<span
+class="math inline">\(G_m(x)\)</span>，之后计算该基分类器在训练数据集上的分类误差率，记为<span
+class="math inline">\(e_m\)</span>： <span class="math display">\[
+e_m = \sum_{i=1}^N w_{m,i} I[G_m(x_i) \neq y_i] = \sum_{G_m(x_i)\neq
+y_i}w_{m,i}
+\]</span>
+这里的分类误差率，实际上就是被误分类的那些样本对应的权重之和。</p>
+<p>下一步，我们要计算<span
+class="math inline">\(G_m(x)\)</span>的系数<span
+class="math inline">\(\alpha_m\)</span>，也就是在最终模型中所占据的权重大小。计算方式如下：
+<span class="math display">\[
+\alpha_m = \frac{1}{2} \log \frac{1-e_m}{e_m}
+\]</span> 根据系数<span
+class="math inline">\(\alpha_m\)</span>的定义，我们有：当<span
+class="math inline">\(e_m =
+1/2\)</span>时，这表示模型在随机猜测，此时对应的系数<span
+class="math inline">\(\alpha_m =
+0\)</span>，随机猜测的模型对最终模型没有什么贡献。当<span
+class="math inline">\(e_m&lt; 1/2\)</span>时，<span
+class="math inline">\(\alpha_m &gt;
+0\)</span>，这表示当弱分类器的正确率要高于随机猜测，此时权重更高，否则当<span
+class="math inline">\(e_m &gt;
+1/2\)</span>时，它具有负权重。实际上负权重也是有意义的，如果我们有一个模型能够做到<span
+class="math inline">\(99\%\)</span>的错误率，那只需要对结果取负号，就可以得到一个正确率<span
+class="math inline">\(99\%\)</span>的模型。另外，随着<span
+class="math inline">\(e_m\)</span>的减小<span
+class="math inline">\(\alpha_m\)</span>逐渐增大，这表明分类误差率越低的模型重要性越高。</p>
+<p>最后，我们需要<strong>更新训练数据的权值分布</strong>，得到<span
+class="math inline">\(D_{m+1}\)</span>： <span class="math display">\[
+D_{m+1} = (w_{m+1,1},w_{m+1,2},...,w_{m+1,N})\\
+w_{m+1,i} = \frac{w_{m,i}}{Z_m}\exp{(-\alpha_my_iG_m(x_i))}
+\]</span> 其中，<span
+class="math inline">\(Z_m\)</span>为规范化因子，用于将<span
+class="math inline">\(w\)</span>进行归一化。计算方式为： <span
+class="math display">\[
+Z_m = \sum_{i=1}^N w_{m,i} \exp(-\alpha_m y_i G_m(x_i))
+\]</span> 如果将权值更新式子中的<span
+class="math inline">\(y_i\)</span>进行分情况讨论，则有： <span
+class="math display">\[
+w_{m+1,i} = \begin{cases}
+w_{m,i}\frac{\exp(-\alpha_m)}{Z_m} , G_m(x_i) = y_i\\
+w_{m,i}\frac{\exp(\alpha_m)}{Z_m}  , G_m(x_i) \neq y_i
+\end{cases}
+\]</span> 从这个式子可以看出，被弱分类器<span
+class="math inline">\(G_m(x)\)</span>误分类的样本权值得以扩大，而被正确分类的样本权值被缩小。这样，误分类样本的权值相对被放大<span
+class="math inline">\(e^{-2\alpha_m} =
+(1-e_m)/e_m\)</span>倍，因此在下一轮学习中将起到更大的作用。不改变所给的训练数据，而<strong>不断改变训练数据权值的分布，使得训练数据在基分类器的学习中起到不同的作用，这也是AdaBoost的一个特点</strong>。</p>
+<p>在经过<span
+class="math inline">\(M\)</span>轮学习之后，我们可以得到<span
+class="math inline">\(M\)</span>个基分类器<span
+class="math inline">\(G_i(x)\)</span>，之后可以通过每轮中计算的系数，得到基分类器的线性组合<span
+class="math inline">\(f(x)\)</span>以及最终分类器<span
+class="math inline">\(G(x)\)</span>： <span class="math display">\[
+f(x) = \sum_{m=1}^M\alpha_mG_m(x)\\
+G(x) = sign(f(x)) = sign(\sum_{m=1}^M\alpha_mG_m(x))
+\]</span>
+<strong>利用基分类器的线性组合来构建最终分类器是AdaBoost的另一个特点</strong>。需要注意的是这里的权重<span
+class="math inline">\(\alpha_m\)</span>是在每一轮中通过分类误差率计算得到的，所有<span
+class="math inline">\(\alpha_m\)</span>之和并不为1。</p>
+<h3 id="算法分析">算法分析</h3>
+<p>在AdaBoost算法描述中，有几个关键点，包括权重更新，系数计算。下面将对这些关键点进行进一步地分析。</p>
+<p>首先在第<span
+class="math inline">\(m+1\)</span>轮更新中，上一轮数据的权值分布为<span
+class="math inline">\(D_{m} =
+\{w_{m,1},w_{m,2},...,w_{m,N}\}\)</span>，模型<span
+class="math inline">\(G_{m}(x)\)</span>由权值分布为<span
+class="math inline">\(D_{m}\)</span>的数据训练获得。这一轮数据的权值分布为<span
+class="math inline">\(D_{m+1}\)</span>，模型<span
+class="math inline">\(G_{m+1}(x)\)</span>由权值分布为<span
+class="math inline">\(D_{m+1}\)</span>的数据训练获得。下面考虑如何从<span
+class="math inline">\(D_{m}\)</span>更新到<span
+class="math inline">\(D_{m+1}\)</span>。</p>
+<p>集成学习最终需要综合多个模型的结果，其中的一个目标是使得多个模型尽可能不同，这样在综合之后，能够得到更好的效果。在更新数据权值分布的时候，也可以考虑这个目标，也就是希望通过改变权值分布，来训练得到前后两个尽可能不同的模型。通过<span
+class="math inline">\(D_m\)</span>训练出<span
+class="math inline">\(G_m(x)\)</span>，通过<span
+class="math inline">\(D_{m+1}\)</span>训练出<span
+class="math inline">\(G_{m+1}(x)\)</span>。而如果在<span
+class="math inline">\(G_{m}(x)\)</span>上预测<span
+class="math inline">\(D_{m+1}\)</span>得到的误差很大，一定程度上也能够说明前后两个模型差异度较大。这里的误差可以用分类错误率来表示。如果分类错误率接近<span
+class="math inline">\(1/2\)</span>，则表示预测效果非常不好，和随机瞎猜没有区别。使用式子来表示，就是我们希望得到如下的目标：
+<span class="math display">\[
+\frac{\sum_{i=1}^N w_{m+1,i} \cdot I[y_i \neq G_m(x)]}{\sum_{i=1}^N
+w_{m+1,i}} = \frac{1}{2}
+\]</span> 上面的式子实际上就是在计算在<span
+class="math inline">\(G_m(x)\)</span>上预测权值分布为<span
+class="math inline">\(D_{m+1}\)</span>的数据时得到的分类错误率。让这个错误率为<span
+class="math inline">\(1/2\)</span>是我们的目标。也就是说，我们应该进行相应的更新，使得权值<span
+class="math inline">\(D_{m+1}\)</span>能够满足上面的式子。</p>
+<p>对这个式子进一步分析，有： <span class="math display">\[
+\begin{aligned}
+\frac{\sum_{i=1}^N w_{m+1,i} \cdot I[y_i \neq G_m(x)]}{\sum_{i=1}^N
+w_{m+1,i}} &amp;= \frac{\sum_{i=1}^N w_{m+1,i} \cdot I[y_i \neq
+G_m(x)]}{\sum_{i=1}^N w_{m+1,i} \cdot I[y_i \neq G_m(x)] + \sum_{i=1}^N
+w_{m+1,i} \cdot I[y_i = G_m(x)]} \\
+&amp;= \frac{1}{2}
+\end{aligned}
+\]</span>
+式子分子部分是分类错误的点数目（配合权重），分母部分是分类错误点与分类正确点数目（配合权重）之和。要使得上面的式子成立，只需要让这两个部分相等即可，即使得：
+<span class="math display">\[
+\sum_{i=1}^N w_{m+1,i} \cdot I[y_i \neq G_m(x)] = \sum_{i=1}^N w_{m+1,i}
+\cdot I[y_i = G_m(x)]
+\tag{target}
+\]</span> 考虑在<span class="math inline">\(D_m\)</span>上，<span
+class="math inline">\(G_m(x)\)</span>的分类错误率为<span
+class="math inline">\(e_m\)</span>。使用记号来简化表达： <span
+class="math display">\[
+X = \sum_{i=1}^N w_{m,i} \cdot I[y_i \neq G_m(x)]\\
+Y = \sum_{i=1}^N w_{m,i} \cdot I[y_i = G_m(x)]
+\]</span> 则有： <span class="math display">\[
+e_m= \frac{X}{X+ Y}
+\]</span> 有等式： <span class="math display">\[
+e_m Y = (1-e_m)X = \frac{XY}{X+Y}
+\]</span> 带入表达，则有： <span class="math display">\[
+(1-e_m)\sum_{i=1}^N w_{m,i} \cdot I[y_i \neq G_m(x)] = e_m \sum_{i=1}^N
+w_{m,i} \cdot I[y_i = G_m(x)]
+\]</span> 对比这个式子以及target式子，只需要令： <span
+class="math display">\[
+w_{m+1,i} = \begin{cases}
+w_{m,i}\cdot(1-e_m),\quad y_i \neq G_m(x)\\
+w_{m,i}\cdot e_m,\quad y_i = G_m(x)
+\end{cases}
+\]</span>
+则可以使得target式子成立。进一步，我们可以引入一个新的尺度因子<span
+class="math inline">\(\delta_t\)</span>： <span class="math display">\[
+\delta_m = \sqrt{\frac{1-e_m}{e_m}}
+\]</span> 将上面的更新过程同时除以<span
+class="math inline">\(\sqrt{(1-e_m)e_m}\)</span>，即将过程修改为： <span
+class="math display">\[
+w_{m+1,i} = \begin{cases}
+w_{m,i}\cdot(1-e_m)/\sqrt{(1-e_m)e_m} = w_{m,i} \cdot \delta_m ,\quad
+y_i \neq G_m(x)\\
+w_{m,i}\cdot e_m / \sqrt{(1-e_m)e_m} = w_{m,i}/\delta_m,\quad y_i =
+G_m(x)
+\end{cases}
+\]</span>
+这一修改并不会改变target式子成立的效果。在这个过程下，对于分类错误的点，权值修改为乘上尺度因子<span
+class="math inline">\(\delta_m\)</span>；而对于分类正确的点，权值修改为除以尺度因子<span
+class="math inline">\(\delta_m\)</span>。引入这个因子是因为它能够告诉我们更多的物理意义。如果<span
+class="math inline">\(e_m \le 1/2\)</span>，则可以得到<span
+class="math inline">\(\delta_m \ge 1\)</span>，此时第<span
+class="math inline">\(m\)</span>轮得到的模型<span
+class="math inline">\(G_m(x)\)</span>是有效的，不是随机猜的，那么接下来分类错误的点乘上尺度因子，表示将错误点权重放大，分类正确的点除以尺度因子，表示将正确点权重缩小。</p>
+<p>对比之前在算法描述中的记载，有： <span class="math display">\[
+\alpha_m = \log \delta_m
+\]</span>
+于是更新过程与前面算法描述中的记载也是相同的，除了缺少了一个归一化的操作。</p>
+<h3 id="误差分析">误差分析</h3>
+<p><strong>AdaBoost最基本的性质是它能够在学习过程中不断减少训练误差</strong>。考虑AdaBoost的训练误差，最终分类器的训练误差为：
+<span class="math display">\[
+\frac{1}{N}\sum_{i=1}^N I[G(x_i) \neq y_i]
+\]</span> 当<span class="math inline">\(G(x_i) \neq
+y_i\)</span>时，有<span class="math inline">\(y_if(x_i) &lt;
+0\)</span>，即<span class="math inline">\(\exp(-y_if(x_i)) \ge
+1\)</span>，从而有： <span class="math display">\[
+\frac{1}{N}\sum_{i=1}^N I[G(x_i) \neq y_i] \le \frac{1}{N}
+\sum_i\exp(-y_if(x_i))
+\]</span> 又根据<span
+class="math inline">\(Z_m,w_{m,i}\)</span>的定义，有： <span
+class="math display">\[
+w_{m,i} \exp(-\alpha_my_iG_m(x_i)) = Z_mw_{m+1,i}
+\]</span> 所以有如下推导： <span class="math display">\[
+\begin{aligned}
+\frac{1}{N} \sum_i\exp(-y_if(x_i))
+&amp;= \frac{1}{N}\sum_i \exp(-\sum_{m=1}^M\alpha_my_iG_m(x_i))\\
+&amp;=  \sum_i w_{1,i} \prod_{m=1}^M\exp(-\alpha_my_iG_m(x_i))\\
+&amp;= Z_1 \sum_i w_{2,i}\prod_{m=2}^M \exp(-\alpha_my_iG_m(x_i))\\
+&amp;= Z_1Z_2\sum_i w_{3,i}\prod_{m=3}^M \exp(-\alpha_my_iG_m(x_i))\\
+&amp;=\quad...\\
+&amp;=\prod_{m=1}^M Z_m
+\end{aligned}
+\]</span> 因此，对于AdaBoost最终模型的分类错误率，有： <span
+class="math display">\[
+\frac{1}{N} \sum_{i=1}^N I[G(x_i) \neq y_i] \le \prod_{m=1}^M Z_m
+\]</span> <strong>这表示我们可以在每一轮中选取适当的<span
+class="math inline">\(G_m(x)\)</span>使得<span
+class="math inline">\(Z_m\)</span>最小，从而使训练误差下降得最快</strong>。</p>
+<p>而对于二分类问题的AdaBoost来说，有： <span class="math display">\[
+\begin{aligned}
+Z_m &amp;= \sum_{i=1}^N w_{m,i}\exp(-\alpha_m y_i G_m(x_i)) \\
+&amp;= \sum_{G_m(x_i) = y_i} w_{m,i}\exp(-\alpha_m) + \sum_{G_m(x_i)
+\neq y_i} w_{m,i}\exp(\alpha_m)\\
+&amp;= (1-e_m)\exp(-\alpha_m) + e_m \exp(\alpha_m)\\
+&amp;= 2\sqrt{e_m(1-e_m)} \quad ...\text{结合}\alpha_m\text{的定义}\\
+\end{aligned}
+\]</span> 记<span class="math inline">\(\gamma_m = \frac{1}{2} -
+e_m\)</span>，则有<span class="math inline">\(Z_m =
+\sqrt{1-4\gamma_m^2}\)</span>，从而有二分类问题下AdaBoost最终模型的训练误差上界：
+<span class="math display">\[
+\frac{1}{N} \sum_{i=1}^N I[G(x_i) \neq y_i] \le \prod_{m=1}^M Z_m
+=\prod_{m=1}^M \sqrt{1-4\gamma_m^2}
+\]</span> 又因为<span class="math inline">\(\sqrt{1-4\gamma_m^2} \le
+\exp{(-2\gamma_m^2)}\)</span>（可根据<span
+class="math inline">\(e^x,\sqrt{1-x}\)</span>在<span
+class="math inline">\(x=0\)</span>处的泰勒展开证明），所以有： <span
+class="math display">\[
+\frac{1}{N} \sum_{i=1}^N I[G(x_i) \neq y_i] \le \prod_{m=1}^M Z_m
+=\prod_{m=1}^M \sqrt{1-4\gamma_m^2} \le \exp{(-2\sum_{m=1}^M\gamma_m^2)}
+\]</span> 这也就是二分类问题下AdaBoost最终模型的训练误差上界。考虑<span
+class="math inline">\(\gamma_m\)</span>的定义概念，直观上说，它表示基分类器<span
+class="math inline">\(G_m(x)\)</span>的分类能力，如果<span
+class="math inline">\(\gamma_m = 0\)</span>，则表示<span
+class="math inline">\(e_m = \frac{1}{2}%\)</span>，此时<span
+class="math inline">\(G_m(x)\)</span>相当于在随机猜测正反；而如果<span
+class="math inline">\(\gamma_m\)</span>越接近<span
+class="math inline">\(1/2\)</span>，则表示<span
+class="math inline">\(G_m(x)\)</span>的分类正确率越高。</p>
+<p>针对上面的不等式，进一步，如果存在<span class="math inline">\(\gamma
+&gt; 0\)</span>，使得对所有的<span
+class="math inline">\(m\)</span>，都有<span
+class="math inline">\(\gamma_m \ge \gamma\)</span>，则有： <span
+class="math display">\[
+\frac{1}{N}\sum_{i=1}^N I[G(x_i \neq y_i )] \le \exp(-2M\gamma^2)
+\]</span>
+<strong>这表示在此条件下，AdaBoost的训练误差以指数速率下降</strong>。这是一个非常有吸引力的性质。而找到一个<span
+class="math inline">\(\gamma\)</span>满足上述条件是非常容易的，这<strong>只需要能够达到，在每一轮中得到的基分类器<span
+class="math inline">\(G_m(x)\)</span>，它的分类错误率都小于<span
+class="math inline">\(1/2\)</span>，也就是比随机猜测要好就行</strong>。实际过程中，AdaBoost算法不需要知道下界<span
+class="math inline">\(\gamma\)</span>，它由各个基分类器的训练误差率来适应决定。</p>
+<h3 id="另一个角度">另一个角度</h3>
+<p>上面我们介绍了AdaBoost的流程，同时考察了它的误差上界。接下来，我们将从从另一个角度来观察AdaBoost算法。首先我们需要介绍加法模型以及前向分步算法。</p>
+<p>首先，加法模型有如下的表述： <span class="math display">\[
+f(x) = \sum_{m=1}^M \beta_mb(x;\gamma_m)
+\]</span> 其中，<span
+class="math inline">\(b(x;\gamma_m)\)</span>为基函数，<span
+class="math inline">\(\gamma_m\)</span>为基函数的参数，<span
+class="math inline">\(\beta_m\)</span>为基函数的系数。根据定义，可以看出AdaBoost的最终模型表述也是一个加法模型。</p>
+<p>对于给定的损失函数<span
+class="math inline">\(L\)</span>，加法模型的经验损失极小化问题可以表示如下：
+<span class="math display">\[
+\min_{\beta_m,\gamma_m} \sum_{i=1}^N L(y_i,\sum_{m=1}^M
+\beta_mb(x_i;\gamma_m))
+\]</span>
+整体考虑这个极小化问题，通常情况下是一个复杂的优化问题。而前向分步算法则用另一种思想来求解这个优化问题。具体地说，前向分步算法每一步只学习一个基函数及其系数，也就是说每一步只优化如下的问题，得到对应的<span
+class="math inline">\(\beta\)</span>以及<span
+class="math inline">\(\gamma\)</span>： <span class="math display">\[
+\min_{\beta,\gamma} \sum_{i=1}^N L(y_i,\beta b(x_i; \gamma))
+\]</span>
+然后通过逐步优化，慢慢逼近上面的目标问题，从而简化优化的复杂度。</p>
+<p>而AdaBoost算法就可以看作是前向分步加法算法算法的特例。此时，模型是由基本分类器组成的加法模型，而损失函数是指数函数：
+<span class="math display">\[
+L(y,f(x)) = \exp(-yf(x))
+\]</span></p>
+<h2 id="提升树">提升树</h2>
+<h3 id="算法描述-1">算法描述</h3>
+<p>前面我们说到，Boosting实际上可以看作是采用了加法模型（基函数的线性组合）以及前向分步算法。特殊地，<strong>以决策树为基函数的Boosting称为提升树（Boosting
+Tree）</strong>。其中的基本决策树都是二叉的，对于分类问题是二叉分类树，对于回归问题是二叉回归树。于是，提升树模型可以表示为二叉决策树的加法模型，：
+<span class="math display">\[
+f_M(x) =\sum_{m=1}^M T(x;\Theta_m)
+\]</span> 其中，<span
+class="math inline">\(T(x;\Theta_m)\)</span>表示基函数决策树，<span
+class="math inline">\(\Theta_m\)</span>为决策树的参数，<span
+class="math inline">\(M\)</span>为树的个数。</p>
+<p>提升树算法是一个循环迭代的过程。首先确定初始提升树为<span
+class="math inline">\(f_0(x) = 0\)</span>，考虑第<span
+class="math inline">\(m\)</span>步的模型的生成过程，有： <span
+class="math display">\[
+f_m(x) = f_{m-1}(x) + T(x;\Theta_m)
+\]</span> 其中当前轮需要学习的则是参数<span
+class="math inline">\(\Theta_m\)</span>，它通过经验损失极小化来进行学习：
+<span class="math display">\[
+\hat{\Theta_m} = \arg \min_{\Theta_m} \sum_{i=1}^N L(y_i;f_{m-1}(x_i) +
+T(x_i;\Theta_m))
+\]</span>
+由于树的线性组合可以很好地拟合训练数据，所以提升树是一个高功能的学习算法。</p>
+<h3 id="不同的提升树">不同的提升树</h3>
+<p>提升树学习算法是一个大体的框架，而针对不同问题的提升树算法，主要区别在于使用的损失函数不同。对于回归问题来说，使用的是平方误差损失函数；对于分类问题来说，使用的是指数损失函数；当然还有使用其他一般损失函数的一般决策问题。</p>
+<p>如果使用提升树来解决二分类问题，只需要将AdaBoost中的基分类器限定为二叉决策树就可以了。此时可以说提升树算法是AdaBoost算法的一种特殊情况。</p>
+<p>如果使用提升树来解决回归问题，则需要使用平方误差损失函数。</p>
+<p>考虑已知训练集<span class="math inline">\(T =
+\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，<span
+class="math inline">\(x_i,y_i\)</span>分别处在输入空间<span
+class="math inline">\(X\)</span>以及输出空间<span
+class="math inline">\(Y\)</span>中。<span
+class="math inline">\(T(x;\Theta)\)</span>表示一棵回归树，它将输入空间划分为<span
+class="math inline">\(J\)</span>个互不相交的区域<span
+class="math inline">\(R_1,R_2,...,R_J\)</span>，并且在每个区域上根据经验风险最小化可以确定输出常量<span
+class="math inline">\(c_j\)</span>，于是整个回归树可以表示为： <span
+class="math display">\[
+T(x;\Theta) = \sum_{j=1}^J c_j I(x\in R_j)
+\]</span> 回归问题提升树则是使用前向分步算法： <span
+class="math display">\[
+\begin{aligned}
+f_0(x) &amp;= 0\\
+f_m(x) &amp;=f_{m-1}(x) + T(x;\Theta_m),\quad m=1,2,...,M\\
+f_M(x) &amp;= \sum_{m=1}^M T(x;\Theta_m)
+\end{aligned}
+\]</span> 其中第<span
+class="math inline">\(m\)</span>步中需要根据经验风险极小化来求解对应的参数<span
+class="math inline">\(\Theta_m\)</span>： <span class="math display">\[
+\hat{\Theta_m} = \arg \min_{\Theta_m} \sum_{i=1}^N L(y_i;f_{m-1}(x_i) +
+T(x_i;\Theta_m))
+\]</span> 在回归问题中，采用平方误差损失函数，则有： <span
+class="math display">\[
+\begin{aligned}
+L(y,f_{m-1}(x) + T(x;\Theta_m))
+&amp;= (y - f_{m-1}(x) - T(x;\Theta_m))^2\\
+&amp;= (r - T(x;\Theta_m))^2
+\end{aligned}
+\]</span> 其中记<span class="math inline">\(r = y -
+f_{m-1}(x)\)</span>，它表示当前模型与最终输出的差距，即当前模型拟合数据的残差。所以从这种角度来看，回归问题的提升树在每一步中只需要拟合当前模型的残差，所以算法是比较简单的。</p>
+<h3 id="梯度提升">梯度提升</h3>
+<p>对于回归问题，提升树使用平方误差函数；对于分类问题，提升树使用指数函数。这两类问题对应的优化问题都较好求解。不过对于一般的损失函数来说，往往每一步优化并不容易。</p>
+<p><strong>梯度提升算法</strong>则是用来优化使用一般损失函数的提升树。这是一个最速下降法的近似方法，借鉴回归提升树中残差的思想，<strong>利用损失函数的负梯度在当前模型上的值作为残差的近似值，拟合一个回归树</strong>。具体地说，第<span
+class="math inline">\(m\)</span>轮需要拟合的残差为： <span
+class="math display">\[
+-[\frac{\partial L(y,f(x))}{\partial f(x)}]_{f(x) = f_{m-1}(x)}
+\]</span> 对于给定的训练集<span
+class="math inline">\(T=\{(x_1,y_1),(x_2,y_2),...,(x_N,y_N)\}\)</span>，损失函数<span
+class="math inline">\(L(y,f(x))\)</span>，梯度提升算法经过如下的过程生成一个回归树。</p>
+<p>首先进行初始化，估计使损失函数极小化的常数值<span
+class="math inline">\(c\)</span>，也就是初始化树是一棵单节点树： <span
+class="math display">\[
+f_0(x) = \arg\min_c \sum_{i=1}^N L(y_i,c)
+\]</span> 之后考虑第<span
+class="math inline">\(m\)</span>轮的过程，<span class="math inline">\(m
+= 1,2,...,M\)</span>。在第<span
+class="math inline">\(m\)</span>轮中，首先计算所有的模拟残差<span
+class="math inline">\(r\)</span>，即对于<span
+class="math inline">\(i=1,2,...,N\)</span>，计算： <span
+class="math display">\[
+r_{m,i} = -[\frac{\partial L(y,f(x_i))}{\partial f(x_i)}]_{f(x) =
+f_{m-1}(x)}
+\]</span> 之后利用得到的模拟残差<span
+class="math inline">\(r_{m,i}\)</span>，拟合一个回归树，得到第<span
+class="math inline">\(m\)</span>棵树的划分区域<span
+class="math inline">\(R_{m,j},j=1,2..,J\)</span>。对于每个区域（每个叶子结点），还需要使损失函数最小化，得到叶子节点的常数输出<span
+class="math inline">\(c_{m,j}\)</span>，即： <span
+class="math display">\[
+c_{m,j} = \arg \min_{c} \sum_{x_i \in R_{m,j}}L(y_i,f_{m-1}(x) + c)
+\]</span>
+最终对于每个区域（叶子节点），都得到一个输出，于是就构成了第<span
+class="math inline">\(m\)</span>轮得到的回归树。接下来更新整体回归树得到<span
+class="math inline">\(f_m(x)\)</span>，然后继续下一轮循环： <span
+class="math display">\[
+\begin{aligned}
+f_m(x) &amp;= f_{m-1}(x) + T(x;\Theta_m) \\
+&amp;= f_{m-1}(x) + \sum_{j=1}^Jc_{m,j}I(x\in R_{m,j})
+\end{aligned}
+\]</span> 经过<span
+class="math inline">\(M\)</span>轮循环之后，得到最终的输出： <span
+class="math display">\[
+\hat{f}(x) = f_M(x) = \sum_{m=1}^M\sum_{j=1}^J c_{m,j}I(x\in R_{m,j})
+\]</span></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" class="category-chain-item">基础理论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>机器学习基础(9)-集成学习</div>
+      <div>http://example.com/2023/08/24/机器学习基础-9-集成学习/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/23/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-8-%E5%86%B3%E7%AD%96%E6%A0%91/" title="机器学习基础(8)-决策树">
+                        <span class="hidden-mobile">机器学习基础(8)-决策树</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
