@@ -1,0 +1,971 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了前馈神经网络，它是最具代表性的神经网络。当神经网络的层数达到一定数量的时候（一般大于2），此时又称为深度神经网络。对于深度神经网络，我们通常使用随机梯度下降来进行优化，其中反向传播是计算梯度的重要实现。在优化过程中，还有一些问题，例如梯度下降、梯度爆炸、内部协变量偏移等，这些问题可以通过不同的归一化方法来解决。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础(10)-神经网络">
+<meta property="og:url" content="http://example.com/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了前馈神经网络，它是最具代表性的神经网络。当神经网络的层数达到一定数量的时候（一般大于2），此时又称为深度神经网络。对于深度神经网络，我们通常使用随机梯度下降来进行优化，其中反向传播是计算梯度的重要实现。在优化过程中，还有一些问题，例如梯度下降、梯度爆炸、内部协变量偏移等，这些问题可以通过不同的归一化方法来解决。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/bpp1.png">
+<meta property="og:image" content="http://example.com/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/bpp2.png">
+<meta property="article:published_time" content="2023-08-27T06:48:51.000Z">
+<meta property="article:modified_time" content="2023-08-28T06:53:58.129Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/bpp1.png">
+  
+  
+  
+  <title>机器学习基础(10)-神经网络 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="机器学习基础(10)-神经网络"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-27 14:48" pubdate>
+          2023年8月27日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          57 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习基础(10)-神经网络</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前馈神经网络">前馈神经网络</h1>
+<h2 id="模型描述">模型描述</h2>
+<p>神经元是神经网络的基本单元，本质上是一个非线性函数，有如下的定义：
+<span class="math display">\[
+y = f(x_1, x_2, ..., x_n) = a(\sum_{i=1}^n w_ix_i+b)
+\]</span> 其中<span
+class="math inline">\(a(\cdot)\)</span>是特定的非线性函数，称为激活函数。常见的激活函数有：</p>
+<p>sigmoid函数： <span class="math display">\[
+\begin{aligned}
+a(z) &amp;= \text{sigmoid}(z) = \frac{1}{1+e^{-z}} \\
+a^{&#39;}(z) &amp;= a(z)(1-a(z))
+\end{aligned}
+\]</span> 双曲正切tanh函数（hyperbolic tangent function）： <span
+class="math display">\[
+\begin{aligned}
+a(z) &amp;= \text{tanh}(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}} \\
+a^{&#39;}(z) &amp;= 1 - a(z)^2
+\end{aligned}
+\]</span> 整流线性ReLU函数（rectified linear unit）： <span
+class="math display">\[
+\begin{aligned}
+a(z) &amp;= \text{relu}(z) = max(0, z) \\
+a^{&#39;}(z)
+&amp;=  \begin{cases}
+  1, &amp; \text{if } z &gt; 0 \\
+  0,  &amp; \text{if else} \\
+\end{cases}
+\end{aligned}
+\]</span>
+其中sigmoid和tanh有一定的转化关系，直观上双曲正切tanh函数将sigmoid函数放大两倍，并向下平移一个单位长度：
+<span class="math display">\[
+\text{tanh}(z) = 2 \cdot \text{sigmoid}(2z) - 1
+\]</span>
+而前馈神经网络则由多层神经元组成，层间的神经元相互连接，前一层神经元的输出是后一层神经元的输入。整个前馈神经网络整体就表示从输入信号到输出信号的多次非线性转换。前馈神经网络模型可以看作是矩阵与向量乘积的非线性变换的多次重复，其基本结构是非常简单的。通常神经网络可以分为输入层，隐藏层和输出层，隐藏层和输出层的激活函数通常有不同的定义。在这里，我们定义以含有神经元的层作为神经网络的层，即不考虑输入层。</p>
+<p>前馈神经网络与我们之前学过的logistic回归、感知机和支持向量机等模型有密切的联系。</p>
+<p>对于多分类的单层神经网络，如果输出层激活函数是softmax函数的时候，模型等价于多项logistic回归模型，其中softmax函数定义如下。因此前馈神经网络可以看作是logistic回归模型的扩展。
+<span class="math display">\[
+\text{softmax}(x_i) = \frac{e^{x_i}}{\sum_{j=1}^n e^{x_j}}
+\]</span>
+对于二分类的单层神经网络，如果输出层激活函数是tanh函数的时候，模型可以与感知机相对应。可以认为前馈神经网络是感知机的扩展，有说法也称前馈神经网络为多层感知机。而对于二分类的多层神经网络，当输出层激活函数是tanh函数的时候，模型也可以与非线性支持向量机对应。</p>
+<p>实际上，前馈神经网络具有非常强大的表示能力，对于任意的连续函数，都存在一个二层的前馈神经网络能够对其进行近似。当然理论存在性并不代表现实可行性，通常要达到近似精度，二层前馈神经网络中所需要的神经元的个数可能是非常大的，甚至是指数级别的，具有同等表征能力的深度神经网络和浅层神经网络，往往浅层神经网络的复杂度会指数级别地提高，因此在实际操作过程中通常会考虑另一个方向，即将模型变深，而非将模型变宽。这也是为什么神经网络对应了深度学习。</p>
+<h2 id="优化算法">优化算法</h2>
+<h3 id="反向传播">反向传播</h3>
+<p>神经网络的优化算法使用梯度下降的算法，其中最为关键的是梯度的计算，我们采用反向传播（back
+propagation）算法来计算梯度。反向传播算法也称为误差反向传播算法，它提供了一个高校的梯度计算以及参数更新的方式，只需要依照网络结构进行一次正向传播（forward）和一次反向传播（backward），就可以完成梯度下降的一次迭代。其中正向传播旨在基于当前的参数重新计算神经网络的所有变量，并将神经元的输出进行存储；反向传播旨在利用当前的变量重新计算损失函数对所有参数的梯度。</p>
+<p>反向传播利用的核心思想为求导中的链式法则。下面举例演示的是如何用一笔data来进行反向传播。</p>
+<p>回到梯度下降的过程中，我们定义一个损失函数<span
+class="math inline">\(L(\theta) =
+\underset{N}{\sum}C^n(\theta)\)</span>​​​​​。其中，函数<span
+class="math inline">\(C^n(\theta)\)</span>​​表示衡量第n个输出与第n个label之间的距离，距离越大代表损失函数的值越大，代表效果越不好。这里真实值y有N个维度。这里函数接受参数<span
+class="math inline">\(\theta\)</span>​作为输入，参数<span
+class="math inline">\(\theta\)</span>​先通过一系列过程影响神经网络的输出，然后再影响距离衡量函数。</p>
+<p>在梯度下降的过程中，我们需要计算$L() <span
+class="math inline">\(​。考虑\)</span><span
+class="math inline">\(中的某一个参数\)</span>w$，计算偏导则有： <span
+class="math display">\[
+\frac{\partial L(\theta)}{\partial w} = \sum \limits_N \frac{\partial
+C^n(\theta)}{\partial w}
+\]</span>
+为了更新这个参数，我们需要计算等式左边的值。为此我们只需要计算求和号后面的每一项，再进行求和即可。于是我们考虑其中一项<span
+class="math inline">\(\partial C(\theta) / \partial w\)</span>。</p>
+<p>考虑如下图的网络结构：</p>
+<img src="/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/bpp1.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="bpp1">
+<p>其中，a代表一个神经元的输出，z代表一个神经元的输入，w表示网络中需要更新（需要计算梯度）的参数，并且假设神经元的激活函数为<span
+class="math inline">\(a = \sigma
+(z)\)</span>​。​这里的w在意义上涵盖了网络中所有的参数，分别为后一层即为输出层的参数和后一层还是隐藏层的参数。</p>
+<p>根据链式法则，我们可以得到以下表达式： <span class="math display">\[
+\frac{\partial C}{\partial w} = \frac{\partial z}{\partial w}
+\frac{\partial C}{\partial z}
+\tag{backpropagation}
+\]</span> 前项很容易求得，从网络中容易看出，<span
+class="math inline">\(\partial z /\partial
+w\)</span>就等于前一个神经元对应的输出，在上图中的网络中，有$z_1 /w_1 =
+a_1 <span class="math inline">\(，\)</span>z_1 /w_1 = a_1 <span
+class="math inline">\(，\)</span>z_2 /w_2 = a_2 <span
+class="math inline">\(，\)</span>z_1 /w_6 = a_2 <span
+class="math inline">\(​，等等。这一项求取的过程，称为Forward。意思是只需要沿着网络的正向逐步前进，就可以计算出所有的\)</span>z
+/w$。</p>
+<p>后项看起来比较困难，因为由<span
+class="math inline">\(z\)</span>到达<span
+class="math inline">\(C\)</span>，中间需要经过很多乱七八糟的过程。这一项求取的过程称为Backward。后面我们可以看到，只需要沿着网络的逆向逐步前进，就可以计算出所有的<span
+class="math inline">\(\partial C /\partial z\)</span>。​</p>
+<p>现在考虑两种不同的参数<span class="math inline">\(w\)</span>。</p>
+<p>假设现在需要更新的参数<span
+class="math inline">\(w\)</span>​​​处在最后一个隐藏层中，如图中的<span
+class="math inline">\(w_1,w_2,w_5,w_6\)</span>​​​。下面考虑参数<span
+class="math inline">\(w_1\)</span>​​​，那么有关系式<span
+class="math inline">\(y^{&#39;}_1 = \sigma
+(z_1)\)</span>​​​​​。这样，我们需要求的(backpropagation)中的后项有： <span
+class="math display">\[
+\frac{\partial C}{\partial z_1} = \frac{\partial y^{&#39;}_1}{\partial
+z_1} \frac{\partial C}{\partial y^{&#39;}_1}
+\]</span> 在这个式子中，等式右边的前项，即为<span
+class="math inline">\(\sigma ^{&#39;}(z_1)\)</span>。</p>
+<p>而后项的求取，只需要知道函数<span
+class="math inline">\(C\)</span>的表达式后也很容易得到，即为<span
+class="math inline">\(C^{&#39;}(y^{&#39;}_1)\)</span>​。而这个表达式也是事先给定的。</p>
+<p>下面假设现在需要更新的参数<span
+class="math inline">\(w\)</span>处于其他的隐藏层中，如图中的<span
+class="math inline">\(w_3,w_4,w_7,w_8\)</span>。下面考虑参数<span
+class="math inline">\(w_3\)</span>，那么有需要求的(backpropagation)中的后项如下：
+<span class="math display">\[
+\begin{aligned}
+\frac{\partial C}{\partial z_3}
+&amp;= \frac{\partial a_1}{\partial z_3} \frac{\partial C}{\partial a_1}
+\\
+&amp;= \sigma ^{&#39;}(z_3) (\frac{\partial C}{\partial z_1}
+\frac{\partial z_1}{\partial a_1} + \frac{\partial C}{\partial z_2}
+\frac{\partial z_2}{\partial a_1}) \\
+&amp;= \sigma ^{&#39;}(z_3) (w_1 \frac{\partial C}{\partial z_1} + w_5
+\frac{\partial C}{\partial z_2}) \\
+\end{aligned}
+\]</span> 并且观察到，其中的<span class="math inline">\(\partial C /
+\partial z_1\)</span>和<span class="math inline">\(\partial C / \partial
+z_2\)</span>，都是已经可以求出来的。这样，逐步向前推广，就可以求出所有的<span
+class="math inline">\(\partial C / \partial
+z\)</span>​。而在求取的过程中，如果采用网络逆向的方式，计算的复杂度也将降低为与Forward一样的复杂度。并且也可以将求取的过程看成是经过另一个网络的模式。</p>
+<img src="/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/bpp2.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="bpp2">
+<p>其中，a元素在该网络结构中没有起到作用，经过每一个三角形单元表示整个式子乘上对应的<span
+class="math inline">\(\sigma^{&#39;}(z_i)\)</span>，而到达对应<span
+class="math inline">\(z_i\)</span>的位置，得到的就是对应的<span
+class="math inline">\(\partial C / \partial z_i\)</span>。</p>
+<p>综上所述，整个反向传播算法的过程，只需要先进行一次Forward计算得出所有的<span
+class="math inline">\(\partial z / \partial
+w\)</span>，再进行一次Backward计算得出所有的<span
+class="math inline">\(\partial C / \partial
+z\)</span>，再对应相乘即可得到所有的<span class="math inline">\(\partial
+C / \partial
+w\)</span>。并且在这个过程中，Forward和Backward的复杂度是相同的。</p>
+<h3 id="算法实现技巧">算法实现技巧</h3>
+<p>深度神经网络学习是一个复杂的非凸优化问题，实际操作过程中可能会产生一些优化上的困难，例如会出现梯度消失和梯度爆炸、内部协变量偏移等。</p>
+<h4 id="梯度消失和爆炸">梯度消失和爆炸</h4>
+<p>在深度神经网络学习的过程中，首先通过正向传播计算各层的输出，然后通过反向传播计算各层的误差和梯度。在这个过程中，各层的梯度，尤其是靠前层的梯度，有时候会接近0（梯度消失），或者接近无穷（梯度爆炸）。梯度消失会导致参数更新停止，梯度爆炸则会导致参数溢出，两者都会使得学习无法有效地进行。</p>
+<p>当然也有一些防止梯度消失和梯度爆炸的技巧：</p>
+<ol type="1">
+<li>进行恰当的随机参数初始化：一个经验的方法是对于每个神经元的权重<span
+class="math inline">\(\mathbf{w} = (w_1, w_2, ...,
+w_n)^T\)</span>，根据正态分布<span class="math inline">\(\mathscr{N}(0,
+1/n)\)</span>进行随机取值；</li>
+<li>使用ReLU作为激活函数，可以一定程度上防止梯度消失；</li>
+<li>使用特定的网络架构，避免反向传播时只依赖矩阵连乘。例如使用ResNet、LSTM等</li>
+</ol>
+<h4 id="内部协变量偏移">内部协变量偏移</h4>
+<p>在机器学习包括深度学习中存在一个普遍现象，如果将输入向量<span
+class="math inline">\(\mathbf{x}\)</span>的每一维的数值进行归一化，使其框定在一定范围内例如0到1之间，那么就可以加快基于梯度下降的学习收敛速度。这是因为梯度下降是以相同的学习率对每个维度进行最小化的，如果各个维度之间取值范围相差很大，那么学习就很难在各个维度上同时收敛。当然如果学习率取得很小的话，可以避免这个问题，但是这样反过来会降低学习效率。</p>
+<p>对于深度神经网络来说，网络中的每一层，它的输入依赖于前面的层，前面层的参数在学习过程中会不断改变，因此该层的输入也会不断变化，这不利于该层以及后面层的学习。这种现象在神经网络的各层都会发生，称作内部协变量偏移。上面提到的归一化就可以解决这个问题。</p>
+<h4 id="批量归一化">批量归一化</h4>
+<p>批量归一化（batch
+normalization）指的是对每一层的输入，针对每一个Batch的数据进行归一化后再输入该层。</p>
+<blockquote>
+<p>原理上在每一层，对于原始输入<span
+class="math inline">\(\mathbf{x}\)</span>和净输入<span
+class="math inline">\(\mathbf{z}\)</span>都可以进行归一化（两者的关系是<span
+class="math inline">\(\mathbf{z} = \mathbf{W}^T \cdot \mathbf{x} +
+\mathbf{b}\)</span>）。在实际操作过程中，发现对净输入<span
+class="math inline">\(\mathbf{z}\)</span>进行归一化可以取得更好的效果。</p>
+</blockquote>
+<p>批量归一化操作如下，假设批量数据在当前层的净输入是<span
+class="math inline">\(\{z_1, z_2, ..., z_n\}\)</span>，其中<span
+class="math inline">\(n\)</span>为批量大小，首先计算当前层净输入的均值和方差：
+<span class="math display">\[
+\begin{aligned}
+\mu &amp;= \frac{1}{n} \sum_{j=1}^n z_j \\
+\sigma^2 &amp;= \frac{1}{n-1} \sum_{j=1}^n (z_j - \mu)^2
+\end{aligned}
+\]</span> 这里<span class="math inline">\(\mu\)</span>和<span
+class="math inline">\(\sigma^2\)</span>分别表示均值向量和方差向量，之后对于每个样本的净输入向量进行归一化：
+<span class="math display">\[
+\bar{z_j} = \frac{z_j - \mu}{\sqrt{\sigma^2 + \varepsilon }},\quad
+j=1,2,...,n
+\]</span> 其中，<span
+class="math inline">\(\varepsilon\)</span>是一个每个元素都是很小正数的向量，主要用来保证分母不为0。归一化之后，再进行仿射变换：
+<span class="math display">\[
+\tilde{z_j} = \gamma \odot\bar{z_j} + \beta , \quad j=1,2,...,n
+\]</span> 其中，<span class="math inline">\(\gamma\)</span>和<span
+class="math inline">\(\beta\)</span>都是参数向量，<span
+class="math inline">\(\odot\)</span>是向量逐元素乘积。最后将经过归一化和仿射变换的结果<span
+class="math inline">\(\tilde{z_j}\)</span>作为批量数据在这一层的净输入。一方面，每个批量在各层具有各自的均值<span
+class="math inline">\(\mu\)</span>和方差<span
+class="math inline">\(\sigma^2\)</span>，当输入样本和网络参数确定的时候，<span
+class="math inline">\(\mu\)</span>和<span
+class="math inline">\(\sigma^2\)</span>就确定了。另一方面，每一层具有各自的参数<span
+class="math inline">\(\gamma\)</span>和<span
+class="math inline">\(\beta\)</span>。</p>
+<p>经过批量归一化之后，使得神经网络的每一层净输入的均值是0，方差是1。这样使得每一层输出的各个维度都不会有太大数量级的差别，使得学习收敛速度提高。</p>
+<h4 id="层归一化">层归一化</h4>
+<p>层归一化（layer
+normalization）是另一种防止内部协变量偏移的方法，其思想与批量归一化相同，不过是在每一层的神经元上进行归一化，而不是在每个批量的数据上进行归一化。</p>
+<p>假设当前层的所有神经元，净输入为<span
+class="math inline">\(\mathbf{z} =(z_1, z_2,
+...,z_m)^T\)</span>，其中<span
+class="math inline">\(z_j\)</span>表示第<span
+class="math inline">\(j\)</span>个神经元的净输入，<span
+class="math inline">\(m\)</span>是该层神经元的个数。之后有类似的操作，首先计算该层净输入的均值和方差：
+<span class="math display">\[
+\begin{aligned}
+\mu &amp;= \frac{1}{m} \sum_{j=1}^m z_j \\
+\sigma^2 &amp;= \frac{1}{m-1} \sum_{j=1}^m (z_j - \mu)^2
+\end{aligned}
+\]</span> 之后进行归一化： <span class="math display">\[
+\bar{z_j} = \frac{z_j - \mu}{\sqrt{\sigma^2 + \varepsilon }} , \quad
+j=1, 2, ..., m
+\]</span> 之后再进行仿射变换： <span class="math display">\[
+\tilde{z_j} = \gamma \odot\bar{z_j} + \beta, \quad j = 1, 2, ..., m
+\]</span></p>
+<h2 id="正则化">正则化</h2>
+<p>正则化的目的是提高学习的泛化能力，深度学习中的正则化包括L1正则化、L2正则化、early
+stopping和dropout等。其中前三种方法是机器学习通用的方法，最后一种则是深度学习特有。</p>
+<p><strong>early
+stopping</strong>指的是在学习过程中，使用验证集来进行评估，判断训练的终止点，从而进行模型的选择，是一种隐式的正则化方法。</p>
+<p>在early
+stopping中将数据分为训练集、验证集和测试集。在学习过程中，持续使用训练集训练模型，得到在训练集上的误差，同时使用验证集来进行评估，得到在验证集上的误差。通常随着训练轮数的增加，训练误差会逐渐减少并趋近于0，而验证误差会先降低后升高。early
+stopping选择那个验证误差最小的点作为训练的终止点，将此时的模型作为最终的模型输出。</p>
+<p>early
+stopping的优点是简单有效，缺点是需要将一部分标注数据用作训练的评估而不是训练。</p>
+<p><strong>dropout</strong>指的是在训练过程中每一步随机选择一些神经元，让它们不参与训练。这是一种经验性的方法，在实际使用过程中确实很有效，但是目前没有严格的理论证明。</p>
+<p>具体来说，对于神经网络的输入层和隐藏层，每一层都有一个保留概率<span
+class="math inline">\(p\)</span>，当然各层的保留概率不一定相同。在每次训练的时候，每层的神经元每个神经元以<span
+class="math inline">\(p\)</span>的概率保留。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" class="category-chain-item">基础理论</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">#深度学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>机器学习基础(10)-神经网络</div>
+      <div>http://example.com/2023/08/27/机器学习基础-10-神经网络/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/24/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-9-%E9%9B%86%E6%88%90%E5%AD%A6%E4%B9%A0/" title="机器学习基础(9)-集成学习">
+                        <span class="hidden-mobile">机器学习基础(9)-集成学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
