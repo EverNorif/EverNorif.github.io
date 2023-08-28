@@ -1,0 +1,1229 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要记录了动手学深度学习之前需要具备的一些预备知识，包括线性代数补充，导数计算以及自动求导。此处并不会记录线性代数的详细学习过程，而是集中记录一些在机器学习中会遇到的概念。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动手学深度学习(1)-预备知识">
+<meta property="og:url" content="http://example.com/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要记录了动手学深度学习之前需要具备的一些预备知识，包括线性代数补充，导数计算以及自动求导。此处并不会记录线性代数的详细学习过程，而是集中记录一些在机器学习中会遇到的概念。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/%E5%8F%8D%E5%90%91%E7%B4%AF%E7%A7%AF.png">
+<meta property="article:published_time" content="2023-08-28T06:56:33.000Z">
+<meta property="article:modified_time" content="2023-08-28T07:00:34.947Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E5%9B%BE.png">
+  
+  
+  
+  <title>动手学深度学习(1)-预备知识 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="动手学深度学习(1)-预备知识"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-28 14:56" pubdate>
+          2023年8月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          86 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">动手学深度学习(1)-预备知识</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="线性代数补充">线性代数补充</h1>
+<h2 id="向量点积-dot-product">向量点积 Dot Product</h2>
+<p>给定两个向量，它们之间的点积（dot
+product）是对应位置元素相乘并相加：</p>
+<p><span class="math display">\[
+\overrightarrow{a} \cdot \overrightarrow{b} = \sum_{i=1}^{n}a_ib_i =
+a_1b_1 + a_2b_2 + ...+a_nb_n
+\]</span></p>
+<p>对应Pytorch中的操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">a, b = torch.arange(<span class="hljs-number">5</span>), torch.arange(<span class="hljs-number">5</span>)<br><br>result = torch.dot(a, b)<br></code></pre></td></tr></table></figure>
+<h2 id="矩阵-向量积-matrix-vector-product">矩阵-向量积 Matrix-Vector
+Product</h2>
+<p>给定一个<span class="math inline">\(m \times n\)</span>的矩阵<span
+class="math inline">\(A\)</span>和一个<span
+class="math inline">\(n\)</span>维向量<span
+class="math inline">\(x\)</span>，矩阵和向量的乘积有如下计算方式：</p>
+<p><span class="math display">\[
+Ax =
+\begin{bmatrix}
+a_1^T \\
+a_2^T \\
+... \\
+a_m^T \\
+\end{bmatrix} x
+=
+\begin{bmatrix}
+a_1^T x \\
+a_2^T x \\
+... \\
+a_m^T x \\
+\end{bmatrix}
+\]</span></p>
+<p>矩阵向量积<span class="math inline">\(Ax\)</span>是一个长度为<span
+class="math inline">\(m\)</span>的列向量，其中第<span
+class="math inline">\(i\)</span>个元素是向量点积<span
+class="math inline">\(a_i^Tx\)</span>。</p>
+<p>我们可以把一个矩阵<span class="math inline">\(A \in R^{m \times
+n}\)</span>乘法看作一个从<span class="math inline">\(R^n\)</span>到<span
+class="math inline">\(R^m\)</span>向量的转换。
+这些转换是非常有用的，例如可以用方阵的乘法来表示旋转。</p>
+<h2 id="矩阵乘法-matrix-matrix-multiplication">矩阵乘法 Matrix-Matrix
+Multiplication</h2>
+<p>矩阵乘法即遵循前给行，后给列的计算方式，是矩阵-向量积的扩展。</p>
+<p>注意，矩阵乘法不应该与Hadamard积混淆。Hadamard积（Hadamard
+product）表示的是矩阵按照对应位置元素进行相乘，数学符号为<span
+class="math inline">\(\odot\)</span>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python">a = torch.arange(<span class="hljs-number">5</span>)<br><br><span class="hljs-comment"># 矩阵乘法</span><br>a @ a.T<br>a.matmul(a.T)<br><br><span class="hljs-comment"># 按元素相乘 Hadamard积</span><br>a * a<br>a.mul(a)<br></code></pre></td></tr></table></figure>
+<h2 id="范数">范数</h2>
+<p>简单地说，向量的范数是用来衡量一个向量有多大的。向量的范数并不局限于某一种计算方式，只要一个函数<span
+class="math inline">\(f\)</span>能够将向量映射到标量，并且满足如下性质，那么我们就可以称这个函数是向量的范数。</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;1.[缩放] \ f(\alpha x) = |\alpha|f(x) \\
+&amp;2.[三角不等式]\  f(x+y) \le f(x) + f(y) \\
+&amp;3.[非负]\  f(x) \ge 0\\
+&amp;4.范数最小为0，当且仅当向量全由0组成
+\end{aligned}
+\]</span></p>
+<p>自然有很多函数都能够满足这些要求，在这些函数或者称为范数中，有一些常用的特殊范数，包括<span
+class="math inline">\(L_2\)</span>范数、<span
+class="math inline">\(L_1\)</span>范数、<span
+class="math inline">\(L_p\)</span>范数等。</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;L_1范数: ||x||_1 = \sum_{i=1}^n |x_i|\\
+&amp;L_2范数: ||x||_2 = ||x|| = \sqrt{\sum_{i=1}^{n}x_i^2} \\
+&amp;L_p范数: ||x||_p = (\sum_{i=1}^n |x_i|^p)^{1-p}\\
+\end{aligned}
+\]</span></p>
+<p>在Pytorch中，这些范数可以通过下面的方式进行计算：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">data = torch.tensor([<span class="hljs-number">3.0</span>, -<span class="hljs-number">4.0</span>])<br><br><span class="hljs-comment"># L2范数</span><br>torch.norm(data)<br><span class="hljs-comment"># L1范数</span><br>torch.<span class="hljs-built_in">abs</span>(data).<span class="hljs-built_in">sum</span>()<br></code></pre></td></tr></table></figure>
+<p>类似于向量的<span class="math inline">\(L_2\)</span>范数，矩阵<span
+class="math inline">\(X \in R^{m \times
+n}\)</span>的Frobenius范数是矩阵元素平方和的平方根：</p>
+<p><span class="math display">\[
+||X||_F = \sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n}x_{ij}^{2}}
+\]</span></p>
+<h1 id="导数计算">导数计算</h1>
+<h2 id="函数推广">函数推广</h2>
+<p>我们最熟悉的函数应该是<span class="math inline">\(y =
+f(x)\)</span>的格式，这里的函数<span
+class="math inline">\(f(x)\)</span>接受一个标量<span
+class="math inline">\(x\)</span>，输出另一个标量<span
+class="math inline">\(y\)</span>。在线性代数里面我们引入了向量，矩阵等，于是函数也可以对应推广到标量、向量和矩阵版本。针对函数的类型和输入的类型，可以分为下面几类。</p>
+<blockquote>
+<p>理解核心在于牢牢把握<span
+class="math inline">\(f\)</span>的输出是一个标量，这样就可以清楚不同类型函数+不同类型输入的计算逻辑以及形状。</p>
+</blockquote>
+<h3 id="标量function">标量function</h3>
+<p>标量function称为实值标量函数，输出是一个标量，也是最基本的函数，使用符号<span
+class="math inline">\(f\)</span>表示。</p>
+<p>input可以是一个标量，例如：</p>
+<p><span class="math display">\[
+f(x) = ax+b
+\]</span></p>
+<p>input可以是一个向量，例如：</p>
+<p><span class="math display">\[
+设\mathbf{x} = [x_1, x_2, x_3]^T \\
+f(\mathbf{x}) = ax_1 + bx_2 + cx_3
+\]</span></p>
+<p>input可以是一个矩阵，例如：</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;设 \mathbf{X}_{3 \times 2} = (x_{ij})_{i=1,j=1}^{3,2} \\
+f(\mathbf{X}) &amp;= a_1x_{11} + a_2x_{12} + a_3x_{13} + a_4x_{21} +
+a_5x_{22} + a_6x_{23}
+\end{aligned}
+\]</span></p>
+<h3 id="向量function">向量function</h3>
+<p>向量function称为实向量函数，输出是一个向量，使用符号<span
+class="math inline">\(\mathbf{f}\)</span>表示，例如有：</p>
+<p><span class="math display">\[
+\mathbf{f}_{3\times 1} =
+\begin{bmatrix}
+f_1\\
+f_2\\
+f_3
+\end{bmatrix}
+\]</span></p>
+<p>input可以是一个标量，例如：</p>
+<p><span class="math display">\[
+\mathbf{f}_{3\times 1}(x) =
+\begin{bmatrix}
+f_1(x)\\
+f_2(x)\\
+f_3(x)
+\end{bmatrix} =
+\begin{bmatrix}
+a_1x+b_1\\
+a_2x+b_2\\
+a_3x+b_3
+\end{bmatrix}
+\]</span></p>
+<p>input可以是一个向量，例如：</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;设\mathbf{x} = [x_1, x_2, x_3]^T \\
+\mathbf{f}_{3\times 1}(\mathbf{x})&amp; =
+\begin{bmatrix}
+f_1(\mathbf{x})\\
+f_2(\mathbf{x})\\
+f_3(\mathbf{x})
+\end{bmatrix} =
+\begin{bmatrix}
+a_1x_1+b_1x_2+c_1x_3\\
+a_2x_1+b_2x_2+c_2x_3\\
+a_3x_1+b_3x_2+c_3x_3\\
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<p>input可以是一个矩阵，例如：</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;设 \mathbf{X}_{3 \times 2} = (x_{ij})_{i=1,j=1}^{3,2} \\
+\mathbf{f}_{3\times 1}(\mathbf{X}) &amp;=
+\begin{bmatrix}
+f_1(\mathbf{X})\\
+f_2(\mathbf{X})\\
+f_3(\mathbf{X})
+\end{bmatrix} =
+\begin{bmatrix}
+a_1x_{11} + a_2x_{12} + a_3x_{13} + a_4x_{21} + a_5x_{22} + a_6x_{23} \\
+b_1x_{11} + b_2x_{12} + b_3x_{13} + b_4x_{21} + b_5x_{22} + b_6x_{23} \\
+c_1x_{11} + c_2x_{12} + c_3x_{13} + c_4x_{21} + c_5x_{22} + c_6x_{23} \\
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<h3 id="矩阵function">矩阵function</h3>
+<p>矩阵function称为实矩阵函数，输出是一个矩阵，使用符号<span
+class="math inline">\(\mathbf{F}\)</span>表示，例如有：</p>
+<p><span class="math display">\[
+\mathbf{F}_{3\times 2} =
+\begin{bmatrix}
+f_{11} &amp; f_{12} \\
+f_{21} &amp; f_{22} \\
+f_{31} &amp; f_{32} \\
+\end{bmatrix} \\
+\]</span></p>
+<p>input可以是一个标量，例如：</p>
+<p><span class="math display">\[
+\mathbf{F}_{3\times 2}(x) =
+\begin{bmatrix}
+f_{11}(x) &amp; f_{12}(x) \\
+f_{21}(x) &amp; f_{22}(x) \\
+f_{31}(x) &amp; f_{32}(x) \\
+\end{bmatrix} \\
+\]</span></p>
+<p>input可以是一个向量，例如：</p>
+<p><span class="math display">\[
+设\mathbf{x} = [x_1, x_2, x_3]^T \\
+\mathbf{F}_{3\times 2}(\mathbf{x}) =
+\begin{bmatrix}
+f_{11}(\mathbf{x}) &amp; f_{12}(\mathbf{x}) \\
+f_{21}(\mathbf{x}) &amp; f_{22}(\mathbf{x}) \\
+f_{31}(\mathbf{x}) &amp; f_{32}(\mathbf{x}) \\
+\end{bmatrix} \\
+\]</span></p>
+<p>input可以是一个矩阵，例如：</p>
+<p><span class="math display">\[
+设 \mathbf{X}_{3 \times 2} = (x_{ij})_{i=1,j=1}^{3,2} \\
+\mathbf{F}_{3\times 2}(\mathbf{X}) =
+\begin{bmatrix}
+f_{11}(\mathbf{X}) &amp; f_{12}(\mathbf{X}) \\
+f_{21}(\mathbf{X}) &amp; f_{22}(\mathbf{X}) \\
+f_{31}(\mathbf{X}) &amp; f_{32}(\mathbf{X}) \\
+\end{bmatrix} \\
+\]</span></p>
+<p>总结来说可以得到如下的表格：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>function</th>
+<th>标量input</th>
+<th>向量input</th>
+<th>矩阵input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>实值标量函数</td>
+<td><span class="math inline">\(f(x)\)</span></td>
+<td><span class="math inline">\(f(\mathbf{x})\)</span></td>
+<td><span class="math inline">\(f(\mathbf{X})\)</span></td>
+</tr>
+<tr class="even">
+<td>实向量函数</td>
+<td><span class="math inline">\(\mathbf{f}(x)\)</span></td>
+<td><span class="math inline">\(\mathbf{f}(\mathbf{x})\)</span></td>
+<td><span class="math inline">\(\mathbf{f}(\mathbf{X})\)</span></td>
+</tr>
+<tr class="odd">
+<td>实矩阵函数</td>
+<td><span class="math inline">\(\mathbf{F}(x)\)</span></td>
+<td><span class="math inline">\(\mathbf{F}(\mathbf{x})\)</span></td>
+<td><span class="math inline">\(\mathbf{F}(\mathbf{X})\)</span></td>
+</tr>
+</tbody>
+</table>
+<h2 id="矩阵求导以及相关布局">矩阵求导以及相关布局</h2>
+<p>矩阵求导的本质实际上就是function中的每个<span
+class="math inline">\(f\)</span>分别对input中的每个元素逐个求偏导，只不过写成了向量、矩阵形式而已。例如考虑实值标量函数，input为向量，即<span
+class="math inline">\(f(\mathbf{x}_{n\times 1})\)</span>，则有：</p>
+<p><span class="math display">\[
+\frac{\partial f(\mathbf{x})}{\partial \mathbf{x}_{n\times 1}} =
+\begin{bmatrix}
+\frac{\partial f}{\partial x_1} \\
+\frac{\partial f}{\partial x_2} \\
+... \\
+\frac{\partial f}{\partial x_n}
+\end{bmatrix} \\
+\]</span></p>
+<p>上面我们将结果写成了列向量的形式，当然也可以写成行向量的形式，行列向量的形式互为转置。</p>
+<p><span class="math display">\[
+\frac{\partial f(\mathbf{x})}{\partial \mathbf{x}_{n\times 1}} =
+[
+\frac{\partial f}{\partial x_1}
+\frac{\partial f}{\partial x_2}
+...
+\frac{\partial f}{\partial x_n}
+]
+\]</span></p>
+<p>再考虑向量function，同时input也是向量，即<span
+class="math inline">\(\mathbf{f}_{m\times1}(\mathbf{x}_{n\times1})\)</span>，其中function中有<span
+class="math inline">\(m\)</span>个<span
+class="math inline">\(f\)</span>，input中有<span
+class="math inline">\(n\)</span>个元素。进行求导就可以产生<span
+class="math inline">\(m\times n\)</span>个结果。这<span
+class="math inline">\(m \times
+n\)</span>个结果如何排列，是写成行向量还是列向量，则对应矩阵求导结果的相关布局。</p>
+<p>布局分为分子布局和分母布局。</p>
+<p>分子布局指的是分子<code>f</code>是列向量形式，分母<code>x</code>是行向量形式：</p>
+<p><span class="math display">\[
+\frac{\partial \mathbf{f}_{m\times 1}}{\partial \mathbf{x}_{n \times 1}}
+=
+\begin{bmatrix}
+\frac{\partial f_1}{\partial \mathbf{x}_{n \times 1}} \\
+\frac{\partial f_2}{\partial \mathbf{x}_{n \times 1}} \\
+... \\
+\frac{\partial f_m}{\partial \mathbf{x}_{n \times 1}} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{\partial f_1}{\partial x_{1}}
+&amp; \frac{\partial f_1}{\partial x_{2}}
+&amp; ...
+&amp; \frac{\partial f_1}{\partial x_{n}}
+\\
+\frac{\partial f_2}{\partial x_{1}}
+&amp; \frac{\partial f_2}{\partial x_{2}}
+&amp; ...
+&amp; \frac{\partial f_2}{\partial x_{n}}
+\\
+... \\
+\frac{\partial f_m}{\partial x_{1}}
+&amp; \frac{\partial f_m}{\partial x_{2}}
+&amp; ...
+&amp; \frac{\partial f_m}{\partial x_{n}}
+\\
+\end{bmatrix} \\
+\]</span></p>
+<p>分母布局指的是分母<code>x</code>是列向量形式，分子<code>f</code>是行向量形式：</p>
+<p><span class="math display">\[
+\frac{\partial \mathbf{f}_{m\times 1}}{\partial \mathbf{x}_{n \times 1}}
+=
+\begin{bmatrix}
+\frac{\partial \mathbf{f}_{m \times 1}}{\partial x_1} \\
+\frac{\partial \mathbf{f}_{m \times 1}}{\partial x_2} \\
+... \\
+\frac{\partial \mathbf{f}_{m \times 1}}{\partial x_n} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{\partial f_{1}}{\partial x_1}
+&amp; \frac{\partial f_{2}}{\partial x_1}
+&amp; ..
+&amp; \frac{\partial f_{m}}{\partial x_1}
+\\
+\frac{\partial f_{1}}{\partial x_2}
+&amp; \frac{\partial f_{2}}{\partial x_2}
+&amp; ..
+&amp; \frac{\partial f_{m}}{\partial x_n}
+\\
+... \\
+\frac{\partial f_{1}}{\partial x_1}
+&amp; \frac{\partial f_{2}}{\partial x_2}
+&amp; ..
+&amp; \frac{\partial f_{m}}{\partial x_n}
+\\
+\end{bmatrix} \\
+\]</span></p>
+<p>使用哪种布局并没有严格的要求，只需要前后统一即可。不过无论使用何种布局，<span
+class="math inline">\(\mathbf{f}_{m\times1}(\mathbf{x}_{n\times1})\)</span>的导数都是一个二维矩阵，而对于更高维度的矩阵函数，或者输入是矩阵，同样也可以这样分析。此时假设矩阵input的维度为<span
+class="math inline">\((a,b)\)</span>，那么input中的<span
+class="math inline">\(n\)</span>个元素就可以从第一个维度便利，看作是<span
+class="math inline">\(a\)</span>个向量，然后依次进行分析，进行推广。</p>
+<p>假设此时我们使用分子布局，对于矩阵求导结果的维度则有如下结论：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>function</th>
+<th>dim</th>
+<th>标量input</th>
+<th>向量input</th>
+<th>矩阵input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dim</td>
+<td></td>
+<td><span class="math inline">\(x(1,)\)</span></td>
+<td><span class="math inline">\(\mathbf{x}(n,1)\)</span></td>
+<td><span class="math inline">\(\mathbf{X}(n,k)\)</span></td>
+</tr>
+<tr class="even">
+<td>标量function</td>
+<td><span class="math inline">\(y(1,)\)</span></td>
+<td><span class="math inline">\(\partial y/\partial x(1,)\)</span></td>
+<td><span class="math inline">\(\partial y/\partial
+\mathbf{x}(1,n)\)</span></td>
+<td><span class="math inline">\(\partial y/\partial \mathbf{X}(k,
+n)\)</span></td>
+</tr>
+<tr class="odd">
+<td>向量function</td>
+<td><span class="math inline">\(\mathbf{y}(m,1)\)</span></td>
+<td><span class="math inline">\(\partial \mathbf{y}/\partial
+x(m,1)\)</span></td>
+<td><span class="math inline">\(\partial \mathbf{y}/\partial
+\mathbf{x}(m,n)\)</span></td>
+<td><span class="math inline">\(\partial \mathbf{y}/\partial
+\mathbf{X}(m, k, n)\)</span></td>
+</tr>
+<tr class="even">
+<td>矩阵function</td>
+<td><span class="math inline">\(\mathbf{Y}(m,l)\)</span></td>
+<td><span class="math inline">\(\partial \mathbf{Y}/\partial x(m,
+l)\)</span></td>
+<td><span class="math inline">\(\partial \mathbf{Y}/\partial
+\mathbf{x}(m, l, n)\)</span></td>
+<td><span class="math inline">\(\partial \mathbf{Y}/\partial
+\mathbf{X}(m, l, k, n)\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>这里需要注意的是，如果后续没有特别说明，本人笔记中矩阵求导结果默认都使用分子布局，即分子<code>f</code>为列向量形式，分母<code>x</code>为行向量形式。</p>
+<h1 id="自动求导">自动求导</h1>
+<p>机器学习中非常常用的优化算法是梯度下降法，它的实现关键在于梯度的计算。其中，也会涉及到矩阵求导。下面主要介绍如何进行矩阵导数的计算。</p>
+<p>首先回顾标量函数，我们有标量链式法则：</p>
+<p><span class="math display">\[
+y=f(u),u=g(x),则 \frac{\partial y}{\partial x} = \frac{\partial
+y}{\partial u} \frac{\partial u}{\partial x}
+\]</span></p>
+<p>链式法则同样可以推广到向量和矩阵，不过特别需要注意各个阶段的形状：</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{\partial y}{\partial \mathbf{x}} &amp;= \frac{\partial y}{\partial
+u} \frac{\partial u}{\partial \mathbf{x}} \\
+(1,n)&amp;=(1,)(1,n) \\
+\frac{\partial y}{\partial \mathbf{x}} &amp;= \frac{\partial y}{\partial
+\mathbf{u}} \frac{\partial \mathbf{u}}{\partial \mathbf{x}} \\
+(1,n)&amp;=(1,k)(k,n) \\
+\frac{\partial \mathbf{y}}{\partial \mathbf{x}} &amp;= \frac{\partial
+\mathbf{y}}{\partial \mathbf{u}} \frac{\partial \mathbf{u}}{\partial
+\mathbf{x}} \\
+(m,n)&amp;=(m,k)(k,n) \\
+\end{aligned}
+\]</span></p>
+<p>有了推广的链式法则，理论上我们可以进行任何函数的求导。但是神经网络通常具有非常深度的结构，手动进行链式法则求导是比较困难的，因此需要借助自动求导。</p>
+<p>自动求导指的是计算一个函数在指定值上的导数，自动求导与符号求导和数值求导不同，符号求导指的是计算出导数的表达式，然后带入特定值直接计算导数值；数值求导指的是利用导数的定义，使用特定值附近差值的极限来计算导数值。</p>
+<p>自动求导的思想实际上就是链式法则。对于导数<span
+class="math inline">\(\partial y / \partial x\)</span>，有：</p>
+<p><span class="math display">\[
+\frac{\partial y}{\partial x} = \frac{\partial y}{\partial u_n}
+\frac{\partial u_n}{\partial u_{n-1}} ... \frac{\partial u_2}{\partial
+u_1}\frac{\partial u_1}{\partial x}
+\]</span></p>
+<p>通过这个式子，我们可以计算在指定值上的导数。计算方式有两种，分别对应自动求导的两种模式，正向累积和反向累积（其中反向累积就是大名鼎鼎的反向传播Back
+Propagation，反向传播是用来计算梯度的一种方式）</p>
+<p><span class="math display">\[
+\begin{aligned}
+正向累积: \frac{\partial y}{\partial x} = \frac{\partial y}{\partial
+u_n} (\frac{\partial u_n}{\partial u_{n-1}}( ... (\frac{\partial
+u_2}{\partial u_1}\frac{\partial u_1}{\partial x})))
+\\
+反向累积:\frac{\partial y}{\partial x} = (((\frac{\partial y}{\partial
+u_n} \frac{\partial u_n}{\partial u_{n-1}}) ... )\frac{\partial
+u_2}{\partial u_1})\frac{\partial u_1}{\partial x})
+\\
+\end{aligned}
+\]</span></p>
+<p>之后，我们再引入计算图的概念。简单来说，计算图就是将一个计算分解成多步操作，形成一个类似无环图的结构。考虑如下计算图的构造，整个计算图自底向上执行的过程实际上就是计算过程：</p>
+<img src="/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E5%9B%BE.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="计算图">
+<p>这里我们主要介绍反向累积的计算过程。可以发现，如果结合链式法则，实际上计算图中的每个非叶子节点就是一步计算，可以对应到链式法则中的一次导数计算。</p>
+<img src="/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/%E5%8F%8D%E5%90%91%E7%B4%AF%E7%A7%AF.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="反向累积">
+<p>那么为了计算整个导数，我们可以反向执行计算图。即从上到下依次计算各个节点的导数值。举例来说，为了计算<span
+class="math inline">\(\partial z / \partial b =
+2b\)</span>，我们需要知道b的值，即该节点计算过程中的中间结果。</p>
+<p>于是整个反向累积的过程实际上分为两个过程：</p>
+<ul>
+<li>正向过程：自底向上的原式计算过程，需要存储中间结果</li>
+<li>反向过程：自顶向下的导数计算过程，利用存储的中间结果进行导数计算</li>
+</ul>
+<p>如果假设操作子数目为n的话，反向累积的是时间复杂度为<span
+class="math inline">\(O(n)\)</span>，通常可以认为正向和反向的代价类似；空间复杂度为<span
+class="math inline">\(O(n)\)</span>，因为需要存储正向过程中的所有中间结果。</p>
+<p>在Pytroch中，即利用类似的原理完成自动求导。首先进行数据准备。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><br>x = torch.arange(<span class="hljs-number">4.0</span>) <span class="hljs-comment"># tensor([0., 1., 2., 3.])</span><br><span class="hljs-comment"># 如果要存储梯度，那么需要开启选项</span><br>x.requires_grad_(<span class="hljs-literal">True</span>)<br><span class="hljs-comment"># 也可以在初始化的时候给定该选项 </span><br><span class="hljs-comment"># 等价于x = torch.arange(4.0,requires_grad=True)</span><br>x.grad <span class="hljs-comment">#默认值是None</span><br></code></pre></td></tr></table></figure>
+<p>假设我们现在计算<span
+class="math inline">\(\mathbf{x}\)</span>的点积，即：</p>
+<p><span class="math display">\[
+y = \mathbf{x} \cdot \mathbf{x} =
+[x_1^2, x_2^2 ,x_3^2, x_4^2]
+\]</span></p>
+<p>我们可以手动进行符号求导，即</p>
+<p><span class="math display">\[
+\frac{\partial y}{\partial \mathbf{x}} = [2x_1, 2x_2, 2x_3,2x_4]
+\]</span></p>
+<p>在Pytroch中，可以通过下面的方式自动计算梯度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 首先构造算式</span><br>y = torch.dot(x, x)<br><br><span class="hljs-comment"># 之后调用反向传播来计算y关于每个分量的梯度</span><br><span class="hljs-comment"># 注意和符号求导的区别，这里会直接计算出具体的值</span><br>y.backward()<br>x.grad <span class="hljs-comment"># tensor([0., 2., 4., 6.])</span><br></code></pre></td></tr></table></figure>
+<p>我们也可以将<span
+class="math inline">\(\mathbf{x}\)</span>的值带入上面进行的手动求导结果中，可以发现确实是相同的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">x.grad == <span class="hljs-number">2</span> * x  <span class="hljs-comment"># tensor([True, True, True, True])</span><br></code></pre></td></tr></table></figure>
+<p>同样我们可以计算其他算式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 在默认情况下，PyTorch会累积梯度，我们需要清除之前的值</span><br>x.grad.zero_()  <span class="hljs-comment">#如果没有这一步结果就会加累上之前的梯度值，变为[1,5,9,13]</span><br>y = x.<span class="hljs-built_in">sum</span>()<br>y.backward()<br>x.grad  <span class="hljs-comment"># tensor([1., 1., 1., 1.])</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">x.grad.zero_()<br>y = x * x  <span class="hljs-comment">#哈达玛积，对应元素相乘</span><br>y.<span class="hljs-built_in">sum</span>().backward()  <span class="hljs-comment">#等价于y.backword(torch.ones(len(x)))</span><br>x.grad  <span class="hljs-comment"># tensor([0., 2., 4., 6.])</span><br></code></pre></td></tr></table></figure>
+<p>注意这里需要首先对<span
+class="math inline">\(y\)</span>进行sum，之后再进行反向传播。这样做是因为<strong>在深度学习当中通常考虑的都是标量Loss，因此计算的是标量对向量或矩阵的导数</strong>。我们通常不会去计算向量或者矩阵函数的导数，因为这样的Loss维度膨胀会非常快。</p>
+<p>并且即使构建函数的计算图需要用过Python控制流，仍然可以计算得到的变量的梯度。这也是隐式构造的优势，因为它会存储梯度计算的计算图，再次计算时执行反向过程就可以。</p>
+<p>同时Pytroch还支持将某些计算移动到计算图之外，即不计算这部分的梯度。这种方式可以用于将神经网络的一些参数进行固定：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 后可用于用于将神经网络的一些参数固定住</span><br>x.grad.zero_()<br>y = x * x<br>u = y.detach() <span class="hljs-comment"># 把y当作常数</span><br>z = u * x<br><br>z.<span class="hljs-built_in">sum</span>().backward()<br>x.grad == x * x  <span class="hljs-comment"># 如果没有y.detach() 此处应该是x.grad = 3 * x * x</span><br></code></pre></td></tr></table></figure>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/263777564">矩阵求导--本质篇</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://zh.d2l.ai/chapter_preliminaries/autograd.html">动手学深度学习-预备知识-自动微分</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">动手学深度学习</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">#深度学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>动手学深度学习(1)-预备知识</div>
+      <div>http://example.com/2023/08/28/动手学深度学习-1-预备知识/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/" title="机器学习基础(10)-神经网络">
+                        <span class="hidden-mobile">机器学习基础(10)-神经网络</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
