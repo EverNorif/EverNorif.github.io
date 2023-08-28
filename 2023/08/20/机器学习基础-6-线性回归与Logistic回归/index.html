@@ -16,17 +16,17 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本篇主要介绍了机器学习中常见的线性回归以及Logisitic回归，其中线性回归主要用来解决回归问题，而Logisitc回归面向分类问题。同时还介绍了由二分类问题如何扩展到多分类问题。">
+    <meta name="description" content="本篇主要介绍了机器学习中常见的线性回归以及Logisitic回归，其中线性回归主要用来解决回归问题，而Logisitc回归面向分类问题。同时还介绍了由二分类问题如何扩展到多分类问题，包括扩展思想和softmax回归。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="机器学习基础(6)-线性回归与Logistic回归">
 <meta property="og:url" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="本篇主要介绍了机器学习中常见的线性回归以及Logisitic回归，其中线性回归主要用来解决回归问题，而Logisitc回归面向分类问题。同时还介绍了由二分类问题如何扩展到多分类问题。">
+<meta property="og:description" content="本篇主要介绍了机器学习中常见的线性回归以及Logisitic回归，其中线性回归主要用来解决回归问题，而Logisitc回归面向分类问题。同时还介绍了由二分类问题如何扩展到多分类问题，包括扩展思想和softmax回归。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/sigmoid.png">
 <meta property="og:image" content="http://example.com/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/err%E5%AF%B9%E6%AF%94.png">
 <meta property="article:published_time" content="2023-08-20T13:02:33.000Z">
-<meta property="article:modified_time" content="2023-08-22T13:03:31.223Z">
+<meta property="article:modified_time" content="2023-08-28T12:50:47.045Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="机器学习">
 <meta property="article:tag" content="监督学习">
@@ -270,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          6.8k 字
+          7.1k 字
         
       </span>
     
@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          57 分钟
+          60 分钟
         
       </span>
     
@@ -600,7 +600,8 @@ E_{out-线性分类}
 class="math inline">\(E_{out}\)</span>仍然存在上界，只不过这个上界变得更加宽松了。对于利用Logistic回归来解决线性分类问题也具有相同的解释。</p>
 <h1 id="多分类问题">多分类问题</h1>
 <p>上面的讨论都是二分类的情况，而多分类的情况可以由基本的二分类拓展得到。</p>
-<h2 id="one-versus-all">One-Versus-All</h2>
+<h2 id="扩展思想">扩展思想</h2>
+<h3 id="one-versus-all">One-Versus-All</h3>
 <p>对于多分类问题，我们可以将其想象为多个二分类问题。对于每个类别<span
 class="math inline">\(M\)</span>，我们都可以将训练集划分为两部分，分别是属于类别<span
 class="math inline">\(M\)</span>以及不属于这个类别。通过这样的数据，我们就可以训练一个关于类别<span
@@ -611,13 +612,19 @@ class="math inline">\(m\)</span>个输出。如果二分类输出的是01是否�
 <p>这种多分类的处理方式，我们称之为One-Versus-All（OVA）。它的优点是简单高效，缺点是会存在数据不平衡的方式。考虑存在<span
 class="math inline">\(m\)</span>个类别，如果对于多分类来说数据分布是均匀的，那么我们在训练每个二分类模型的时候，正类数据占1份，负类数据占<span
 class="math inline">\(m-1\)</span>份。数据不平衡会影响后续的分类效果。</p>
-<h2 id="one-versus-one">One-Versus-One</h2>
+<h3 id="one-versus-one">One-Versus-One</h3>
 <p>OVA的方式由于数据不平衡，可能会影响分类效果。那我们考虑在训练二分类的时候，使用平衡的数据。具体来说，我们每次只取<span
 class="math inline">\(m\)</span>个类中的2个类别的数据进行二分类模型的训练，例如AB两类。这样我们得到的模型能做到的事情就是将输入分成A类或者B类。对所有可能的2类取样进行二分类模型的训练，这样我们就可以得到<span
 class="math inline">\(\binom{m}{2}\)</span>个二分类模型。对于给定的输入，我们分别调用这<span
 class="math inline">\(\binom{m}{2}\)</span>个模型，对应得到<span
 class="math inline">\(\binom{m}{2}\)</span>个输出，然后就可以通过投票的方式得到最终的输出。</p>
 <p>这种多分类的处理方式，我们称之为One-Versus-One（OVO）。这种方式避免了出现数据不均衡，在训练二分类模型的时候也更加高效，因为训练数据减少了，每次仅需要进行两个类别的比较。但是这种方式需要训练的模型更多，时间复杂度和空间复杂度可能都比较高。</p>
+<h2 id="softmax">Softmax</h2>
+<p>对于多分类问题，我们也可以使用Softmax回归来解决。Softmax回归实际上就是Logistic回归的扩展，对于Logistic回归使用的sigmoid函数，我们可以将其看作是输出属于正类的概率，而Softmax函数定义如下：
+<span class="math display">\[
+\text{softmax}(x_i) = \frac{e^{x_i}}{\sum_{j=1}^n e^{x_j}}
+\]</span>
+在使用的过程中，我们可以通常输入一个向量，通过softmax得到输出向量，而输出向量的每个维度就可以看作是属于对应类别的概率。总结来说，softmax函数能够将未规范化的预测变换为全部非负并且总和为1的规范化概率预测，同时还可以保持函数可导的性质。softmax函数并不会改变预测的大小次序，而是确定每个预测的概率。</p>
 
                 
               </div>
