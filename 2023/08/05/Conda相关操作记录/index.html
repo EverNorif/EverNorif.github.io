@@ -24,7 +24,7 @@
 <meta property="og:description" content="Conda是Python中另一个强大的包管理器，本篇主要记录了Conda的相关操作。目前包括Conda的虚拟环境管理、jupyter与Conda的相关配置。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-05T06:49:54.000Z">
-<meta property="article:modified_time" content="2023-08-05T06:52:29.702Z">
+<meta property="article:modified_time" content="2023-09-06T01:49:40.877Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Conda">
@@ -266,7 +266,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          923 字
+          3.7k 字
         
       </span>
     
@@ -278,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          8 分钟
+          31 分钟
         
       </span>
     
@@ -348,6 +348,54 @@ notebook是无法检测到Conda中的虚拟环境，需要进行如下配置。<
 <p>默认情况下，通过浏览器打开jupyter
 notebook是没有代码提示与自动补全功能的，可以参考xxx，通过安装相关插件来增加对应功能。</p>
 <p>当然也可以通过在Pycharm中使用jupyter来解决。利用Pycharm打开<code>.ipynb</code>文件，其中会自带代码提示和补全的支持。</p>
+<h1 id="服务器安装anaconda">服务器安装Anaconda</h1>
+<p>在为服务器安装Anaconda的时候，我们希望在系统中仅安装一个Anaconda，同时给多用户提供服务。</p>
+<ol type="1">
+<li>首先通过root用户或者sudo权限将Anaconda安装到一个公共的目录，例如<code>/opt</code>。在安装完成之后不执行conda
+init，后续手动修改环境配置。</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> /opt<br>wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh<br>sudo sh Anaconda3-2023.07-2-Linux-x86_64.sh<br></code></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>创建用户组conda，并将Anaconda安装目录的权限都设置为该group。</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">sudo groupadd conda<br>sudo <span class="hljs-built_in">chgrp</span> -R conda /opt/anaconda3<br>sudo <span class="hljs-built_in">chmod</span> 770 -R /opt/anaconda3<br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>目前仍然只有root用户可以使用Anaconda。如果新用户想要使用，则需要将其添加到conda用户组中，并修改自身home目录下的环境配置。</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">sudo usermode -a -G conda &lt;user-account&gt;<br></code></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># &gt;&gt;&gt; conda initialize &gt;&gt;&gt;</span><br><span class="hljs-comment"># !! Contents within this block are managed by &#x27;conda init&#x27; !!</span><br>__conda_setup=<span class="hljs-string">&quot;<span class="hljs-subst">$(&#x27;/opt/anaconda3/bin/conda&#x27; &#x27;shell.bash&#x27; &#x27;hook&#x27; 2&gt; /dev/null)</span>&quot;</span><br><span class="hljs-keyword">if</span> [ $? -eq 0 ]; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">eval</span> <span class="hljs-string">&quot;<span class="hljs-variable">$__conda_setup</span>&quot;</span><br><span class="hljs-keyword">else</span><br>    <span class="hljs-keyword">if</span> [ -f <span class="hljs-string">&quot;/opt/anaconda3/etc/profile.d/conda.sh&quot;</span> ]; <span class="hljs-keyword">then</span><br>        . <span class="hljs-string">&quot;/opt/anaconda3/etc/profile.d/conda.sh&quot;</span><br>    <span class="hljs-keyword">else</span><br>        <span class="hljs-built_in">export</span> PATH=<span class="hljs-string">&quot;/opt/anaconda3/bin:<span class="hljs-variable">$PATH</span>&quot;</span><br>    <span class="hljs-keyword">fi</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-built_in">unset</span> __conda_setup<br><span class="hljs-comment"># &lt;&lt;&lt; conda initialize &lt;&lt;&lt;</span><br></code></pre></td></tr></table></figure>
+<h1 id="jupyter-lab相关配置">Jupyter Lab相关配置</h1>
+<p>在服务器上安装了Anaconda之后，base环境中自带了Jupyter
+Lab，我们可以启动服务器上的Jupyter
+Lab，并将其转发到本机的端口上，实现通过本地浏览器进行访问。</p>
+<ol type="1">
+<li>生成配置文件</li>
+</ol>
+<p>jupyter
+lab配置文件默认位于<code>~/.jupyter/jupyter_notebook_config.py</code>，如果没有该文件，可以通过下面的命令生成：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">jupyter notebook --generate-config<br></code></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>修改登录密码</li>
+</ol>
+<p>首先进入python交互式环境，通过下面方式生成密码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> notebook.auth <span class="hljs-keyword">import</span> passwd<br>passwd()<br></code></pre></td></tr></table></figure>
+<p>根据提示进行密码设置，得到对应的hash表示。之后将该hash表示配置在jupyter
+lab配置文件中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">c.NotebookApp.password = <span class="hljs-string">&#x27;your_password_hash_here&#x27;</span><br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>修改启动端口。启动端口的修改只需要修改配置文件即可</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">c.ServerApp.port = <span class="hljs-number">9999</span>  <span class="hljs-comment"># Change to your desired port number</span><br></code></pre></td></tr></table></figure>
+<ol start="4" type="1">
+<li>之后我们可以在本地启动jupyter
+lab。可以通过命令行直接启动，这里提供一个参考脚本</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-comment"># Set the path to your JupyterLab directory</span><br>JUPYTERLAB_DIR=<span class="hljs-string">&quot;/your/jupyter/lab/work/directory&quot;</span><br>ANACONDA_DIR=<span class="hljs-string">&quot;/opt&quot;</span><br>LOG_DIR=<span class="hljs-string">&quot;/your/log/directory&quot;</span><br><br><span class="hljs-function"><span class="hljs-title">start_jupyterlab</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Starting JupyterLab...&quot;</span><br>    <span class="hljs-built_in">cd</span> <span class="hljs-string">&quot;<span class="hljs-variable">$JUPYTERLAB_DIR</span>&quot;</span><br>    <span class="hljs-built_in">source</span> <span class="hljs-variable">$ANACONDA_DIR</span>/anaconda3/bin/activate base<br>    <span class="hljs-built_in">nohup</span> jupyter lab &gt; <span class="hljs-variable">$LOG_DIR</span>/logs/jupyter-running-log.log 2&gt;&amp;1 &amp;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;JupyterLab started.&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">stop_jupyterlab</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Stopping JupyterLab...&quot;</span><br>    pkill -f <span class="hljs-string">&quot;jupyter-lab&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;JupyterLab stopped.&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">view_log</span></span>() &#123;<br>    <span class="hljs-built_in">local</span> num_lines=<span class="hljs-variable">$&#123;1:-20&#125;</span>  <span class="hljs-comment"># Default to 20 lines if not specified</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Viewing last <span class="hljs-variable">$num_lines</span> lines of JupyterLab log...&quot;</span><br>    <span class="hljs-built_in">tail</span> -n <span class="hljs-string">&quot;<span class="hljs-variable">$num_lines</span>&quot;</span> <span class="hljs-string">&quot;<span class="hljs-variable">$LOG_DIR</span>/logs/jupyter-running-log.log&quot;</span><br>&#125;<br><br><span class="hljs-keyword">case</span> <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span> <span class="hljs-keyword">in</span><br>    start)<br>        start_jupyterlab<br>        ;;<br>    stop)<br>        stop_jupyterlab<br>        ;;<br>    restart)<br>        stop_jupyterlab<br>        start_jupyterlab<br>        ;;<br>    <span class="hljs-built_in">log</span>)<br>        view_log <span class="hljs-string">&quot;<span class="hljs-variable">$2</span>&quot;</span>  <span class="hljs-comment"># Pass the parameter to view_log function</span><br>        ;;<br>    *)<br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Usage: <span class="hljs-variable">$0</span> &#123;start|stop|restart|log&#125; [num_lines]&quot;</span><br>        <span class="hljs-built_in">exit</span> 1<br>        ;;<br><span class="hljs-keyword">esac</span><br><br><span class="hljs-built_in">exit</span> 0<br></code></pre></td></tr></table></figure>
+<ol start="5" type="1">
+<li>启动之后，可以通过ssh端口转发，然后在本地通过浏览器访问localhost来进入jupyter
+lab。注意这里端口要与上面修改的port相对应。</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">ssh -N -L 9999:localhost:8888 username@remote_server_ip<br></code></pre></td></tr></table></figure>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
 <li><a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15127622/4594568">anaconda
