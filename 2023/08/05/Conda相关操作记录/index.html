@@ -24,7 +24,7 @@
 <meta property="og:description" content="Conda是Python中另一个强大的包管理器，本篇主要记录了Conda的相关操作。目前包括Conda的虚拟环境管理、jupyter与Conda的相关配置。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-05T06:49:54.000Z">
-<meta property="article:modified_time" content="2023-09-06T01:49:40.877Z">
+<meta property="article:modified_time" content="2023-09-07T03:09:34.567Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Conda">
@@ -278,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          31 分钟
+          32 分钟
         
       </span>
     
@@ -362,7 +362,7 @@ init，后续手动修改环境配置。</li>
 <ol start="3" type="1">
 <li>目前仍然只有root用户可以使用Anaconda。如果新用户想要使用，则需要将其添加到conda用户组中，并修改自身home目录下的环境配置。</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">sudo usermode -a -G conda &lt;user-account&gt;<br></code></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">sudo usermod -a -G conda &lt;user-account&gt;<br></code></pre></td></tr></table></figure>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># &gt;&gt;&gt; conda initialize &gt;&gt;&gt;</span><br><span class="hljs-comment"># !! Contents within this block are managed by &#x27;conda init&#x27; !!</span><br>__conda_setup=<span class="hljs-string">&quot;<span class="hljs-subst">$(&#x27;/opt/anaconda3/bin/conda&#x27; &#x27;shell.bash&#x27; &#x27;hook&#x27; 2&gt; /dev/null)</span>&quot;</span><br><span class="hljs-keyword">if</span> [ $? -eq 0 ]; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">eval</span> <span class="hljs-string">&quot;<span class="hljs-variable">$__conda_setup</span>&quot;</span><br><span class="hljs-keyword">else</span><br>    <span class="hljs-keyword">if</span> [ -f <span class="hljs-string">&quot;/opt/anaconda3/etc/profile.d/conda.sh&quot;</span> ]; <span class="hljs-keyword">then</span><br>        . <span class="hljs-string">&quot;/opt/anaconda3/etc/profile.d/conda.sh&quot;</span><br>    <span class="hljs-keyword">else</span><br>        <span class="hljs-built_in">export</span> PATH=<span class="hljs-string">&quot;/opt/anaconda3/bin:<span class="hljs-variable">$PATH</span>&quot;</span><br>    <span class="hljs-keyword">fi</span><br><span class="hljs-keyword">fi</span><br><span class="hljs-built_in">unset</span> __conda_setup<br><span class="hljs-comment"># &lt;&lt;&lt; conda initialize &lt;&lt;&lt;</span><br></code></pre></td></tr></table></figure>
 <h1 id="jupyter-lab相关配置">Jupyter Lab相关配置</h1>
 <p>在服务器上安装了Anaconda之后，base环境中自带了Jupyter
@@ -404,6 +404,8 @@ lab。注意这里端口要与上面修改的port相对应。</li>
 target="_blank" rel="noopener" href="https://blog.csdn.net/u014264373/article/details/119390267">如何在
 Jupyter Notebook 中切换/使用 conda 虚拟环境？_jupyter notebook conda
 env_Tina姐的博客-CSDN博客</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15899958/5907212">Anaconda
+多用户安装 51CTO博客 ubuntu 安装anaconda</a></li>
 </ol>
 
                 
