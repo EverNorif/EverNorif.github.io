@@ -1,0 +1,812 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了前馈神经网络，又称多层感知机的基本实现，以及一些正则化手段的实现，包括权重衰退和Dropout。注意本篇基本均为使用方面的记录，并没有涉及很多的理论知识，理论知识可以参考机器学习基础系列中与神经网络相关的文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动手学深度学习(3)-多层感知机">
+<meta property="og:url" content="http://example.com/2023/09/09/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-3-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了前馈神经网络，又称多层感知机的基本实现，以及一些正则化手段的实现，包括权重衰退和Dropout。注意本篇基本均为使用方面的记录，并没有涉及很多的理论知识，理论知识可以参考机器学习基础系列中与神经网络相关的文章。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-09T12:30:14.000Z">
+<meta property="article:modified_time" content="2023-09-09T12:32:56.356Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>动手学深度学习(3)-多层感知机 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="动手学深度学习(3)-多层感知机"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-09 20:30" pubdate>
+          2023年9月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">动手学深度学习(3)-多层感知机</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="多层感知机">多层感知机</h1>
+<p>在<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">机器学习基础(10)-神经网络
+-
+EverNorif</a>中，我们已经简单介绍过前馈神经网络，即多层感知机，这里不再重复介绍。下面直接进入多层感知机的Pytorch实现。</p>
+<p>这里我们同样使用FashionMNIST数据集来进行测试，实际上多层感知机的实现只需要在之前Softmax回归的基础上增加net的层数即可。</p>
+<p>首先需要设置Model，相比于之前的Softmax回归，这里多增加了一层ReLU激活函数以及一层全连接层：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python">num_inputs = <span class="hljs-number">28</span> * <span class="hljs-number">28</span><br>num_outputs = <span class="hljs-number">10</span><br><br>net = nn.Sequential(nn.Flatten(),<br>                    nn.Linear(num_inputs, <span class="hljs-number">256</span>),<br>                    nn.ReLU(),<br>                    nn.Linear(<span class="hljs-number">256</span>, num_outputs))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">init_weights</span>(<span class="hljs-params">layer</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(layer) == nn.Linear:<br>        nn.init.normal_(layer.weight, std=<span class="hljs-number">0.01</span>)<br>net.apply(init_weights)<br></code></pre></td></tr></table></figure>
+<p>之后设置相关超参数以及数据，损失函数和优化器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">batch_size, learning_rate, num_epochs = <span class="hljs-number">256</span>, <span class="hljs-number">0.1</span>, <span class="hljs-number">10</span><br>loss = nn.CrossEntropyLoss()<br>optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)<br>train_data_loader, test_data_loader = load_data_fashion_mnist(batch_size)<br></code></pre></td></tr></table></figure>
+<p>之后就可以进行训练和测试了，这部分的代码基本都是类似的。这里的accuracy与<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-1">动手学深度学习(2)-线性模型
+- EverNorif</a>中实现的方法相同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>    metric = Accumulator(<span class="hljs-number">3</span>)<br>    <span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> train_data_loader:<br>        y_hat = net(X)<br>        l = loss(y_hat, y)<br><br>        optimizer.zero_grad()<br>        l.mean().backward()<br>        optimizer.step()<br><br>        metric.add(<span class="hljs-built_in">float</span>(l.<span class="hljs-built_in">sum</span>()), accuracy(y_hat, y), y.numel())<br><br>    training_loss = metric[<span class="hljs-number">0</span>] / metric[<span class="hljs-number">2</span>]<br>    training_accuracy = metric[<span class="hljs-number">1</span>] / metric[<span class="hljs-number">2</span>]<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;epoch <span class="hljs-subst">&#123;epoch + <span class="hljs-number">1</span>&#125;</span>, loss: <span class="hljs-subst">&#123;training_loss&#125;</span>&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;epoch <span class="hljs-subst">&#123;epoch + <span class="hljs-number">1</span>&#125;</span>, accuracy: <span class="hljs-subst">&#123;training_accuracy&#125;</span>&quot;</span>)<br>    <br>metric = Accumulator(<span class="hljs-number">3</span>)<br><span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> test_data_loader:<br>    y_hat = net(X)<br>    l = loss(y_hat, y)<br>    metric.add(<span class="hljs-built_in">float</span>(l.<span class="hljs-built_in">sum</span>()), accuracy(y_hat, y), y.numel())<br><br>test_loss = metric[<span class="hljs-number">0</span>] / metric[<span class="hljs-number">2</span>]<br>test_accuracy = metric[<span class="hljs-number">1</span>] / metric[<span class="hljs-number">2</span>]<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;loss: <span class="hljs-subst">&#123;test_loss&#125;</span>&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;accuracy: <span class="hljs-subst">&#123;test_accuracy&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+<h1 id="正则化">正则化</h1>
+<h2 id="权重衰退">权重衰退</h2>
+<p>在训练参数化机器学习模型的时候，权重衰退（weight
+decay）是最广泛使用的正则化技术之一，它实际上就是<span
+class="math inline">\(L_2\)</span>正则化。权重衰退的思想在于通过控制参数向量范数的大小来控制模型的复杂度，并且选择的是<span
+class="math inline">\(L_2\)</span>范数<span
+class="math inline">\(||w||^2\)</span>。</p>
+<blockquote>
+<p>此外，为什么我们首先使用L2范数，而不是L1范数.事实上，这个选择在整个统计领域中都是有效的和受欢迎的。L2正则化线性模型构成经典的岭回归(ridge
+regression）算法，
+L1正则化线性回归是统计学中类似的基本模型，通常被称为套索回归（lasso
+regression）。使用L2范数的一个原因是它对权重向量的大分量施加了巨大的惩罚,
+这使得我们的学习算法偏向于在大量特征上均匀分布权重的模型。
+在实践中，这可能使它们对单个变量中的观测误差更为稳定。相比之下，L1惩罚会导致模型将权重集中在一小部分特征上，而将其他权重清除为零。这称为<em>特征选择</em>（feature
+selection），这可能是其他场景下需要的。</p>
+</blockquote>
+<p><span class="math inline">\(L_2\)</span>正则化的优化目标函数是：
+<span class="math display">\[
+L(\mathbf{w}, b) + \frac{\lambda}{2} ||\mathbf{w}||^2
+\]</span> 将其带入梯度下降算法中，每一轮的参数更新方式即为： <span
+class="math display">\[
+\mathbf{w} \leftarrow (1-\eta \lambda) \mathbf{w} - \eta \frac{\partial
+L(\mathbf{w}, b)}{\partial \mathbf{w}}
+\]</span> 与不带<span
+class="math inline">\(L_2\)</span>正则化的参数更新式子相比，这个式子仅仅在前一项<span
+class="math inline">\(\mathbf{w}\)</span>上增加了一个小于1的系数，这表示在每次更新参数的时候，我们首先将参数缩小一些，再进行正常流程的更新。也就是说，我们在利用梯度更新参数的同时，也在试图将参数的大小缩小到零。这也就对应了该正则化方法的名称：权重衰减。</p>
+<p>在Pytorch中，可以直接在实例化优化器的时候指定<code>weight_decay</code>参数来进行指定进行权重衰减时需要使用的<span
+class="math inline">\(\lambda\)</span>值，默认不传则表示该值为0，即不进行权重衰减。默认情况下Pytorch同时衰减权重和偏置项，我们也可以通过传入字典列表来指定对于不同参数执行不同的权重衰减。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 默认同时衰减权重和偏置项</span><br>optimizer = torch.optim.SGD(net.parameters(), weight_decay=<span class="hljs-number">1e-2</span>, lr=learning_rate)<br><br><span class="hljs-comment"># 传入字典列表进行更加细节的定制</span><br>optimizer = torch.optim.SGD(<br>    [&#123;<span class="hljs-string">&#x27;params&#x27;</span>: net[<span class="hljs-number">0</span>].weight, <span class="hljs-string">&#x27;weight_decay&#x27;</span>: <span class="hljs-number">1e-2</span>&#125;, &#123;<span class="hljs-string">&#x27;params&#x27;</span>: net[<span class="hljs-number">0</span>].bias&#125;],<br>    lr=learning_rate)<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>在实践中，权重衰减的值通常设置为1e-2、1e-3、1e-4。不过权重衰退的效果有限，如果模型真的非常复杂，权重衰减一般不会带来特别好的效果。</p>
+</blockquote>
+<h2 id="dropout">Dropout</h2>
+<p>dropout是深度学习中另一种常用的正则化方法。我们通常希望一个模型具有良好的鲁棒性，即对于正常的数据能够正常处理，对于不那么好的数据，同样也能够进行较好地处理。为了实现这个目标，我们可以在训练过程中增加噪音。有两种方式可以增加噪音，一种是直接使用含有噪音的数据，另一种则是在层与层之间增加噪音，dropout就属于后者。</p>
+<p>这里需要对加入噪音进行一定的数学描述，假设<span
+class="math inline">\(X\)</span>是正常的数据，<span
+class="math inline">\(X^{&#39;}\)</span>是加入噪音之后的数据，我们希望有如下等式:
+<span class="math display">\[
+E(X^{&#39;}) = X
+\]</span>
+简单来说，dropout完成的事情就是在层间随机抑制一些神经元，同时加强另一些神经元。具体地，对于每个元素，有如下变化方式，该方式可以满足上面提到的增加噪音的等式原则。
+<span class="math display">\[
+x^{&#39;} = \begin{cases}
+  0, &amp; \text{with probablity p}  \\
+  \frac{x}{1-p},  &amp; \text{otherwise}  \\
+\end{cases}
+\]</span>
+通常情况下，我们会将dropout作用在隐藏层中全连接层的输出上。在Pytorch构造Model的时候，我们可以很容易地在层之间增加dropout。不过需要注意的是，dropout仅在训练过程中使用，它会影响模型参数的更新。而在预测的时候，dropout层的行为是原样输出，即不做任何处理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python">dropout1 = <span class="hljs-number">0.2</span><br>dropout2 = <span class="hljs-number">0.5</span><br><br>net = nn.Sequential(nn.Flatten(),<br>        nn.Linear(<span class="hljs-number">784</span>, <span class="hljs-number">256</span>),<br>        nn.ReLU(),<br>        <span class="hljs-comment"># 在第一个全连接层之后添加一个dropout层</span><br>        nn.Dropout(dropout1),<br>        nn.Linear(<span class="hljs-number">256</span>, <span class="hljs-number">256</span>),<br>        nn.ReLU(),<br>        <span class="hljs-comment"># 在第二个全连接层之后添加一个dropout层</span><br>        nn.Dropout(dropout2),<br>        nn.Linear(<span class="hljs-number">256</span>, <span class="hljs-number">10</span>))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">init_weights</span>(<span class="hljs-params">m</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">type</span>(m) == nn.Linear:<br>        nn.init.normal_(m.weight, std=<span class="hljs-number">0.01</span>)<br><br>net.apply(init_weights);<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>在实践中，dropout概率通常可以选择0.9、0.5、0.1。</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">动手学深度学习</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">#深度学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>动手学深度学习(3)-多层感知机</div>
+      <div>http://example.com/2023/09/09/动手学深度学习-3-多层感知机/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/" title="动手学深度学习(2)-线性模型">
+                        <span class="hidden-mobile">动手学深度学习(2)-线性模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
