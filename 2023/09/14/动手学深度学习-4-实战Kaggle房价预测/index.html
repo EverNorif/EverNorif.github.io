@@ -24,7 +24,7 @@
 <meta property="og:description" content="本篇主要是利用之前学过的知识，完整地完成一次预测任务。本篇不涉及相关的概念和理论的描述，仅包含代码的相关讲解。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-09-14T02:54:24.000Z">
-<meta property="article:modified_time" content="2023-09-14T02:56:14.320Z">
+<meta property="article:modified_time" content="2023-09-14T03:00:38.349Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary_large_image">
@@ -516,6 +516,12 @@ target="_blank" rel="noopener" href="http://zh.d2l.ai/chapter_multilayer-percept
   
 
 
+  
+  
+
+
+
+
 
 
 
@@ -707,6 +713,49 @@ target="_blank" rel="noopener" href="http://zh.d2l.ai/chapter_multilayer-percept
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
