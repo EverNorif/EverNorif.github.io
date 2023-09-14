@@ -1,0 +1,728 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要是利用之前学过的知识，完整地完成一次预测任务。本篇不涉及相关的概念和理论的描述，仅包含代码的相关讲解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动手学深度学习(4)-实战Kaggle房价预测">
+<meta property="og:url" content="http://example.com/2023/09/14/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-4-%E5%AE%9E%E6%88%98Kaggle%E6%88%BF%E4%BB%B7%E9%A2%84%E6%B5%8B/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要是利用之前学过的知识，完整地完成一次预测任务。本篇不涉及相关的概念和理论的描述，仅包含代码的相关讲解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-14T02:54:24.000Z">
+<meta property="article:modified_time" content="2023-09-14T02:56:14.320Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>动手学深度学习(4)-实战Kaggle房价预测 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="动手学深度学习(4)-实战Kaggle房价预测"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-14 10:54" pubdate>
+          2023年9月14日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          37 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">动手学深度学习(4)-实战Kaggle房价预测</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="代码描述">代码描述</h1>
+<p>下面的代码主要工作是完成房价的预测。数据集的准备可以参考对应文章，这里假设已经可以拿到数据，数据以csv的格式存储在对应的目录下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> utils.deep_learning_util <span class="hljs-keyword">import</span> download<br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><br>train_data = pd.read_csv(download(<span class="hljs-string">&#x27;kaggle_house_train&#x27;</span>))<br>test_data = pd.read_csv(download(<span class="hljs-string">&#x27;kaggle_house_test&#x27;</span>))<br><br><span class="hljs-comment"># 获取所有的特征feature</span><br>all_features = pd.concat((train_data.iloc[:, <span class="hljs-number">1</span>:-<span class="hljs-number">1</span>], test_data.iloc[:, <span class="hljs-number">1</span>:]))<br></code></pre></td></tr></table></figure>
+<p>之后我们需要完成数据预处理的操作。数据中包括数字特征和离散特征。</p>
+<p>对于数字特征，我们对其进行标准化处理，意在缩小不同量纲之间的差距，将所有的特征都放在一个共同的尺度上。代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 对所有的数字特征，进行标准化，使用均值和方差</span><br>numeric_features = all_features.dtypes[all_features.dtypes != <span class="hljs-string">&#x27;object&#x27;</span>].index<br>all_features[numeric_features] = all_features[numeric_features].apply(<br>    <span class="hljs-keyword">lambda</span> x: (x - x.mean()) / (x.std())<br>)<br><span class="hljs-comment"># 填充缺失值为0</span><br>all_features[numeric_features] = all_features[numeric_features].fillna(<span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+<p>对于离散特征，我们将其转化为one-hot编码，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 对所有的离散特征，使用one hot embedding</span><br><span class="hljs-comment"># 注意这里2.x版本的pandas会转化成True Or False, 而不是01编码, 需要增加一步类型转化</span><br>all_features = pd.get_dummies(all_features, dummy_na=<span class="hljs-literal">True</span>)<br>all_features = all_features.apply(<span class="hljs-keyword">lambda</span> x: x.astype(<span class="hljs-built_in">float</span>), axis=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+<p>数据处理完成之后，我们可以将DataFrame格式的数据转化成torch中的Tensor：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><br>n_train = train_data.shape[<span class="hljs-number">0</span>]<br><span class="hljs-comment"># DataFrame的.values可以获取到numpy.array</span><br>train_features = torch.tensor(all_features[:n_train].values, dtype=torch.float32)<br>test_features = torch.tensor(all_features[n_train:].values, dtype=torch.float32)<br>train_labels = torch.tensor(train_data[<span class="hljs-string">&#x27;SalePrice&#x27;</span>].values.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), dtype=torch.float32)<br></code></pre></td></tr></table></figure>
+<p>接下来就是训练相关的步骤，首先定义损失函数和网络结构，这里网络结构采用了最简单的线性模型。在应对一个全新的问题时，我们通常的做法是将线性模型作为一个baseline，后续的优化可以对比这个baseline模型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> nn<br><br><span class="hljs-comment"># 损失函数</span><br>loss_func = nn.MSELoss()<br>num_features = train_features.shape[<span class="hljs-number">1</span>]<br><br><br><span class="hljs-comment"># 网络结构</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_net</span>():<br>    net = nn.Sequential(nn.Linear(num_features, <span class="hljs-number">1</span>))<br>    <span class="hljs-keyword">return</span> net<br></code></pre></td></tr></table></figure>
+<p>实际上，这里使用标准的MSE是不太合适的，因为房价之间相差可能非常大，我们关心的应该是相对数量而不是绝对数量，即我们更加关心相对误差。一种方式是计算价格对数的均方差，即：
+<span class="math display">\[
+\sqrt{\frac{1}{n}\sum_{i=1}^n(\log y_i - \log \hat{y_i})^2}
+\]</span> 代码实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">log_rmse</span>(<span class="hljs-params">net, features, labels</span>):<br>    clipped_preds = torch.clamp(net(features), <span class="hljs-number">1</span>, <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;inf&#x27;</span>))<br>    rmse = torch.sqrt(loss_func(torch.log(clipped_preds), torch.log(labels)))<br>    <span class="hljs-keyword">return</span> rmse.item()<br></code></pre></td></tr></table></figure>
+<p>接下来，可以完成模型训练的方法，按照基本流程即可。这里将每一轮的训练和测试损失记录在一个列表中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> utils.deep_learning_util <span class="hljs-keyword">import</span> load_array<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">net, train_features, train_labels,</span><br><span class="hljs-params">          test_features, test_labels, num_epochs, learning_rate, weight_decay, batch_size</span>):<br>    train_loss, test_loss = [], []<br>    train_iter = load_array((train_features, train_labels), batch_size)<br>    optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=weight_decay)<br><br>    <span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>        <span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> train_iter:<br>            optimizer.zero_grad()<br>            loss = loss_func(net(X), y)<br>            loss.backward()<br>            optimizer.step()<br>        train_loss.append(log_rmse(net, train_features, train_labels))<br>        <span class="hljs-keyword">if</span> test_labels <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            test_loss.append(log_rmse(net, test_features, test_labels))<br>    <span class="hljs-keyword">return</span> train_loss, test_loss<br></code></pre></td></tr></table></figure>
+<p>这里的<code>load_array</code>函数的作用是将一个由tensor组成的array转化为DataLoader并进行返回：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> torch.utils <span class="hljs-keyword">import</span> data<br><br><span class="hljs-comment"># generate DataLoader from one array of Tensor</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">load_array</span>(<span class="hljs-params">data_arrays, batch_size, is_train=<span class="hljs-literal">True</span></span>):<br>    dataset = data.TensorDataset(*data_arrays)<br>    <span class="hljs-keyword">return</span> data.DataLoader(dataset, batch_size, shuffle=is_train)<br></code></pre></td></tr></table></figure>
+<p>除此之外，我们还会使用K折交叉验证。该方法有助于模型选择和超参数调整。下面是相关代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># K折交叉验证</span><br><span class="hljs-comment"># 以train_features, train_labels, valid_features, valid_labels的格式返回K折的数据</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_k_fold_data</span>(<span class="hljs-params">k, i, X, y</span>):<br>    <span class="hljs-keyword">assert</span> k &gt; <span class="hljs-number">1</span><br>    fold_size = X.shape[<span class="hljs-number">0</span>] // k<br>    X_train, y_train = <span class="hljs-literal">None</span>, <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(k):<br>        idx = <span class="hljs-built_in">slice</span>(j * fold_size, (j + <span class="hljs-number">1</span>) * fold_size)<br>        X_part, y_part = X[idx, :], y[idx]<br>        <span class="hljs-keyword">if</span> j == i:<br>            X_valid, y_valid = X_part, y_part<br>        <span class="hljs-keyword">elif</span> X_train <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            X_train, y_train = X_part, y_part<br>        <span class="hljs-keyword">else</span>:<br>            X_train = torch.cat([X_train, X_part], <span class="hljs-number">0</span>)<br>            y_train = torch.cat([y_train, y_part], <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> X_train, y_train, X_valid, y_valid<br><br><br><span class="hljs-comment"># 返回进行k次训练之后的平均训练误差和平均验证误差</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">k_fold</span>(<span class="hljs-params">k, X_train, y_train, num_epochs, learning_rate, weight_decay, batch_size</span>):<br>    train_loss_sum, valid_loss_sum = <span class="hljs-number">0</span>, <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(k):<br>        data = get_k_fold_data(k, i, X_train, y_train)<br>        net = get_net()<br>        train_loss, valid_loss = train(net, *data, num_epochs, learning_rate, weight_decay, batch_size)<br>        train_loss_sum += train_loss[-<span class="hljs-number">1</span>]<br>        valid_loss_sum += valid_loss[-<span class="hljs-number">1</span>]<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;折<span class="hljs-subst">&#123;i + <span class="hljs-number">1</span>&#125;</span>，训练log rmse<span class="hljs-subst">&#123;<span class="hljs-built_in">float</span>(train_loss[-<span class="hljs-number">1</span>]):f&#125;</span>, 验证log rmse<span class="hljs-subst">&#123;<span class="hljs-built_in">float</span>(valid_loss[-<span class="hljs-number">1</span>]):f&#125;</span>&#x27;</span>)<br><br>    <span class="hljs-keyword">return</span> train_loss_sum / k, valid_loss_sum / k<br></code></pre></td></tr></table></figure>
+<p>至此准备工作已经完成，之后就可以调整超参数，进行训练（炼丹）。同时根据不同超参数带来的效果，选定最优的模型和参数。下面是一个例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">k, num_epochs, lr, weight_decay, batch_size = <span class="hljs-number">5</span>, <span class="hljs-number">100</span>, <span class="hljs-number">5</span>, <span class="hljs-number">0</span>, <span class="hljs-number">64</span><br>train_l, valid_l = k_fold(k, train_features, train_labels, num_epochs, lr, weight_decay, batch_size)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;k&#125;</span>-折验证: 平均训练log rmse: <span class="hljs-subst">&#123;<span class="hljs-built_in">float</span>(train_l):f&#125;</span>, 平均验证log rmse: <span class="hljs-subst">&#123;<span class="hljs-built_in">float</span>(valid_l):f&#125;</span>&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="http://zh.d2l.ai/chapter_multilayer-perceptrons/kaggle-house-price.html">4.10.
+实战Kaggle比赛：预测房价 — 动手学深度学习 2.0.0 documentation</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">动手学深度学习</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">#深度学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>动手学深度学习(4)-实战Kaggle房价预测</div>
+      <div>http://example.com/2023/09/14/动手学深度学习-4-实战Kaggle房价预测/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/09/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-3-%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA/" title="动手学深度学习(3)-多层感知机">
+                        <span class="hidden-mobile">动手学深度学习(3)-多层感知机</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
