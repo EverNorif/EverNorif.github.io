@@ -1,0 +1,991 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了光栅化、着色、纹理映射等知识。光栅化完成的是将3D Model以某个分辨率绘制在屏幕上的过程；着色则指的是根据不同物体的材质和光照，进行不同效果呈现；纹理映射则完成了物体不同位置不同属性的定义。此外，还有关于图形管线和重心坐标的简单介绍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Games101(2)-光栅化与着色">
+<meta property="og:url" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了光栅化、着色、纹理映射等知识。光栅化完成的是将3D Model以某个分辨率绘制在屏幕上的过程；着色则指的是根据不同物体的材质和光照，进行不同效果呈现；纹理映射则完成了物体不同位置不同属性的定义。此外，还有关于图形管线和重心坐标的简单介绍。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20230928143122730.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20230928143353587.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001155551491.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001192904348.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001193613842.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001202500078.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001195103474.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001201531756.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001202435309.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001221315324.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001222237851.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001223048276.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001224313653.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001230242819.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001205124251.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001205905683.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001212149610.png">
+<meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001212410004.png">
+<meta property="article:published_time" content="2023-10-01T15:07:41.932Z">
+<meta property="article:modified_time" content="2023-10-01T15:13:21.059Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="计算机图形学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20230928143122730.png">
+  
+  
+  
+  <title>Games101(2)-光栅化与着色 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Games101(2)-光栅化与着色"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-01 23:07" pubdate>
+          2023年10月1日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          80 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Games101(2)-光栅化与着色</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="光栅化rasterization">光栅化Rasterization</h1>
+<p>首先考虑之前在变换章节我们完成的事情。在MVP变换中，我们经过Model，View的变换，将照相机放置在了标准位置，并将对应的Model坐标也进行转换；再通过Projection变换，将所有的Model坐标都映射到了一个标准立方体中，即<span
+class="math inline">\([-1,
+1]^3\)</span>中。而下一步，就需要将标准立方体的信息绘制在图像上，或者说绘制在显示器屏幕上。而光栅化(Rasterization)指的就是将模型绘制在屏幕上的过程。在德语中，Raster表示的就是screen屏幕的意思，因此动词化的Rasterize，就表示绘制到屏幕上这一操作。</p>
+<p>在具体介绍光栅化之前，我们首先需要明确一些概念。</p>
+<p>在计算机图形学中，3D模型通常都是由数量众多的三角形组成的。通常来说，要描述一个3D模型，我们会提供一系列三维的坐标，同时提供三角形信息，具体来说就是描述所有的哪三个点会构成三角形。使用三角形来描述3D模型是有很多好处的，包括但不限于三角形足够简单；三角形可以保证是一个平面；同时三角形有很好的方式来进行插值计算（利用重心坐标）。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20230928143122730.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20230928143122730">
+<p>而屏幕通常会被看成是一个二维矩阵，矩阵中的每个元素是一个像素pixel，每个像素是一个单色的小正方形，具有RGB等色彩信息。这个矩阵的大小就是常说的分辨率。我们一般会将像素看成是屏幕上的一个点，当然实际上，每个像素都会占用一定面积，并不是真实的点。在屏幕坐标系下，利用一个二维坐标(x,
+y)，我们就可以确定一个像素的位置，而这个像素的中心点实际上是(x+0.5,
+y+0.5)。其中，屏幕坐标系原点的位置的指定是一个习惯问题，多指定为左上位置。</p>
+<p>假设屏幕宽度有width个像素,
+高度有height个像素。如果先不考虑z轴的话，那么将标准立方体中的xy范围<span
+class="math inline">\([-1,1]^2\)</span>映射到屏幕尺寸<span
+class="math inline">\([0,\text{width}] \times [0,
+\text{height}]\)</span>，实际上就是执行了一个缩放操作，其中缩放矩阵为:(注意这里还是3DModel坐标系中的变换，与屏幕坐标系无关，只是使用到了屏幕的宽度和高度)
+<span class="math display">\[
+\mathbf{M}_{viewport} = \begin{pmatrix}
+width/2 &amp; 0 &amp; 0 &amp; width/2 \\
+0 &amp; height/2 &amp; 0 &amp; height/2 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 \\
+\end{pmatrix}
+\]</span></p>
+<blockquote>
+<p>不要将3D Model的坐标系和屏幕坐标系混淆，二者并没有直接的联系。</p>
+</blockquote>
+<h2 id="三角形光栅化">三角形光栅化</h2>
+<p>由于3D模型最终是有三角形构成的，因此我们考虑基础的三角形光栅化。考虑我们现在具备的条件，我们有一个三角形在<span
+class="math inline">\([0,\text{width}] \times [0,
+\text{height}]\)</span>连续空间中的表示，需要将其绘制在屏幕上，简单来说，就是决定哪些像素需要被绘制上颜色。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20230928143353587.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20230928143353587">
+<p>一种简单的考虑方式是判断每个像素的中心点和三角形的位置关系，如果像素中心点在三角形内，那么就将其绘制在屏幕上，否则不进行绘制。而在之前在线性代数基础中，我们已经简单介绍了如何利用叉乘来判断一个点是否在三角形内，实际上这也就是三角形光栅化的核心。整体的逻辑可以用下面的伪代码来表示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta"># image表示屏幕像素数组</span><br><span class="hljs-meta"># inside函数用于判断(x,y)是否在三角形t中</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">inside</span><span class="hljs-params">(t, x, y)</span> </span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">Point</span>(x, y) in triangle t) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>    &#125;<br>&#125;<br><br># 循环处理每个像素<br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> x=<span class="hljs-number">0</span>; x &lt; width; x++) &#123;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> y=<span class="hljs-number">0</span>; y &lt; height; y++) &#123;<br>        image[x][y] = <span class="hljs-built_in">inside</span>(tri, x+<span class="hljs-number">0.5</span>, y+<span class="hljs-number">0.5</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当然实际上，我们可以一定程度上减少循环次数。如果我们知道了一个三角形的三个顶点，那么很容易计算出一个小于屏幕范围的BoundingBox，然后只需要遍历BoundingBox中的像素即可。</p>
+<h2 id="走样分析">走样分析</h2>
+<p>使用上面的操作，我们可以将一个三角形绘制在屏幕上，但是我们会发现实际表示出来的效果非常不真实，带有非常明显的锯齿，这点在分辨率低的情况下尤为明显。我们称这种现象为走样。当我们提高分辨率之后，锯齿问题可以得到一定程度的缓解，但是这没有解决走样问题。</p>
+<p>走样问题的解决被成为反走样，反走样应该在同等分辨率的条件下进行解决。一种解决方案是先对三角形进行<strong>模糊</strong>，然后再进行光栅化。这里我们对于每个像素只进行一次判断，即使用中心点坐标是否在三角形内，来代表整个像素。另一种可以一定程度增加真实性的操作是<strong>超采样</strong>，对像素区域内进行多次采样，每次采样得到的坐标都进行是否在三角形内部的判断，最终整个像素的表示就是这些采样的综合。注意第二种方法并没有提高分辨率，最终得到的像素个数依然没有改变。</p>
+<p>对于走样和反走样的分析，可以从采样理论方面进行分析，具体指的是频域和时域的分析。出现走样的原因是采样频率过低，也叫做欠采样，简单说明一下就是信号变化很快，但是我们采样的频率跟不上信号变化的频率。欠采样可能导致的问题包括锯齿，摩尔纹和马车轮效应等。</p>
+<h2 id="深度缓存">深度缓存</h2>
+<p>通过上面的分析，我们现在已经可以将空间中的一个三角形给绘制在屏幕上了，下一步就是将这个过程推广到空间中所有的三角形上。对多个三角形进行光栅化，必然会出现可见性和遮挡的问题。光栅化的结果应当和现实生活中的场景类似，当出现遮挡时，则是离照相机远的被遮挡，离得近的能够显示出来。</p>
+<p>一种很简单的处理方式是画家算法，这种算法总是先绘制远的物体，然后再绘制近的物体。在整个过程中，新绘制的物体如果与已绘制的物体有重叠部分，新的结果总会覆盖旧的结果。这种方式非常简单，但是会出现非常多的冗余计算。并且画家算法无法解决物体之间相互交错的情况，因为无法完全分出哪个物体在前，哪个物体在后。</p>
+<p>在图形学中，通常使用深度缓存Z-Buffer的算法来处理这类问题。具体来说，当我们需要光栅化得到一幅图的时候，底层实际上维护了两个数组，分别是<code>frame buffer</code>和<code>depth buffer(z-buffer)</code>，分别称为渲染图和深度图。它们分别存储了每个像素的RGB值和每个像素的最小深度值，即空间中的Z值。深度图的维护也非常简单，首先将depth
+buffer中的每个像素值深度初始化为无穷，然后遍历每个三角形，根据三角形采样点的Z值来判断是否更新frame
+buffer和depth
+buffer。伪代码如下。这里需要注意的是，我们始终认为深度是一个非负数，如果在空间中的实际坐标为负，则取它的绝对值。这种处理方式可以统一不同坐标系定义之间的差别，使得算法无需进行符号操作。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">for</span> (each triangle T) &#123;<br>    <span class="hljs-keyword">for</span> (each <span class="hljs-built_in">sample</span> (x, y, z) in T) &#123;<br>        <span class="hljs-keyword">if</span> (z &lt; depth_buffer[x, y]) &#123;<br>            frame_buffer[x, y] = rgb; <span class="hljs-comment">// update color</span><br>            depth_buffer[x, y] = z; <span class="hljs-comment">// update depth</span><br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            pass; <span class="hljs-comment">// do nothing</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>如果我们将深度图进行可视化，可以得到一张灰度图，每个像素记录其最浅的深度。在这张灰度图中，离照相机近的物体会显得更黑，颜色更深。因为深度值小，转化为灰度值，越小越黑。</p>
+</blockquote>
+<p>Z-Buffer算法的复杂度为<span
+class="math inline">\(O(n)\)</span>，因为它只需要对所有的三角形遍历一遍即可。并且Z-Buffer算法具有顺序无关性，这就使得该算法可以并行完成，例如使用GPU来进行加速。但是Z-Buffer也有一些缺点，例如无法处理透明物体等。</p>
+<h1 id="着色shading">着色Shading</h1>
+<p>在图形学中，Shading着色指的是根据不同物体的材质和光照进行不同效果呈现的过程，经过shading操作之后，物体会显得更加真实。</p>
+<h2 id="blinn-phong着色模型">Blinn-Phong着色模型</h2>
+<p>Blinn-Phong着色模型是一个简单的着色模型。它是一个经验模型，虽然不完全符合真实生活中的光照现象，但是能够在一定程度上进行模拟。该着色模型将光线分为三类，分别是高光(Specular
+Highlights)、漫反射(Diffuse Reflection)和环境光照(Ambient
+Lighting)，三类光照分别使用不同的计算方式。</p>
+<p>首先考虑shading作用在某个点的过程，这个点我们称为shading
+point。在该点上具有如下相关属性：</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001155551491.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001155551491">
+<ul>
+<li>向量v为viewer direction，是从shading
+point指向观察点位的单位向量</li>
+<li>向量n为surface normal，是shading point所在位置的法向量</li>
+<li>向量l为Light direction，是从shading point指向光源的单位向量</li>
+<li>还有一些材质本身的性质，包括颜色，光泽度等属性</li>
+</ul>
+<h3 id="漫反射">漫反射</h3>
+<p>首先考虑三种光照类型中的漫反射。在漫反射的条件下，如果一束光打在物体的某个点上，光线会均匀地反射到各个不同的方向，也就是说观察者不管从什么角度进行观察，表面的颜色都是一样的。但是同样的光如果以不同的角度照在同样的表面上，得到的明暗程度是不一样的，因为物体单位面积吸收光的多少是不同的，因此能反射出去的也有所不同，如图所示：</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001192904348.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001192904348">
+<p>一般认为只有当入射光线与shading
+point所在平面垂直的时候，该点才能完整地接受所有光的能量。Lambert余弦定律定向地描述了这种情况，它通过光线方向和法线方向来计算一个shading
+point的亮度，即接受到的光线能量与光线的角度有关，这里可以通过光线方向和法线方向点乘得到cos来表征角度。</p>
+<p>接下来考虑有到底有多少光到达了shading
+point，考虑光从光源向外辐射的过程，这个过程可以看作是无数个球壳叠加。由于球的表面积计算公式是平方项的，同时结合能量守恒，因此光源处的光强度与半径为r处的光强度成平方反比的关系。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001193613842.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001193613842">
+<p>结合上面的分析，我们可以得到Blinn-Phong着色模型中漫反射光照强度的计算公式。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001202500078.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001202500078">
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\(k_d\)</span>是一个与shading
+point所在位置的材质有关的系数，用于表征该物体吸收能量的能力。该系数为1表示物体材质完全不吸收能量，具有最大的亮度；该系数为0则表示全部吸收，那么看到该点就是黑色</li>
+<li><span class="math inline">\(I\)</span>为定义的光源处的光强，<span
+class="math inline">\(r\)</span>为光源到shading point的距离</li>
+<li><span class="math inline">\(\mathbf{n} \cdot
+\mathbf{l}\)</span>得到的结果就是<span
+class="math inline">\(\cos{\theta}\)</span>，结合Lambert余弦定律来估计shading
+point吸收了多少能量。这里使用与0进行max取值的原因是如果点乘的结果为负数，则表示<span
+class="math inline">\(\theta\)</span>大于九十度，对应实际情况是光从物体下面打到物体表面。在只考虑反射的条件下，这种情况没有任何意义，因此使用max将大于90度的光进行排除</li>
+<li>漫反射与观测的角度没有关系，这是由漫反射基本原理决定的：在其余条件相同的情况下，人在不同方向看到的漫反射光是完全一样的。因此这里并不会涉及观测方向<span
+class="math inline">\(\mathbf{v}\)</span>的参与</li>
+</ul>
+<h3 id="高光">高光</h3>
+<p>接下来考虑三种光照类型中的高光。高光可以理解为是到达shading
+point之后通过直接镜面反射进入人眼中的光照，如图所示。其中<span
+class="math inline">\(\mathbf{R}\)</span>表示镜面反射出射光的方向。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001195103474.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001195103474">
+<p>通过直觉考虑，该shading point反射的高光强度应当与出射方向<span
+class="math inline">\(\mathbf{R}\)</span>和观察方向<span
+class="math inline">\(\mathbf{v}\)</span>之间的夹角有关，夹角越小，光强度越高。我们通过镜面反射定律计算出<span
+class="math inline">\(\mathbf{R}\)</span>，然后再计算<span
+class="math inline">\(\mathbf{R}\)</span>与<span
+class="math inline">\(\mathbf{v}\)</span>之间的夹角来得出最终的光强。这的确是一种计算方式，但是可能会遇到比较复杂的运算。Blinn-Phong着色模型则采用了一种半程向量的思想，得出高光强度的计算方式：</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001201531756.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001201531756">
+<p>其中：</p>
+<ul>
+<li><span
+class="math inline">\(\mathbf{h}\)</span>被称为半程向量，它是<span
+class="math inline">\(\mathbf{v}\)</span>和<span
+class="math inline">\(\mathbf{l}\)</span>之间角平分线方向上的单位向量。相比于上面的夹角，半程向量计算方式非常简单。半程向量与法线方向之间形成一个夹角<span
+class="math inline">\(\alpha\)</span>，Blinn-Phong的思想就是用这个夹角来近似表示出射方向<span
+class="math inline">\(\mathbf{R}\)</span>与视线方向<span
+class="math inline">\(\mathbf{v}\)</span>之间的夹角</li>
+<li><span
+class="math inline">\(k_s\)</span>是镜面反射系数，同样与该点所在位置的材质有关</li>
+<li>注意到这里有一个指数<span
+class="math inline">\(p\)</span>的存在，这个指数实际上是用来控制高光衰减速率的值。指数越大，高光衰减越快，即高光范围越小，只有在很小的范围内才能看到高光</li>
+</ul>
+<h3 id="环境光照">环境光照</h3>
+<p>最后考虑三种光照类型中的环境光照。对于环境光，Blinn-Phong着色模型做了一个非常大胆的简化，即认为无论在哪个点，环境光照的强度都是一样的，即公式中的<span
+class="math inline">\(I_a\)</span>。而公式中的<span
+class="math inline">\(k_a\)</span>则与该点所在位置的材质有关。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001202435309.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001202435309">
+<p>最终总结一下，Blinn-Phong着色模型对一个shading point的光照计算如下：
+<span class="math display">\[
+\begin{aligned}
+L &amp;= L_s + L_d + L_a \\
+L_s &amp;= k_s(I/r^2)\max{(0, \mathbf{n}\cdot\mathbf{h})^p} \\
+L_d &amp;= k_d(I/r^2) \max{(0, \mathbf{n} \cdot \mathbf{l})} \\
+L_a &amp;= k_aI_a
+\end{aligned}
+\]</span></p>
+<h2 id="着色频率">着色频率</h2>
+<p>通过Blinn-Phong着色模型，我们可以计算出在某个shading
+point上的光照强度。而着色频率Shading
+Frequencies描述地则是我们如何将Shading应用在模型上。常见的策略有三种，分别是Flat
+Shading逐平面着色、Gouraud Shading逐顶点着色以及Phone
+Shading逐像素着色。</p>
+<p><strong>Flat
+Shading逐平面着色</strong>以Model的面为着色单位，对于每个三角形，使用叉积计算出每个三角形的法线，之后可以根据着色模型进行计算，将结果赋予整个面。</p>
+<p><strong>Gouraud
+Shading逐顶点着色</strong>则是以Model的各个顶点为着色单位，对于每个顶点首先计算出该顶点的法线，然后进行一次着色，而三个顶点构成的三角形的着色结果则可以通过插值方法得到。其中顶点法线的计算方式可以通过各面平均完成。具体来说，将顶点所关联的各个面法线进行简单或者加权平均，最后进行归一化，就可以得到顶点的法线。</p>
+<p><strong>Phone
+Shading逐像素着色</strong>则是以像素为着色单位。对于每个像素，首先求出对应的法线方向，然后进行着色。像素的法线方向可以通过插值完成，首先得到对应三角形三个顶点的法线方向，然后通过插值得到像素的法线方向。</p>
+<p>通常情况下，逐像素着色能够得到比较好的效果，但是相应的计算复杂度也更高。不过这也不是一定的，当模型面数逐渐增加，也可以选择相对简单的着色模型，此时仍然能够得到较好的效果。</p>
+<h1 id="纹理映射texture-mapping">纹理映射Texture Mapping</h1>
+<h2 id="纹理图">纹理图</h2>
+<p>到目前为止，我们讨论的模型都是一些简单的三维物体，这里的简单体现在物体各个位置上的属性我们简单地认为是相同的。纹理映射Texture
+Mapping实际上解决的就是如何在物体不同位置上定义不同的属性。通过纹理，我们可以定义物体上不同位置的属性，即前面公式中出现的<span
+class="math inline">\(k\)</span>。这样在进行着色的时候，不同位置得到的效果也不同，更接近现实世界中的情况。</p>
+<p>任何一个三维物体的表面都是二维的，并且我们通常只考虑物体表面点的属性，因此如果将物体的表面展开成一张二维的图，就可以得到一张纹理图。通常会在纹理图上使用纹理坐标系uv，并且3D模型中的每一个顶点，都可以对应纹理坐标系上的一个uv坐标，这样通过查询的方式可以直接得到对应的属性，这也就是纹理映射中映射的来源。当然这种映射并不是严格限定为一一映射，不同的顶点可以对应到同一个uv坐标，即不同位置可以映射为相同的纹理。</p>
+<p>引入纹理映射，我们就解决了模型三角形每个顶点上的属性定义问题。这张图实际上在进行美术建模的时候，就已经同步完成了，此时就已经为模型的每个顶点分配了uv信息。而对于三角形内部的属性，则可以利用插值的方式进行平滑的过渡。</p>
+<h2 id="问题分析">问题分析</h2>
+<p>虽然我们现在有了一张纹理图，可以提供不同位置的属性信息，但是这张图不总是能和最终的分辨率对应。例如当纹理图的精细程度无法跟上分辨率的时候，就会出现下面最左边这种类似马赛克的情况。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001221315324.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001221315324">
+<blockquote>
+<p>我们首先定义一个概念为texel(纹理元素、纹素)，它可以理解为在纹理图中的一个像素。</p>
+</blockquote>
+<p>考虑现在需要查询得到一个点的纹理，但是由于分辨率高，但是纹理图又不够精细，这就导致在查询uv的时候可能得到一个非整数的值。也就是想要查询的点落在了uv的一些非整数点上。如果此时直接采用最近查询的方式返回纹理值，那么就会出现第一幅图那种马赛克的情况。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001222237851.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001222237851">
+<p>此时可以考虑使用插值来解决这样的问题。例如对于这个点，我们再考虑它周围的四个点，进行纹理的插值，具体插值方式这里不进行展开。Bilinear
+Interpolation双线性插值得到的就是第二幅图的情况，可以看到效果明显更加优秀。或者可以进一步使用Bicubic方式，取邻近的16个texel，每次对四个进行双线性插值。</p>
+<p>上面描述的纹理不够精细的时候会产生的问题。另一方面，在一些情况下，如果纹理过于精细，也会产生一些问题。例如下面的图，在近处出现了锯齿，在远处出现了摩尔纹的现象。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001223048276.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001223048276">
+<p>出现这种现象的原因也可以解释，由于纹理图比较精细，可能一个像素就覆盖了多个texel。</p>
+<p>超采样SuperSampling可以在一定程度上解决这种问题，对每个像素进行超采样，然后将得到的纹理结果进行平均。这样确实可以一定程度缓解，但是代价是昂贵的计算量。不过我们可以从这种方式中得到启发。在目前的uv查询方式中，我们都是通过点进行查询的，如果对应一个范围，则通过采样后平均来解决。那么有没有一种方式，可以直接范围查询得到平均值，而不需要进行采样。Mipmap就是基于这种思想来解决问题的。</p>
+<p>对于一张纹理图，我们可以首先对其进行Mipmap的计算，即逐步降低纹理图的精度，得到不同精度下的纹理图，最终可以构成一种类似图像金字塔的结构。相比于原来的只存放一张纹理图，Mipmap额外存放了其他多级的结果。不过由于每层除以4的存储容量，实际多出来的只是原先<span
+class="math inline">\(1/3\)</span>的存储量。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001224313653.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001224313653">
+<p>有了预先处理的纹理图像金字塔之后，就可以执行范围查询了。对于一个像素点，我们可以根据该点覆盖纹理图的区域计算出对应匹配的层级，如果该层级为整数，就可以直接在对应的层级中进行查询，如果层级为非整数，则可以在前后两个层级之间查询之后进行插值处理，这样可以得到一个过渡平滑的处理结果，这里不进行细节的描述。</p>
+<blockquote>
+<p>这种方式相当于提前算出了一系列特定区域的平均，之后将一般的区域近似到这些特定区域上，最后直接做查询。</p>
+</blockquote>
+<p>当然Mipmap方法也存在一些缺点。首先Mipmap只支持正方形的范围查询，并且在处理过程中的很多地方存在近似，因此与真实的效果还是有所差距，可能会出现过渡模糊(OverBlur)的情况。但是相比于最初的结果，效果已经得到较大改善，并且没有带来很高的额外开销。</p>
+<p>在此基础上，还有各向异性过滤(Remap)和EWA过滤，这两种方式对Mipmap进行改进，前者增加了在横纵两个方向的计算，允许我们对一个矩形区域进行范围查询；后者使用多个圆形来覆盖拟合不规则的形状，代价是带来多次查询。</p>
+<h2 id="纹理的高级应用">纹理的高级应用</h2>
+<p>在现代GPU中，我们可以将纹理理解为一张图，或者说是一块内存，并且我们可以对这块内存进行范围查询。</p>
+<p>纹理还有许多高级应用，例如可以用纹理来记录环境光照。环境光照可以记录在球面上，将其展开后得到记录环境光照信息的纹理图。使用球面记录信息，在展开之后会导致扭曲的效果，Cube
+Map是其中一种改进方式。它采用球形的外接立方体来记录光照信息，最终展开成一个六面的正方体展开图。这种处理方式不会有扭曲的现象，不过代价是坐标映射的计算方式会相对复杂。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001230242819.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001230242819">
+<p>使用纹理，还可以影响shading的结果，达到欺骗人眼的效果。例如通过法线贴图，我们可以定义一个复杂的纹理，但是不需要改变Model的几何信息，即不会带来更多的三角形增加模型的复杂度。在法线贴图中，我们定义每个顶点法线的扰动情况，之后在进行shading的时候，结合记录的法线扰动情况，重新计算该点的法线，从而影响shading的结果。或者使用位移贴图，直接定义每个顶点的扰动位置，进而影响shading结果。</p>
+<p>纹理还可以用来记录一些事先计算好的信息，在需要使用的时候直接进行查询使用，以此来增加渲染的速度。</p>
+<h1 id="图形管线graphics-pipeline">图形管线Graphics Pipeline</h1>
+<p>至此，我们已经基本了解整个图形管线的流程，即如何将3D场景变换到二维屏幕上的一张图。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001205124251.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001205124251">
+<ol type="1">
+<li>首先通过MVP变换，将3D空间中的顶点变换到屏幕中(Vertex
+Processing)</li>
+<li>然后构成对应的三角形(Triangle Processing)</li>
+<li>通过光栅化得到对应的像素点表示，此时三角形都被离散化成为了一堆像素点(Rasterization)</li>
+<li>通过着色shading，深度测试等等操作，得到最终的Image</li>
+</ol>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001205905683.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001205905683">
+<p>现代的图形管线通常已经被整合在了硬件当中，例如GPU等。在这个渲染管线中，有某个特定部分是可编程等，这个部分被称为着色器Shader。着色器工作在图形渲染管线等某个特定部分，接收某种输入并执行得到对应的输出。着色器分为顶点着色器和片段着色器，它们工作在渲染管线的不同位置。顶点着色器(Vertex
+Shader)作用在Vertex
+Processing。该着色器接受一个单独的3D顶点作为输入，输出则是2D坐标。除了完成MVP变换，我们还可以增加一些自定义的操作。片段着色器(Fragment
+Shader)作用在Fragment
+Processing。该着色器主要完成的是为每个三角形中的每个像素进行着色。</p>
+<h1 id="重心坐标">重心坐标</h1>
+<p>在前面我们多次提到插值，插值可以让我们得到一个平滑的结果。前面提到的许多操作，都是在三角形的顶点上完成的，而插值允许我们得到三角形内部任意点的平滑结果。并且得益于重心坐标，这种插值的计算也非常方便。</p>
+<p>重心坐标是定义在三角形平面上的一个坐标系，假设三角形的三个点分别为<span
+class="math inline">\(A,B,C\)</span>，那么任意一个点都可以使用这个三个点坐标的线性组合来表示，即:
+<span class="math display">\[
+(x,y) = \alpha A + \beta B + \gamma C, \text{其中，}\alpha + \beta +
+\gamma = 1
+\]</span> 后面的约束条件是为了保证所求的点在在三角形平面内。</p>
+<p>实际上，重心坐标的三个值与对应三角形面积有密不可分的关系，实际上如果要用重心坐标来表示三角形的重心，那么得到的应该是<span
+class="math inline">\((1/3, 1/3, 1/3)\)</span>。</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001212149610.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001212149610">
+<p>如果已知一个点的实际xy坐标，那么可以通过下面的方式计算出对应的重心坐标：</p>
+<img src="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001212410004.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231001212410004">
+<blockquote>
+<p>需要注意的是，空间维度变换并不能保证重心坐标不变，因此三维空间的属性需要在三维空间中进行插值。</p>
+</blockquote>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1X7411F744?p=5&amp;vd_source=f05227407dcf2e1cd95d954a632cec91">Lecture
+05 Rasterization 1 (Triangles) bilibili</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://juejin.cn/post/7088508204337856519">计算机图形学入门(四):
+图形渲染管线 - 掘金</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.yuque.com/u21084722/hmh07m/ytqph7">08_Shading2(Shading,Pipeline
+and Texture Mapping)</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" class="category-chain-item">计算机图形学</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/Games101/" class="category-chain-item">Games101</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/">#计算机图形学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Games101(2)-光栅化与着色</div>
+      <div>http://example.com/2023/10/01/Games101-2-光栅化与着色/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/" title="Games101(1)-线性代数基础与变换">
+                        <span class="hidden-mobile">Games101(1)-线性代数基础与变换</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
