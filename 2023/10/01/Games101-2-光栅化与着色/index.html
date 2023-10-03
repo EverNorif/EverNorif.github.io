@@ -42,7 +42,7 @@
 <meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001212149610.png">
 <meta property="og:image" content="http://example.com/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/image-20231001212410004.png">
 <meta property="article:published_time" content="2023-10-01T15:07:41.932Z">
-<meta property="article:modified_time" content="2023-10-03T10:05:51.045Z">
+<meta property="article:modified_time" content="2023-10-03T12:30:59.729Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="计算机图形学">
 <meta name="twitter:card" content="summary_large_image">
@@ -284,7 +284,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          9.5k 字
+          10k 字
         
       </span>
     
@@ -296,7 +296,7 @@
         
         
           <!-- compatible with older versions-->
-          80 分钟
+          87 分钟
         
       </span>
     
@@ -558,7 +558,22 @@ class="math inline">\((1/3, 1/3, 1/3)\)</span>。</p>
 <p>需要注意的是，空间维度变换并不能保证重心坐标不变，因此三维空间的属性需要在三维空间中进行插值。</p>
 </blockquote>
 <h1 id="shadow-mapping">Shadow Mapping</h1>
-<p>Shadow mapping</p>
+<p>前面我们提到shading着色，它完成的只是对某个shading
+point的处理，使用的只有单个点的相关性质(属性k、法线、光照方向等)，并不会考虑其他点对它的影响，即shading实际上不能做出阴影的效果。接下来则介绍一个可以在光栅化中处理阴影的方式，称为Shadow
+Mapping。</p>
+<blockquote>
+<p>需要指出的是，Shadow Mapping是一个在图像空间中的算法(Image-Space
+Algorithm)，它并不需要场景的几何信息。另一方面，Shadow
+Mapping只能处理点光源，只能构造硬阴影，具有明显的阴影边界。</p>
+</blockquote>
+<p>阴影的产生与光源有关。来自光源的光线，如果照射到不透明物体上，被该物体遮挡的地方，由于光线无法到达，于是会产生阴影。从这个原因出发，似乎阴影的构造一定需要几何结构的参与，但是Shadow
+Mapping的思想来自于观察到的另一个现象。假设在点光源的位置有一个照相机，从这个位置向物体看，可以得到一张深度图，也就是哪些像素能够被看到；同样从实际的观察位置看，也可以得到从该点到光源的深度。如果某个地方可以通过实际观察位置看到，但是无法通过点光源的位置看到，那么这个位置就应该出现阴影。或者换一种说法，没有阴影的地方必须能够同时从实际观察位置和点光源位置看到。</p>
+<p>Shadow
+Mapping的实际做法也确实是这样。首先从点光源看向场景，记录看到的每个点的深度，可以得到一张深度图；之后从实际观察位置出发，再次看向场景。对于每个看到的点，可以将其投影回从光源观察时所成的像上，此时也有一个深度信息。如果从光源到该点的深度与从实际观察位置看到的该点到光源的深度相同，那么说明这个位置没有阴影。于是通过两次不同方向的计算，可以得到一张Shadow
+Map阴影图，它表示的就是在哪个位置上有阴影。这张阴影图也是一张图，它的分辨率则影响整体的阴影质量。</p>
+<p>Shadow
+Mapping具有不错的效果，但是也存在一些问题。首先是上面提到的只能处理点光源，无法形成软阴影；其次在Shadow
+Mapping的过程中会涉及到浮点数的比较，因此会存在数值精度的问题，现有的算法都是在一定程度上缓解效果，无法从本质上解决数值精度的问题。</p>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
 <li><a
