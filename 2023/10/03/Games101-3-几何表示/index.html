@@ -1,0 +1,857 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了计算机图形学中的几何表示，分为隐式表达和显式表达。然后介绍了曲线和曲面，包括贝塞尔曲线、曲面细分、曲面简化等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Games101(3)-几何表示">
+<meta property="og:url" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了计算机图形学中的几何表示，分为隐式表达和显式表达。然后介绍了曲线和曲面，包括贝塞尔曲线、曲面细分、曲面简化等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003151623347.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003155014628.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003155545879.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003163425270.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003164855067.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003165929989.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003165944613.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003171615118.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003172142457.png">
+<meta property="og:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003172752196.png">
+<meta property="article:published_time" content="2023-10-03T09:34:09.000Z">
+<meta property="article:modified_time" content="2023-10-03T09:35:59.256Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="计算机图形学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003151623347.png">
+  
+  
+  
+  <title>Games101(3)-几何表示 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Games101(3)-几何表示"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-03 17:34" pubdate>
+          2023年10月3日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Games101(3)-几何表示</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="几何-gemoetry">几何 Gemoetry</h1>
+<h2 id="几何表示">几何表示</h2>
+<p>在计算机图形学中，模型的几何表示大体上可以分为两个种类，隐式几何表示和显式几何表示。</p>
+<p>隐式几何表示描述的是构成模型的点之间的位置关系，但是不会直接告诉我们点在哪个位置，表示的含义非常不直观。隐式几何表示的优点在于我们能够非常方便地判断某个点是否在表面上，但是想要知道具体有哪些点则比较困难。举例来说，隐式几何有如下一些表示方式。</p>
+<p>第一种是利用数学公式来表示模型上点满足的关系，称为Algebraic
+Surfaces。例如<span
+class="math inline">\(x^2+y^2+z^2=1\)</span>表示一个球的表面；<span
+class="math inline">\((R-\sqrt{x^2+y^2})^2 + z^2 =
+r^2\)</span>表示一个圆环面；<span class="math inline">\((x^2 + 9y^2/4 +
+z^2 - 1)^3 = x^2z^3 + 9y^2z^3/80\)</span> 表示一个心形表面。</p>
+<p>第二种方式是CSG(Constructive Solid
+Gemetry)，它指的是通过一系列基本的几何体，利用一些基本运算，例如交并差等，得到更加复杂的几何表示。</p>
+<p>第三种方式是距离函数(Distance
+Functions)，该函数的含义是空间中任意一点到达所定义模型表面的最短距离，该距离可正可负，与在模型内外有关。利用距离函数，我们可以恢复模型的表面，实际上就是将所有<span
+class="math inline">\(f(x, y, z) = 0\)</span>的位置找到即可。</p>
+<p>第四种方式是水平集方法(<a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-tw/%E6%B0%B4%E5%B9%B3%E9%9B%86%E6%96%B9%E6%B3%95">Level
+Set
+Methods</a>)。这种方式与距离函数类似，距离函数方法需要使用一个封闭形式的函数来表达，在表征一些较为复杂的情况时，可能会较为吃力，而水平集方法可以在笛卡尔网络中对曲线或曲面进行数值计算，而不必对曲线或曲面积进行参数化，因此可以表达更加复杂的情况。</p>
+<p>第五种方式是分形的方式。分形类似于递归，表达出的几何形式具有自相似的特点。</p>
+<p>显式几何表示描述的是哪些点或者面构成了模型。显式几何表示相对隐式几何表示会更加直观，进行采样会非常简单，但是相应地会有其他缺点，例如判断点是否在对应面上会比较复杂。举例来说，显式几何有如下一些表示方式。</p>
+<p>第一种方式是使用点云(point
+cloud)来表示模型，即利用位于模型上数量众多的点来表示整个模型。实际上，就是用一个由点坐标<span
+class="math inline">\((x,
+y,z)\)</span>构成的列表来表征模型。可以想见的是，点云的密度越大，表示的模型精度也就更高，同时也能够表达更加复杂的模型。</p>
+<p>第二种方式是使用多边形mesh(polygon
+mesh)来表示模型。常见使用的多边形包括三角形和四边形。这种方式会描述所有的顶点，以及这些顶点如何组成多边形等信息。例如Wavefront
+Object File对应的<code>.obj</code>文件，就是利用polygon
+mesh来表示模型的。文件中以约定的格式记录了顶点坐标xyz信息、纹理坐标uv信息、法线信息、以及顶点如何构成多边形的信息。</p>
+<p>还有一种方式是通过参数映射的方式将二维平面上的范围映射到三维空间中，这种方式直接给定了每个点坐标的确切的求法，所以也属于显式几何表示</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003151623347.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003151623347">
+<p>实际上无论是隐式几何表示还是显式几何表示，它们都有各自的优缺点，适用于不同的任务和场景，并没有一种最好best的方式能够统一几何表示，具体使用何种表达需要视具体的任务而定。</p>
+<h2 id="曲线">曲线</h2>
+<p>在计算机图形学中表现曲线有许多方式，这里介绍一种非常常见的方式，贝塞尔曲线(Bezier
+Curves)。</p>
+<p>贝塞尔曲线最终得到的曲线结果由一系列控制点决定，例如下面是一个包含4个控制点的贝塞尔曲线。这条曲线从第一个控制点出发，到最后一个控制点结束，过程中不一定会经过其他控制点。并且在曲线起始处，切线方向为<span
+class="math inline">\(t_0=3(p_1=p_0)\)</span>，在曲线结束位置，切线方向为<span
+class="math inline">\(t_1 = 3(p_3-p_2)\)</span>。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003155014628.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003155014628">
+<p>接下来，我们先可以从几何上理解贝塞尔曲线的工作流程，即确定了一系列控制点之后，如何绘制出这条贝塞尔曲线。首先可以确定的是，这条曲线一定会经过第一个和最后一个控制点，我们不妨将这两个点连接起来，得到一条线段，定义线段的长度为1，并以此为x轴定义一个坐标系，接下来就是需要确定当x坐标为任意t的时候，y坐标是多少。整个过程是一个递归的过程。控制点两两相连之后，在每条线段上按照x坐标比例找到新的点，重复这个过程，直到最终得到一个点，这个点就是对应x坐标下，在曲线上的点。</p>
+<p>这里的描述可能比较抽象，绘制过程可以参考<a
+target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1qL411B73P/?buvid=XY51D05509E0158F01C148D8D6DD2C4F51EE3&amp;is_story_h5=false&amp;mid=nzux1dBeHGmU4ZSyLeypBw%3D%3D&amp;p=1&amp;plat_id=114&amp;share_from=ugc&amp;share_medium=android&amp;share_plat=android&amp;share_session_id=74c2f7d8-13ec-445f-922a-9e92ce59da0e&amp;share_source=COPY&amp;share_tag=s_i&amp;timestamp=1687756447&amp;unique_k=gWvW0ml&amp;up_id=480935340&amp;vd_source=f05227407dcf2e1cd95d954a632cec91">贝塞尔曲线-可莉视觉</a>。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003155545879.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003155545879">
+<p>上面是贝塞尔曲线的几何理解，下面将介绍它的代数表示。我们现在有一系列控制点<span
+class="math inline">\(b_0, b_1, ...,
+b_n\)</span>，那么实际上最终贝塞尔曲线上的任意一个点的坐标，都可以通过这些控制点的坐标得到，具体公式如下：
+<span class="math display">\[
+\mathbf{b}^n(t) = \sum_{j=0}^{n}\mathbf{b}_jB_j^n(t)
+\]</span> 其中，<span
+class="math inline">\(B_j^n(t)\)</span>是伯恩斯坦多项式中的第j项，实际上就是一个描述二项分布的多项式：
+<span class="math display">\[
+B_j^n(t) = \binom{n}{j}t^j(1-t)^j
+\]</span> 贝塞尔曲线具有一些良好的性质，包括：</p>
+<ol type="1">
+<li>贝塞尔曲线一定会经过第一个和最后一个控制点</li>
+<li>贝塞尔曲线具有凸包性质，即贝塞尔曲线一定会处于控制点所形成的凸包范围内</li>
+<li>贝塞尔曲线具有仿射变换下的不变性，即先对控制点做仿射变换，再计算得到新的贝塞尔曲线，与对旧的贝塞尔曲线直接做仿射变换得到的曲线是相同的</li>
+</ol>
+<p>理论上，如果我们想要模拟比较复杂的曲线，只需要增加贝塞尔曲线的阶数即可，即增加控制点的个数。但是当控制点增加的时候，曲线的变化会不够直观。因此实际的做法是采用分段贝塞尔曲线，每段贝塞尔曲线均采用4个控制点来控制。分段贝塞尔曲线可以在这里找到控制样例：<a
+target="_blank" rel="noopener" href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier
+Curve Edit</a></p>
+<p>分段贝塞尔曲线能够保证整条曲线首尾相连不会断开，但是在连续性上有不同的定义：</p>
+<ul>
+<li><span
+class="math inline">\(C^0\)</span>连续：两条贝塞尔曲线在连接处相连</li>
+<li><span
+class="math inline">\(C^1\)</span>连续：两条贝塞尔曲线在连接处相连，并且在连接处的切线相同（不考虑方向，仅考虑大小）</li>
+</ul>
+<blockquote>
+<p>补充材料：</p>
+<p>当然除了分段贝塞尔曲线，还有其他的曲线，例如spline曲线(样条曲线)。样条曲线可以看作是对贝塞尔曲线的扩展，贝塞尔曲线通过一系列控制点来调整整条曲线，但是这种调整是整体性的，类似牵一发而动全身的感觉。但是有时候我们并不希望有这种整体性，例如当我想微调某个局部的曲线的时候，我就希望曲线的其他地方不会改变。而样条曲线就具备这样一种局部性。(当然分段贝塞尔曲线也能够做到局部性，不过分段带来了额外的复杂度)</p>
+</blockquote>
+<h2 id="曲面">曲面</h2>
+<h3 id="贝塞尔曲面">贝塞尔曲面</h3>
+<p>一种常见的曲面表示方式是由贝塞尔曲线扩展而来的，我们称之为贝塞尔曲面。贝塞尔曲面可以看作是两个方向上多条贝塞尔曲线的组合。首先在一个方向形成多条贝塞尔曲线，然后在另一个方向上，将这些点看作是新的控制点。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003163425270.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003163425270">
+<h3 id="几何操作">几何操作</h3>
+<p>常见的曲面几何操作包括曲面细分(Mesh Subdivision)，曲面简化(Mesh
+Simplification)，曲面正规化(Mesh Regularization)等。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003164855067.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003164855067">
+<h4 id="曲面细分">曲面细分</h4>
+<p><strong>曲面细分</strong>的目的是在原曲面的基础上分出更多的三角形，使得模型变得更加精细。曲面细分包括两个步骤，第一个步骤是在原曲面的基础上细分出更多的面，第二个步骤是调整各个顶点的位置。接下来将介绍两种常见的曲面细分算法，分别是Loop
+Subdivision和Catmull-Clark Subdivision。</p>
+<p>Loop细分对三角形进行操作。对于某个三角形，首先可以取各条边的中点相连，这样就可以将一个三角形细分成新的四个小三角形。细分之后需要进行顶点位置的调整，在Loop细分算法中，将顶点分为两类，一类是新出现的顶点，一类是旧的顶点。</p>
+<p>对于新的顶点，它必然出现在原来的某条边上，因此会和原始的两个三角形有关，如图所示。因此对于该点位置的更新，也可以从相邻两个三角形共4个点出发，其中认为处在同一条边上的两个顶点对新的顶点具有更多的影响，因此权重更大。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003165929989.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003165929989">
+<p>对于旧的顶点，则考虑它原来所有相邻的顶点，使用这些顶点的坐标来更新自己，当然同时也需要考虑自己的原始坐标。这里的权重与顶点的度有关，顶点的度越高，表示这个点相邻的点越多，实际上表示这个点没有那么重要，它的位置可以由其他点来决定；反之如果这个顶点的度很小，则应该更加偏重自己的原始坐标。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003165944613.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003165944613">
+<p>Loop细分只能处理三角形的情况，而Catmull-Clark细分能够处理多边形的情况。在介绍这种细分之前，首先需要引入两个概念，一个是非四边形，一个是奇异点。前者见名知义，指的是不是四边形的多边形；后者奇异点，指的是那些度(degree)不为4的点。</p>
+<p>同样，首先需要进行的细分出更多的形状。Catmull-Clark细分首先取各条边的中点，然后取各个面的中点，之后中点之间相互连接，这样就得到了细分的更多四边形。结合前面非四边形和奇异点的定义，我们可以发现，经过一次细分之后，所有非四边形面都消失了。并且之前有多少个非四边形面，经过一次细分之后，就会新出现多少个奇异点，并且此后不会再增加。而进行顶点位置更新的时候，Catmull-Clark细分算法将点分为三种情况，对应的更新算法如下所示：</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003171615118.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003171615118">
+<h4 id="曲面简化">曲面简化</h4>
+<p>曲面简化的目的是减少三角形的个数，但是同样能够一定程度上表征模型。减少三角形的个数必定会带来模型精度的下降，但是模型精度的需求是视情况而定的。在一些情况下，我们可能希望有更高的模型精度，但是另一些情况，例如这个模型离观察者很远的时候，我们也许使用更少的模型就已经能够达到可以接受的效果了。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003172142457.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003172142457">
+<p>一种曲面简化的方式是边坍缩(edge
+collapsing)。边坍缩指的就是将一条边坍缩成为一个点，从而减少三角形面。减少了一条边，新增了一个顶点，这个顶点的位置该如何确定呢。实际上，顶点位置可以视作一个优化问题，使用二次误差度量作为优化目标。二次误差度量(Quadric
+Error
+Metrics)指的是这个点到原来几个面距离的平方和，通过优化这个点的位置，可以使得这个点到原来几个面的距离平方和最小。</p>
+<img src="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/image-20231003172752196.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231003172752196">
+<p>将该方式推广到整个模型，则选取二次度量误差最小的边开始坍缩，以此类推，直到剩下的三角形数符合要求。需要注意的是，当我们坍缩了某条边之后，相邻的面会发生变化，因此相邻的边对应的二次度量误差也会发生变化，从而导致排序会发生变化。堆(或者称为优先队列)这种数据结构可以很好地应对这类问题。实际上，这种曲面简化的方式是一种贪心的方式，它以局部二次度量误差最小作为标准，而不是全局的最优。但是在实际操作中，这种贪心算法得到的效果一般都是不错的。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" class="category-chain-item">计算机图形学</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/Games101/" class="category-chain-item">Games101</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/">#计算机图形学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Games101(3)-几何表示</div>
+      <div>http://example.com/2023/10/03/Games101-3-几何表示/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/10/01/Games101-2-%E5%85%89%E6%A0%85%E5%8C%96%E4%B8%8E%E7%9D%80%E8%89%B2/" title="Games101(2)-光栅化与着色">
+                        <span class="hidden-mobile">Games101(2)-光栅化与着色</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
