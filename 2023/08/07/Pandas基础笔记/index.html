@@ -24,7 +24,7 @@
 <meta property="og:description" content="Pandas的学习笔记，包括一些基础操作，例如数据读取、数据保存、数据查询与修改、数据清洗、数据统计等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-07T07:13:44.000Z">
-<meta property="article:modified_time" content="2023-08-16T13:23:53.910Z">
+<meta property="article:modified_time" content="2023-10-12T11:55:30.685Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Pandas">
@@ -266,7 +266,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          8.1k 字
+          8.5k 字
         
       </span>
     
@@ -278,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          68 分钟
+          71 分钟
         
       </span>
     
@@ -519,10 +519,18 @@ String hadnling｜pandas</a>。</p>
 <h3 id="groupby">GroupBy</h3>
 <p>Pandas中的<code>groupby</code>方法可以做到先对数据进行分组，然后在每个分组上应用聚合函数或者转换函数</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">groupby(<span class="hljs-string">&#x27;columns&#x27;</span>)  <span class="hljs-comment"># 原来的columns变成索引，以此看其他列</span><br><br>groupby([<span class="hljs-string">&#x27;columns1&#x27;</span>,<span class="hljs-string">&#x27;colunms2&#x27;</span>,...])  <span class="hljs-comment"># 形成多级索引（分层索引）</span><br><span class="hljs-comment"># as_index=False：指定不要形成多级索引</span><br><br><span class="hljs-comment"># 如果需要同时查看多种数据统计，可以使用.agg方法</span><br><span class="hljs-comment"># import numpy as np</span><br>df.groupby(<span class="hljs-string">&#x27;unit&#x27;</span>).agg([np.<span class="hljs-built_in">sum</span>, np.count_nonzero])<br><span class="hljs-comment"># 也可以传dict作为参数，指定对特定列执行特定的操作</span><br>df.groupby(<span class="hljs-string">&#x27;unit&#x27;</span>).agg(&#123;<span class="hljs-string">&#x27;age&#x27;</span>:np.mean,<span class="hljs-string">&#x27;name&#x27;</span>:np.count_nonzero&#125;)<br></code></pre></td></tr></table></figure>
+<h1 id="pandas加速">Pandas加速</h1>
+<h2 id="pandarallel">pandarallel</h2>
+<p>在pandas中运行例如apply方法的时候，如果数据量过大，处理时需要耗费很多时间。默认pandas使用单核进行运行，而<a
+target="_blank" rel="noopener" href="https://pypi.org/project/pandarallel/">pandarallel</a>提供了一种并行处理的方式，利用多核并行来加速pandas的处理。这里简单介绍使用方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pandarallel <span class="hljs-keyword">import</span> pandarallel<br><br>pandarallel.initialize(progress_bar=<span class="hljs-literal">True</span>)<br><br><span class="hljs-comment"># 之后可以在DataFrame上调用parallel_apply方法</span><br>result = df.parallel_apply(some_func)<br></code></pre></td></tr></table></figure>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
 <li><a target="_blank" rel="noopener" href="https://www.datacamp.com/tutorial/pandas">pandas
 tutorial|datacamp</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/nalepae/pandarallel/issues/127">OSError:
+[Errno 28] No space left on device · Issue #127 ·
+nalepae/pandarallel</a></li>
 </ol>
 
                 
