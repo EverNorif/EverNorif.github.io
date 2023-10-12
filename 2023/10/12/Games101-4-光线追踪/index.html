@@ -1,0 +1,1089 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了光线追踪的基本概念。包括光追引入，基础Ray Tracing，Whitted-Style Ray Tracing。为了更加真实的描述光线的作用方式，我们介绍了辐射度量学Radiometry，同时推出最终渲染方程。为了解这个渲染方程，我们介绍了路径追踪算法，并从最初的想法一步步改进到最终结果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Games101(4)-光线追踪">
+<meta property="og:url" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了光线追踪的基本概念。包括光追引入，基础Ray Tracing，Whitted-Style Ray Tracing。为了更加真实的描述光线的作用方式，我们介绍了辐射度量学Radiometry，同时推出最终渲染方程。为了解这个渲染方程，我们介绍了路径追踪算法，并从最初的想法一步步改进到最终结果。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010230939370.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010232021792.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011101529651.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011105102202.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212330249.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212805774.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011213906440.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011220018546.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221540060.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221952705.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011222331706.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012133659124.png">
+<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012144331636.png">
+<meta property="article:published_time" content="2023-10-12T06:53:43.000Z">
+<meta property="article:modified_time" content="2023-10-12T07:02:27.573Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="计算机图形学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010230939370.png">
+  
+  
+  
+  <title>Games101(4)-光线追踪 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Games101(4)-光线追踪"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-12 14:53" pubdate>
+          2023年10月12日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          95 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Games101(4)-光线追踪</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="ray-tracing光追">Ray Tracing光追</h1>
+<h2 id="背景引入">背景引入</h2>
+<p>通过光栅化Rasterization，我们已经可以将3D空间中的物体渲染在屏幕上，但是它仍旧存在一些缺点。例如，光栅化不能很好地处理全局的影响，例如无法处理软阴影(Soft
+Shadows)、Glossy
+Reflection、间接光照(光线经过多次弹射)等。虽然光栅化能够做得比较快，但是它在过程中存在多处近似，使得得出的结果仍然是不真实的。</p>
+<p>光线追踪Ray
+Tracing是另一种渲染方式，同样能够将3D空间中的物体渲染在屏幕上。与光栅化不同的是，光追的处理过程更加贴近真实的情况，能够得到非常真实的结果。当然相对的，光追的速度非常慢(trade
+off!)。当然现在也有一些研究方向是实时光追。</p>
+<blockquote>
+<p>Tips：下面是从另一种角度来对比光栅化和光追。</p>
+<p>计算机图形学的基本任务就是将在3D世界中的几何物体以某种特定的视角，在2D平面上以像素的形式渲染出来。</p>
+<p>一般来说，渲染可以分为两种思路(两种思路有点类似于双重循环的不同循环顺序)：</p>
+<ul>
+<li>object-order
+rendering:每个object会逐个考虑，在考虑每一个object的过程中，判断哪些像素被它影响并进行更新。</li>
+<li>image-order
+rendering:每个pixel会逐个考虑，在考虑每一个pixel的过程中，判断共有哪些物体影响这个像素，并计算这个像素最终的值。</li>
+</ul>
+<p>object-order
+rendering在速度和效率上有着很大的优势。相比于反复检索被着色像素需要的场景物体，场景中每个物体只需遍历一遍的方法显然快很多。光栅化使用的就是object-order
+rendering思路。</p>
+<p>image-order
+rendering会更加简单粗暴，也更加灵活，只不过需要更大的计算量，但是效果也往往比较好。光追使用的就是image-order
+rendering思路。</p>
+</blockquote>
+<h2 id="基础-ray-tracing">基础 Ray Tracing</h2>
+<p>在介绍光追算法之前，我们可以先对光线进行一些简单的定义和说明。我们认为光线沿直线传播、不同光线之间不会发生碰撞、光线从光源发出，最后到达眼睛。似乎上面都是一些很普通的定义，的确也正是这样。考虑摄像机/人眼能够看见物体(成像)，是因为光线在物体上弹射之后进入摄像机/人眼中。而光线追踪实际上利用了光路的可逆性，它考虑的是光线从摄像机/人眼出发，在物体之间弹射，最后到达光源。这也是光追的核心思想。</p>
+<p>首先考虑基础的光追算法(Basic Ray Tracing
+Algorithm)，也称为光线投射(Ray Casting)。该算法假设：</p>
+<ul>
+<li>人眼是针孔摄像机(one point)，光源是点光源</li>
+<li>光线打到场景中的物体会发生完美的反射/折射</li>
+</ul>
+<p>基础Ray
+Tracing分为两部分，第一部分是从人眼向每个图像中的每个像素投射光线，第二部分是检测是否处在阴影当中。</p>
+<ol type="1">
+<li>从眼睛开始，向成像屏幕的每个像素投射光线，光线(Eye
+Ray)会打到最近的一个物体上(实际上“最近的”简单地就解决了深度测试的问题)，得到一个交点</li>
+<li>从这个交点与光源之间可以连接一条光线(Shadow
+Ray)，如果这条线上没有东西遮挡，就认为这点可以被光线照亮，此时就可以使用各种Shading模型得到像素的值(例如在光栅化中提到的Blinn-Phong着色模型)；如果这条线上有东西遮挡，就认为该点在阴影当中</li>
+</ol>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010230939370.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231010230939370">
+<h2 id="whitted-style-ray-tracing">Whitted-Style Ray Tracing</h2>
+<h3 id="介绍">介绍</h3>
+<p>注意到，在基础Ray
+Tracing中，光线只进行一次弹射，仍然不是很符合实际。于是引出下面的方法，即Whitted-Style
+Ray Tracing。</p>
+<p>Whitted-Style Ray Tracing在Basic Ray
+Tracing的基础上，考虑投射的光线可以继续传播，打到场景中的其他物体上，即光线的多次弹射。在每一个交点上，我们都可以计算一次着色，最终的该像素的总体着色值是所有弹射点的着色值总和。(需要考虑到光线在弹射的过程中有能量损失，最终并不会出现类似过曝的现象)。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010232021792.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231010232021792">
+<h3 id="光线与平面求交">光线与平面求交</h3>
+<p>whitted-Style Ray
+Tracing的思想其实比较好理解，但是在实际实现过程中，会涉及到许多技术相关的问题。接下来就进行介绍。</p>
+<p>首先遇到的第一个问题就是如何计算光线与表面的交点，为此首先需要对光线进行数学上的定义，考虑光线是一个射线，从某个点<span
+class="math inline">\(\mathbf{o}\)</span>出发，沿着方向<span
+class="math inline">\(\mathbf{d}\)</span>进行传播，因此可以得到光线方程：
+<span class="math display">\[
+\mathbf{r}(t) = \mathbf{o} + t \mathbf{d}, \quad 0 \le t &lt; +\infty
+\]</span>
+定义了光线方程之后，就可以求光线与表面的交点了。如果物体的表面可以通过某种方程来显示描述，那么就可以通过联立方程组来计算出交点。当然这种方式推广到隐式表示中也是成立的，只要物体的表面可以通过某种方程来描述，就可以通过联立方程组的方式来求出交点。</p>
+<blockquote>
+<p>如何解方程组不在这里考虑，我们只需要知道实际上有很多数值计算的方式来解方程组。</p>
+</blockquote>
+<p>当然还有一种常见的方式是利用众多三角形面来表征物体的表面，也就是需要处理光线和三角形mesh的交点。我们可以将每个三角形看作是一个平面，对每个三角形，求出光线与该平面的交点，然后判断该交点是否在三角形内部即可。</p>
+<p>由于我们知道三角形的法线，同时也知道三角形的三个顶点坐标，因此可以很容易写出平面方程(平面上的任意向量都会垂直于法线)。通过联立方程可以算出光线与平面的交点，再通过判断该点是否在三角形内部即可完成对于一个三角形的操作。</p>
+<p>上面的方式对于一个三角形需要执行两步，实际上我们可以利用重心坐标来一步计算出是否有满足条件的交点。考虑三角形的三个顶点分别为<span
+class="math inline">\(\mathbf{p_0},\mathbf{p_1},
+\mathbf{p_2}\)</span>，那么光线与三角形内部相交的情况就会满足下面的式子，其中等式的左边是光线方程，右边是用重心坐标表示的三角形内部的任意点.
+<span class="math display">\[
+\mathbf{o} + t \mathbf{d} = (1 - b_1 - b_2)\mathbf{p_0}+b_1\mathbf{p_1}
++ b_2\mathbf{p_2},\quad \text{其中} t &gt; 0,1-b_1-b_2 \ge 0, b_1 \ge 0,
+b_2 \ge 0
+\]</span> 我们需要求解的就是满足条件的三个未知量<span
+class="math inline">\(t,b_1,b_2\)</span>。该方程的求解可以通过<a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%85%8B%E8%90%8A%E5%A7%86%E6%B3%95%E5%89%87">克莱姆法则</a>完成。</p>
+<blockquote>
+<p>实际上，上面说的算法的名称为<a
+target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm">Möller–Trumbore
+intersection algorithm</a></p>
+</blockquote>
+<h3 id="aabb加速">AABB加速</h3>
+<p>通过上面描述的光线与三角形求交的方式，我们实际上已经可以利用光追算法来渲染出图像，但是过程中会存在性能问题。考虑处理的像素有pixels个，场景中的三角形有traingles个，光线弹射的次数为bounces，那么所需计算的次数就是<span
+class="math inline">\(pixels \times traingles \times
+bounces\)</span>。实际上场景中的物体所含有的全部三角形数目是非常巨大的，导致这种方式的计算次数也会变得非常巨大，这种性能是无法被接受的。为此，需要对计算方式进行一定的优化。</p>
+<p>每个物体由众多三角形面构成，每次计算需要考虑光线是否与物体相交。可以观察到，如果遍历场景中的所有三角形，有很多遍历是无意义的。考虑某个物体的包围盒(Bounding
+Box)，一种加速思想是，如果光线与包围盒没有交点，那么肯定与这个物体没有交点，那么这个物体所包含的三角形就可以全部不用考虑了。并且注意到与物体求交是困难的，与包围盒求交是简单的，这种方式可以大大地简化计算。</p>
+<p>一个物体的包围盒有很多，我们常用的是一种称为轴对齐包围盒的Bounding
+Box，对应的英文名称为Axis-Aligned Bounding
+Box，简称AABB。AABB是一个矩形，其中的每个面都会平行于x,y,z轴构成的其中一个平面。这样处理的好处是得到了一个表示简单的Bounding
+Box，计算光线与它是否相交也会变得很简单。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011101529651.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011101529651">
+<p>那么光线如何与AABB求交？我们将AABB考虑为三个对面(<span
+class="math inline">\(3\times2=6\)</span>
+一共六个面)，当光线进入了三个对面，才算进入了包围盒；当光线离开了任何一个对面，就算离开了包围盒。因此我们可以计算光线进入x,y,z三组平面的<span
+class="math inline">\(t_{min},t_{max}\)</span>(即求光线与平面的交点，此时的平面较为特殊，是平行于坐标系平面的平面，因此计算起来也会比较简单)，那么光线进入包围盒的时间<span
+class="math inline">\(t_{enter}\)</span>就是所有<span
+class="math inline">\(t_{min}\)</span>的最大值，离开包围盒的时间<span
+class="math inline">\(t_{exit}\)</span>就是所有<span
+class="math inline">\(t_{max}\)</span>的最小值。</p>
+<ul>
+<li>如果<span class="math inline">\(t_{exit} &lt;
+0\)</span>，表示包围盒在光线的后面（射线的后面），那么不可能有交点</li>
+<li>如果<span class="math inline">\(t_{enter} &lt; 0, t_{exit} &gt;
+0\)</span>，表示光线在包围盒中，那么一定有交点</li>
+<li>如果<span class="math inline">\(t_{enter} &gt; 0, t_{exit}
+&gt;0\)</span>，那么只有当<span class="math inline">\(t_{enter} &lt;
+t_{exit}\)</span>，即光线在包围盒中存在了一定时间，才与包围盒有交点</li>
+</ul>
+<p>综上所述，只有当<span class="math inline">\(t_{enter} &lt;
+t_{exit}\)</span> 且 <span class="math inline">\(t_{exit} &gt;0\)</span>
+时，光线与包围盒有交点。</p>
+<h3 id="加速结构">加速结构</h3>
+<p>AABB提供了一种思想，即利用包围盒来加速Ray
+Tracing。而在实际应用的过程中，有多种使用方式，具体差别在于如何划分场景中的AABB。接下来所说的划分结构，或者称为加速结构
+都是在执行光追之前进行构建的，用以加速光追的执行。</p>
+<p>一种最为简单的方式是将场景进行均匀划分(uniform
+grid)，得到众多大小相等的小格子。这些小格子可以被分为两类，一类是与物体表面相交的格子，另一类是没有与任何物体相交的格子。与物体相交的格子会存储所有与之相交的物体(的所有三角形)。当光线投射的时候，我们可以先判断光线与哪些格子相交，在这些格子中，进一步判断该格子中是否有物体，如果有，就对其中的物体三角形进行遍历处理，进一步判断光线是否与物体相交。</p>
+<p>均匀划分实现简单，但是划分数目会很大程度上影响性能。如果格子太少太稀疏，那么无法起到加速作用；如果格子太多太密集，则需要多次判断光线是否与格子有交点，可能也会降低效率。</p>
+<blockquote>
+<p>一个经验上的做法是划分出<span class="math inline">\(C \times
+\text{num of objects}\)</span>个数的格子，其中<span
+class="math inline">\(C=27\)</span>。</p>
+</blockquote>
+<p>均匀划分在一些情况下的确能够起到加速作用，但是它不适用于场景中物体分布不均匀的情况，即场景中某个地方有大量的物体，某个地方又有大量的空白。基于此，我们又提出了一些不均匀的空间划分结构，不均匀的空间划分主要希望使得在空白的地方格子大些，在物体密集的地方格子小一些。常见的空间划分结构包括Oct-Tree、KD-Tree和BSP-Tree。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011105102202.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011105102202">
+<p>Oct-Tree(八叉树)按照每次八分的方式对场景进行递归划分(三次切分，上下左右前后),每次划分后可以得到新的八个子grid，在每个节点都递归地进行划分，划分停止的条件是发现该grid中没有物体或者该grid中的物体数量足够少。</p>
+<p>八叉树的划分方式与维度有关，随着维度的上升，划分出的空间数量会呈指数增长。为了解决这个问题，出现了KD-Tree的方法。对于每个grid，KD-Tree采取的方式是只进行一次划分，并且这次划分是沿着某个轴进行的，并且按照xyzxyz的方式按序改变沿着的轴。最终形成的树是一个二叉树，中间节点只存储了指向子空间的指针，在叶子结点中存放了对应空间中所有物体或者所有三角形面的信息。</p>
+<p>BSP-Tree的划分方式与KD-Tree基本一致，不同之处在于BSP-Tree的划分不一定是沿着固定的某个轴，而是可以任意划分。划分方向不规则也就导致了求交不好计算，随着维度升高也会变得越来越复杂。</p>
+<p>上面所说的划分方式都是对空间进行划分，可能会出现同一个物体被多个grid都存储的情况。另一种思想是基于物体进行划分，称为Bounding
+Volume
+Hierarchy(BVH)。对于每个包围盒，可以其中的物体划分为两部分，对于每部分的物体可以重新计算出一个包围盒，递归地进行该操作，直到某个包围盒中的三角形面数小于某个设定的值。对于BVH来说，它的包围盒之间可能出现重叠，但是一个物体只会出现在一个包围盒当中。BVH划分的是物体，具体的划分方式也有多种，例如为了让空间均匀分布，每次将最长的轴切断，沿着该轴找到中间的三角形，以它为分界线进行划分。</p>
+<h1 id="辐射度量学radiometry">辐射度量学Radiometry</h1>
+<p>在Whitted-Style Ray
+Tracing算法作用下，能够得到一定效果的成像结果，但是真实性仍然较为缺乏，这是因为我们所使用的光线作用方式仍然是简化的，近似的。因此，为了达到更好的效果，我们需要定义更加精确的光线作用方式，因此首先引入辐射度量学Radiometry。辐射度量学精确地定义了与光相关的一系列物理量和方法，来描述光如何与表面发生作用。</p>
+<h2 id="光照描述">光照描述</h2>
+<ul>
+<li><strong>Radiant Energy</strong>：光线辐射出来的能量<span
+class="math inline">\(Q\)</span>，单位为焦耳<span
+class="math inline">\(J\)</span></li>
+<li><strong>Radiant Flux</strong>：光线单位时间内辐射的能量<span
+class="math inline">\(\Phi\)</span>，类似于功率，单位为瓦特<span
+class="math inline">\(W\)</span>；不过更常用的单位是流明<span
+class="math inline">\(lm\)</span></li>
+</ul>
+<p><span class="math display">\[
+\Phi = \frac{d Q}{ d t}
+\]</span></p>
+<blockquote>
+<p>注意，在图形学中描述的能量通常都是单位时间的能量，即这里的flux。</p>
+</blockquote>
+<ul>
+<li><strong>Radiant Intensity</strong>：单位立体角上的Flux，单位为<span
+class="math inline">\(cd(candela)\)</span></li>
+</ul>
+<p><span class="math display">\[
+I(\omega) = \frac{d \Phi}{d \omega}
+\]</span></p>
+<p>这里涉及到一个立体角的概念。在平面上，角的定义我们非常熟悉，即弧长/半径，而立体角就是角度在三维空间中的衍生。考虑空间中的一个球，一个立体角会对应球面上的一个面积，那么立体角就等于
+球面面积/半径的平方。一个平面的圆形，它的角度是<span
+class="math inline">\(2\pi\)</span>；一个空间中的球形，它的立体角是<span
+class="math inline">\(4\pi\)</span>。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212330249.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011212330249">
+<p>考虑在半径为<span
+class="math inline">\(r\)</span>的球中，一条具体半径的确定可以通过<span
+class="math inline">\((\theta,\phi)\)</span>来确定，单位立体角则考虑在这两个方向上旋转一个非常小的角度，然后计算对应的立体角。可以看到单位立体角与具体的半径方向有关，即与对应方向<span
+class="math inline">\(\omega\)</span>有关。最终得到结论： <span
+class="math display">\[
+d\omega = \sin{\theta} d\theta d\phi
+\]</span></p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212805774.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011212805774">
+<ul>
+<li>Irradiance：单位面积上的flux通量，即考虑垂直于光线的面积，单位为<span
+class="math inline">\(lux\)</span></li>
+</ul>
+<p><span class="math display">\[
+E(\mathbf{x}) = \frac{d \Phi(\mathbf{x})}{d A}
+\]</span></p>
+<ul>
+<li>Radiance：光线在单位面积<span
+class="math inline">\(A\)</span>，单位立体角<span
+class="math inline">\(\omega\)</span>上辐射出的Flux。这个概念也是描述环境中光的分布的基本概念。</li>
+</ul>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011213906440.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011213906440">
+<p>Radiance可以分为入射和出射的情况，这两种情况可以从不同角度进行理解。</p>
+<ul>
+<li>对于入射Radiance，可以理解为从每个单位立体角上到达dA的光线的能量，即：</li>
+</ul>
+<p><span class="math display">\[
+L(\mathbf{p}, \omega) = \frac{dE(\mathbf{p})}{d\omega \cos{\theta}}
+\]</span></p>
+<ul>
+<li>对于出射Radiance，可以理解为从每个单位投影面积上辐射出的能量，即：</li>
+</ul>
+<p><span class="math display">\[
+L(\mathbf{p}, \omega) = \frac{dI(\mathbf{p}, \omega)}{dA \cos{\theta}}
+\]</span></p>
+<p>相比于Irradiance，Radiance增加了方向性。Irradiance描述了单位面积上接收/辐射的能量，Radiance描述的则是单位面积上对某个方向接收/辐射的能量。对Radiance沿着球面进行积分，就可以得到Irradiance。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011220018546.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011220018546">
+<h2 id="brdf双向反射分布函数">BRDF双向反射分布函数</h2>
+<p>在定义了上面的物理量之后，我们就可以对光线作用进行描述。BRDF，全称为Bidirectional
+Reflectance Distribution
+Function，双向反射分布函数，就描述了光线与物体如何进行作用。</p>
+<p>考虑在某个点point上发生的光线反射，从某个方向<span
+class="math inline">\(\omega_i\)</span>来的Radiance会转化为dA吸收的能量E，这份能量会转化为向其他方向<span
+class="math inline">\(\omega_r\)</span>出射的Radiance。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221540060.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011221540060">
+<ul>
+<li>入射Radiance：<span class="math inline">\(dE(\omega_i) =
+L(\omega_i)\cos{\theta} d\omega_i\)</span></li>
+<li>出射Raidance：<span
+class="math inline">\(dL_r(\omega_r)\)</span></li>
+</ul>
+<p>而BRDF就是一个函数，用来描述在这个点上，如何将自己吸收到的能量分配到其他各个方向上去。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221952705.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011221952705">
+<h2 id="渲染方程">渲染方程</h2>
+<p>通过BRDF，我们可以知道每个入射光最后反射出去的Radiance。那么将所有入射方向上光的贡献都进行累计，然后计算对某个特定出射方向的贡献，既可以得到反射方程。</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011222331706.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231011222331706">
+<p>在反射方程中，<span
+class="math inline">\(L_i(p,\omega_i)\cos{\theta_i}d\omega_i\)</span>表示来自某个方向上的入射光，乘上一个BRDF，得到该入射光对于特定出射方向的贡献。</p>
+<blockquote>
+<p>但是需要注意的是，这里的入射光除了来自光源，还可能来自其他物体反射的光，而其他物体反射的光也需要利用反射方程来计算，这就是一个递归情况。</p>
+</blockquote>
+<p>为了使得适用情况更加广泛，这里将反射方程扩展为渲染方程，实际上就是考虑物体自己也会发光，增加一项发光项。
+<span class="math display">\[
+L_o(p, \omega_r) = L_e(p, \omega_o) + \int_{\Omega+}
+L_i(p,\omega_i)f_r(p, w_i, w_r)(n\cdot\omega_i)d\omega_i
+\]</span> 更进一步对渲染方程进行分析：</p>
+<ul>
+<li>如果是一个点光源或者多个点光源，则可以使用累加；</li>
+<li>如果是面光源，则相当于一堆点光源的集合；</li>
+<li>如果入射光是其他物体反射而来，则将物体当成面光源，对立体角进行积分</li>
+</ul>
+<p>从渲染方程出发，最后经过推到可以得到下面的表达： <span
+class="math display">\[
+L = E + KE + K^2E + K^3E + ...
+\]</span>
+其中L是最终需要得到的结果，E是本身发出的能量，K是反射因子。</p>
+<p>这个式子告诉我们，最终得到的结果可以分解为光线弹射从0到无数次的结果：</p>
+<ul>
+<li>光线弹射0次：直接打到眼睛中，即我们看到的光源</li>
+<li>光线弹射1次：光线从光源出发，打到物体经过一次弹射后进入眼睛，即直接光照</li>
+<li>光线弹射2次：光线从光源出发，打到物体经过两次弹射后进入眼睛，光线弹射两次以上都属于间接光照</li>
+<li>...</li>
+</ul>
+<p>最终全局光照=光源+直接光照+间接光照。</p>
+<p>从这个角度进行考虑，光栅化只能告诉我们光线弹射0次和1次的光照内容，但是对于后续的间接光照则较难实现。光线弹射次数越多，得到的全局光照效果越趋近于收敛。</p>
+<h1 id="路径追踪path-tracking">路径追踪Path Tracking</h1>
+<p>通过辐射度量学，我们可以得到渲染方程。渲染方程描述了光线在实际环境中的作用方式，光追实际上就是对这个渲染方程进行求解。接下来将介绍其中一种求解方式，蒙特卡洛路径追踪(Monte
+Carlo Path Tracing)。</p>
+<h2 id="蒙特卡洛积分">蒙特卡洛积分</h2>
+<p>首先介绍蒙特卡洛积分。考虑积分，如果我们知道一个函数的解析式，并且该函数的原函数也能够很好地表示出来，那么利用牛顿-莱布尼茨公式就能够很方便地计算积分值。考虑其他一些更加常见的情况，某个函数的解析式并不能够很容易地表达出来，从而原函数也不能容易地给出。对于这类函数，如果我们只关心最终的积分数值而不关心解析式的话，就可以使用蒙特卡洛积分的方式来近似得到这个积分值。</p>
+<p>考虑下面这个不规则的函数，需要求它在区间<span
+class="math inline">\([a,
+b]\)</span>的积分值，利用蒙特卡洛积分的方式完成：</p>
+<ol type="1">
+<li>每次在区间<span
+class="math inline">\([a,b]\)</span>之间进行采样，采样得到一个<span
+class="math inline">\(x_i\)</span>，得到对应的<span
+class="math inline">\(f(x_i)\)</span>，将该值认为是长方形的高，则得到长方形的面积为<span
+class="math inline">\(f(x_i)\times
+(b-a)\)</span>，用这个值近似整个积分的值；</li>
+<li>重复采样，得到一系列近似结果。最终认为这些近似结果的平均值就是我们需要得到的<span
+class="math inline">\(\int_a^bf(x)dx\)</span>的值；</li>
+<li>这相当于重复采样得到<span
+class="math inline">\(f(x_i)\)</span>，然后计算出它的平均，再乘上范围<span
+class="math inline">\([a, b]\)</span>。</li>
+</ol>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012133659124.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231012133659124">
+<p>下面可以数学的角度对蒙特卡洛积分进行定义，考虑一个函数<span
+class="math inline">\(f(x)\)</span>，我们需要求它在某个范围内的积分<span
+class="math inline">\(\int_a^bf(x)dx\)</span>。考虑对自变量<span
+class="math inline">\(x\)</span>进行抽样，得到一个随机变量<span
+class="math inline">\(X_i\)</span>。假设该随机变量服从某个分布，即$X_i
+p(x) $，那么最终得到的蒙特卡洛积分模拟值为： <span
+class="math display">\[
+\int_a^b f(x) dx = \frac{1}{N} \sum_{i=1}^{N}
+\frac{f(X_i)}{p(X_i)},\quad X_i \sim p(x)
+\]</span></p>
+<h2 id="路径追踪">路径追踪</h2>
+<p>我们说光追是对渲染方程进行求解。渲染方程中出现了一项积分项，求解这项积分项就可以通过蒙特卡洛积分来进行。</p>
+<blockquote>
+<p>注意后续的渲染方程都暂且不考虑自身发光项，仅考虑直接光照和间接光照。</p>
+</blockquote>
+<p>观察渲染方程中的积分项： <span class="math display">\[
+\int_{\Omega+} L_i(p,\omega_i)f_r(p, w_i, w_r)(n\cdot\omega_i)d\omega_i
+\]</span> 要利用蒙特卡洛积分对齐进行求解，那么需要对<span
+class="math inline">\(\omega\)</span>进行采样。例如假设采样遵守半球内的均匀分布，则有<span
+class="math inline">\(p(\omega_i) =
+1/2\pi\)</span>。利用蒙特卡洛积分求解，则有如下表达式，其中<span
+class="math inline">\(pdf(\omega_i)\)</span>表示采样的概率分布。 <span
+class="math display">\[
+\begin{aligned}
+L_o(p, \omega_r) &amp;= \int_{\Omega+} L_i(p,\omega_i)f_r(p, w_i,
+w_r)(n\cdot\omega_i)d\omega_i \\
+&amp;=\frac{1}{N} \sum_{i=1}^N \frac{L_i(p,\omega_i)f_r(p, w_i,
+w_r)(n\cdot\omega_i)}{pdf(\omega_i)}
+\end{aligned}
+\]</span>
+同时考虑直接光照和间接光照，我们就可以得到下面一个路径追踪初步的伪代码。注意其中分为直接光照和间接光照，直接光照的L直接来自于光源，间接关照的L则来自其他物体的反射，此时这个值需要递归的求解。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">shade(p, w_r)<br>    Randomly choose N directions w_i ~ pdf<br>    L_o = <span class="hljs-number">0.0</span><br>    For each w_i<br>    	Trace a ray r(p, w_i)<br>        If ray r hit the light: <span class="hljs-comment"># 直接光照</span><br>            L_o += (<span class="hljs-number">1</span> / N) * L_i * f_r * cosine / pdf(w_i)<br>        Else If ray r hit an <span class="hljs-built_in">object</span> at q: <span class="hljs-comment"># 间接光照</span><br>            L_o += (<span class="hljs-number">1</span> / N) * shade(q, -w_i) * f_r * cosine / pdf(w_i)<br>    Return L_o<br></code></pre></td></tr></table></figure>
+<p>注意到在这个算法中，对于一个位置p，我们需要投射N条光线，但是由于这些会出现在其他物体上的弹射，并且每次弹射也会继续有N条光线，所以很容易造成光线数量的爆炸。因此这里进行算法的改进，将N设置为1，然后将多次采样的操作设置在像素级别。于是此时的效果就是对于每个像素，我们进行多次不同方向的采样，对于每个方向只投射一根光线。由于跟踪的是一条光线的弹射，也就有点类似于在空间中跟踪这条光线的路径，这也是该算法名称路径追踪的由来。下面是改进之后的算法伪代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 对于投射的每条光线</span><br>shade(p, w_r)<br>    Randomly choose ONE directions w_i ~ pdf  <span class="hljs-comment"># N = 1</span><br>    L_o = <span class="hljs-number">0.0</span><br>    For each w_i<br>    	Trace a ray r(p, w_i)<br>        If ray r hit the light: <span class="hljs-comment"># 直接光照</span><br>            L_o += (<span class="hljs-number">1</span> / N) * L_i * f_r * cosine / pdf(w_i)<br>        Else If ray r hit an <span class="hljs-built_in">object</span> at q: <span class="hljs-comment"># 间接光照</span><br>            L_o += (<span class="hljs-number">1</span> / N) * shade(q, -w_i) * f_r * cosine / pdf(w_i)<br>    Return L_o<br>    <br><span class="hljs-comment"># 对于像素的采样</span><br>ray_generation(camPos, pixel)<br>	Uniformly choose N sample positions within the pixel<br>    pixel_radiance = <span class="hljs-number">0.0</span><br>    For each sample <span class="hljs-keyword">in</span> the pixel<br>    	Shoot a ray r(camPos, cam_to_sample)<br>        If ray r hit the scene at p<br>        	pixel_radiance += (<span class="hljs-number">1</span> / N) * shade(p, sample_to_cam)<br>    Return pixel_radiance<br></code></pre></td></tr></table></figure>
+<p>上面的算法仍然存在问题，因为我们发现光线会在场景中一直弹射，反应在算法中就是递归没有停止条件。改进的方法是使用俄罗斯轮盘赌(Russian
+Roulette,RR)。考虑光线每次弹射都可能有<span
+class="math inline">\(p\)</span>的概率停止弹射。当然考虑到能量守恒，如果光线停止弹射，我们需要对它的能量进行补偿，即将当前的L修正为L/p。</p>
+<blockquote>
+<p>类似于神经网络中dropout的补偿修正。</p>
+</blockquote>
+<p>根据RR的思想，我们可以改进shade方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python">shade(p, w_r)<br>	<span class="hljs-comment"># RR Russian Roulette</span><br>	Manually specify a probability P_RR<br>    Randomly select ksi <span class="hljs-keyword">in</span> a uniform dist. <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>]<br>    If (ksi &gt; P_RR) Return <span class="hljs-number">0.0</span><br>    <br>    Randomly choose ONE directions w_i ~ pdf  <span class="hljs-comment"># N = 1</span><br>    L_o = <span class="hljs-number">0.0</span><br>    For each w_i<br>    	Trace a ray r(p, w_i)<br>        If ray r hit the light: <span class="hljs-comment"># 直接光照</span><br>            L_o += (<span class="hljs-number">1</span> / N) * L_i * f_r * cosine / pdf(w_i)<br>        Else If ray r hit an <span class="hljs-built_in">object</span> at q: <span class="hljs-comment"># 间接光照</span><br>            L_o += (<span class="hljs-number">1</span> / N) * shade(q, -w_i) * f_r * cosine / pdf(w_i)<br>    Return L_o<br></code></pre></td></tr></table></figure>
+<p>至此我们已经得到了一个正确的路径追踪算法，但是它仍然存在一些问题。虽然它能够得到正确的结果，但是它效率太低了。考虑光源很小的时候，只有很少的光线能够最终抵达光源，很多的采样光线都浪费了。</p>
+<p>一种改进思路是直接对光源进行采样，假设光源面积为A。之前的渲染方程是对立体角做积分，因此在立体角上采样，现在需要对光源进行采样，那么则需要将渲染方程改写为对光源的积分，实际上就是需要找到dA和dw之间的关系：</p>
+<img src="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012144331636.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231012144331636">
+<p>改写后的渲染方程： <span class="math display">\[
+\begin{aligned}
+L_o(x, \omega_r) &amp;= \int_{\Omega+} L_i(x,\omega_i)f_r(x, w_i,
+w_r)\cos{\theta}d\omega_i \\
+&amp;=\int_{A} L_i(x, \omega_i)f_r(x,
+\omega_i,\omega_r)\frac{\cos{\theta}\cos{\theta&#39;}}{||x&#39;-x||^2}dA
+\end{aligned}
+\]</span> 此时将对应的算法伪代码进行改进：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">shade(p, w_r)<br>	<span class="hljs-comment"># 直接光照 不需要进行RR轮盘赌</span><br>	Uniformly sample the light at x<span class="hljs-string">&#x27; (pdf_light = 1 / A)</span><br><span class="hljs-string">    L_dir = L_i * f_r * cos \theta * cos \theta&#x27;</span> / |x<span class="hljs-string">&#x27; - p|^2 / pdf_light</span><br><span class="hljs-string">    </span><br><span class="hljs-string">    # 间接光照 需要使用RR</span><br><span class="hljs-string">    L_indir = 0.0</span><br><span class="hljs-string">    Test Russian Roulette with probability P_RR</span><br><span class="hljs-string">    Uniformly sample the hemisphere toward wi (pdf_hemi = 1 / 2pi)</span><br><span class="hljs-string">    Trace a ray r(p, wi)</span><br><span class="hljs-string">    If ray r hit a non-emitting object at q</span><br><span class="hljs-string">    	L_indir = shade(q, -wi) * f_r * cos \theta / pdf_hemi / P_RR</span><br><span class="hljs-string">        </span><br><span class="hljs-string">    Return L_dir + L_indir</span><br></code></pre></td></tr></table></figure>
+<p>注意上面的算法没有判断光源和点之间是否有遮挡，当然这也非常容易判断，如果判断有遮挡的话，那么就直接返回即可。</p>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://tangible-havarti-5bc.notion.site/Ray-Tracing-386efcb96f47413999b0825aaa76d1a1">Ray
+Tracing|tangible-havarti-5bc</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" class="category-chain-item">计算机图形学</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/Games101/" class="category-chain-item">Games101</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/">#计算机图形学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Games101(4)-光线追踪</div>
+      <div>http://example.com/2023/10/12/Games101-4-光线追踪/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/10/03/Games101-3-%E5%87%A0%E4%BD%95%E8%A1%A8%E7%A4%BA/" title="Games101(3)-几何表示">
+                        <span class="hidden-mobile">Games101(3)-几何表示</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

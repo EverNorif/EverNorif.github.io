@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230928134135724.png">
 <meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230928134234121.png">
 <meta property="article:published_time" content="2023-09-30T09:08:45.000Z">
-<meta property="article:modified_time" content="2023-09-30T09:16:52.022Z">
+<meta property="article:modified_time" content="2023-10-10T11:18:09.472Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="线性代数">
 <meta property="article:tag" content="计算机图形学">
@@ -274,7 +274,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          7.5k 字
+          7.8k 字
         
       </span>
     
@@ -286,7 +286,7 @@
         
         
           <!-- compatible with older versions-->
-          63 分钟
+          65 分钟
         
       </span>
     
@@ -548,14 +548,18 @@ n_z &amp; 0 &amp; -n_z\\
 0 &amp; 0 &amp; 0 &amp; 1\\
 \end{pmatrix}
 \]</span></p>
-<h2 id="viewing-transfromation">Viewing Transfromation</h2>
-<p>计算机需要显示3D物体，实际上需要经过一系列流程，这个过程涉及如下环节（可以类比拍照）也统称为MVP变换：</p>
+<h2 id="viewing-transformation">Viewing Transformation</h2>
+<p>计算机需要显示3D物体，具体来说需要将3D空间中的坐标转化为图像空间中的像素坐标。在实际操作中，整个过程分为两部分，第一部分是将3D空间的坐标进行一定的处理，使得要处理的场景都处于标准立方体中；第二部分是从标准立方体转化到像素坐标。这一节主要介绍的就是第一部分，而完成第二部分的操作包括后续的光栅化、光线追踪等技术。</p>
+<p>第一部分的流程主要涉及如下环节（可以类比拍照）也统称为MVP变换：</p>
 <ul>
 <li>model transformation：摆好被拍的东西</li>
 <li>view transformation：摆好照相机</li>
 <li>projection transformation：开始照相</li>
 </ul>
 <h3 id="view-transformation">view transformation</h3>
+<p>model transformation和view
+transformation两者统一完成的是一种刚体变换，保持相机和场景物体的相对位置不变，同时将相机按照特定的方式固定在原点。（特定的方式指的是相机位置在原点，相机正面朝向在<span
+class="math inline">\(-z\)</span>）该变换只和摄像机的原始描述向量有关。</p>
 <p>这里的相机通常使用会使用三个向量来定义：</p>
 <ol type="1">
 <li>指定相机的位置position：<span
