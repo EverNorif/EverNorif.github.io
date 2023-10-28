@@ -16,30 +16,23 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本篇主要介绍了现代摄影设备的一些简单成像相关知识，包括相机构成以及原理，光场概念等。本篇知识较为分散，属于一些基础的杂项知识。">
+    <meta name="description" content="Python中的标准日志模块是logging，利用相关配置，我们可以做到一系列日志操作。而loguru是一个第三方日志记录package，相比于原始的logging，它提供了更加简单的使用方式，同时提供许多高效的功能。本篇主要介绍loguru的使用方法，以及它相对于Python标准日志模块logging的方便之处。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Games101(5)-成像相关知识">
-<meta property="og:url" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:title" content="Loguru: 简单高效的Python日志记录方案">
+<meta property="og:url" content="http://example.com/2023/10/28/Loguru-%E7%AE%80%E5%8D%95%E9%AB%98%E6%95%88%E7%9A%84Python%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%96%B9%E6%A1%88/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="本篇主要介绍了现代摄影设备的一些简单成像相关知识，包括相机构成以及原理，光场概念等。本篇知识较为分散，属于一些基础的杂项知识。">
+<meta property="og:description" content="Python中的标准日志模块是logging，利用相关配置，我们可以做到一系列日志操作。而loguru是一个第三方日志记录package，相比于原始的logging，它提供了更加简单的使用方式，同时提供许多高效的功能。本篇主要介绍loguru的使用方法，以及它相对于Python标准日志模块logging的方便之处。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014221725258.png">
-<meta property="og:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014224329613.png">
-<meta property="og:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014224942492.png">
-<meta property="og:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014225356797.png">
-<meta property="og:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014230230111.png">
-<meta property="og:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014231836639.png">
-<meta property="og:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014232758379.png">
-<meta property="article:published_time" content="2023-10-15T02:57:01.000Z">
-<meta property="article:modified_time" content="2023-10-15T02:59:14.044Z">
+<meta property="article:published_time" content="2023-10-28T05:37:57.000Z">
+<meta property="article:modified_time" content="2023-10-28T05:40:01.197Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="计算机图形学">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="logging">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014221725258.png">
   
   
   
-  <title>Games101(5)-成像相关知识 - EverNorif</title>
+  <title>Loguru: 简单高效的Python日志记录方案 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -249,7 +242,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Games101(5)-成像相关知识"></span>
+            <span id="subtitle" data-typed-text="Loguru: 简单高效的Python日志记录方案"></span>
           
         </div>
 
@@ -260,8 +253,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-10-15 10:57" pubdate>
-          2023年10月15日 上午
+        <time datetime="2023-10-28 13:37" pubdate>
+          2023年10月28日 下午
         </time>
       </span>
     
@@ -273,7 +266,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.1k 字
+          3.5k 字
         
       </span>
     
@@ -285,7 +278,7 @@
         
         
           <!-- compatible with older versions-->
-          27 分钟
+          30 分钟
         
       </span>
     
@@ -327,99 +320,65 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Games101(5)-成像相关知识</h1>
+            <h1 style="display: none">Loguru: 简单高效的Python日志记录方案</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="相机构成和原理">相机构成和原理</h1>
-<p>相机的实际构成部件非常复杂，这里主要介绍简化之后的模型。相机有两个重要部件，分别是快门Shutter和传感器Sensor：</p>
-<ul>
-<li>快门Shutter：控制光在多少分之一秒内进入相机</li>
-<li>传感器Sensor：用来捕捉光，记录Irradiance。注意传感器无法记录方向信息，因此如果需要成像，需要在传感器之前增加透镜，让来自实际物体同一点的信息最终能够到达传感器的一点(或者一小块区域，此时成像模糊)</li>
-</ul>
-<p>最简单的成像原理是小孔成像，小孔成像成的是倒立的实象，现在的针孔相机就是使用小孔成像的原理制作的。需要注意的是，利用小孔成像拍出来的图像是没有深度信息的，它记录的图像所有地方都是锐利的，得不到带有景深的效果。</p>
-<h2 id="field-of-view">Field of View</h2>
-<p>接下来介绍Field of
-View，视场的概念。视场FOV指的是相机成像的角度范围。</p>
-<img src="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014221725258.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231014221725258">
-<p>在上面的图中，<span
-class="math inline">\(h\)</span>表示传感器的宽度，<span
-class="math inline">\(f\)</span>表示相机的焦距，那么视场FOV可以通过如下方式进行计算：
-<span class="math display">\[
-FOV = 2 \arctan{(\frac{h}{2f})}
-\]</span>
-当然这里我们考虑的是水平方向的可视角度，垂直方向上同样有类似的计算方式。可以看到，当焦距<span
-class="math inline">\(f\)</span>越小，FOV角度越大，从而能够成像的范围也就越大，这也就是广角相机的原理。FOV的大小同时涉及<span
-class="math inline">\(h\)</span>和<span
-class="math inline">\(f\)</span>两个变量，但是有一种约定俗成的描述方式，就是固定<span
-class="math inline">\(h\)</span>，直接使用焦距<span
-class="math inline">\(f\)</span>来衡量FOV，这个固定的<span
-class="math inline">\(h\)</span>指的是35mm格式的胶卷<span
-class="math inline">\((36\times 24
-mm)\)</span>。在实际传感器并不是这个大小的时候，我们仍然使用焦距来衡量FOV，这表示该相机的FOV相当于在35mm格式下，对应焦距的成像FOV。</p>
-<h2 id="exposure">Exposure</h2>
-<p>在辐射度量学中，我们说一直考虑的都是单位时间内的量，但是在实际相机的成像过程中，传感器感光一定会经过一个时间段。这个时间段我们就称为曝光(Exposure)时间。对应在实际情况中，如果在一个较暗的场景下，曝光时间越长，最终也能够得到一个比较亮的场景。</p>
-<p>影响曝光的因素有很多，主要可以分为光圈的大小、快门的速度以及ISO感光度。</p>
-<img src="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014224329613.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231014224329613">
-<p>光圈大小(Aperture
-Size)可以理解为是挡光的程度，通常使用F-Number来描述光圈的大小，有计算公式<span
-class="math inline">\(N = f / A\)</span>，其中<span
-class="math inline">\(f\)</span>为焦距，<span
-class="math inline">\(A\)</span>为光圈的直径。如果光圈越大，那么被遮挡的光就越少，进光量越多，从而曝光的程度越高。</p>
-<p>快门速度即快门的开放时间，速度越快，那么快门开放的时间就越短，从而进光量越少，曝光程度越低。快门速度和物体运动速度相互影响，可以形成运动模糊的效果。假设物体在高速运动，在快门打开和关闭的时候，物体的位置已经发生了改变，那么这段中间过程就会被记录下来，由于传感器记录了最终的平均效果，从而得到了模糊。在同样的运行速度下，曝光时间越长，运动模糊越严重；在同样的曝光时间下，运动速度越快，运动模糊越严重。</p>
+                <h1 id="loguru">Loguru</h1>
+<p>在Python中，我们可以很容易使用logging模块来完成日志的记录，但是如果需要成系统地进行日志的记录和管理，还需要进行相关Formatter，Handler等配置，详情可以参考<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2023/04/03/Python%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-logging/">Python日志模块-logging
+-
+EverNorif</a>。而Loguru是一个Python的第三方package，它提供简化的使用方式，使得我们无需进行复杂的配置就能够得到很好的日志管理效果。</p>
+<p>loguru的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/Delgan/loguru">Delgan/loguru: Python logging
+made (stupidly)
+simple</a>。在使用之前，需要使用pip进行该package的安装。</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">pip <span class="hljs-keyword">install</span> loguru<br></code></pre></td></tr></table></figure>
+<p>在标准的logging模块中，默认的日志功能输出的信息较为有限（当然可以通过Formatter进行配置）。而loguru提供了开箱即用的格式信息，默认输出已经非常丰富：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> loguru <span class="hljs-keyword">import</span> logger<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    logger.debug(<span class="hljs-string">&quot;debug message&quot;</span>)<br>    logger.info(<span class="hljs-string">&quot;info message&quot;</span>)<br>    logger.warning(<span class="hljs-string">&quot;warning message&quot;</span>)<br>    logger.error(<span class="hljs-string">&quot;error message&quot;</span>)<br><br></code></pre></td></tr></table></figure>
+<p>默认日志输出如下：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cmd"><span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">12</span>:<span class="hljs-number">54</span>:<span class="hljs-number">55</span>.<span class="hljs-number">799</span> | DEBUG    | __main__:&lt;module&gt;:<span class="hljs-number">4</span> - debug message<br><span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">12</span>:<span class="hljs-number">54</span>:<span class="hljs-number">55</span>.<span class="hljs-number">799</span> | INFO     | __main__:&lt;module&gt;:<span class="hljs-number">5</span> - info message<br><span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">12</span>:<span class="hljs-number">54</span>:<span class="hljs-number">55</span>.<span class="hljs-number">799</span> | WARNING  | __main__:&lt;module&gt;:<span class="hljs-number">6</span> - warning message<br><span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">12</span>:<span class="hljs-number">54</span>:<span class="hljs-number">55</span>.<span class="hljs-number">799</span> | ERROR    | __main__:&lt;module&gt;:<span class="hljs-number">7</span> - error message<br></code></pre></td></tr></table></figure>
+<p>在loguru中，不区分Handler、Formatter、Filter等概念，而是统一使用一个add方法来进行管理，包括增加新的handler、设置日志格式、过滤信息、设置日志等级等。</p>
+<p>add方法可以理解为增加了一种日志处理的逻辑。loguru提供了默认的处理逻辑（输出到stderr，日志格式如上默认，日志等级为DEBUG），我们可以在此基础上新增加任何其他的处理逻辑，这些处理逻辑都是会同时生效的。</p>
+<p>add方法返回一个logger的标识id，通过<code>logger.remove(handler_id)</code>方法可以禁用对应的日志处理逻辑。如果直接调用<code>logger.remove()</code>而不传入任何参数，则表示禁用默认的处理逻辑。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">from</span> loguru <span class="hljs-keyword">import</span> logger<br><br>logger.remove()  <span class="hljs-comment"># 禁用默认处理逻辑</span><br><br>logger1 = logger.add(<br>    sys.stdout, level=<span class="hljs-string">&#x27;INFO&#x27;</span>,<br>    <span class="hljs-built_in">format</span>=<span class="hljs-string">&quot;[logger1]&#123;time:YYYY-MM-DD HH:mm:ss&#125; | &#123;level&#125; | &#123;module&#125;:&#123;function&#125;:&#123;line&#125; - &#123;message&#125;&quot;</span><br>)<br>logger.remove(logger1)  <span class="hljs-comment"># 禁用logger1对应的处理逻辑</span><br><br>logger2 = logger.add(<br>    sys.stdout, level=<span class="hljs-string">&#x27;WARNING&#x27;</span>,<br>    <span class="hljs-built_in">format</span>=<span class="hljs-string">&quot;[logger2]&#123;time:YYYY-MM-DD HH:mm:ss&#125; | &#123;level&#125; | &#123;module&#125;:&#123;function&#125;:&#123;line&#125; - &#123;message&#125;&quot;</span><br>)<br><span class="hljs-comment"># 最终只有logger2的处理逻辑生效</span><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    logger.debug(<span class="hljs-string">&quot;debug message&quot;</span>)<br>    logger.info(<span class="hljs-string">&quot;info message&quot;</span>)<br>    logger.warning(<span class="hljs-string">&quot;warning message&quot;</span>)<br>    logger.error(<span class="hljs-string">&quot;error message&quot;</span>)<br><br></code></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cmd">[logger2]<span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">13</span>:<span class="hljs-number">09</span>:<span class="hljs-number">36</span> | WARNING | loguru-test:&lt;module&gt;:<span class="hljs-number">20</span> - warning message<br>[logger2]<span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">13</span>:<span class="hljs-number">09</span>:<span class="hljs-number">36</span> | ERROR | loguru-test:&lt;module&gt;:<span class="hljs-number">21</span> - error message<br></code></pre></td></tr></table></figure>
+<p>注意上面我们使用f-string的方式来完成格式信息的配置，相比于logging的配置方式更加方便。</p>
+<p>同样，我们可以在处理逻辑中配置将日志记录到文件中(可以看到其中可以配置对应时间作为日志文件名称)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">logger.add(<br>    <span class="hljs-string">&#x27;./my_log_&#123;time:YYYY-MM-DD HH:mm:ss&#125;.log&#x27;</span><br>)<br></code></pre></td></tr></table></figure>
+<p>在将日志记录到文件的时候，还可能会进行其他的配置，例如rotation、retention、compression等，这些操作都可以通过非常简单的配置项来指定。详细使用可以参考<a
+target="_blank" rel="noopener" href="https://loguru.readthedocs.io/en/stable/api/logger.html#file">The
+file sinks - loguru.logger — loguru documentation</a></p>
 <blockquote>
-<p>利用快门速度，可以实现高速摄影和延时摄影。</p>
-<p>高速摄影往往用于捕捉运动非常快的物体，此时需要使用非常小的快门速度(曝光时间)来捕捉运动，因此为了补偿曝光度，需要使用大光圈或者提高ISO。</p>
-<p>延时摄影则使用非常长的快门时间，可以对物体的运动轨迹进行成像。但是需要注意控制小光圈和小ISO，防止过曝。</p>
-</blockquote>
-<p>ISO感光度则可以理解为对Irradiance进行简单的线性变化，它可以对信号进行放大。但是需要注意，在放大信号的同时，噪声也会同步被放大。</p>
-<h2 id="透镜">透镜</h2>
-<p>下面开始介绍透镜。实际上，现代设备上的透镜不是一块简单的透镜，基本上都是由一组透镜构成。这里我们对模型进行简化，考虑理想的薄膜透镜，它具有如下的性质：</p>
 <ul>
-<li>所有平行射入透镜的光都会集中于一点，这个点被称为焦点</li>
-<li>所有从焦点射入透镜的光都会被平行射出</li>
-<li>透镜可以任意改变焦距(现代设备使用透镜组可以模拟焦距改变)</li>
+<li>rotation：日志轮换，可以设置定时输出新的日志文件，也可以设置根据指定文件大小来决定是否输出新的日志文件</li>
+<li>retention：设置日志的最长保存时间（近xx天等）</li>
+<li>compression：日志压缩</li>
 </ul>
-<img src="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014224942492.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231014224942492">
-<p>上面是理想透镜的成像规律，<span
-class="math inline">\(f\)</span>是焦距，<span
-class="math inline">\(z_i\)</span>是像距，<span
-class="math inline">\(z_o\)</span>是物距。利用理想透镜的成像规律，我们可以说明景深模糊的原理。在此之前，我们先简单介绍一下景深和弥散圆(Circle
-of
-Confusion,COC)。考虑物体上的某个点，理想情况下，来自这个点的光线被透镜折射之后应该会聚在成像平面的一个点上，即下图的image处。但是可能实际情况中，真正的传感器并没有位于理想成像平面上，此时光会继续传播，在传感器上成像一个范围(圆)，这样就会导致模糊的现象。通过计算可以知道CoC的大小与A有关，在这种情况下，光圈越大，看到东西越模糊。</p>
-<img src="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014225356797.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231014225356797">
-<p>继续考虑拍摄一个场景。假如来自场景中某个深度处物体的光经过透镜之后形成的COC相对较小，那么我们认为这段范围内看到的物体都是清晰的。这段范围就称为景深。可以推出，光圈越小，成像越清晰，从而景深的范围越大。</p>
-<img src="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014230230111.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231014230230111">
-<h1 id="光场">光场</h1>
-<h2 id="全光函数">全光函数</h2>
-<p>全光函数的提出背景来自于一个现象。假设我们现在朝着一个固定方向观察场景，可以得到一张类似2维图像的观察结果，假如我们将这张图像真实地放在面前，应该也能够得到同样的观察结果(类似VR)。全光函数(The
-Plenoptic Function)就是用来描述人眼看到的所有东西的。</p>
+</blockquote>
+<p>记录日志的一大非常重要的作用就是让我们能够跟踪程序的异常情况，loguru提供如下的操作方式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> loguru <span class="hljs-keyword">import</span> logger<br><br><br><span class="hljs-meta">@logger.catch()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">my_function</span>(<span class="hljs-params">x, y, z</span>):<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> / (x + y + z)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    my_function(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br><br></code></pre></td></tr></table></figure>
+<p>此时loguru会输出如下的日志，可以看到在其中还记录了各个变量的值，方便我们进行异常分析</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cmd"><span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">13</span>:<span class="hljs-number">26</span>:<span class="hljs-number">15</span>.<span class="hljs-number">703</span> | ERROR    | __main__:&lt;module&gt;:<span class="hljs-number">10</span> - An error has been caught <span class="hljs-keyword">in</span> function &#x27;&lt;module&gt;&#x27;, process &#x27;MainProcess&#x27; (<span class="hljs-number">8467</span>), thread &#x27;MainThread&#x27; (<span class="hljs-number">8014304000</span>):<br>Traceback (most recent <span class="hljs-keyword">call</span> last):<br><br>&gt; File &quot;/Users/evernorif/Project/Python/PlayGround/python/loguru-test.py&quot;, line <span class="hljs-number">10</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>    my_function(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br>    └ &lt;function my_function <span class="hljs-built_in">at</span> <span class="hljs-number">0</span>x103de6040&gt;<br><br>  File &quot;/Users/evernorif/Project/Python/PlayGround/python/loguru-test.py&quot;, line <span class="hljs-number">6</span>, <span class="hljs-keyword">in</span> my_function<br>    return <span class="hljs-number">1</span> / (x + y + z)<br>                │   │   └ -<span class="hljs-number">1</span><br>                │   └ <span class="hljs-number">1</span><br>                └ <span class="hljs-number">0</span><br><span class="hljs-function"></span><br><span class="hljs-function">ZeroDivisionError: <span class="hljs-title">division</span> <span class="hljs-title">by</span> <span class="hljs-title">zero</span></span><br></code></pre></td></tr></table></figure>
+<p>以上介绍了loguru的一些基本使用。作为一个专注在日志记录的package，loguru还提供了一些其他使用的feature，例如：</p>
+<ul>
+<li>日志结构化</li>
+<li>自定义日志级别</li>
+<li>与其他通知模块(eg,<a
+target="_blank" rel="noopener" href="https://github.com/liiight/notifiers">liiight/notifiers</a>,...)集成</li>
+<li>...</li>
+</ul>
+<p>详细使用可以参考<a
+target="_blank" rel="noopener" href="https://github.com/Delgan/loguru">官方文档</a>。</p>
+<h1 id="参考文章">参考文章</h1>
 <ol type="1">
-<li>假设在某个点，我们向某个方向看，那么使用<span
-class="math inline">\(P(\theta,
-\phi)\)</span>可以描述我们所能看到的东西，其中使用的坐标为球谐坐标，函数值为光的intensity，此时可以理解为是对世界观察得到的灰度图片；</li>
-<li>如果引入波长<span
-class="math inline">\(\lambda\)</span>，那么就可以引入颜色，从而函数为<span
-class="math inline">\(P(\theta, \phi,
-\lambda)\)</span>，此时可以理解为对世界观察得到彩色图片；</li>
-<li>接下来继续引入时间<span class="math inline">\(t\)</span>，<span
-class="math inline">\(P(\theta, \phi, \lambda,
-t)\)</span>，引入时间信息后，就可以观察到一系列的结果，类似于从固定的点观察世界(电影)；</li>
-<li>继续引入观察者的坐标<span
-class="math inline">\((V_x,V_y,V_z)\)</span>，引入三维空间坐标，相当于可以在任意位置，在任意时间，从任意角度观察时间，得到<span
-class="math inline">\(P(\theta, \phi, \lambda,t,
-V_x,V_y,V_z)\)</span></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/hQAlE0-xl_KfNeu6YgDvjQ">为什么不推荐使用Python原生日志库？</a></li>
+<li><a target="_blank" rel="noopener" href="https://cuiqingcai.com/7776.html">Python
+中更优雅的日志记录方案 loguru | 静觅</a></li>
 </ol>
-<p>也就是说，我们观察到的世界可以使用一个7维度的函数来表示出来，在任意位置，任意时间，从任意角度观察得到的不同颜色场景。</p>
-<h2 id="光场light-field">光场Light Field</h2>
-<p>考虑我们要观察一个物体，描述这个物体被观察的情况。可以理解为这个物体在一个包围盒中，它对包围盒上的任意位置，向任意一个方向都会投射出光线。如果有了这个信息，我们实际上就可以描述从任意方向看到这个物体的结果。光场实际上就是记录该物体在任意位置，向任意方向上发出的光的强度。</p>
-<img src="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014231836639.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231014231836639">
-<h2 id="光场相机">光场相机</h2>
-<p>光场相机就是一种利用光场原理工作的相机。光场相机最重要的功能是它可以支持后期的重新聚焦，包括动态调节聚焦，光圈等，这是因为光场相机记录了整个光场的信息。</p>
-<p>在光场相机中，会有很多微透镜，它可以记录来自各个不同方向的光，这些光强的值被记录在透镜后方的传感器上，一个透镜会对应传感器的多个小区域(如果将小区域理解为像素)，这样就可以记录来自不同方向上光的值，也就是说此时记录的是有方向的Radiance。接下来如果要成像，就相当于每个微透镜取一条光线，将得到的结果记录在对应的输出像素上。此时实际上可以选择不同方向，类似于实际相机从不同方向进行拍摄。</p>
-<p>相比于普通相机，光场相机的优点在于可以支持后期动态调节，甚至包括摄像机位置的重新调节；它的缺点在于分辨率较低，可以发现光场相机最终成像的分辨率与微透镜的个数有关。假设光场相机和普通相机使用同样的传感器，在普通相机中，一个像素的信息使用一个像素来记录；而在光场相机中，一个像素的信息需要使用100个像素来记录，因为来自不同方向的信息。光场相机的另一个缺点在于制作成本，其中微透镜属于精密仪器，制作成本较高。</p>
-<img src="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/image-20231014232758379.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231014232758379">
 
                 
               </div>
@@ -438,12 +397,12 @@ V_x,V_y,V_z)\)</span></li>
     
       <span class="category-chain">
         
-  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" class="category-chain-item">计算机图形学</a>
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/Games101/" class="category-chain-item">Games101</a>
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Python/" class="category-chain-item">Python</a>
   
   
 
@@ -460,7 +419,9 @@ V_x,V_y,V_z)\)</span></li>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/">#计算机图形学</a>
+        <a href="/tags/Python/">#Python</a>
+      
+        <a href="/tags/logging/">#logging</a>
       
     </div>
   
@@ -472,8 +433,8 @@ V_x,V_y,V_z)\)</span></li>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Games101(5)-成像相关知识</div>
-      <div>http://example.com/2023/10/15/Games101-5-成像相关知识/</div>
+      <div>Loguru: 简单高效的Python日志记录方案</div>
+      <div>http://example.com/2023/10/28/Loguru-简单高效的Python日志记录方案/</div>
     </div>
     <div class="license-meta">
       
@@ -485,7 +446,7 @@ V_x,V_y,V_z)\)</span></li>
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年10月15日</div>
+          <div>2023年10月28日</div>
         </div>
       
       
@@ -517,18 +478,12 @@ V_x,V_y,V_z)\)</span></li>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/10/28/Loguru-%E7%AE%80%E5%8D%95%E9%AB%98%E6%95%88%E7%9A%84Python%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%96%B9%E6%A1%88/" title="Loguru: 简单高效的Python日志记录方案">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Loguru: 简单高效的Python日志记录方案</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/" title="Games101(4)-光线追踪">
-                        <span class="hidden-mobile">Games101(4)-光线追踪</span>
+                      <a href="/2023/10/15/Games101-5-%E6%88%90%E5%83%8F%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Games101(5)-成像相关知识">
+                        <span class="hidden-mobile">Games101(5)-成像相关知识</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -585,12 +540,6 @@ V_x,V_y,V_z)\)</span></li>
 
 
   
-
-
-  
-  
-
-
 
 
 
@@ -784,49 +733,6 @@ V_x,V_y,V_z)\)</span></li>
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  
-      <script>
-        if (!window.MathJax) {
-          window.MathJax = {
-            tex    : {
-              inlineMath: { '[+]': [['$', '$']] }
-            },
-            loader : {
-              load: ['ui/lazy']
-            },
-            options: {
-              renderActions: {
-                insertedScript: [200, () => {
-                  document.querySelectorAll('mjx-container').forEach(node => {
-                    let target = node.parentNode;
-                    if (target.nodeName.toLowerCase() === 'li') {
-                      target.parentNode.classList.add('has-jax');
-                    }
-                  });
-                }, '', false]
-              }
-            }
-          };
-        } else {
-          MathJax.startup.document.state(0);
-          MathJax.texReset();
-          MathJax.typeset();
-          MathJax.typesetPromise();
-        }
-
-        Fluid.events.registerRefreshCallback(function() {
-          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
-            MathJax.startup.document.state(0);
-            MathJax.texReset();
-            MathJax.typeset();
-            MathJax.typesetPromise();
-          }
-        });
-      </script>
-    
-
-  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
