@@ -1,0 +1,900 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了卷积神经网络，包括基础概念和原理，相关的卷积层，Pooling池化层以及Batch Normalization层等。最后介绍了一些经典的卷积网络结构，包括LeNet、AlexNet、VGG、NiN、GoogLeNet和ResNet等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动手学深度学习(5)-卷积神经网络">
+<meta property="og:url" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了卷积神经网络，包括基础概念和原理，相关的卷积层，Pooling池化层以及Batch Normalization层等。最后介绍了一些经典的卷积网络结构，包括LeNet、AlexNet、VGG、NiN、GoogLeNet和ResNet等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119202836743.png">
+<meta property="og:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119203949303.png">
+<meta property="og:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119204531688.png">
+<meta property="og:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119205837847.png">
+<meta property="og:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119210407518.png">
+<meta property="og:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119210713498.png">
+<meta property="og:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119214841389.png">
+<meta property="article:published_time" content="2023-11-19T14:05:49.000Z">
+<meta property="article:modified_time" content="2023-11-19T14:10:57.735Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119202836743.png">
+  
+  
+  
+  <title>动手学深度学习(5)-卷积神经网络 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="动手学深度学习(5)-卷积神经网络"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-19 22:05" pubdate>
+          2023年11月19日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          54 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">动手学深度学习(5)-卷积神经网络</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="背景介绍">背景介绍</h1>
+<p>神经网络的基本模型就是全连接，但是我们同样可以对架构进行改进和升级。首先介绍卷积神经网络（Convolutional
+Neural
+Network，CNN），它可以看作是一种特殊的全连接网络。CNN专门被设计并应用在影像方面的，它对Model的限制要比全连接网络要大，因为它的设计是为了适应图像的某些性质。（如果其他问题也有图像的类似性质，同样可以使用CNN）</p>
+<p>对于一张图片，在机器内的描述是一个三维的矩阵<span
+class="math inline">\([length, weight,
+channels]\)</span>，其中的维度分别为长度，宽度（高度）和通道数。一般图片是RGB类型，即有三个channels，红（R）绿（G）蓝（B），具体到矩阵中的某一个数值，表示的是在相应位置上的像素点，对应通道的强度。</p>
+<p>假设我们应用Fully Connected
+Network来完成图像分类的问题。我们可以将这个三维的矩阵拉长，成为一个一列的长向量<span
+class="math inline">\(x = [x_1,x_2,...,x_{length\times weight \times
+channels}]\)</span>,以这个向量作为输入，将其送入Fully Connected
+Network中，训练得到最终结果。但是这种方法有一个很容易发现的问题，就是网络中的参数实在是太多了。随着参数的增加，我们可以增加模型的弹性，但是同时也增加了overfitting的风险。于是CNN的设计，就是通过结合图片的性质来减少模型的参数。</p>
+<p>而CNN的设计实际上结合了一些图像的性质，分别是局部性和平移不变性。</p>
+<p>首先，人们观察一张图片的时候，往往利用的并不是图片中所有的信息，而是图像中某些重要部分的信息，将重要部分的信息综合起来，我们就可以完成对图像的分类。由此我们可以观察到图片的一个性质就是，图像中的一些pattern会比整张图片更加重要（局部感知）。利用这个性质，我们就可以减少模型的参数。对于Fully
+Connected
+Network来说，每一个神经元都是看了整张图片；而CNN进行设计，让每一个神经元只看图片的某一部分。于是在CNN中，会将图片划分成多个小区域，这个小区域称为感受野（Receptive
+Field）。每一个Neural只接受自己对应的感受野的输入，而不用去关注整张图片，这样就大大减少了参数的数目。</p>
+<blockquote>
+<p>那么感受野应该如何设计呢？感受野的大小是人为指定的，一般来说也是一个三维的矩阵<span
+class="math inline">\([small\ length,small\ weight, channels
+]\)</span>​，通道数与输入通道数相同。长宽比原图片小得多，如3个像素。</p>
+</blockquote>
+<p>图像的另一个性质是平移不变性。考虑在两张图片中，可能出现相同的特征，比如说都出现鸟嘴，但是这个特征在图片的不同位置。如果仅按照之前的设计，的确有两个Neural分别检测这两个部分，但是这是两个不同的Neural，最终会训练出两套参数。而都是侦测同样的特征，有必要使用两套不同的参数吗？于是CNN针对这一部分，进行参数共享的设计，进一步减少参数量。对于侦测相同特征的Neural，相互之间进行权值共享（Parameter
+Sharing）。这样，一个Neural就承担了检测某个特征的任务，而不同的Neural负责的特征也各不相同。一个特征对应一套参数。一个感受野需要接受多个Neural的检测，看其是否有对应的特征。</p>
+<h1 id="基础概念">基础概念</h1>
+<p>在图像卷积的过程中，我们会给定一个卷积核kernel。此时考虑这个kernel是一个二维的矩阵，其中kernel的大小是一个超参数。卷积的过程可以描述为一个kernel在另一个矩阵上按照步幅进行移动，每次移动可以进行卷积计算，得到对应的值。对于不同的步幅，卷积完成之后矩阵的大小会发生改变。如果不希望矩阵大小发生改变，则需要在周围进行padding填充。</p>
+<p>此外，卷积可以处理多通道的输入。我们同样可以设置任意的输出通道数输出可以是任意通道数目。对于每个输入通道，它都有自己独立的卷积核kernel，对于输出的每个通道，它的结果是所有输入通道卷积结果的相加。（每个通道的结果可以看作是对图像中的某种特征的匹配，不同通道则匹配不同的特征。<a
+target="_blank" rel="noopener" href="https://poloclub.github.io/cnn-explainer/">CNN
+Explainer</a>这个网站较好地可视化了卷积神经网络中每层学习到的特征，可以用作参考。<strong>一种常见的设计方式是让输入数据的高宽减半，同时通道数翻倍</strong>。）</p>
+<p>总结来说，在卷积过程中，有如下的超参数需要设置：</p>
+<ol type="1">
+<li>kernel的大小</li>
+<li>步幅stride和填充padding</li>
+<li>输出通道数是卷积层的超参数</li>
+<li>视情况而定可以选择设置对应bias</li>
+</ol>
+<blockquote>
+<p>一种特殊的情况是kernel的大小为<span class="math inline">\(1\times
+1\)</span>。这种特殊情况通常用来融合不同通道的信息。</p>
+</blockquote>
+<h1 id="pooling池化">Pooling池化</h1>
+<p>Pooling的设计同样来自对图像的观察。假设我们对一张图片进行下采样（subsampling），实际上并不会改变什么，但是我们仍然能够辨别出图像。另一方面，卷积操作对位置非常敏感，我们希望降低这种敏感度，于是引入了Pooling池化层。</p>
+<blockquote>
+<p>对于图像来说，如果是矩阵形式的图像，下采样就是把原始图像中<span
+class="math inline">\(s \times
+s\)</span>窗口内的图像变成一个像素，这个像素点的值就是窗口内所有像素的均值。</p>
+</blockquote>
+<p>Pooling层的操作与卷积层非常类似，都具有填充、步幅等参数，并且输入通道数=输出通道数。可以看到，Pooling本身没有需要学习的参数，参数都是固定的。Pooling也有多种形式，如Max
+Pooling最大池化，Mean
+Pooling平均池化等。由于池化往往是为了缓解卷积对位置的敏感性而使用的，因此一般在使用一层卷积之后，会增加一层池化，两者交替使用。</p>
+<p>需要注意的是，Pooling实际上还是抛弃了图像的一些原始信息，对训练是有所损害的。Pooling的提出可以帮助我们减少计算量，但是如果设备足以支撑这样的运算量，我们实际上是可以把Pooling抛弃的。</p>
+<h1 id="pytorch实现">Pytorch实现</h1>
+<p>卷积层和池化层在Pytorch中都可以非常简单的进行调用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> nn<br><br>conv = nn.Conv2d(in_channels=<span class="hljs-number">1</span>, out_channels=<span class="hljs-number">6</span>, kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">2</span>, padding=<span class="hljs-number">1</span>)<br>max_pool = nn.MaxPool2d(kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">2</span>, padding=<span class="hljs-number">1</span>)<br>mean_pool = nn.AvgPool2d(kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">2</span>, padding=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+<h1 id="batch-normalizaton">Batch Normalizaton</h1>
+<p>（Batch Normalization的具体数学表示可以参考<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2023/08/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-10-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">机器学习基础(10)-神经网络
+- EverNorif</a>）</p>
+<p>深层神经网络的训练往往是比较困难的，尤其是想要使得网络在较短时间内收敛。Batch
+Normalization是一种流行且有效的技术，可以加速深层网络的收敛速度。</p>
+<p>在深层网络中，梯度是通过反向传播传递到各个层中的。而通常每层的梯度较小，如果网络较深，那么在反向传播的时候会出现类似于梯度消失的现象。这将导致在距离输出的层附近梯度相对较大，收敛更快；而在距离数据更近的层上，因为反向传播中梯度的累乘，所以对应的梯度较小，收敛更慢。但是通常来说，靠近数据的层一般都是用于提取较为基础的特征信息的，上方的层收敛后，由于底部提取基础特征的层仍在变化，上方的层一直在不停的重新训练，导致整个网络难以收敛，训练较慢。另一方面，由于网络深度加深，整个模型复杂度增加，使得网络容易过拟合。</p>
+<p>Batch
+Normalization的操作同样可以抽象为一个层。但是它不是单独考虑单个样本，而是需要对整个mini-batch进行，因此需要考虑多种情况：</p>
+<ul>
+<li>对于全连接层，我们将批量规范化层置于全连接层中的仿射变换和激活函数之间</li>
+<li>对于卷积层，我们在卷积层之后和非线性激活函数之前应用批量规范化。当卷积有多个输出通道时，我们需要对这些通道的每个输出执行批量规范化，每个通道都有自己的<span
+class="math inline">\(\gamma, \beta\)</span>参数</li>
+<li>对于预测模式，批量规范化在训练模式和预测模式下的行为通常不同。在预测的时候，我们的模型已经确定下来，可以用在整个训练数据集上得到的均值和方差来对预测时的结果进行归一化。在实际实现时，一般使用指数加权平均来更新小批量的均值和方差，指数加权平均将旧值和当前计算结果不断进行加权平均，最终做到平滑的向更新值靠拢</li>
+</ul>
+<p>在批量归一化层中，可学习参数包括<span class="math inline">\(\gamma,
+\beta\)</span>。在Pytorch中，也提供对应的API，可以直接使用Batch
+Normalization，需要提供的超参数为接受的通道数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> nn<br><br>net = nn.Sequential(<br>    nn.Conv2d(<span class="hljs-number">1</span>, <span class="hljs-number">6</span>, kernel_size=<span class="hljs-number">5</span>), nn.BatchNorm2d(<span class="hljs-number">6</span>), nn.Sigmoid(),<br>    nn.AvgPool2d(kernel_size=<span class="hljs-number">2</span>, stride=<span class="hljs-number">2</span>),<br>    nn.Conv2d(<span class="hljs-number">6</span>, <span class="hljs-number">16</span>, kernel_size=<span class="hljs-number">5</span>), nn.BatchNorm2d(<span class="hljs-number">16</span>), nn.Sigmoid(),<br>    nn.AvgPool2d(kernel_size=<span class="hljs-number">2</span>, stride=<span class="hljs-number">2</span>), nn.Flatten(),<br>    nn.Linear(<span class="hljs-number">256</span>, <span class="hljs-number">120</span>), nn.BatchNorm1d(<span class="hljs-number">120</span>), nn.Sigmoid(),<br>    nn.Linear(<span class="hljs-number">120</span>, <span class="hljs-number">84</span>), nn.BatchNorm1d(<span class="hljs-number">84</span>), nn.Sigmoid(),<br>    nn.Linear(<span class="hljs-number">84</span>, <span class="hljs-number">10</span>))<br></code></pre></td></tr></table></figure>
+<h1 id="经典卷积网络结构">经典卷积网络结构</h1>
+<h2 id="lenet">LeNet</h2>
+<p>LeNet是最早发布的卷积神经网络之一，最早是应用于手写数字的识别应用。LeNet由两个卷积层，两个池化层和三个全连接层构成：</p>
+<img src="/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119202836743.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231119202836743">
+<ul>
+<li>LeNet是早期成功的神经网络，它利用卷积层来学习图片的空间信息，然后使用全连接层来将信息转化到类别空间</li>
+<li>为了构造高性能的卷积神经网络，我们通常对卷积层进行排列，逐渐降低其表示的空间分辨率，同时增加通道数</li>
+</ul>
+<h2 id="alexnet">AlexNet</h2>
+<p>在传统的计算机视觉中，研究人员往往不会直接使用像素数据作为输入，而是会利用精心设计的特征提取算法来提取图片中的特征，然后使用传统机器学习算法进行后续处理。可以说传统的计算机视觉关注的是特征工程。</p>
+<p>而2012年，AlexNet的提出证明了学习到的特征可以超越手工设计的特征，打破了计算机视觉研究现状，AlexNet的提出使得研究的方法论发生改变。</p>
+<ul>
+<li>传统计算机视觉：图片 -&gt; 人工特征提取 -&gt;
+利用传统机器学习算法进行处理，例如利用SVM进行分类</li>
+<li>AlexNet提出之后：图片 -&gt; 通过CNN学习特征 -&gt;
+利用softmax进行回归等</li>
+</ul>
+<p>AlexNet的设计理念与LeNet相似，但是仍然存在一些区别：</p>
+<ol type="1">
+<li>AlexNet相比于LeNet有更加深层的结构</li>
+<li>AlexNet使用ReLU作为激活函数，而不是使用Sigmoid</li>
+<li>AlexNet采用dropout来控制全连接层的模型复杂度</li>
+<li>AlexNet在训练的时候增加了大量的图像增强数据，例如翻转、裁切和变色等</li>
+</ol>
+<img src="/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119203949303.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231119203949303">
+<h2 id="vgg">VGG</h2>
+<p>虽然AlexNet证明比较有效，但是它对于LeNet的改动可能不那么规则，没有可以参考的地方。而为了将网络做得更深更大，往往需要有更好的设计思想和框架来指导我们。</p>
+<p>VGG则是一种使用块的网络，它的网络由多个VGG块构成，而每个VGG块由多个卷积层构成。</p>
+<img src="/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119204531688.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231119204531688">
+<p>VGG的思想在于堆叠可重复的VGG块，然后在最后增加全连接层。不同次数的重复块可以得到不同的架构，例如VGG-16，VGG-19等，后面的数字取决于网络层数。相比于AlexNet，VGG的性能有很大的提升，但是相对地，它的运行速度较慢，对内存的占用和更多。</p>
+<p>VGG的提出基本上表明了后续深度学习模型的构建思想：</p>
+<ol type="1">
+<li>使用可重复的块堆叠，来构成更深更大的模型</li>
+<li>使用不同块的个数，不同的超参数来得到模型的不同版本，得到不同复杂度的变种</li>
+</ol>
+<h2 id="nin">NiN</h2>
+<p>LeNet、AlexNet和VGG都有一个共同的设计模型，就是通过一系列的卷积层来获取空间结构特征，最后通过若干全连接层来对特征的表征进行处理。其中，卷积层的参数较少，而全连接层的参数要多得多，这说明模型的参数中，绝大多数都属于全连接层。</p>
+<p>而NiN的思想在于在一个卷积层之后跟两个<span
+class="math inline">\(1\times
+1\)</span>的卷积层，这种卷积层可以融合多个通道的信息，起到全连接层的作用。一个NiN块如下图所示：</p>
+<img src="/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119205837847.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231119205837847">
+<p>最终的NiN网络由多个NiN块构成，并且最终不使用全连接层，而是使用全局的平均池化来得到输出。NiN设计的一个优点是，它显著减少了模型所需参数的数量。然而，在实践中，这种设计有时会增加训练模型的时间。</p>
+<h2 id="googlenet">GoogLeNet</h2>
+<p>GoogLeNet吸收了NiN中串联网络的思想，并在此基础上做了改进。在实际过程中，我们往往不确定到底选取什么样的层效果更好，到底是3X3卷积层还是5X5的卷积层。而GoogLeNet认为可以同时使用不同大小的卷积核进行组合。</p>
+<p>在GoogLeNet中，基本的卷积块被称为Inception块（Inception
+block），它的基本结构如下：</p>
+<img src="/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119210407518.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231119210407518">
+<ul>
+<li>Inception块由4条并行的路径组成，4条路径都使用合适的padding来使得输入和输出的高宽一致，最终将每条路径上的输出在channel维度上进行连接，得到Inception块的输出</li>
+<li>在Inception块中，通常进行调整的是不同路径的channel数</li>
+</ul>
+<p>GoogLeNet一共使用9个Inception块和全局平均汇聚层的堆叠来生成其估计值。Inception块之间的最大汇聚层可降低维度。</p>
+<img src="/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119210713498.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231119210713498">
+<h2 id="resnet">ResNet</h2>
+<p>在上面的网络设计过程中，我们可以通过新添加层来提升网络的性能，但是很多时候，我们并不能保证新增层一定能够带来性能的提升。</p>
+<p>考虑某种网络结构，它能够表征一系列函数，我们称为一个函数集。在模型优化的过程中，我们就是从中找到一个最优的函数，来逼近实际的函数。如果我们新添加层，那么就相当于得到了一个新的函数集。但是我们并不能保证新的函数集一定包含旧的函数集，因此在新函数集中找到的最优函数，不一定会优于之前的函数。</p>
+<p>基于此思想，ResNet采用残差连接来构造模型。考虑神经网络的某个局部，假设原始输入为<span
+class="math inline">\(x\)</span>，而希望学到的理想映射为<span
+class="math inline">\(f(x)\)</span>。</p>
+<img src="/2023/11/19/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-5-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/image-20231119214841389.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20231119214841389">
+<p>在上图中，左边是正常的块设计，它的虚线部分希望直接拟合出<span
+class="math inline">\(f(x)\)</span>。而右图的残差块中，虚线部分希望拟合残差<span
+class="math inline">\(f(x)-x\)</span>。残差块的设计使得如果进行堆叠，我们可以保证新函数集一定是包括旧函数集的。同时在残差块中，输入可以通过跨层的数据线路更加快速地向前传播。这也使得残差块构成的网络能够更加容易做得更深。</p>
+<p>在ResNet中沿用了VGG完整的<span class="math inline">\(3 \times
+3\)</span>卷积层设计。残差块里首先有2个有相同输出通道数的<span
+class="math inline">\(3\times
+3\)</span>卷积层。每个卷积层后接一个批量规范化层和ReLU激活函数。然后我们通过跨层数据通路，跳过这2个卷积运算，将输入直接加在最后的ReLU激活函数前。经过卷积的输出和原输入必须形状相同才能相加，而如果想要改变通道数，则可以在跨层数据通路上增加一个<span
+class="math inline">\(1\times
+1\)</span>卷积层来将输入变换成需要的形状。</p>
+<p>ResNet的前两层跟之前介绍的GoogLeNet中的一样：在输出通道数为64、步幅为2的<span
+class="math inline">\(7\times 7\)</span>卷积层后，接步幅为2的<span
+class="math inline">\(3\times
+3\)</span>的最大汇聚层。不同之处在于ResNet每个卷积层后增加了批量规范化层。GoogLeNet在后面接了4个由Inception块组成的模块。ResNet则使用4个由残差块组成的模块，每个模块使用若干个同样输出通道数的残差块。第一个模块的通道数同输入通道数一致。由于之前已经使用了步幅为2的最大汇聚层，所以无须减小高和宽。之后的每个模块在第一个残差块里将上一个模块的通道数翻倍，并将高和宽减半。最后，与GoogLeNet一样，在ResNet中加入全局平均汇聚层(全局平均池化)，以及全连接层输出。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">动手学深度学习</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">#深度学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>动手学深度学习(5)-卷积神经网络</div>
+      <div>http://example.com/2023/11/19/动手学深度学习-5-卷积神经网络/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/10/28/Loguru-%E7%AE%80%E5%8D%95%E9%AB%98%E6%95%88%E7%9A%84Python%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E6%96%B9%E6%A1%88/" title="Loguru: 简单高效的Python日志记录方案">
+                        <span class="hidden-mobile">Loguru: 简单高效的Python日志记录方案</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
