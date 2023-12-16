@@ -16,25 +16,22 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="在深度学习中，卷积是一种非常基本的操作，多用于对图像进行特征抽取。与卷积操作相对的一个操作是转置卷积，它通常可以用来进行上采样upsampling。本篇主要介绍了转置卷积的相关概念和运算原理。">
+    <meta name="description" content="tmux是一个非常有用的终端复用器。利用tmux，我们可以很方便地执行一些终端任务，但是这些终端并不会和会话绑定，这也意味着可以很容易利用tmux执行一些后台任务，而不需要利用其他一些复杂的命令进行任务挂起。本篇主要介绍了tmux的简单使用。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深度学习中的转置卷积">
-<meta property="og:url" content="http://example.com/2023/12/14/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF/index.html">
+<meta property="og:title" content="tmux的简单使用">
+<meta property="og:url" content="http://example.com/2023/12/16/tmux%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="在深度学习中，卷积是一种非常基本的操作，多用于对图像进行特征抽取。与卷积操作相对的一个操作是转置卷积，它通常可以用来进行上采样upsampling。本篇主要介绍了转置卷积的相关概念和运算原理。">
+<meta property="og:description" content="tmux是一个非常有用的终端复用器。利用tmux，我们可以很方便地执行一些终端任务，但是这些终端并不会和会话绑定，这也意味着可以很容易利用tmux执行一些后台任务，而不需要利用其他一些复杂的命令进行任务挂起。本篇主要介绍了tmux的简单使用。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/12/14/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF/no_padding_no_strides_transposed.gif">
-<meta property="og:image" content="http://example.com/2023/12/14/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF/padding_strides_transposed.gif">
-<meta property="article:published_time" content="2023-12-14T08:58:04.000Z">
-<meta property="article:modified_time" content="2023-12-14T09:40:14.086Z">
+<meta property="article:published_time" content="2023-12-16T06:01:34.000Z">
+<meta property="article:modified_time" content="2023-12-16T06:12:15.996Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="工具">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/12/14/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF/no_padding_no_strides_transposed.gif">
   
   
   
-  <title>深度学习中的转置卷积 - EverNorif</title>
+  <title>tmux的简单使用 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -244,7 +241,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="深度学习中的转置卷积"></span>
+            <span id="subtitle" data-typed-text="tmux的简单使用"></span>
           
         </div>
 
@@ -255,8 +252,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-12-14 16:58" pubdate>
-          2023年12月14日 下午
+        <time datetime="2023-12-16 14:01" pubdate>
+          2023年12月16日 下午
         </time>
       </span>
     
@@ -268,7 +265,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.9k 字
+          667 字
         
       </span>
     
@@ -280,7 +277,7 @@
         
         
           <!-- compatible with older versions-->
-          16 分钟
+          6 分钟
         
       </span>
     
@@ -322,87 +319,28 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">深度学习中的转置卷积</h1>
+            <h1 style="display: none">tmux的简单使用</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="转置卷积">转置卷积</h1>
-<p>转置卷积（Transposed
-Convolution）是一种与卷积相对应的操作，它的作用是用来完成上采样upsampling。需要明确的是，转置卷积并不是卷积的逆运算。并且转置卷积不同于数学上的反卷积。</p>
-<h2 id="运算步骤">运算步骤</h2>
-<p>接下来我们介绍一下转置卷积的运算步骤。转置卷积实际上也可以看作是一种卷积操作，只不过需要进行一些前置处理。与卷积相同，转置卷积同样具有三个基本参数，stride、padding和kernel。将这三个参数简单记为s、p和k，那么转置卷积的运算步骤如下所示：</p>
+                <h1 id="tmux的简单使用">tmux的简单使用</h1>
+<p>在使用tmux之前，需要进行安装。安装方法如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># Ubuntu 或 Debian</span><br>sudo apt-get install tmux<br><br><span class="hljs-comment"># CentOS 或 Fedora</span><br>sudo yum install tmux<br><br><span class="hljs-comment"># Mac</span><br>brew install tmux<br></code></pre></td></tr></table></figure>
+<p>在安装完成之后，直接在命令行中执行tmux就可以进入对应的窗口。在窗口中，可以看到相关的状态信息、窗口信息、系统信息等。</p>
+<p>常用的功能如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 新建会话</span><br>tmux new -s &lt;session-name&gt;<br><br><span class="hljs-comment"># 分离会话（退出当前窗口，但是会话中的进程仍然在后台运行）</span><br>tmux detach<br><br><span class="hljs-comment"># 查看所有的tmux会话</span><br>tmux <span class="hljs-built_in">ls</span><br>tmux list-session<br><br><span class="hljs-comment"># 重新进入某个会话</span><br>tmux attach -t 0<br>tmux attach -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 杀死某个会话</span><br>tmux kill-session -t 0<br>tmux kill-session -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 切换会话</span><br>tmux switch -t 0<br>tmux switch -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 重命名会话</span><br>tmux rename-session -t 0 &lt;new-name&gt;<br></code></pre></td></tr></table></figure>
+<p>常用流程：</p>
 <ol type="1">
-<li>首先在输入特征图元素之间填充s-1行和列，填充0</li>
-<li>然后在输入特征图的周围填充k-p-1行和列，同样填充0</li>
-<li>将卷积核的参数上下、左右翻转</li>
-<li>之后进行正常的卷积运算，不过在这个卷积运算中，对应的padding=0，strip=1</li>
+<li>新建会话：<code>tmux new -s my_session</code></li>
+<li>在窗口中运行对应的程序</li>
+<li>会话分离：<code>tmux detach</code></li>
+<li>重新连接到会话：<code>tmux attach-session -t my_session</code></li>
 </ol>
-<p>下面的动图表示的分别是s=1，p=0，k=3和s=2，p=1，k=3的情况：</p>
-<p>（s=1，p=0，k=3）</p>
-<img src="/2023/12/14/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF/no_padding_no_strides_transposed.gif" srcset="/img/bilibiliTV.gif" lazyload class="" title="no_padding_no_strides_transposed">
-<p>（s=2，p=1，k=3）</p>
-<img src="/2023/12/14/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF/padding_strides_transposed.gif" srcset="/img/bilibiliTV.gif" lazyload class="" title="padding_strides_transposed">
-<p>根据上面的步骤，我们也可以得到转置卷积输入前后，图像高宽之间的关系：
-<span class="math display">\[
-\begin{aligned}
-H_{out} &amp;= (H_{in} - 1) \times stride[0] - 2 \times padding[0] +
-kernel\_size[0] \\
-W_{out} &amp;= (W_{in} - 1) \times stride[1] - 2 \times padding[1] +
-kernel\_size[1]
-\end{aligned}
-\]</span></p>
-<blockquote>
-<p>Tips：可以发现，在转置卷积中，padding变大会使得输出变小，而stride变大使得输出变大。</p>
-<p>在Pytorch中直接提供了转置卷积的API<code>torch.nn.ConvTranspose2d()</code>供我们使用，详细情况可以参考：<a
-target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.nn.ConvTranspose2d.html#torch.nn.ConvTranspose2d">ConvTranspose2d
-— PyTorch 2.1 documentation</a>。</p>
-<p>在Pytorch提供的API中，还提供对空洞卷积的适应，可以参考相关资料：<a
-target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/113285797">吃透空洞卷积(Dilated
-Convolutions) - 知乎</a></p>
-</blockquote>
-<h2 id="转置卷积的理解">转置卷积的理解</h2>
-<p>转置卷积和卷积具有对应关系，是因为我们可以在一定程度上将其看作是卷积的“逆运算”。但是这个“逆运算”并不是在真正的逆运算，因为它们之间不能在数值上保持一致，而是仅在形状上能够保持一致。换句话说，转置卷积不是还原值，而是还原形状。</p>
-<p>首先回到卷积上。之前我们是从运算逻辑上，以移动窗口的形式来理解卷积的运算。但是在实际实现的时候，整个卷积是可以变成一个矩阵运算的。对于每一次滑动窗口，我们可以从卷积核出发得到一个等效矩阵。多次滑动窗口，得到多个小的等效矩阵，将小矩阵展平并以列向量的形式组成一个大等效矩阵。实际上，最终的卷积运算就是将原始特征图展成一维向量，该一维向量和这个大等效矩阵进行矩阵乘法，得到卷积后的结果。如果用式子表示，则可以表示成下面的式子，其中<span
-class="math inline">\(X\)</span>表示展平后的原始特征图，<span
-class="math inline">\(C\)</span>表示等效矩阵，<span
-class="math inline">\(Y\)</span>表示卷积后的结果。 <span
-class="math display">\[
-X_{1\times r} C_{r\times c} = Y_{1\times c}
-\]</span> 观察这个式子，如果我们有<span
-class="math inline">\(Y\)</span>和<span
-class="math inline">\(C\)</span>，我们并不能保证得到<span
-class="math inline">\(X\)</span>。这是因为我们不能保证<span
-class="math inline">\(C\)</span>的逆矩阵存在。但是我们可以利用<span
-class="math inline">\(Y\)</span>和<span
-class="math inline">\(C\)</span>得到一个和<span
-class="math inline">\(X\)</span>形状相同的矩阵，即计算： <span
-class="math display">\[
-Y_{1\times c} C^{T}_{c\times r} = X^{&#39;}_{1\times r}
-\]</span> 也就是用<span
-class="math inline">\(Y\)</span>乘上等效矩阵<span
-class="math inline">\(C\)</span>的转置。这也对应了Transposed
-Convolution中的转置。而这种理解，实际上在数学上也正好能对应前面的运算步骤，尤其是将卷积核参数上下、左右翻转，然后进行卷积。</p>
-<p>总结来说，我们有：</p>
-<ul>
-<li><p>转置卷积实际上也是一种卷积，它将输入和核进行了重新排列，然后进行特殊的卷积操作(stride=1,
-padding=0)</p></li>
-<li><p>卷积一般来做下采样，转置卷积一般来做上采样</p></li>
-<li><p>卷积将输入从<span class="math inline">\((h,w)\)</span>变成<span
-class="math inline">\((h&#39;,w&#39;)\)</span>，在同样的超参数下，转置卷积将输入从<span
-class="math inline">\((h&#39;,w&#39;)\)</span>变成<span
-class="math inline">\((h,w)\)</span>。即转置卷积完成的是形状的还原</p></li>
-<li><p>对于特定的参数，我们还是主要关注输入前后的数据形状变化，可以通过上面的公式进行计算</p></li>
-</ul>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
-<li><a
-target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1mh411J7U4/?spm_id_from=333.1245.0.0&amp;vd_source=f05227407dcf2e1cd95d954a632cec91">转置卷积（transposed
-convolution）_哔哩哔哩_bilibili</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://github.com/vdumoulin/conv_arithmetic?tab=readme-ov-file">vdumoulin/conv_arithmetic:
-A technical report on convolution arithmetic in the context of deep
-learning</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2019/10/tmux.html">Tmux
+使用教程 - 阮一峰的网络日志</a></li>
 </ol>
 
                 
@@ -422,12 +360,12 @@ learning</a></li>
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="category-chain-item">操作系统</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/Coding/" class="category-chain-item">Coding</a>
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Liunx/" class="category-chain-item">Liunx</a>
   
   
 
@@ -444,7 +382,7 @@ learning</a></li>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">#深度学习</a>
+        <a href="/tags/%E5%B7%A5%E5%85%B7/">#工具</a>
       
     </div>
   
@@ -456,8 +394,8 @@ learning</a></li>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>深度学习中的转置卷积</div>
-      <div>http://example.com/2023/12/14/深度学习中的转置卷积/</div>
+      <div>tmux的简单使用</div>
+      <div>http://example.com/2023/12/16/tmux的简单使用/</div>
     </div>
     <div class="license-meta">
       
@@ -469,7 +407,7 @@ learning</a></li>
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年12月14日</div>
+          <div>2023年12月16日</div>
         </div>
       
       
@@ -501,18 +439,12 @@ learning</a></li>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/12/16/tmux%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/" title="tmux的简单使用">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">tmux的简单使用</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/11/20/wandb-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%BD%BB%E9%87%8F%E7%BA%A7%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/" title="wandb: 深度学习轻量级可视化工具">
-                        <span class="hidden-mobile">wandb: 深度学习轻量级可视化工具</span>
+                      <a href="/2023/12/14/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF/" title="深度学习中的转置卷积">
+                        <span class="hidden-mobile">深度学习中的转置卷积</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -569,12 +501,6 @@ learning</a></li>
 
 
   
-
-
-  
-  
-
-
 
 
 
@@ -768,49 +694,6 @@ learning</a></li>
 
 
   <script>Fluid.plugins.imageCaption();</script>
-
-  
-      <script>
-        if (!window.MathJax) {
-          window.MathJax = {
-            tex    : {
-              inlineMath: { '[+]': [['$', '$']] }
-            },
-            loader : {
-              load: ['ui/lazy']
-            },
-            options: {
-              renderActions: {
-                insertedScript: [200, () => {
-                  document.querySelectorAll('mjx-container').forEach(node => {
-                    let target = node.parentNode;
-                    if (target.nodeName.toLowerCase() === 'li') {
-                      target.parentNode.classList.add('has-jax');
-                    }
-                  });
-                }, '', false]
-              }
-            }
-          };
-        } else {
-          MathJax.startup.document.state(0);
-          MathJax.texReset();
-          MathJax.typeset();
-          MathJax.typesetPromise();
-        }
-
-        Fluid.events.registerRefreshCallback(function() {
-          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
-            MathJax.startup.document.state(0);
-            MathJax.texReset();
-            MathJax.typeset();
-            MathJax.typesetPromise();
-          }
-        });
-      </script>
-    
-
-  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
