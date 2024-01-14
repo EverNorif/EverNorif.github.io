@@ -1,0 +1,776 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在很多程序中，我们都要面临配置管理或者多环境管理的问题。Hydra就是一个用于配置和管理多环境多配置的框架，它允许开发人员轻松地切换不同的配置和环境，从而简化应用程序的开发和部署。本篇主要介绍了Hydra如何在python中进行使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hydra: Python中的多配置环境管理">
+<meta property="og:url" content="http://example.com/2024/01/14/Hydra-Python%E4%B8%AD%E7%9A%84%E5%A4%9A%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="在很多程序中，我们都要面临配置管理或者多环境管理的问题。Hydra就是一个用于配置和管理多环境多配置的框架，它允许开发人员轻松地切换不同的配置和环境，从而简化应用程序的开发和部署。本篇主要介绍了Hydra如何在python中进行使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-14T15:17:55.000Z">
+<meta property="article:modified_time" content="2024-01-14T15:19:51.759Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Config">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Hydra: Python中的多配置环境管理 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Hydra: Python中的多配置环境管理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-14 23:17" pubdate>
+          2024年1月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hydra: Python中的多配置环境管理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="hydra">Hydra</h1>
+<p>Hydra是一个开源的Python配置管理框架，使用它可以简化多环境应用的开发。简单来说，我们可以将不同环境的配置写在不同的yaml配置文件中，使用Hydra可以帮助我们方便地加载和组合不同的配置，同时还支持使用命令行进行动态配置覆盖。Hydra的官方文档地址为：<a
+target="_blank" rel="noopener" href="https://hydra.cc/docs/intro/">Getting started |
+Hydra</a>，可以通过pip进行安装：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install hydra-core<br></code></pre></td></tr></table></figure>
+<p>所谓配置管理，实际上就可以理解为如何将对应的配置(key-value对)以dict的形式加载到我们的程序中，让程序能够动态访问。我们接下来也就会重点关注hydra如何能够做到这一点。</p>
+<h2 id="quick-start">Quick Start</h2>
+<p>在hydra中，配置通过yaml配置文件来进行管理。例如我们可以使用数据库操作的场景。通常，我们会将配置文件放在单独的conf目录下，同时在配置文件中提供对应的信息，例如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">conf/config.yaml</span><br><br><span class="hljs-attr">db:</span><br>  <span class="hljs-attr">driver:</span> <span class="hljs-string">mysql</span><br>  <span class="hljs-attr">user:</span> <span class="hljs-string">your_name</span><br>  <span class="hljs-attr">pass:</span> <span class="hljs-string">your_pass</span><br></code></pre></td></tr></table></figure>
+<p>此时，我们可以通过python代码<code>hydra-test.py</code>进行配置的访问，只需要调用hydra提供的注解，并且指定配置存放的目录以及配置的名称即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> hydra<br><span class="hljs-keyword">from</span> omegaconf <span class="hljs-keyword">import</span> DictConfig<br><br><br><span class="hljs-meta">@hydra.main(<span class="hljs-params">version_base=<span class="hljs-literal">None</span>, config_path=<span class="hljs-string">&#x27;conf&#x27;</span>, config_name=<span class="hljs-string">&#x27;config&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>(<span class="hljs-params">cfg: DictConfig</span>):<br>    <span class="hljs-built_in">print</span>(cfg)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+<p>这里python文件与conf在同级目录下。如果直接直接运行，可以得到如下输出，可以看到配置以多层嵌套dict的方式被读入程序中。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ python hydra-test.py <br>&#123;<span class="hljs-string">&#x27;db&#x27;</span>: &#123;<span class="hljs-string">&#x27;driver&#x27;</span>: <span class="hljs-string">&#x27;mysql&#x27;</span>, <span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;your_name&#x27;</span>, <span class="hljs-string">&#x27;pass&#x27;</span>: <span class="hljs-string">&#x27;your_pass&#x27;</span>&#125;&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>上面的hydra注解会给main函数传入一个DictConfig的cfg，我们可以将其理解为一个嵌套的多层字典。我们可以通过<code>cfg.db.driver</code>的attribute
+style方式调用，也可以通过<code>cfg['db']['driver']</code>的dictionary
+style方式调用。并且从配置文件到DictConfig到过程中存在类型推断。</p>
+</blockquote>
+<p>同时，我们还可以在运行程序时进行配置的覆盖。例如下面的运行命令，会使用命令行中指定的配置value覆盖文件中的值：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">python hydra-test.py db.user=root db.pass=1234</span><br>&#123;&#x27;db&#x27;: &#123;&#x27;driver&#x27;: &#x27;mysql&#x27;, &#x27;user&#x27;: &#x27;root&#x27;, &#x27;pass&#x27;: 1234&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>在使用命令行的时候，需要注意符号的使用。如果是在配置文件中已经存在的配置，那么就直接在命令行中指定；如果是在配置文件中不存在的配置，那么需要使用<code>+</code>进行修饰；同时hydra还提供<code>++</code>，该符号能够同时兼容以上两种情况。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ python hydra-test.py +db.time_out=10 db.user=cmd_user      <br>&#123;<span class="hljs-string">&#x27;db&#x27;</span>: &#123;<span class="hljs-string">&#x27;driver&#x27;</span>: <span class="hljs-string">&#x27;mysql&#x27;</span>, <span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;cmd_user&#x27;</span>, <span class="hljs-string">&#x27;pass&#x27;</span>: <span class="hljs-string">&#x27;your_pass&#x27;</span>, <span class="hljs-string">&#x27;time_out&#x27;</span>: 10&#125;&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ python hydra-test.py ++db.time_out=10 ++db.user=cmd_user<br>&#123;<span class="hljs-string">&#x27;db&#x27;</span>: &#123;<span class="hljs-string">&#x27;driver&#x27;</span>: <span class="hljs-string">&#x27;mysql&#x27;</span>, <span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;cmd_user&#x27;</span>, <span class="hljs-string">&#x27;pass&#x27;</span>: <span class="hljs-string">&#x27;your_pass&#x27;</span>, <span class="hljs-string">&#x27;time_out&#x27;</span>: 10&#125;&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="多配置文件组合">多配置文件组合</h2>
+<h3 id="配置组">配置组</h3>
+<p>hydra提供配置组的概念，允许我们同时存放多个同层级的配置。在配置目录conf下，每个子目录代表一个配置组，配置组中是对应不同的配置，每个配置组中只能同时加载一个配置。例如下面的层次结构（<code>hydra-test.py</code>仍然是Quick
+Start中的程序，用于获取当前配置并输出）：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs stata">├── <span class="hljs-keyword">conf</span><br>│   ├── config.yaml<br>│   └── <span class="hljs-keyword">db</span><br>│       ├── mysql.yaml<br>│       └── postgresql.yaml<br>│   <br>└── hydra-<span class="hljs-keyword">test</span>.py<br></code></pre></td></tr></table></figure>
+<p>配置文件的内容分别如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># conf/config.yaml</span><br><span class="hljs-attr">defaults:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">db:</span> <span class="hljs-string">mysql</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># conf/db/mysql.yaml</span><br><br><span class="hljs-attr">driver:</span> <span class="hljs-string">mysql</span><br><span class="hljs-attr">user:</span> <span class="hljs-string">mysql_user</span><br><span class="hljs-attr">pass:</span> <span class="hljs-string">mysql_pass</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># conf/db/postgresql.yaml</span><br><br><span class="hljs-attr">driver:</span> <span class="hljs-string">postgresql</span><br><span class="hljs-attr">user:</span> <span class="hljs-string">postgresql_user</span><br><span class="hljs-attr">pass:</span> <span class="hljs-string">postgresql_pass</span><br></code></pre></td></tr></table></figure>
+<p>在config.yaml中，通过defaults来指定db配置组默认使用哪一个配置。<code>defaults</code>是hydra中的一个特殊保留指令，用来指定配置组的默认使用配置。</p>
+<p>直接通过命令行运行，运行的就是db配置组中mysql的配置：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ python hydra-test.py<br>&#123;<span class="hljs-string">&#x27;db&#x27;</span>: &#123;<span class="hljs-string">&#x27;driver&#x27;</span>: <span class="hljs-string">&#x27;mysql&#x27;</span>, <span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;mysql_user&#x27;</span>, <span class="hljs-string">&#x27;pass&#x27;</span>: <span class="hljs-string">&#x27;mysql_pass&#x27;</span>&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>同样我们可以在命令行指定db配置组使用postgresql。当然此时也同样支持使用命令行覆盖对应参数：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ python hydra-test.py db=postgresql db.pass=cmd_pass<br>&#123;<span class="hljs-string">&#x27;db&#x27;</span>: &#123;<span class="hljs-string">&#x27;driver&#x27;</span>: <span class="hljs-string">&#x27;postgresql&#x27;</span>, <span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;postgresql_user&#x27;</span>, <span class="hljs-string">&#x27;pass&#x27;</span>: <span class="hljs-string">&#x27;cmd_pass&#x27;</span>&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>当然在原始入口<code>conf/config.yaml</code>配置文件中，我们也可以指定配置组中的属性。此时为了能够加载该属性，我们需要在<code>defaults</code>中增加<code>_self_</code>关键字，表示默认加载自身。此时需要注意覆盖关系，实际执行类似于按照顺序加载，在后面加载的属性会覆盖前面加载的属性。例如此时<code>conf/config.yaml</code>内容如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">defaults:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">_self_</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">db:</span> <span class="hljs-string">mysql</span><br>    <br><span class="hljs-attr">db:</span><br>  <span class="hljs-attr">user:</span> <span class="hljs-string">config_user</span><br></code></pre></td></tr></table></figure>
+<p>输出如下,此时后面的mysql配置就覆盖了config中的config_user。如果把<code>_self_</code>移动到后面，则会加载出config_user</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">$ python hydra-test.py<br>&#123;<span class="hljs-string">&#x27;db&#x27;</span>: &#123;<span class="hljs-string">&#x27;user&#x27;</span>: <span class="hljs-string">&#x27;mysql_user&#x27;</span>, <span class="hljs-string">&#x27;driver&#x27;</span>: <span class="hljs-string">&#x27;mysql&#x27;</span>, <span class="hljs-string">&#x27;pass&#x27;</span>: <span class="hljs-string">&#x27;mysql_pass&#x27;</span>&#125;&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="packages">Packages</h3>
+<p>在Hydra配置组中，存在Package的概念。在默认情况下，Package即为该配置的目录结构，类似于Java中的Package。例如，<code>config/db/mysql.yaml</code>这个配置文件所属的Package就是<code>config.db</code>。<strong>Package最终体现在得到的配置字典中</strong>，这也就意味着对于该配置文件来说，最终在程序中得到的配置dict中，它的前置层次就是<code>config.db</code>，而<code>mysql.yaml</code>中的键值对就在这个前置层次之下进行组织。Package可以通过使用defaults或者Packages指令来修改。</p>
+<p>首先构造下面的场景，配置文件的组织形式如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">├── server<br>│   ├── db<br>│   │   ├── mysql.yaml<br>│   │   └── sqlite.yaml<br>│   └── apache.yaml<br>└── config.yaml<br></code></pre></td></tr></table></figure>
+<p>每个配置文件内容如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># config.yaml</span><br><br><span class="hljs-attr">defaults:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">server/apache</span><br><br><span class="hljs-attr">debug:</span> <span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># server/apache.yaml</span><br><br><span class="hljs-attr">defaults:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">db:</span> <span class="hljs-string">mysql</span><br><br><span class="hljs-attr">name:</span> <span class="hljs-string">apache</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># server/db/mysql.yaml</span><br><span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># server/db/sqlite.yaml</span><br><span class="hljs-attr">name:</span> <span class="hljs-string">sqlite</span><br></code></pre></td></tr></table></figure>
+<p>此时如果我们正常运行程序，可以得到如下的字典结构，可以看到都是按照正常的层级结构进行组织的。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">server:</span><br>  <span class="hljs-attr">db:</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">apache</span><br><span class="hljs-attr">debug:</span> <span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+<p>第一种改变Package的方式是通过在defaults列表中进行操作。使用<code>@PACKAGE</code>操作符，改变的是defaults列表引入的yaml所对应的pacakge。</p>
+<p>例如下面：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># config.yaml</span><br><br><span class="hljs-attr">defaults:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">server/apache@admin</span><br><br><span class="hljs-attr">debug:</span> <span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># server/apache.yaml</span><br><br><span class="hljs-attr">defaults:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">db@backup:</span> <span class="hljs-string">mysql</span><br><br><span class="hljs-attr">name:</span> <span class="hljs-string">apache</span><br></code></pre></td></tr></table></figure>
+<p>输出的层级结构如下，可以看到在key结构中，原本的server变成了admin，db变成了backup</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">admin:</span><br>  <span class="hljs-attr">backup:</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">apache</span><br><span class="hljs-attr">debug:</span> <span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+<p>第二种改变pacakge的方式是在对应yaml文件的首行直接使用package指令，它直接指定该yaml对应的pacakge。</p>
+<p>例如修改<code>mysql.yaml</code>内容如下，这</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># @package foo.bar</span><br><span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span><br></code></pre></td></tr></table></figure>
+<p>得到的配置字典层级结构如下。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">server:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">apache</span><br><span class="hljs-attr">debug:</span> <span class="hljs-literal">false</span><br><span class="hljs-attr">foo:</span><br>  <span class="hljs-attr">bar:</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span><br></code></pre></td></tr></table></figure>
+<p>在这种方式下，有一种常用的保存字是<code>_global_</code>，它表示直接将该yaml的层级提升到最顶级。</p>
+<blockquote>
+<p>可以看到一共有三种方式影响package，它们的优先关系如下：</p>
+<ol type="1">
+<li>在defaults列表中指定的package</li>
+<li>在yaml文件中指定的package</li>
+<li>默认文件层级结构</li>
+</ol>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%90%8E%E7%AB%AF/Python/" class="category-chain-item">Python</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Python/">#Python</a>
+      
+        <a href="/tags/Config/">#Config</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Hydra: Python中的多配置环境管理</div>
+      <div>http://example.com/2024/01/14/Hydra-Python中的多配置环境管理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/" title="相机参数介绍">
+                        <span class="hidden-mobile">相机参数介绍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
