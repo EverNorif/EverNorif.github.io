@@ -16,25 +16,23 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本篇主要介绍了在Python中如何使用tqdm进行进度条的可视化，包括基础使用以及定制化使用。">
+    <meta name="description" content="在3D相关的模型当中，我们通常会使用到相机参数作为参数，其中相机参数又可以分为相机外参和相机内参。本篇主要介绍了相机参数的概念，包括相机外参和相机内参、外参矩阵、内参矩阵、投影矩阵等。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="tqdm: Python中进度条的使用">
-<meta property="og:url" content="http://example.com/2024/01/11/tqdm-Python%E4%B8%AD%E8%BF%9B%E5%BA%A6%E6%9D%A1%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:title" content="相机参数介绍">
+<meta property="og:url" content="http://example.com/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="本篇主要介绍了在Python中如何使用tqdm进行进度条的可视化，包括基础使用以及定制化使用。">
+<meta property="og:description" content="在3D相关的模型当中，我们通常会使用到相机参数作为参数，其中相机参数又可以分为相机外参和相机内参。本篇主要介绍了相机参数的概念，包括相机外参和相机内参、外参矩阵、内参矩阵、投影矩阵等。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2024/01/11/tqdm-Python%E4%B8%AD%E8%BF%9B%E5%BA%A6%E6%9D%A1%E7%9A%84%E4%BD%BF%E7%94%A8/image-20240111161945404.png">
-<meta property="og:image" content="http://example.com/2024/01/11/tqdm-Python%E4%B8%AD%E8%BF%9B%E5%BA%A6%E6%9D%A1%E7%9A%84%E4%BD%BF%E7%94%A8/image-20240111161805982.png">
-<meta property="article:published_time" content="2024-01-11T08:04:37.000Z">
-<meta property="article:modified_time" content="2024-01-11T08:24:11.466Z">
+<meta property="article:published_time" content="2024-01-14T09:26:57.000Z">
+<meta property="article:modified_time" content="2024-01-14T09:27:50.479Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="Python">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="相机">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2024/01/11/tqdm-Python%E4%B8%AD%E8%BF%9B%E5%BA%A6%E6%9D%A1%E7%9A%84%E4%BD%BF%E7%94%A8/image-20240111161945404.png">
   
   
   
-  <title>tqdm: Python中进度条的使用 - EverNorif</title>
+  <title>相机参数介绍 - EverNorif</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -248,7 +246,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="tqdm: Python中进度条的使用"></span>
+            <span id="subtitle" data-typed-text="相机参数介绍"></span>
           
         </div>
 
@@ -259,8 +257,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-11 16:04" pubdate>
-          2024年1月11日 下午
+        <time datetime="2024-01-14 17:26" pubdate>
+          2024年1月14日 下午
         </time>
       </span>
     
@@ -272,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.4k 字
+          1.9k 字
         
       </span>
     
@@ -284,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          12 分钟
+          16 分钟
         
       </span>
     
@@ -326,32 +324,96 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">tqdm: Python中进度条的使用</h1>
+            <h1 style="display: none">相机参数介绍</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="tqdm的使用">tqdm的使用</h1>
-<p>在很多情况下，我们在程序中会遇到循环的代码，此时如果有一个进度条显示，会大幅增加体验，帮助我们了解代码执行的进度。tqdm就是Python中提供的快速、可扩展的进度条，可以在Python的循环中添加进度提示信息。</p>
-<p>tqdm需要额外安装：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pip install tqdm<br></code></pre></td></tr></table></figure>
-<h2 id="基础使用">基础使用</h2>
-<p>tqdm的使用非常简单，只需要直接在循环对应的可迭代对象上包装一个tqdm即可：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><span class="hljs-comment"># from tqdm.notebook import tqdm</span><br><span class="hljs-keyword">import</span> time<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tqdm(<span class="hljs-built_in">range</span>(<span class="hljs-number">100</span>)):<br>    time.sleep(<span class="hljs-number">0.1</span>)<br></code></pre></td></tr></table></figure>
-<p>tqdm提供了基础和notebook版本的两类进度条，可以通过在import时决定引入那种。notebook版本的进度条更加美观一些，两者的区别如图所示：</p>
-<img src="/2024/01/11/tqdm-Python%E4%B8%AD%E8%BF%9B%E5%BA%A6%E6%9D%A1%E7%9A%84%E4%BD%BF%E7%94%A8/image-20240111161945404.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20240111161945404">
-<h2 id="定制化使用">定制化使用</h2>
-<p>同时我们可以通过tqdm对象来控制在进度条中显示不同的信息。例如在下面的代码中，我们希望将epoch、train_loss、eval_loss、acc等信息也显示到进度条中，可以通过tqdm对象提供的两类方法来实现，分别是<code>set_postfix</code>和<code>set_description</code>。前者可以传入一个字典，其中的字符会显示在中括号<code>[]</code>之内，后者可以传入一个字符串，其中的内容会显示在进度条之前。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tqdm.notebook <span class="hljs-keyword">import</span> tqdm<br><span class="hljs-keyword">import</span> random<br><span class="hljs-keyword">import</span> time<br><br>epoch_num = <span class="hljs-number">200</span><br>epoch_range_bar = tqdm(<span class="hljs-built_in">range</span>(epoch_num))<br><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> epoch_range_bar:<br>    time.sleep(<span class="hljs-number">0.1</span>)<br>    acc = random.uniform(<span class="hljs-number">0.</span>, <span class="hljs-number">1.</span>)<br>    train_loss = random.uniform(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>)<br>    eval_loss = random.uniform(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>)<br>    epoch_range_bar.set_postfix(&#123;<br>        <span class="hljs-string">&#x27;train_loss&#x27;</span>: <span class="hljs-built_in">round</span>(train_loss, <span class="hljs-number">3</span>),<br>        <span class="hljs-string">&#x27;eval_loss&#x27;</span>: <span class="hljs-built_in">round</span>(eval_loss, <span class="hljs-number">3</span>),<br>        <span class="hljs-string">&#x27;acc&#x27;</span>: <span class="hljs-built_in">round</span>(acc, <span class="hljs-number">3</span>)<br>    &#125;)<br>    epoch_range_bar.set_description(<br>        <span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;epoch + <span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">&#123;epoch_num&#125;</span>]&quot;</span>)<br></code></pre></td></tr></table></figure>
-<p>上面代码的效果如下所示：</p>
-<img src="/2024/01/11/tqdm-Python%E4%B8%AD%E8%BF%9B%E5%BA%A6%E6%9D%A1%E7%9A%84%E4%BD%BF%E7%94%A8/image-20240111161805982.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="image-20240111161805982">
-<h2 id="结合pandas">结合pandas</h2>
-<p>此外，tqdm还可以结合pandas使用。在pandas中，我们经常会调用DataFrame的apply方法，此时使用tqdm我们可以增加对应的进度条显示。使用方式如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span>  np<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><br>tqdm.pandas(desc=<span class="hljs-string">&quot;pandas bar&quot;</span>)  <span class="hljs-comment"># 进度条的description</span><br> <br>df = pd.DataFrame(np.random.randint(<span class="hljs-number">0</span>, <span class="hljs-number">100</span>, (<span class="hljs-number">10000000</span>, <span class="hljs-number">6</span>)))<br>df.progress_apply(<span class="hljs-keyword">lambda</span> x: x**<span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
+                <h1 id="相机参数">相机参数</h1>
+<p>在3D模型的训练过程中，通常需要在3D坐标系和图像坐标系中进行转换，此时我们会用到相机外参和相机内参。在过程中，涉及到不同的坐标系，包括世界坐标系，相机坐标系，以及图像坐标系。概括来说，通过相机外参矩阵，可以从世界坐标系转化到相机坐标系，通过相机内参矩阵，可以从相机坐标系转化到图像坐标系。</p>
+<h2 id="相机外参">相机外参</h2>
+<p>相机外参矩阵(extrinsic)又可以称为w2c(world to
+camera)矩阵，它的作用是用作transform矩阵，将世界坐标系的3D坐标变换到相机坐标系中。该矩阵由<span
+class="math inline">\(3\times 3\)</span>的正交旋转矩阵R和<span
+class="math inline">\(3\times
+1\)</span>的平移矢量t组成，通常也可以记作<span
+class="math inline">\([R|t]\)</span>，维度为<span
+class="math inline">\(3 \times
+4\)</span>。如果使用齐次坐标，则可以表示为<span
+class="math inline">\(4\times 4\)</span>的维度，形式如下： <span
+class="math display">\[
+w2c = \begin{bmatrix}
+R &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix}
+\]</span>
+另外，还有一个相机位姿(pose)的概念。相机位姿描述的是相机坐标系是如何通过世界坐标旋转和平移得来的，对应得到旋转矩阵<span
+class="math inline">\(R_c\)</span>和平移矢量<span
+class="math inline">\(t_c\)</span>。<span
+class="math inline">\([R_c|t_c]\)</span>实际上描述的就是相机坐标系xyz轴以及相机中心在世界坐标系中的方向和位置。具体来说，旋转矩阵的第一列到第三列分别表示相机坐标系xyz轴在世界坐标系下对应的方向；平移向量表示相机原点在世界坐标系中对应的位置。
+<span class="math display">\[
+[R_c|t_c] = [x_{\text{c in w}}, y_{\text{c in w}}, z_{\text{c in w}},
+p_{\text{camera center in w}}]
+\]</span> 实际上，我们有c2w(camera to
+world)矩阵，它与w2c矩阵互为逆矩阵，表示的也是互相相反的转换。c2w矩阵实际上就可以通过pose得到。在齐次坐标表示下，我们有：
+<span class="math display">\[
+c2w = \begin{bmatrix}
+R_c &amp; t_c \\
+0 &amp; 1 \\
+\end{bmatrix}, \quad
+w2c = c2w^{-1}
+\]</span> 通过计算，可以得到： <span class="math display">\[
+R = R_c^{T}, \quad t = -Rt_c
+\]</span></p>
+<h2 id="相机内参">相机内参</h2>
+<p>相机的内参矩阵(intrinsic)通常可以表示为<span
+class="math inline">\(K\)</span>。它的作用是将相机坐标系下的3D坐标映射到2D的图像平面。相机内参描述了相机的内部特性，包括焦距、主点位置、畸变等信息。这些参数通常是固定的，与相机的位置和方向无关。</p>
+<p>以针孔摄像头为例，内参矩阵<span
+class="math inline">\(K\)</span>如下所示： <span class="math display">\[
+K = \begin{bmatrix}
+f_x &amp; 0 &amp; c_x \\
+0 &amp; f_y &amp; c_y \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span> 其中<span class="math inline">\(f_x\)</span><span
+class="math inline">\(和f_y\)</span>是相机的水平和垂直焦距（对于理想的针孔相机，<span
+class="math inline">\(f_x=f_y\)</span>）。焦距指的是是相机中心到成像平面的距离，以像素为单位。<span
+class="math inline">\(c_x\)</span>和<span
+class="math inline">\(c_y\)</span>是图像原点相对于相机光心的水平和垂直偏移量。在一般情况下，<span
+class="math inline">\(c_x\)</span>，<span
+class="math inline">\(c_y\)</span>可以用图像宽和高的1/2近似。</p>
+<p>通过相机的内参和外参，我们就可以得到相机的<strong>投影矩阵</strong>（Projection
+matrix）<span
+class="math inline">\(P\)</span>。通过投影矩阵，我们可以将世界坐标系中的点映射到二维图像平面，实际也就是依次连续使用世界坐标系-&gt;相机坐标系-&gt;图像坐标系的变换（依次左乘变换矩阵），我们有：
+<span class="math display">\[
+P = K[R|t]
+\]</span></p>
+<blockquote>
+<p>至此我们可以进行一个阶段性总结：</p>
+<ul>
+<li>相机外参(extrinsic, w2c)<span
+class="math inline">\([R|t]\)</span>，它的作用是将世界坐标系的3D坐标变换到相机坐标系中</li>
+<li>相机位姿(pose,
+c2w)，描述的是世界坐标系如何通过旋转和平移得到相机坐标系，这对应一个pose矩阵。这个pose矩阵在数值上与相机外参互逆（在齐次形式下）。</li>
+<li>相机内参(intrinsic)<span
+class="math inline">\(K\)</span>,它的作用是将相机坐标系下的3D坐标映射到2D的图像平面中</li>
+</ul>
+</blockquote>
+<p>另外，相机参数的获取一般有两种方式。一般对于公开的数据集，其中都直接包含了相机参数，虽然组织形式有所区别，需要查看对应的文档。对于一些真实场景数据集，例如我们自己使用手机拍摄了一组图像，想要获取相机位姿，则可以通过Structure-From-Motion(SFM,
+运动恢复结构)技术来估计几个相机之间的相对位姿，其中最为常用的软件是<a
+target="_blank" rel="noopener" href="https://colmap.github.io/">COLMAP</a>。通过输入多张图片，COLMAP可以估计出相机的内参和外参。</p>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/642715876">相机位姿(camera
+pose)与外参矩阵 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Pose_(computer_vision)">Pose
+(computer vision) - Wikipedia</a></li>
 <li><a
-target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1765991">python的tqdm模块——进度条配置-腾讯云开发者社区-腾讯云</a></li>
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/593204605/">NeRF代码解读-相机参数与坐标系变换
+- 知乎</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/374269239">立体视觉入门指南（1）：坐标系与相机参数
+- 知乎</a></li>
 </ol>
 
                 
@@ -371,12 +433,12 @@ target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article
     
       <span class="category-chain">
         
-  <a href="/categories/%E5%90%8E%E7%AB%AF/" class="category-chain-item">后端</a>
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E5%90%8E%E7%AB%AF/Python/" class="category-chain-item">Python</a>
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
   
   
 
@@ -393,7 +455,9 @@ target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Python/">#Python</a>
+        <a href="/tags/3D/">#3D</a>
+      
+        <a href="/tags/%E7%9B%B8%E6%9C%BA/">#相机</a>
       
     </div>
   
@@ -405,8 +469,8 @@ target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>tqdm: Python中进度条的使用</div>
-      <div>http://example.com/2024/01/11/tqdm-Python中进度条的使用/</div>
+      <div>相机参数介绍</div>
+      <div>http://example.com/2024/01/14/相机参数介绍/</div>
     </div>
     <div class="license-meta">
       
@@ -418,7 +482,7 @@ target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年1月11日</div>
+          <div>2024年1月14日</div>
         </div>
       
       
@@ -450,18 +514,12 @@ target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/" title="相机参数介绍">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">相机参数介绍</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/12/16/tmux%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/" title="tmux的简单使用">
-                        <span class="hidden-mobile">tmux的简单使用</span>
+                      <a href="/2024/01/11/tqdm-Python%E4%B8%AD%E8%BF%9B%E5%BA%A6%E6%9D%A1%E7%9A%84%E4%BD%BF%E7%94%A8/" title="tqdm: Python中进度条的使用">
+                        <span class="hidden-mobile">tqdm: Python中进度条的使用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -518,6 +576,12 @@ target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -711,6 +775,49 @@ target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
