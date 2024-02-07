@@ -24,7 +24,7 @@
 <meta property="og:description" content="在3D相关的模型当中，我们通常会使用到相机参数作为参数，其中相机参数又可以分为相机外参和相机内参。本篇主要介绍了相机参数的概念，包括相机外参和相机内参、外参矩阵、内参矩阵、投影矩阵等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-01-14T09:26:57.000Z">
-<meta property="article:modified_time" content="2024-01-14T09:27:50.479Z">
+<meta property="article:modified_time" content="2024-02-03T09:49:03.223Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="相机">
@@ -270,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.9k 字
+          2.1k 字
         
       </span>
     
@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          16 分钟
+          18 分钟
         
       </span>
     
@@ -330,7 +330,7 @@
               <div class="markdown-body">
                 
                 <h1 id="相机参数">相机参数</h1>
-<p>在3D模型的训练过程中，通常需要在3D坐标系和图像坐标系中进行转换，此时我们会用到相机外参和相机内参。在过程中，涉及到不同的坐标系，包括世界坐标系，相机坐标系，以及图像坐标系。概括来说，通过相机外参矩阵，可以从世界坐标系转化到相机坐标系，通过相机内参矩阵，可以从相机坐标系转化到图像坐标系。</p>
+<p>在3D模型的训练过程中，通常需要在3D坐标系和图像坐标系中进行转换，此时我们会用到相机外参和相机内参。在过程中，涉及到不同的坐标系，包括世界坐标系，相机坐标系，以及图像坐标系。概括来说，通过相机外参矩阵，可以从世界坐标系转化到相机坐标系，通过相机内参矩阵，可以从相机坐标系转化到图像坐标系。（以下介绍均以针孔摄像机为例）</p>
 <h2 id="相机外参">相机外参</h2>
 <p>相机外参矩阵(extrinsic)又可以称为w2c(world to
 camera)矩阵，它的作用是用作transform矩阵，将世界坐标系的3D坐标变换到相机坐标系中。该矩阵由<span
@@ -381,7 +381,18 @@ class="math inline">\(f_x=f_y\)</span>）。焦距指的是是相机中心到成
 class="math inline">\(c_x\)</span>和<span
 class="math inline">\(c_y\)</span>是图像原点相对于相机光心的水平和垂直偏移量。在一般情况下，<span
 class="math inline">\(c_x\)</span>，<span
-class="math inline">\(c_y\)</span>可以用图像宽和高的1/2近似。</p>
+class="math inline">\(c_y\)</span>​可以用图像宽和高的1/2近似。</p>
+<p>实际上标准的内参矩阵<span
+class="math inline">\(K\)</span>还包括一个偏斜量skew <span
+class="math inline">\(s\)</span>，如下所示： <span
+class="math display">\[
+K = \begin{bmatrix}
+f_x &amp; s &amp; c_x \\
+0 &amp; f_y &amp; c_y \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span> 不过一般情况下，我们会假设像素没有偏斜，即<span
+class="math inline">\(s=0\)</span>。</p>
 <p>通过相机的内参和外参，我们就可以得到相机的<strong>投影矩阵</strong>（Projection
 matrix）<span
 class="math inline">\(P\)</span>。通过投影矩阵，我们可以将世界坐标系中的点映射到二维图像平面，实际也就是依次连续使用世界坐标系-&gt;相机坐标系-&gt;图像坐标系的变换（依次左乘变换矩阵），我们有：
