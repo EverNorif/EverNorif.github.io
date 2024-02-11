@@ -1,0 +1,1642 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了摄像机几何和极几何相关的知识。在摄像机几何方面，首先从小孔模型开始，介绍摄像机坐标系中的映射关系，而后引入图片坐标系以及世界坐标系，最终得到从世界坐标到图片坐标到映射关系。在极几何方面，介绍了同一场景两个视角的数学约束，包括本质矩阵，基础矩阵以及单应矩阵。平行视图下的极几何具有较好的性质，包括极线水平，同名点纵坐标相等等，通过极线校正，我们可以将普通视图校正为平行视图。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="摄像机几何与极几何">
+<meta property="og:url" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了摄像机几何和极几何相关的知识。在摄像机几何方面，首先从小孔模型开始，介绍摄像机坐标系中的映射关系，而后引入图片坐标系以及世界坐标系，最终得到从世界坐标到图片坐标到映射关系。在极几何方面，介绍了同一场景两个视角的数学约束，包括本质矩阵，基础矩阵以及单应矩阵。平行视图下的极几何具有较好的性质，包括极线水平，同名点纵坐标相等等，通过极线校正，我们可以将普通视图校正为平行视图。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208150004194.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208150319671.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208152803079.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208172116936.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208172244678.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240209101903567.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210181148545.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210180204775.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210180145957.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210181224316.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211112724498.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211145557010.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211152849266.png">
+<meta property="og:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211154144695.png">
+<meta property="article:published_time" content="2024-02-11T08:28:43.000Z">
+<meta property="article:modified_time" content="2024-02-11T08:35:00.525Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="相机">
+<meta property="article:tag" content="极几何">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208150004194.png">
+  
+  
+  
+  <title>摄像机几何与极几何 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="摄像机几何与极几何"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-02-11 16:28" pubdate>
+          2024年2月11日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          18k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          150 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">摄像机几何与极几何</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="摄像机几何">摄像机几何</h1>
+<h2 id="针孔模型">针孔模型</h2>
+<p>考虑最初的成像模型，我们会利用小孔成像来记录现实世界。经过小孔成像模型，来自场景的光线可以经过小孔打到胶片上，而不会受到其他位置光线的干扰。而针孔摄像机就是一种类似小孔成像的模型，它的物理模型可以参考下图：</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208150004194.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="小孔成像">
+<p>其中，针孔到像平面的距离被称为针孔摄像机的焦距<span
+class="math inline">\(f\)</span>。注意到小孔成像成的是倒立的实像，而为了坐标处理的方便，我们通常会考虑对应的虚拟像平面，这样就不用处理繁琐的坐标符号问题，而是可以专注于其他更加重要的逻辑。因此如果没有特殊说明，我们考虑的都是这个虚拟像平面。</p>
+<p>在整个摄像机几何中，一个非常重要的问题就是如何将真实世界中的某个点映射到成像平面中，例如下图，我们考虑的问题就是在摄像机坐标系中如何完成从<span
+class="math inline">\(P\)</span>点到<span
+class="math inline">\(P&#39;\)</span>点的映射。注意这里两个点都是在相机坐标系下进行描述，其中k轴表示深度，在更常用的xyz坐标系中对应z轴。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208150319671.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="坐标系描述">
+<p>假定<span class="math inline">\(P\)</span>点的坐标为<span
+class="math inline">\((x, y, z)\)</span>，<span
+class="math inline">\(P&#39;\)</span>的坐标为<span
+class="math inline">\((x&#39;,
+y&#39;)\)</span>。这里在像平面上的点，我们更加关注它的xy坐标。通过简单的相似三角形，我们很容易得到下面的对应关系：
+<span class="math display">\[
+P = \begin{bmatrix}
+x \\
+y \\
+z \\
+\end{bmatrix}
+\rightarrow
+P&#39; = \begin{bmatrix}
+x&#39; \\
+y&#39; \\
+\end{bmatrix}
+\quad
+x&#39; = f\frac{x}{z} ,\quad
+y&#39; = f\frac{y}{z}
+\]</span>
+这也就是在针孔摄像机的工作原理下，相机坐标系中场景的点与成像点之间坐标的映射关系。</p>
+<h2 id="透镜">透镜</h2>
+<p>接下来我们介绍透镜。在介绍透镜之前，我们需要介绍光圈。光圈尺寸实际对应的就是成像小孔的大小，光圈越大，对应小孔越大，成的像就会越模糊；光圈越小，对应小孔越小，成像虽然越清晰，但是亮度也越来越暗。为了解决这个问题，我们可以引入透镜，因为透镜可以做到光线的汇聚，它将多条光线汇聚到胶片的同一个点上，可以增加亮度。</p>
+<p>透镜的物理性质就是对光线进行汇聚，其中所有平行于光轴的光线都会会聚到焦点上。焦点到透镜中心的距离称为透镜的焦距。这里需要注意区分透镜的焦距和针孔相机的焦距，这两者指的并不是同一个概念，需要结合上下文具体分析，<strong>在摄像机几何的语境下，我们说到焦距，更多地指的是相机的焦距</strong>。根据透镜的折射规律，一个点经过折射后汇聚的点，可以通过连接该点和光心得到，因此在实际分析时，我们仍然可以使用上面针孔摄像机得到的映射模型。</p>
+<p>虽然引入透镜解决了光圈的问题，并且仍然可以使用针孔摄像机的映射模型，但是引入透镜也会带来一些实际的问题。</p>
+<p>第一个问题是<strong>失焦</strong>。由于透镜具有自己的焦距，只有在焦距对应深度左右范围内成的像是清晰的，其他位置成的像则会变得模糊。对应这种现象，我们有一个景深的概念。在许多摄影作品中，我们都可以看到景深的效果。</p>
+<p>第二个问题是<strong>径向畸变</strong>。径向畸变指的是经过成像之后，图像像素点以畸变中心为中心点，沿着径向产生的位置偏差，从而导致图像中所成的像发生形变。径向畸变根据畸变方向又可以分为枕形畸变和桶形畸变。下图就是一个径向畸变的照片表现。另外一个径向畸变的例子是门上的猫眼，通过猫眼看外面的景象，会有类似鱼眼的效果。径向畸变产生的原因是光线在远离透镜中心的地方比靠近中心的地方更加弯曲。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208152803079.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="径向畸变">
+<h2 id="摄像机几何-1">摄像机几何</h2>
+<h3 id="图片坐标系引入">图片坐标系引入</h3>
+<p>通过对针孔模型的分析，我们得到了在相机坐标系中，场景坐标到像平面坐标的映射关系。接下来进一步，我们将引入图片坐标系。对于一张图片来说，我们通常会使用图片坐标系，该坐标系如下图所示，以像素为单位。图片坐标系以图片的左下角为原点建立xy轴。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208172116936.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="图像坐标系">
+<p>可以注意到，相机坐标系的原点即光心，在图片坐标系中的投影是带有一定的偏差的，因此在转换时，需要进行偏差的处理，即这里的<span
+class="math inline">\((c_x,
+c_y)\)</span>，以像素为单位。另一方面，相机坐标系的单位是长度(基本单位为m)，而在图片坐标系中，单位是像素，因此我们还需要引入一个比例转换，将长度转化为像素。这个转换比例沿着xy轴可能有所不同，在下面的式子中分别以<span
+class="math inline">\(k,l\)</span>来表示。</p>
+<p>综合整个流程，我们将相机坐标系下场景中的某个点<span
+class="math inline">\(P_c(x,y,z)\)</span>映射到图片坐标系下，有如下的映射关系：
+<span class="math display">\[
+(x, y, z) \rightarrow (fk\frac{x}{z} + c_x,fl\frac{y}{z} + c_y) =
+(\alpha\frac{x}{z} + c_x, \beta\frac{y}{z} + c_y)
+\]</span> 其中，<span
+class="math inline">\(f\)</span>表示相机的焦距，<span
+class="math inline">\(k,l\)</span>表示沿着x，y轴的长度与像素的比例，<span
+class="math inline">\(k,l\)</span>的单位是<span
+class="math inline">\(\text{pixel/m}\)</span>，表示一个长度单位可以转化为多少个像素。具体来说，如果知道相机传感器的物理尺寸（宽度和高度）以及它的分辨率（像素数量），就可以算出单位长度内像素的数量。</p>
+<p>为了方便起见，我们可以将参数进行整合，即： <span
+class="math display">\[
+\alpha = fk,\quad \beta = fl
+\]</span> 在一些场景中，我们还可能见到这样的简化： <span
+class="math display">\[
+f_x = fk, \quad f_y = fl
+\]</span> 那么此时仍然需要注意这里的<span
+class="math inline">\(f_x,f_y\)</span>指的是相机焦距在像素坐标系中的表示，以像素为单位。</p>
+<p>上面我们得到了新的映射模型，它帮助我们将场景点在相机坐标系下的坐标映射到图像坐标系下的坐标表示。但是上面的式子不利于我们后续的处理，这里我们将其转化为齐次坐标的表达形式（包括相机坐标系下的三维表示和图像坐标系下的二维表示都转化为齐次坐标），那么映射关系就可以表示为下面的式子
+<span class="math display">\[
+P_i = \begin{bmatrix}
+\alpha x + c_xz \\
+\beta y + c_yz \\
+z
+\end{bmatrix}
+= \begin{bmatrix}
+\alpha &amp; 0 &amp; c_x &amp; 0\\
+0 &amp; \beta &amp; c_y &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1 \\
+\end{bmatrix}
+= \begin{bmatrix}
+\alpha &amp; 0 &amp; c_x &amp; 0\\
+0 &amp; \beta &amp; c_y &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}
+P_c
+\]</span>
+这里还需要提到一个摄像机偏斜的问题。在理想情况下，图像坐标系以左下点为原点，xy轴分别垂直。但是由于制造工艺的问题，实际对应的时候可能会出现偏斜，即图像坐标系中xy轴并不垂直，而是具有一个夹角<span
+class="math inline">\(\theta \neq 90\)</span>度。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240208172244678.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="摄像机偏斜">
+<p>此时，上面的齐次坐标形式的映射关系就需要进行改写，改写之后变成下面的样子：
+<span class="math display">\[
+P_i = \begin{bmatrix}
+\alpha &amp; -\alpha \cot \theta &amp; c_x &amp; 0\\
+0 &amp; \beta / \sin \theta &amp; c_y &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1 \\
+\end{bmatrix}
+=\begin{bmatrix}
+\alpha &amp; -\alpha \cot \theta &amp; c_x &amp; 0\\
+0 &amp; \beta / \sin \theta &amp; c_y &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}
+P_c
+\]</span> 进一步，我们可以将公式写成下面的分块形式： <span
+class="math display">\[
+P_i = \begin{bmatrix}
+\alpha &amp; -\alpha \cot \theta &amp; c_x &amp; 0\\
+0 &amp; \beta / \sin \theta &amp; c_y &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1 \\
+\end{bmatrix} = MP_c = K[I, 0]P_c, \quad
+K = \begin{bmatrix}
+\alpha &amp; -\alpha \cot \theta &amp; c_x\\
+0 &amp; \beta / \sin \theta &amp; c_y \\
+0 &amp; 0 &amp; 1  \\
+\end{bmatrix}
+\]</span> 其中矩阵<span
+class="math inline">\(K\)</span>就是我们常说的<strong>相机内参</strong>。内参决定了摄像机坐标系下空间点到图像点的映射。可以看到相机内参<span
+class="math inline">\(K\)</span>一共具有5个自由度。</p>
+<h3 id="世界坐标系引入">世界坐标系引入</h3>
+<p>上面我们引入图片坐标系后，已经得到了相应的映射模型，它能够将相机坐标系下的场景坐标映射到图片坐标系中。注意到这里场景坐标仍然是使用相机坐标系，因此接下来最后一步，我们需要引入世界坐标系。最终，我们需要得到一个从世界坐标系到图片坐标系的映射关系。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240209101903567.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="世界坐标系">
+<p>由于相机坐标系和世界坐标系同样属于3维坐标系，它们之间的转换只需要旋转和平移即可。我们可以将世界坐标系经过旋转<span
+class="math inline">\(R\)</span>和平移<span
+class="math inline">\(t\)</span>得到相机坐标系，其中旋转矩阵<span
+class="math inline">\(R\)</span>是一个<span class="math inline">\(3
+\times 3\)</span>的矩阵，平移向量<span
+class="math inline">\(t\)</span>是一个<span
+class="math inline">\(1\times
+3\)</span>的向量，<strong>它们表示相机坐标系相对世界坐标系的旋转和平移</strong>。因此引入世界坐标系后，映射公式可以如下表示：
+<span class="math display">\[
+P_i =K \begin{bmatrix}
+I &amp; 0 \\
+\end{bmatrix}\begin{bmatrix}
+R &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1
+\end{bmatrix}
+=K \begin{bmatrix}
+I &amp; 0 \\
+\end{bmatrix}\begin{bmatrix}
+R &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix}
+P_w
+= K [R|t] P_w
+\]</span> 这里的<span class="math inline">\([R|t]\)</span>是一个<span
+class="math inline">\(3\times
+4\)</span>​的矩阵，通常被称为<strong>相机外参</strong>。</p>
+<blockquote>
+<p>有时候，说到相机外参可能指的是<span class="math inline">\(4 \times
+4\)</span>的形式，那时候只需要在<span
+class="math inline">\([R|t]\)</span>下补充一行<span
+class="math inline">\([0,0,0,1]\)</span>即可。</p>
+<p>相机外参在不同情况下可能指代不同的形式，需要结合环境讨论。但是它们都代表这里提到的含义，根据维度判断，并不会出现歧义。</p>
+</blockquote>
+<p>那么最终我们就可以得到一个投影矩阵，它可以在齐次表示的情况下，将世界坐标系中的场景坐标映射到图片坐标系中的像素坐标:
+<span class="math display">\[
+M = K[R|t]
+\]</span> 由于<span class="math inline">\(K\)</span>具有5个自由度，<span
+class="math inline">\(R\)</span>具有3个自由度，<span
+class="math inline">\(t\)</span>​​具有三个自由度，因此整体的投影矩阵具有11个自由度。</p>
+<p>最终我们得到如下的映射公式（以及带维度表示）： <span
+class="math display">\[
+\begin{aligned}
+P_i &amp;= K[R|t] P_w\\
+P_i^{3\times 1} &amp;= K^{3\times 3} [R^{3\times 3}|t^{3\times
+1}]^{3\times 4}P_w^{4\times 1}
+\end{aligned}
+\]</span></p>
+<h3 id="投影以及投影矩阵">投影以及投影矩阵</h3>
+<p>上面我们可以得到一个投影矩阵<span
+class="math inline">\(M\)</span>，接下来我们对其一些性质进行讨论。首先作如下变换：
+<span class="math display">\[
+M = K\begin{bmatrix}
+R &amp; t \\
+\end{bmatrix}= \begin{bmatrix}
+KR &amp; Kt \\
+\end{bmatrix}=\begin{bmatrix}
+A &amp; b \\
+\end{bmatrix},\quad
+A = \begin{bmatrix}
+a_1^T \\
+a_2^T \\
+a_3^T \\
+\end{bmatrix}
+\]</span></p>
+<ul>
+<li><span
+class="math inline">\(M\)</span>是透视投影矩阵的一个充分必要条件是<span
+class="math inline">\(\det(A) \neq 0\)</span></li>
+<li><span
+class="math inline">\(M\)</span>是零倾斜透视投影矩阵的一个充分必要条件是<span
+class="math inline">\(\det(A) \neq 0\)</span>且满足：</li>
+</ul>
+<p><span class="math display">\[
+(a_1\cdot a_3)\cdot(a_2\cdot a_3) = 0
+\]</span></p>
+<ul>
+<li><span
+class="math inline">\(M\)</span>是零倾斜且宽高比为1的透视投影矩阵的一个充分必要条件是<span
+class="math inline">\(\det(A) \neq 0\)</span>​且满足：</li>
+</ul>
+<p><span class="math display">\[
+\left\{\begin{matrix}
+(a_1 \times a_3) \cdot (a_2 \times a_3) = 0\\
+(a_1 \times a_3) \cdot (a_1 \times a_3) = (a_2 \times a_3) \cdot (a_2
+\times a_3)
+\end{matrix}\right.
+\]</span></p>
+<p>这里我们还补充一些透视投影变换的性质，包括点投影为点、线投影为线、近大远小、角度不再保持、平行线相交等。</p>
+<p>在实际过程中，我们获取相机参数则可以通过相机标定的方式来完成。相机标定主要是通过对相机标定装置进行拍摄，人为找到3D空间与照片之间的对应点，通过多组对应点来构造多组方程，再通过求解方程组来得到相机参数。</p>
+<h2 id="概念补充">概念补充</h2>
+<h3 id="平面和空间的变换">平面和空间的变换</h3>
+<p>下面我们主要介绍在平面和空间中的一些常见变换，包括等距变换、相似变换、仿射变换、透视变换等。我们知道在坐标系的表达下，变换Transform可以通过矩阵的形式来表示，因此各种变换的重点也就在于矩阵的不同。并且下面的介绍统一都是使用齐次坐标的形式来表示的。</p>
+<h4 id="d平面上的变换">2D平面上的变换</h4>
+<ul>
+<li>等距变换</li>
+</ul>
+<p>首先考虑等距变换。等距变换是一种最简单的变换，在变换前后可以保持距离不变。等距变换可以通过旋转矩阵<span
+class="math inline">\(R_{2\times 2}\)</span>与平移向量<span
+class="math inline">\(t_{2\times
+1}\)</span>来表示。假设某个点在原来的坐标系上坐标为<span
+class="math inline">\(\mathbf{x}\)</span>，经过变换之后的坐标变成了<span
+class="math inline">\(\mathbf{x}&#39;\)</span>，那么它们之间的关系如下：
+<span class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+R &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix} \mathbf{x} = H_e\mathbf{x}
+\]</span> 等距变换共有3个自由度：旋转角度+沿两个轴的平移长度。</p>
+<ul>
+<li>相似变换</li>
+</ul>
+<p>相似变换可以保持图形相似，在变换前后能够保持两直线的夹角、长度的比值、面积的比值不变。相似变换是等距变换和均匀缩放变换的合成，均匀缩放变换可以由下面的矩阵来表示：
+<span class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+s &amp; 0 &amp; 0 \\
+0 &amp; s &amp; 0 \\
+0 &amp; 0 &amp; 1 \\
+\end{bmatrix}
+\mathbf{x}
+\]</span> 因此整个相似变换坐标前后关系为： <span class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+sR &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix} \mathbf{x} = H_s\mathbf{x}
+\]</span>
+缩放变换共有4个自由度：旋转角度+沿两个轴的平移长度+缩放比例。</p>
+<ul>
+<li>仿射变换</li>
+</ul>
+<p>仿射变换前后保持平行性不变、面积的比值不变、平行线段长度的比值不变。一个矩形经过仿射变换之后会变成平行四边形。仿射变换如下：
+<span class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+a &amp; b &amp; x_0 \\
+c &amp; d &amp; y_0 \\
+0 &amp; 0 &amp; 1 \\
+\end{bmatrix}
+\mathbf{x},\quad
+\mathbf{x}&#39; = \begin{bmatrix}
+A &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix}
+\mathbf{x} = H_a \mathbf{x}
+\]</span> 仿射变换一共有6个自由度。</p>
+<ul>
+<li>透视变换</li>
+</ul>
+<p>透视变换前后保持四共线点的<a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E4%BA%A4%E6%AF%94">交比</a>不变。透视变换如下：
+<span class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+a &amp; b &amp; x_0 \\
+c &amp; d &amp; y_0 \\
+v_1 &amp; v_2 &amp; 1 \\
+\end{bmatrix}
+\mathbf{x},\quad
+\mathbf{x}&#39; = \begin{bmatrix}
+A &amp; t \\
+v^T &amp; 1 \\
+\end{bmatrix}
+\mathbf{x} = H_a \mathbf{x}
+\]</span> 透视变换一共有8个自由度。</p>
+<h4 id="d空间中的变换">3D空间中的变换</h4>
+<ul>
+<li>相似变换</li>
+</ul>
+<p>3D空间中的相似变换保持点变换到点、线变换到线；保持点点共线(面)性、线的共面性；保持直线与直线、直线与平面、平面与平面的平行性不变；保持角度不变等。变换公式如下，其中<span
+class="math inline">\(R_{3\times 3}\)</span>表示旋转矩阵，<span
+class="math inline">\(t_{3\times1}\)</span>表示平移向量。 <span
+class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+sR &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix} \mathbf{x}
+\]</span>
+3D空间中的相似变换一共有7个自由度：绕3个轴的旋转+沿3个轴的平移+缩放比例。</p>
+<ul>
+<li>仿射变换</li>
+</ul>
+<p>3D空间中的仿射变换保持无穷远平面不变（无穷远点变换到无穷远点），保持直线与直线、直线与平面、平面与平面的平行性不变。变换公式如下：
+<span class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+A_{3\times 3} &amp; t_{3\times 1} \\
+0_{1\times 3} &amp; 1_{1\times 1} \\
+\end{bmatrix} \mathbf{x}
+\]</span> 3D空间中的仿射变换一共有12个自由度：<span
+class="math inline">\(A\)</span>中包含9个，<span
+class="math inline">\(t\)</span>中包含3个。</p>
+<ul>
+<li>透视变换</li>
+</ul>
+<p>3D空间中的透视变换保持点变换到点、线变换到线，并且保持点的共线(面)性、线的共面性。变换公式如下：
+<span class="math display">\[
+\mathbf{x}&#39; = \begin{bmatrix}
+A_{3\times 3} &amp; t_{3\times 1} \\
+v_{1\times 3} &amp; 1_{1\times 1} \\
+\end{bmatrix} \mathbf{x}
+\]</span> 3D空间中的透视变换一共有15个自由度：<span
+class="math inline">\(A\)</span>中包含9个，<span
+class="math inline">\(t\)</span>中包含3个，<span
+class="math inline">\(v\)</span>中包含3个。</p>
+<h3 id="平面和空间的无穷远">平面和空间的无穷远</h3>
+<p>在前面空间中的变换时，我们提到无穷远的概念。接下来就介绍在平面和空间中的无穷远。</p>
+<p>首先进行无穷远的定义。无穷远包括无穷远点、无穷远线、无穷远面。在引入无穷远之后，我们说平行线在无穷远点处相交、两个平行平面的交线是无穷远线。它们本身保持类似普通点线面的定义，即无穷远点在无穷远线上，无穷远线在无穷远面上。</p>
+<p>考虑平面中的无穷远，直线的解析方程为<span
+class="math inline">\(ax+by+c=0\)</span>，在齐次坐标中有如下表示，其中<span
+class="math inline">\(a,b\)</span>决定了直线的方向，而<span
+class="math inline">\(\mathbf{l}\)</span>就可以代表这条直线。 <span
+class="math display">\[
+\mathbf{l} = \begin{bmatrix}
+a \\ b \\ c
+\end{bmatrix},
+\mathbf{x} = \begin{bmatrix}
+x \\ y \\ 1
+\end{bmatrix}
+\quad
+\text{那么}\mathbf{x} \in \mathbf{l} \text{就对应}
+\mathbf{l}^T\mathbf{x} = 0
+\]</span>
+而无穷远点是平行线的交点，而两条直线的交点可以通过直线向量进行叉乘得到，因此有：
+<span class="math display">\[
+\mathbf{l} = \begin{bmatrix}
+a \\ b \\ c
+\end{bmatrix},
+\mathbf{l}&#39; = \begin{bmatrix}
+a \\ b \\ c&#39;
+\end{bmatrix},
+\quad
+\text{交点}\mathbf{x}_{\infty} = \mathbf{l} \times \mathbf{l}&#39;
+=  \begin{bmatrix}
+b \\ -a \\ 0
+\end{bmatrix}
+\]</span> 其中，两个向量叉乘可以转化为矩阵和向量之间的乘法： <span
+class="math display">\[
+p\times q = \begin{bmatrix}
+0 &amp; -p_z &amp; p_y \\
+p_z &amp; 0 &amp; -p_x \\
+-p_y &amp; p_x &amp; 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+q_x \\ q_y \\ q_z
+\end{bmatrix}
+= [p_{\times}]q
+\]</span>
+通过上面的计算，我们可以定义在平面中的无穷远点就是齐次坐标下最后一维为0的点。并且对于一组平行线与其对应的无穷远点，无穷远点的前两维度实际上就代表了这组平行线的方向，这点可以在后续3维空间中的推广中使用到。于是2D空间中的无穷远点就有如下表示：
+<span class="math display">\[
+\mathbf{x}_{\infty} = \begin{bmatrix}
+x_1 \\ x_2 \\ 0
+\end{bmatrix}
+\]</span>
+所有的无穷远点都位于无穷远线上，因此2D空间中的无穷远线就有如下表示：
+<span class="math display">\[
+\mathbf{l}_{\infty} = \begin{bmatrix}
+0 \\ 0 \\ 1
+\end{bmatrix}
+\]</span> 下面开始向3维空间中进行推广。</p>
+<p>在3维空间中，假设直线的方向向量是<span class="math inline">\(d = [a,
+b, c]^T\)</span>，那么这组平行线对应的无穷远点就是<span
+class="math inline">\(\mathbf{x}_{\infty} = [a, b, c,
+0]^T\)</span>，与在2D空间中具有相同的性质。即： <span
+class="math display">\[
+\mathbf{x}_{\infty} = \begin{bmatrix}
+x_1 \\ x_2 \\ x_3 \\ 0
+\end{bmatrix}
+\]</span>
+在3维空间中有很多无穷远线，每一组平行的平面就会在一条无穷远线上相交，所有的无穷远线构成无穷远面。那么3维空间中的无穷远面具有如下表示：
+<span class="math display">\[
+\Pi_{\infty} = \begin{bmatrix}
+0 \\ 0 \\ 0 \\ 1
+\end{bmatrix}
+\]</span></p>
+<h3 id="影消点与影消线">影消点与影消线</h3>
+<p>影消点和影消线是图片坐标系中的概念，因此单位是像素。它们本身是图片坐标系中确定的点和确定的线，只不过是由空间中的无穷远点和无穷远线投影而来。</p>
+<p>影消点指的是三维空间中的无穷远点在图像平面上的投影点。考虑<span
+class="math inline">\(v\)</span>为影消点坐标，<span
+class="math inline">\(X_{\infty}\)</span>为相机坐标系下的无穷远点，它对应一组平行线，方向为<span
+class="math inline">\(d=[a, b, c]^T\)</span>，相机的内参矩阵为<span
+class="math inline">\(K\)</span>，那么则有： <span
+class="math display">\[
+X_{\infty} = \begin{bmatrix}
+a \\ b \\ c \\ 0
+\end{bmatrix},\quad
+v = K \begin{bmatrix}
+I &amp; 0
+\end{bmatrix}\begin{bmatrix}
+a \\ b \\ c \\ 0
+\end{bmatrix} = K\begin{bmatrix}
+a \\ b \\ c
+\end{bmatrix} = Kd
+\]</span> 因此可以推出： <span class="math display">\[
+d = \frac{K^-1v}{||K^-1v||}
+\]</span>
+这表示如果我们知道(图片坐标系下)影消点的坐标，就可以得到三维空间（相机坐标系下）中的对应一组平行线的方向。</p>
+<p>影消线则是三维空间中的无穷远线在图像平面上的投影线。考虑3维空间中的一个平面<span
+class="math inline">\(\Pi = [a, b, c, d]^T\)</span>，它的法向量为<span
+class="math inline">\(\mathbf{n}_{3\times 1} = [a, b,
+c]^T\)</span>，它与无穷远平面会相交于无穷远直线<span
+class="math inline">\(\mathbf{l}_{\infty}\)</span>上，这个无穷远直线投影到成像平面上，在图像坐标系中得到影消线<span
+class="math inline">\(\mathbf{l}_{h}\)</span>。考虑相机坐标系中的一个点<span
+class="math inline">\(P\)</span>，它满足如下关系： <span
+class="math display">\[
+\begin{aligned}
+\text{该点在3维空间的平面上:}\quad &amp;\Pi^TP = 0 \\
+\text{该点投影之后在影消线上:}\quad &amp; \mathbf{l}_h^TK[I|0]P = 0
+\end{aligned}
+\]</span>
+观察这两个式子，在第二个式子中，如果我们采用分块矩阵，只观察<span
+class="math inline">\(I\)</span>对应的那一块，那么实际上可以得出如下结论：
+<span class="math display">\[
+\mathbf{n} = K^T\mathbf{l}_h
+\]</span>
+这表示如果我们知道(图像坐标系下)影消线的表示，就可以得到三维空间(相机坐标系下)对应的平面的法向量。</p>
+<h1 id="极几何">极几何</h1>
+<p>考虑我们对场景中的一个3D场景进行拍摄，从两个不同的角度进行拍摄，如下图所示。其中<span
+class="math inline">\(O_1,O_2\)</span>分别表示两次拍摄的相机光心；<span
+class="math inline">\(K,K&#39;\)</span>分别表示两次拍摄的相机内参；<span
+class="math inline">\(p,p&#39;\)</span>分别表示在各自图像坐标系中的像素点坐标，并且代表的是场景中的同一点<span
+class="math inline">\(P\)</span>；<span
+class="math inline">\(R,T\)</span>分别表示从<span
+class="math inline">\(O_1\)</span>坐标系变换到<span
+class="math inline">\(O_2\)</span>坐标系需要经过的旋转和平移。如果在理想的情况下，我们可以在同一个3维坐标系中，同时求出直线<span
+class="math inline">\(l\)</span>和<span
+class="math inline">\(l&#39;\)</span>，并且这两条直线的交点就是场景中对应真实点的坐标<span
+class="math inline">\(P\)</span>，只需要通过直线叉乘即可。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210181148545.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="一个场景的两个不同角度拍摄">
+<p>在理想的情况下，我们可以通过<span
+class="math inline">\(l,l&#39;\)</span>叉乘得到场景中<span
+class="math inline">\(P\)</span>的坐标，但是在实际操作中，由于噪声的存在，我们算出来的两条直线通常不会相交，那么此时我们就需要使用其他的方法来求解。首先重新描述问题：</p>
+<ul>
+<li>已知：<span
+class="math inline">\(p,p&#39;,K,K&#39;,R,T\)</span></li>
+<li>求解：<span class="math inline">\(P\)</span>的三维坐标(在<span
+class="math inline">\(O_1\)</span>坐标系中)</li>
+</ul>
+<p>有两种方式来求解该问题，分别是线性解法和非线形解法。</p>
+<p>线性解法通过已知来构建如下关系： <span class="math display">\[
+\begin{aligned}
+p &amp;= K[I|0]P \\
+p&#39;&amp;= K&#39;[R|T]P
+\end{aligned}
+\]</span>
+该关系可以展开为一个超定齐次线性方程组，可以通过相关方法求其最小二乘解。</p>
+<p>非线形解法则通过最小化重投影误差来得到<span
+class="math inline">\(P\)</span>，可以使用相关优化方法来求得最优解。</p>
+<p>上面的描述告诉我们，如果我们能够知道两个视角中的同名点(对应3维空间中的同一真实点)，那么是可以通过相关方法计算出真实点的坐标的。那么问题就是如何在两张图片中找到对应的同名点。极几何就可以在这种情况下建立一定的约束，它描述了同一场景或者物体的两个视点图像之间的几何关系。</p>
+<h2 id="基础概念">基础概念</h2>
+<p>考虑如下的成像过程，我们介绍极几何中的一些基础概念：</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210180204775.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="极几何基础概念">
+<ul>
+<li>极平面：同时过目标点<span
+class="math inline">\(P\)</span>，两个光心<span
+class="math inline">\(O_1,O_2\)</span>的平面</li>
+<li>基线Baseline：光心<span
+class="math inline">\(O_1,O_2\)</span>的连线</li>
+<li>极线Epipolar：极平面与成像平面之间的交线(直线)</li>
+<li>极点：基线与成像平面的交点</li>
+</ul>
+<p>由定义我们可以知道，所有的极平面都会相交于基线，所有的极线都会经过极点。</p>
+<p>考虑在左成像平面上的<span
+class="math inline">\(l\)</span>，该直线对应的真实场景点一定位于极平面上，同理右成像平面上<span
+class="math inline">\(l&#39;\)</span>对应的真实场景点也一定位于极平面上。这也就是说，如果我们要找<span
+class="math inline">\(l\)</span>上点的同名点，我们只需要在对应极线<span
+class="math inline">\(l&#39;\)</span>上进行寻找，有这种约束条件存在，同名点不会出现在其他位置上。反之亦成立，因为<span
+class="math inline">\(l,l&#39;\)</span>​是同一组极线。应用这个性质，就可以降低搜索空间，如果我们要找一张图中某个点<span
+class="math inline">\(p\)</span>的同名点<span
+class="math inline">\(p&#39;\)</span>，只需要在它对应的极线上进行搜索即可。</p>
+<p>当然极几何有一个特例，就是平行视图：</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210180145957.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="平行视图">
+<p>平行视图具有如下性质：</p>
+<ul>
+<li>两个图像平面平行</li>
+<li>基线平行于图像平面，极点<span
+class="math inline">\(e,e&#39;\)</span>位于无穷远处</li>
+<li>极线平行于图像坐标系的u轴</li>
+</ul>
+<p>介绍完极几何的基础概念之后，我们对极几何进行数学上的描述。</p>
+<h2 id="三个矩阵">三个矩阵</h2>
+<h3 id="本质矩阵">本质矩阵</h3>
+<p>本质矩阵是对规范化摄像机拍摄的两个视角图像之间极几何关系进行的代数描述。</p>
+<p>所谓规范化摄像机，指的是它执行规范化投影变换： <span
+class="math display">\[
+P&#39; = \begin{bmatrix}
+x \\ y \\ z
+\end{bmatrix} = \begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+x \\ y \\ z \\ 1
+\end{bmatrix}
+= M\begin{bmatrix}
+x \\ y \\ z \\ 1
+\end{bmatrix}
+\]</span> 在规范化投影变化下，摄像机坐标系下三维点的欧式(非齐次)坐标 =
+图像点的齐次坐标。</p>
+<p>那么整体场景就可以描述为下图的形式。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240210181224316.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="本质矩阵对应场景">
+<p>我们已知两个相机内参<span
+class="math inline">\(K,K&#39;\)</span>都是单位矩阵(规范化投影)，<span
+class="math inline">\(p\)</span>在图像<span
+class="math inline">\(I\)</span>的图像坐标系中的坐标为<span
+class="math inline">\((u,v)\)</span>,<span
+class="math inline">\(p&#39;\)</span>在图像<span
+class="math inline">\(I&#39;\)</span>的图像坐标系中的坐标为<span
+class="math inline">\((u&#39;,v&#39;)\)</span>。那么接下来我们一步步进行本质矩阵的推导。</p>
+<p>第一步，由于我们使用的规范化投影，在规范化投影下，摄像机坐标系下三维点的欧式(非齐次)坐标
+= 图像点的齐次坐标。因此我们有空间点<span
+class="math inline">\(p\)</span>在<span
+class="math inline">\(O_1\)</span>坐标系下的非齐次坐标为<span
+class="math inline">\((u,v,1)\)</span>，空间点<span
+class="math inline">\(p&#39;\)</span>在<span
+class="math inline">\(O_2\)</span>坐标系下的非齐次坐标为<span
+class="math inline">\((u&#39;,v&#39;,1)\)</span>。</p>
+<p>第二步，我们需要将描述统一在<span
+class="math inline">\(O_1\)</span>坐标系下(此时相当于<span
+class="math inline">\(O_1\)</span>摄像机坐标系同时也是世界坐标系)，因此需要将<span
+class="math inline">\(O_2\)</span>和空间点<span
+class="math inline">\(p&#39;\)</span>转化为在<span
+class="math inline">\(O_1\)</span>​坐标系下的描述。根据已知，<span
+class="math inline">\(O_1\)</span>通过旋转<span
+class="math inline">\(R\)</span>和平移<span
+class="math inline">\(T\)</span>变成<span
+class="math inline">\(O_2\)</span>，那么<span
+class="math inline">\(O_2\)</span>在<span
+class="math inline">\(O_1\)</span>坐标系下的坐标假设为<span
+class="math inline">\(O&#39;\)</span>，那么满足<span
+class="math inline">\(O_2 = RO&#39; + T\)</span>，可以解得<span
+class="math inline">\(O&#39; = R^{-1}(-T) =
+-R^TT\)</span>(这里注意由于旋转矩阵都是正交矩阵，所以有<span
+class="math inline">\(R^T = R^{-1}\)</span>)。而<span
+class="math inline">\(p&#39;\)</span>在<span
+class="math inline">\(O_1\)</span>坐标系中的坐标假设为<span
+class="math inline">\(p&#39;_*\)</span>，那么同样满足<span
+class="math inline">\(p&#39; = Rp&#39;_* + T\)</span>，可以解得<span
+class="math inline">\(p&#39;_* = R^Tp&#39; -
+R^TT\)</span>。那么现在我们就将所有的描述都统一在了<span
+class="math inline">\(O_1\)</span>​坐标系下。</p>
+<p>此时在<span class="math inline">\(O_1\)</span>坐标系下考虑<span
+class="math inline">\(O_2\)</span>向量和<span
+class="math inline">\(p&#39;\)</span>向量，这两个向量的叉乘可以得到一个垂直于极平面的向量，从而该向量与<span
+class="math inline">\(p\)</span>的点积为0。具体数学分析如下： <span
+class="math display">\[
+\begin{aligned}
+O_2 \times p&#39; = (-R^TT) \times (R^Tp&#39; - R^TT) &amp;= -R^T T
+\times R^Tp&#39; \\
+该向量(不失一般性，可以消除负号)&amp;与p向量垂直，即点乘为0，则有 \\
+(R^TT \times R^Tp&#39;)^T \cdot p = 0&amp;\\
+(R^T(T\times p&#39;))^T\cdot p = 0
+&amp;\quad[先旋转后叉乘等价于先叉乘后旋转]\\
+(T\times p&#39;)^TR \cdot p = 0 &amp;\\
+([T_{\times}]p&#39;)^TR\cdot p = 0
+&amp;\quad[其中[T_{\times}]表示平移向量T在叉乘的矩阵乘法表示中对应的反对称矩阵]
+\\
+p&#39;^T[T_\times]^TRp = 0
+&amp;\quad[[T_{\times}]为反对称矩阵，因此有[T_{\times}]^T =
+-[T_{\times}]] \\
+p&#39;^T[T_\times]Rp = 0
+\end{aligned}
+\]</span> 我们令<span class="math inline">\(E_{3\times 3} = [T_\times]
+R\)</span>，那么就有<span class="math inline">\(p&#39;^TEp
+=0\)</span>，其中这个<span
+class="math inline">\(E\)</span>就被称为本质矩阵。该矩阵可以通过两个相机坐标系之间的相对旋转和平移得到，在上面的说明中，我们使用的是<span
+class="math inline">\(O_1\rightarrow O_2\)</span>的形式。</p>
+<p>下面我们可以对本质矩阵<span
+class="math inline">\(E\)</span>进行分析，注意<span
+class="math inline">\(p&#39;,p\)</span>表示点在各自图像坐标系中的像素坐标位置。</p>
+<ul>
+<li><span class="math inline">\(p\)</span>对应的极线在<span
+class="math inline">\(I_2\)</span>图像坐标系中，且有<span
+class="math inline">\(l&#39; = Ep\)</span>​</li>
+<li><span class="math inline">\(p&#39;\)</span>对应的极线在<span
+class="math inline">\(I_1\)</span>图像坐标系中，且有<span
+class="math inline">\(l = E^Tp&#39;\)</span></li>
+<li><span class="math inline">\(Ee = 0,e&#39;^TE = 0\)</span>​</li>
+<li><span class="math inline">\(E\)</span>是奇异的，它的秩为2</li>
+<li><span
+class="math inline">\(E\)</span>有5个自由度（3个旋转+3个平移，<span
+class="math inline">\(\det(E)=0\)</span>去掉了一个自由度）</li>
+</ul>
+<h3 id="基础矩阵">基础矩阵</h3>
+<p>基础矩阵是对普通摄像机拍摄的两个视角图像之间极几何关系进行的代数描述。由于上面介绍了规范化相机，因此在基础矩阵部分进行的工作，只需要将普通摄像机转化为规范化摄像机即可。现在考虑两个相机的内参<span
+class="math inline">\(K,K&#39;\)</span>并不是规范化的内参矩阵，我们有图像坐标系中的坐标<span
+class="math inline">\(p\)</span>与相机坐标系下的点<span
+class="math inline">\(P\)</span>之间的映射关系如下： <span
+class="math display">\[
+\begin{aligned}
+p &amp;= K[I|0] P\\
+K^{-1}p &amp; = K^{-1}K[I|0]P\\
+K^{-1}p &amp; = \begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}P
+\end{aligned}
+\]</span> 令<span class="math inline">\(p_c = K^{-1}p\)</span>，则有：
+<span class="math display">\[
+p_c = \begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+\end{bmatrix}P
+\]</span> 这意味着，对于一个普通的摄像机内参矩阵<span
+class="math inline">\(K\)</span>，在普通投影变化下，它将<span
+class="math inline">\(P\)</span>投影到<span
+class="math inline">\(p\)</span>；在规范化投影变化下，它将<span
+class="math inline">\(P\)</span>投影到<span
+class="math inline">\(K^{-1}p\)</span>。有了这个结论，我们就可以借用上面本质矩阵继续进行推导：
+<span class="math display">\[
+\begin{aligned}
+p_c&#39;^TEp_c
+&amp;= p_c&#39;^T[T_\times]Rp_c \\
+&amp;= (K&#39;^{-1}p&#39;)^T[T_\times]RK^{-1}p\\
+&amp;=p&#39;^TK&#39;^{-1}[T_\times]RK^{-1}p = 0
+\end{aligned}
+\]</span> 令<span class="math inline">\(F =
+K&#39;^{-1}[T_\times]RK^{-1}\)</span>，则有<span
+class="math inline">\(p&#39;^TFp =
+0\)</span>。同样可以进行类似的分析：</p>
+<ul>
+<li><span class="math inline">\(p\)</span>对应的极线在<span
+class="math inline">\(I_2\)</span>图像坐标系中，且有<span
+class="math inline">\(l&#39; = Fp\)</span>​</li>
+<li><span class="math inline">\(p&#39;\)</span>对应的极线在<span
+class="math inline">\(I_1\)</span>图像坐标系中，且有<span
+class="math inline">\(l = F^Tp&#39;\)</span></li>
+<li><span class="math inline">\(Fe = 0,e&#39;^TF = 0\)</span>​</li>
+<li><span class="math inline">\(F\)</span>是奇异的，它的秩为2</li>
+<li><span class="math inline">\(F\)</span>有7个自由度</li>
+</ul>
+<p>此时，我们就可以得到在普通情况下的基础矩阵。利用基础矩阵，我们实际上就可以完成极线的定位，根据一张图上点的坐标，以及相机内参和两次拍摄的相对旋转与平移，我们就可以在另一张图上找到该点对应的极线。用数学的语言来描述，假设我们已知两次拍摄的相机内参分别为<span
+class="math inline">\(K,K&#39;\)</span>，<span
+class="math inline">\(O_1\rightarrow
+O_2\)</span>的变换需要经过旋转和平移<span
+class="math inline">\(R,T\)</span>，在<span
+class="math inline">\(O_1\)</span>对应图像坐标系中，<span
+class="math inline">\(p\)</span>的像素坐标为<span
+class="math inline">\((u,v)\)</span>，那么<span
+class="math inline">\(p\)</span>在另外一张图中对应的极线(在另外一张图的图像坐标系下)就是<span
+class="math inline">\(l&#39; = Fp\)</span>，其中<span
+class="math inline">\(F\)</span>为基础矩阵，计算如下： <span
+class="math display">\[
+F =K&#39;^{-1}[T_\times]RK^{-1} = K&#39;^{-1}EK^{-1}
+\]</span></p>
+<h3 id="单应矩阵">单应矩阵</h3>
+<p>本质矩阵和基础矩阵并不是两个像素之间的相互转换关系，而是一种坐标之间的内在约束式。而如果再增加一定的约束，当空间中的场景是同一个平面的时候，那么该平面上的点在左右视图上的投影点就可以通过可逆的矩阵实现一对一的坐标相互转换，这个矩阵就被称为单应矩阵。单应矩阵描述的是空间中的平面在两个摄像机下的投影几何。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211112724498.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="单应矩阵对应场景">
+<p>考虑上图对应的场景。其中两个摄像机的内参矩阵分别为<span
+class="math inline">\(K,K&#39;\)</span>，第一个摄像机通过旋转和平移<span
+class="math inline">\(R,t\)</span>变换到第二个摄像机，<span
+class="math inline">\(\mathbf{n}\)</span>表示在空间中的平面<span
+class="math inline">\(\pi\)</span>在第一个摄像机坐标系下的单位法向量，<span
+class="math inline">\(d\)</span>表示平面<span
+class="math inline">\(\pi\)</span>到第一个摄像机坐标系原点的距离。此时我们需要寻找<span
+class="math inline">\(p\)</span>与<span
+class="math inline">\(p&#39;\)</span>之间的对应关系，它们分别表示平面<span
+class="math inline">\(\pi\)</span>上的某一点<span
+class="math inline">\(P\)</span>在两张图像上的像素坐标。</p>
+<p>不妨假设<span class="math inline">\(P = [\widetilde{P}^T,
+1]^T\)</span>，那么平面<span
+class="math inline">\(\pi\)</span>的方程就是<span
+class="math inline">\(\mathbf{n}^T\widetilde{P} = d\)</span>，并记<span
+class="math inline">\(\mathbf{n}_d = \mathbf{n}/d\)</span>接下来： <span
+class="math display">\[
+\begin{aligned}
+M &amp;= K[I|0], \quad M&#39; = K&#39;[R|t], \quad P = [\widetilde{P}^T,
+1]^T \\
+p &amp;= MP = K[I|0]\begin{bmatrix}
+\widetilde{P} \\ 1
+\end{bmatrix} = K\widetilde{P} \\
+p&#39;&amp;= M&#39;P = K&#39;[R|t]\begin{bmatrix}
+\widetilde{P} \\ 1
+\end{bmatrix} = K&#39;(R\widetilde{P} + t) \\
+p&#39;&amp;= K&#39;(R\widetilde{P} + t) =  K&#39;(R\widetilde{P} + tI)
+=  K&#39;(R\widetilde{P} + t\mathbf{n}_d^T\widetilde{P}) \\
+&amp;=  K&#39;(R + t\mathbf{n}^T_d)\widetilde{P} =K&#39;(R +
+t\mathbf{n}^T_d)K^{-1}p
+\end{aligned}
+\]</span> 于是我们可以得到单应矩阵<span
+class="math inline">\(H\)</span>。 <span class="math display">\[
+p&#39; = Hp,\quad H =K&#39;(R + t\mathbf{n}^T_d)K^{-1}
+\]</span>
+单应矩阵可以帮助我们完成两张视图像素坐标的一一对应转换，但是需要注意前提是同名点来自空间中的同一平面，并且我们知道平面的法向量以及到原点的距离。</p>
+<p>单应矩阵具有8个自由度。</p>
+<blockquote>
+<p>注意在此篇文章中，本质矩阵，基础矩阵以及单应矩阵都是相对于第一个相机参考系而言的表示。</p>
+</blockquote>
+<h2 id="平行视图">平行视图</h2>
+<h3 id="平行视图的优势">平行视图的优势</h3>
+<p>在极几何的基础概念中，我们介绍了一个特殊的极几何情况，就是平行视图。在平行视图的情况下，两个图像平面相互平行，并且基线位于图像平面，极点<span
+class="math inline">\(e,e&#39;\)</span>位于无穷远处。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211145557010.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="平行视图">
+<p>在平行视图下，会有一些<strong>非常好的性质</strong>：</p>
+<ol type="1">
+<li>所有的极线都是平行于u轴的</li>
+<li>对于图像中的<span
+class="math inline">\(p\)</span>点，它的同名点<span
+class="math inline">\(p&#39;\)</span>一定在对应的极线上，并且这条直线与p所在极线高度相同。即<span
+class="math inline">\(p\)</span>和<span
+class="math inline">\(p&#39;\)</span>的<span
+class="math inline">\(v\)</span>坐标相同</li>
+</ol>
+<p>下面是对这个性质的证明，在实际使用过程中，我们知道有上面那些很好的性质即可。</p>
+<p>首先，平行视图仍然属于我们讨论的对同一场景不同角度的拍摄，因此之前的矩阵描述同样可以适用，因此有：
+<span class="math display">\[
+F = K&#39;^{-T}[T_\times]RK^{-1}
+\]</span> 考虑极点<span class="math inline">\(e&#39;\)</span>，它是<span
+class="math inline">\(O_1\)</span>光心在<span
+class="math inline">\(I_2\)</span>图像平面上的投影，因此我们有： <span
+class="math display">\[
+e&#39; = K&#39;[R|T]\begin{bmatrix}
+0 \\ 0 \\ 0 \\ 1
+\end{bmatrix} = K&#39;T
+\]</span> 这里我们直接使用一个叉乘的性质：对于任何向量<span
+class="math inline">\(a\)</span>来说，如果<span
+class="math inline">\(B\)</span>是可逆的，那么在相差一个尺度的情况下，我们有：
+<span class="math display">\[
+[a_\times]B = B^{-T}[(B^{-1}a)_\times]
+\]</span> 我们令<span class="math inline">\(a =
+T,B=K&#39;^{-1}\)</span>，那么则有： <span class="math display">\[
+\begin{aligned}
+\text[T_\times] K&#39;^{-1} &amp;= K&#39;^{T}[(K&#39;T)_\times] \\
+[T_\times] &amp;= K&#39;^T[(K&#39;T)_\times]K&#39;
+\end{aligned}
+\]</span> 用这个结论带入基础矩阵<span
+class="math inline">\(F\)</span>，则有： <span class="math display">\[
+\begin{aligned}
+F &amp;= K&#39;^{-T}[T_\times]RK^{-1} =
+K&#39;^{-T}K&#39;^T[(K&#39;T)_\times]K&#39;RK^{-1}\\
+&amp;=[(K&#39;T)_\times]K&#39;RK^{-1} \\
+&amp;=[e&#39;_\times]K&#39;RK^{-1}
+\end{aligned}
+\]</span>
+上面的结论是对任何普通情况都成立的，相当于给出了基础矩阵的另外一种使用极点坐标的表示方式。而对于平行视图的情况，我们有：
+<span class="math display">\[
+K = K&#39;,\quad R = I,\quad e&#39; = \begin{bmatrix}
+1 \\ 0 \\ 0
+\end{bmatrix}
+\]</span> 在这种情况下，基础矩阵可以简化为： <span
+class="math display">\[
+F = [e&#39;_\times]K&#39;RK^{-1} = [e&#39;_\times] = \begin{bmatrix}
+0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; -1 \\
+0 &amp; 1 &amp; 0 \\
+\end{bmatrix}
+\]</span> 于是对于<span class="math inline">\(p\)</span>来说，极线为：
+<span class="math display">\[
+l&#39; = Fp = \begin{bmatrix}
+0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; -1 \\
+0 &amp; 1 &amp; 0 \\
+\end{bmatrix}\begin{bmatrix}
+p_u \\
+p_v \\
+1 \\
+\end{bmatrix} = \begin{bmatrix}
+0 \\
+-1 \\
+p_v\\
+\end{bmatrix}
+\]</span> 这表示极线是水平的，平行于u轴。</p>
+<p>考虑<span class="math inline">\(p,p&#39;\)</span>的坐标，则有： <span
+class="math display">\[
+\begin{aligned}
+p&#39;^TFp &amp;= 0 \\
+\begin{bmatrix}
+p&#39;_u &amp;
+p&#39;_v &amp;
+1 \\
+\end{bmatrix}\begin{bmatrix}
+0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; -1 \\
+0 &amp; 1 &amp; 0 \\
+\end{bmatrix}\begin{bmatrix}
+p_u \\
+p_v \\
+1 \\
+\end{bmatrix} &amp;= 0 \\
+p_v &amp;= p&#39;_v
+\end{aligned}
+\]</span> 这表示同名点对之间的纵坐标是相同的，它们位于同一行。</p>
+<h3 id="极线校正">极线校正</h3>
+<p>我们说平行视图有非常多的好处，但是很多情况下我们拍摄的情况并不是平行视图。此时，我们可以使用极线纠正，来将不是平行视图的情况转化成平行视图。如下图所示，我们希望将两个原始的图像经过<span
+class="math inline">\(H,H&#39;\)</span>变换之后得到平行视图的情况，并且在变换过程中保持一一映射。</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211152849266.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="极线校正">
+<p>进行极线校正可以通过一系列步骤完成，这里只介绍步骤内容，具体的原理不再进行说明。</p>
+<p>第一步：在两幅图像之间找到一组匹配点(不少于8个)，估计出基础矩阵<span
+class="math inline">\(F\)</span></p>
+<p>第二步：利用基础矩阵求解出两幅图像中的极点<span
+class="math inline">\(e,e&#39;\)</span></p>
+<p>第三步：选择透视变换<span
+class="math inline">\(H&#39;\)</span>将<span
+class="math inline">\(e&#39;\)</span>变换到无穷远点<span
+class="math inline">\((f,0,0)\)</span>，这里<span
+class="math inline">\(H&#39; = T^{-1}GRT\)</span>，其中<span
+class="math inline">\(T,R,G\)</span>可以通过下面细节求得： <span
+class="math display">\[
+T = \begin{bmatrix}
+1 &amp; 0 &amp; -\frac{width}{2} \\
+0 &amp; 1 &amp; -\frac{height}{w} \\
+0 &amp; 0 &amp; 1\\
+\end{bmatrix}
+\]</span> 记<span class="math inline">\(e&#39; =
+(e&#39;_1,e&#39;_2,1)\)</span>，则： <span class="math display">\[
+R = \begin{bmatrix}
+\alpha\frac{e_1&#39;}{\sqrt{e_1&#39;^2+e_2&#39;^2}} &amp;
+\alpha\frac{e_2&#39;}{\sqrt{e_1&#39;^2+e_2&#39;^2}} &amp; 0 \\
+-\alpha\frac{e_2&#39;}{\sqrt{e_1&#39;^2+e_2&#39;^2}} &amp;
+\alpha\frac{e_1&#39;}{\sqrt{e_1&#39;^2+e_2&#39;^2}} &amp; 0 \\
+0 &amp; 0 &amp; 1 \\
+\end{bmatrix},其中e_1&#39; &gt; 0 时\alpha = 1;反之\alpha = -1
+\]</span> 接下来： <span class="math display">\[
+G =\begin{bmatrix}
+1 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 \\
+-\frac{1}{f} &amp; 0 &amp; 1\\
+\end{bmatrix}
+\]</span> 第四步：寻找对应的透视变换矩阵<span
+class="math inline">\(H\)</span>使得下面的式子最小： <span
+class="math display">\[
+\sum_i d(Hp_i,H&#39;p&#39;_i)
+\]</span> 第五步：分别利用矩阵<span
+class="math inline">\(H,H&#39;\)</span>来对左右两幅图像<span
+class="math inline">\(I,I&#39;\)</span>进行重采样。</p>
+<p>下面是一个极线校正前后的对比：</p>
+<img src="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/image-20240211154144695.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="极线校正前后">
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1mT4y1o7Q2/?spm_id_from=333.788&amp;vd_source=f05227407dcf2e1cd95d954a632cec91">计算机视觉之三维重建（深入浅出SfM与SLAM核心算法）bilibili</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/3D/">#3D</a>
+      
+        <a href="/tags/%E7%9B%B8%E6%9C%BA/">#相机</a>
+      
+        <a href="/tags/%E6%9E%81%E5%87%A0%E4%BD%95/">#极几何</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>摄像机几何与极几何</div>
+      <div>http://example.com/2024/02/11/摄像机几何与极几何/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年2月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/02/07/Mulit-View-Stereo-%E4%BC%A0%E7%BB%9F%E6%96%B9%E6%B3%95/" title="Mulit-View Stereo 传统方法">
+                        <span class="hidden-mobile">Mulit-View Stereo 传统方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -24,7 +24,7 @@
 <meta property="og:description" content="在3D相关的模型当中，我们通常会使用到相机参数作为参数，其中相机参数又可以分为相机外参和相机内参。本篇主要介绍了相机参数的概念，包括相机外参和相机内参、外参矩阵、内参矩阵、投影矩阵等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-01-14T09:26:57.000Z">
-<meta property="article:modified_time" content="2024-02-03T09:49:03.223Z">
+<meta property="article:modified_time" content="2024-02-08T09:48:36.287Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="相机">
@@ -270,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.1k 字
+          2.5k 字
         
       </span>
     
@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          18 分钟
+          21 分钟
         
       </span>
     
@@ -347,7 +347,8 @@ R &amp; t \\
 0 &amp; 1 \\
 \end{bmatrix}
 \]</span>
-另外，还有一个相机位姿(pose)的概念。相机位姿描述的是相机坐标系是如何通过世界坐标旋转和平移得来的，对应得到旋转矩阵<span
+在齐次坐标的表达下，我们可以利用w2c矩阵来将世界坐标系的3D坐标变换到相机坐标系中，此时两个坐标系中都是3D坐标，齐次坐标表示则有4维。</p>
+<p>另外，还有一个相机位姿(pose)的概念。相机位姿描述的是相机坐标系是如何通过世界坐标旋转和平移得来的，对应得到旋转矩阵<span
 class="math inline">\(R_c\)</span>和平移矢量<span
 class="math inline">\(t_c\)</span>。<span
 class="math inline">\([R_c|t_c]\)</span>实际上描述的就是相机坐标系xyz轴以及相机中心在世界坐标系中的方向和位置。具体来说，旋转矩阵的第一列到第三列分别表示相机坐标系xyz轴在世界坐标系下对应的方向；平移向量表示相机原点在世界坐标系中对应的位置。
@@ -376,10 +377,10 @@ f_x &amp; 0 &amp; c_x \\
 0 &amp; 0 &amp; 1
 \end{bmatrix}
 \]</span> 其中<span class="math inline">\(f_x\)</span><span
-class="math inline">\(和f_y\)</span>是相机的水平和垂直焦距（对于理想的针孔相机，<span
-class="math inline">\(f_x=f_y\)</span>）。焦距指的是是相机中心到成像平面的距离，以像素为单位。<span
+class="math inline">\(和f_y\)</span>是相机的水平和垂直焦距在相机坐标系中的表示，单位为像素（对于理想的针孔相机，<span
+class="math inline">\(f_x=f_y\)</span>）。相机焦距指的是是相机中心到成像平面的距离，通常是长度单位，为了转化为像素表示，还需要结合对应的比例。<span
 class="math inline">\(c_x\)</span>和<span
-class="math inline">\(c_y\)</span>是图像原点相对于相机光心的水平和垂直偏移量。在一般情况下，<span
+class="math inline">\(c_y\)</span>是图像原点相对于相机光心的水平和垂直偏移量，单位同样是像素。在一般情况下，<span
 class="math inline">\(c_x\)</span>，<span
 class="math inline">\(c_y\)</span>​可以用图像宽和高的1/2近似。</p>
 <p>实际上标准的内参矩阵<span
@@ -392,12 +393,25 @@ f_x &amp; s &amp; c_x \\
 0 &amp; 0 &amp; 1
 \end{bmatrix}
 \]</span> 不过一般情况下，我们会假设像素没有偏斜，即<span
-class="math inline">\(s=0\)</span>。</p>
-<p>通过相机的内参和外参，我们就可以得到相机的<strong>投影矩阵</strong>（Projection
+class="math inline">\(s=0\)</span>​。</p>
+<p>在齐次坐标的情况下，我们可以利用内参矩阵<span
+class="math inline">\(K\)</span>来将相机坐标系下的3D坐标<span
+class="math inline">\(A\)</span>（齐次表示具有4维）映射到图像坐标系中的2D坐标<span
+class="math inline">\(B\)</span>（齐次表示具有3维度），映射关系如下：
+<span class="math display">\[
+B_{3\times 1} = K_{3\times 1}[I, 0]_{3\times 4} A_{4\times 1}
+\]</span>
+通过相机的内参和外参，我们就可以得到相机的<strong>投影矩阵</strong>（Projection
 matrix）<span
 class="math inline">\(P\)</span>。通过投影矩阵，我们可以将世界坐标系中的点映射到二维图像平面，实际也就是依次连续使用世界坐标系-&gt;相机坐标系-&gt;图像坐标系的变换（依次左乘变换矩阵），我们有：
 <span class="math display">\[
-P = K[R|t]
+\begin{aligned}
+P &amp;= K[I,0] w2c  = K[I, 0]\begin{bmatrix}
+R &amp; t \\
+0 &amp; 1 \\
+\end{bmatrix} \\
+&amp; = K[R|t]
+\end{aligned}
 \]</span></p>
 <blockquote>
 <p>至此我们可以进行一个阶段性总结：</p>
@@ -407,7 +421,7 @@ class="math inline">\([R|t]\)</span>，它的作用是将世界坐标系的3D坐
 <li>相机位姿(pose,
 c2w)，描述的是世界坐标系如何通过旋转和平移得到相机坐标系，这对应一个pose矩阵。这个pose矩阵在数值上与相机外参互逆（在齐次形式下）。</li>
 <li>相机内参(intrinsic)<span
-class="math inline">\(K\)</span>,它的作用是将相机坐标系下的3D坐标映射到2D的图像平面中</li>
+class="math inline">\(K\)</span>，它的作用是将相机坐标系下的3D坐标映射到2D的图像平面中</li>
 </ul>
 </blockquote>
 <p>另外，相机参数的获取一般有两种方式。一般对于公开的数据集，其中都直接包含了相机参数，虽然组织形式有所区别，需要查看对应的文档。对于一些真实场景数据集，例如我们自己使用手机拍摄了一组图像，想要获取相机位姿，则可以通过Structure-From-Motion(SFM,
