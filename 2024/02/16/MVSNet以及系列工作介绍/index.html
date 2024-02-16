@@ -1,0 +1,1375 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了MVSNet及其相关的一系列工作，包括MVSNet本身的介绍、基于MVSNet各个方面的改进、无监督MVS等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVSNet以及系列工作介绍">
+<meta property="og:url" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了MVSNet及其相关的一系列工作，包括MVSNet本身的介绍、基于MVSNet各个方面的改进、无监督MVS等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240212090808308.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240213150410825.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240213161405637.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214111944972.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240213181823050.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214120333956.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214145434076.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214164036755.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215100645825.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215110559302.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215115559980.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214184752340.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214184813113.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215182657914.png">
+<meta property="og:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240216141203555.png">
+<meta property="article:published_time" content="2024-02-16T07:26:29.000Z">
+<meta property="article:modified_time" content="2024-02-16T07:30:31.226Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="MVS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240212090808308.png">
+  
+  
+  
+  <title>MVSNet以及系列工作介绍 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MVSNet以及系列工作介绍"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-02-16 15:26" pubdate>
+          2024年2月16日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          19k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          162 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MVSNet以及系列工作介绍</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="summary-前置">Summary 前置</h1>
+<p>MVSNet系列的网络基本都包含三个部分，分别是：特征抽取网络Feature
+Extraction Network、Cost Volume构造以及Cost Volume
+Regularization。不同模型在这是三个主要部分上有所区分。然后再是在不同地方增加特殊的trick。</p>
+<ul>
+<li>Feature Extraction Network：基本上还是使用CNN
+Backbone来提取特征，包括ResNet、U-Net；</li>
+<li>Cost
+Volume构造：这一步主要差异在如何将多视图的转换后的Volume聚合在一起，已有尝试包括简单加法、方差计算、权重分配学习等；</li>
+<li>Cost Volume Regularization：这一步将Cost Volume转化为概率Volume
+<span class="math inline">\(P\)</span>，已有尝试包括3D CNN、RNN、Coarse
+to Fine等；</li>
+</ul>
+<p>另外在损失函数方面，我们可以将损失函数大致分为<strong>类分类的损失函数</strong>以及<strong>类回归的损失函数</strong>。在类分类的损失函数情况中，我们在预测最终深度时，选择概率最大的深度值，所以损失函数将目标深度建模为one-hot向量，利用最终的概率图<span
+class="math inline">\(P\)</span>​与GT计算corss
+entropy；在类回归的损失函数情况中，预测最终深度时是计算深度的期望，所以损失函数是这个深度与GT深度之间的差异。经验表明，类分类的损失函数有助于预测出准确的深度值，但是可能会导致深度值的不连续；类回归的损失函数有助于预测平滑的深度图，但是会失去边缘的清晰度。</p>
+<p>从经典论文<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1804.02505">MVSNet(ECCV2018)</a>开始，它提出了一个端到端的多视角深度图推理框架，后面的论文在它提出的框架下进行不同的改进。</p>
+<p>本篇文章涉及从MVSNet开始的一系列相关模型，这里进行简单描述整理，便于后续查询</p>
+<ul>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1804.02505">MVSNet(ECCV2018)</a>：经典论文，提出MVSNet，完成端到端的多视角深度图推理</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1902.10556">R-MVSNet(CVPR2019)</a>：MVSNet的原作者对MVSNet的改进，使用循环GRU代替3D
+UNet来完成Cost Volume Regularization，降低显存的占用</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1908.04422">Point-MVSNet(ICCV2019)</a>：首先预测出粗略的深度信息，生成初始点云，再用3D点云的算法去迭代优化depth的回归</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content_ICCV_2019/papers/Luo_P-MVSNet_Learning_Patch-Wise_Matching_Confidence_Aggregation_for_Multi-View_Stereo_ICCV_2019_paper.pdf">P-MVSNet(ICCV2019)</a>：在构造Cost
+Volume时从pixel-wise的扩展到patch-wise</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1912.08329">CVP-MVSNet(CVPR2020)</a>：使用coarse-to-fine的模式来构造Cost
+Volume金字塔，并对深度图进行迭代优化</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1912.06378">Cascade-MVSNet(CVPR2020)</a>：使用coarse-to-fine的模式构造级联Cost
+Volume，逐步还原高分辨率深度图</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2007.10872">D2HC-RMVSNet(ECCV2020)</a>：使用扩张卷积来抽取保持分辨率的图像特征，结合LSTM完成Cost
+Volume Regularization，并提出动态一致性检查算法来进行深度过滤</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2003.13017">Fast-MVSNet(CVPR2020)</a>：采用稀疏的cost
+volume以及Gauss-Newton layer，目的是提高MVSNet的速度</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2012.01411">PatchMatchNet(CVPR2021)</a>：将传统PatchMatch的迭代传播思想引入MVSNet中，做到计算速度快、内存占用低的同时还能保持很高的精度</p></li>
+</ul>
+<p>此外还有无监督的MVSNet：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1905.02706">Unsupervised MVSNet(CVPR
+2019)</a>：利用多视图的一致性约束来构造监督信息，以自监督的方式完成MVS</li>
+<li><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2104.05374">JDACS-MS(AAAI2021)</a>：无监督MVS网络，效果较好</li>
+</ul>
+<h1 id="mvsneteccv2018">MVSNet(ECCV2018)</h1>
+<h2 id="模型架构">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240212090808308.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="MVSNet架构">
+<p>MVSNet完成的是根据多视图来完成深度图的推理，具体来说，它的输入输出如下：</p>
+<ul>
+<li><p>输入：一张Reference Image + 多张Source
+Image，以及各自对应的相机参数(多视图)</p></li>
+<li><p>输出：Reference Image对应的深度图</p></li>
+</ul>
+<p>MVSNet总体步骤如下：</p>
+<p>第一步，使用卷积抽取Feature Map，得到多张Feature
+Map。论文中提到，与简单地使用原始图像进行密集匹配相比，提取的特征图显著地提高了重建质量。</p>
+<p>第二步，将每个Feature Map<span
+class="math inline">\(\mathbf{F}\)</span>(<span
+class="math inline">\(C\times H \times W\)</span>)都转化为一个Volume
+<span class="math inline">\(\mathbf{V}\)</span>(<span
+class="math inline">\(C \times D\times H \times
+W\)</span>)，其中坐标的映射关系通过单应矩阵<span
+class="math inline">\(H\)</span>来完成。</p>
+<p>单应矩阵原始的应用条件如下，考虑空间中的一个平面，这个平面上的点在两个像素平面上有不同的投影，投影坐标可以通过单应矩阵完成一一对应的转换。如果将世界坐标系建立等同于第一个相机坐标系，那么可以通过下面的式子来计算单应矩阵，可以参考：<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/#%E5%8D%95%E5%BA%94%E7%9F%A9%E9%98%B5">摄像机几何与极几何｜单应矩阵
+-
+EverNorif</a>。也就是说，要计算单应矩阵，除了相机之间的相对旋转和平移，我们还需要知道平面的单位法向量<span
+class="math inline">\(\mathbf{n}\)</span>以及平面到坐标系原点的距离<span
+class="math inline">\(d\)</span>​。</p>
+<p>而这里的思想实际上是，假设每个pixel的投影都是来自于空间中的一个平面，并且这个平面垂直于Reference
+Image对应相机坐标系的z轴。这样每个pixel对应的深度就是空间中点(小平面)的深度，而法向量就是相机坐标系的z轴。在这种假设下，每个Source
+Image根据对应的单应矩阵，可以投影出一个Reference
+Image'。由于单应矩阵与深度<span
+class="math inline">\(d\)</span>有关，所以最终的Volume多出了一维度<span
+class="math inline">\(D\)</span>​。经过这一步，我们就构造出了多个Volume，并且每个Volume都可以在一定程度上认为是真实场景在Reference
+Image对应相机参数下的投影。</p>
+<p>第三步，将多个Volume融合成Cost Volume <span
+class="math inline">\(\mathbf{C}\)</span>(<span
+class="math inline">\(C\times D\times H \times
+W\)</span>)。使用方差融合。传统的代价函数使用启发式的方式计算代价，而MVSNet认为所有的视图都同等地贡献匹配成本，而不会去偏向参考图像。最终我们得到Cost
+Volume，它类似于双目立体匹配中的DSI。 <span class="math display">\[
+\mathbf{C} = \mathcal{M}(\mathbf{V}_1,...,\mathbf{V}_N) =
+\frac{\sum_{i=1}^N(\mathbf{V}_i - \overline{\mathbf{V}_i})^2}{N}
+\]</span> 第四步，Cost Volume Regularization。原始的Cost
+Volume可能具有较多的噪声，因此需要执行Regularization来缓解。Cost Volume
+Regularization完成的是将上面原始的Cost Volume <span
+class="math inline">\(C\)</span>转化为概率Volume <span
+class="math inline">\(P\)</span>。这里使用3D的UNet结构，输出的维度是<span
+class="math inline">\(1\times D\times H \times
+W\)</span>，然后沿深度方向进行softmax，最终得到每个像素属于每个深度的概率，得到概率Volume
+<span class="math inline">\(\mathbf{P}_{D\times H \times
+W}\)</span>。此时已经可以进行深度估计，每个像素的估计使用的是所有深度的期望，此时得到的深度图就是Initial
+Depth Map。</p>
+<p>(<span
+class="math inline">\(P\)</span>的构造类似将深度估计转化为一个分类问题，将每个像素pixel分类到深度范围内<span
+class="math inline">\(D\)</span>个深度中的一个。但是最终深度的估算以及loss又类似于回归，深度估算计算深度期望，与真实深度进行比较。)
+<span class="math display">\[
+\mathbf{D}_{H \times W} = \sum_{d = d_{min}}^{d_{max}} d \times
+\mathbf{P}(d)
+\]</span> 第五步，Depth Map Refinement。Initial Depth
+Map由于采用的是期望算法，因此可能会出现过度平滑的结果。Depth Map
+Refinement将概率Volume和Reference Map输入残差网络得到Refined Depth
+Map。</p>
+<p>而网络的最终Loss包括两个部分，分别是Inital Depth Map，Refined Depth
+Map与GT深度图之间的L1 Loss(这种Loss类似于回归问题)。</p>
+<h2 id="公式推导">公式推导</h2>
+<p>在MVSNet中，关键的一步在于Cost
+Volume的构造。不过这里需要提到，原始论文中的单应矩阵公式是有错误的，正确的公式推导如下。</p>
+<p>如果首先假定世界坐标系就是Reference
+Image对应的相机坐标系，从该第1个坐标系变换到第<span
+class="math inline">\(i\)</span>个坐标系需要经过<span
+class="math inline">\(R,t\)</span>的转换，那么对应的单应矩阵就是（这里法向量<span
+class="math inline">\(\mathbf{n}\)</span>从指向原点，因此有符号差异）：
+<span class="math display">\[
+H = K_i(R - \frac{t\mathbf{n}^T}{d})K_1^{-1}
+\]</span>
+而在MVSNet中，我们是基于一个其他的世界坐标系进行计算的，即还存在外参<span
+class="math inline">\(R_1,t_1,...,
+R_i,t_i,...\)</span>。为了使用上面的公式，我们需要将Reference相机坐标系中的相对旋转和平移变换到世界坐标系中。不妨记相对变换在世界坐标系下则为<span
+class="math inline">\(R,t\)</span>，那么则有如下分析。相对变换可以记为<span
+class="math inline">\(1\rightarrow i\)</span>,它又可以分解为<span
+class="math inline">\(1 \rightarrow w ,w\rightarrow
+i\)</span>两个变换，因此有： <span class="math display">\[
+\begin{aligned}
+\begin{bmatrix}
+R &amp; t\\
+0 &amp; 1
+\end{bmatrix}_{1\rightarrow i}
+&amp;= \begin{bmatrix}
+R_i &amp; t_i\\
+0 &amp; 1
+\end{bmatrix}_{w\rightarrow i}
+\begin{bmatrix}
+R_1 &amp; t_1\\
+0 &amp; 1
+\end{bmatrix}_{1\rightarrow w}^{-1} \\
+&amp;=\begin{bmatrix}
+R_i &amp; t_i\\
+0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+R_1^{-1} &amp; -R_1^{-1}t_1\\
+0 &amp; 1
+\end{bmatrix} \\
+&amp;= \begin{bmatrix}
+R_iR_1^{-1} &amp; t_i-R_iR_1^{-1}t_1\\
+0 &amp; 1
+\end{bmatrix}
+\end{aligned}
+\]</span>
+这样我们就得到相对变换在世界坐标系下的表示，带入上面的单应矩阵，则有：
+<span class="math display">\[
+\begin{aligned}
+H &amp;= K_i(R - \frac{t\mathbf{n}^T}{d})K_1^{-1} \\
+&amp;= K_i(R_iR_1^{-1} -
+\frac{(t_i-R_iR_1^{-1}t_1)\mathbf{n}^T}{d})K_1^{-1} \\
+&amp;= K_iR_i(R_1^{-1} - \frac{(R_i^{-1}t_i -
+R_1^{-1}t_1)\mathbf{n}^T}{d})K_1^{-1} \\
+&amp;= K_iR_i(I - \frac{(R_i^{-1}t_i -
+R_1^{-1}t_1)\mathbf{n}^TR_1}{d})R_1^{-1}K_1^{-1}
+\end{aligned}
+\]</span> 尽管我们可以使用<span class="math inline">\(R^T =
+R^{-1}\)</span>来进一步简化，但是仍然无法得到论文中的表达方式。</p>
+<blockquote>
+<p>原始论文中的公式是有错误的，但是Github项目代码实现却是正确的，参考<a
+target="_blank" rel="noopener" href="https://github.com/YoYo000/MVSNet/issues/77">论文中公式问题 ·
+Issue #77 · YoYo000/MVSNet</a></p>
+</blockquote>
+<h2 id="平面扫描plane-sweeping">平面扫描Plane Sweeping</h2>
+<p>考虑多视角的情况下，相机分为Reference位置以及其他Source位置。平面扫描实际上是对场景的一种假设，假设所有物体只有漫反射，并且根据Reference位置的相机来定义一个近平面和远平面，在这之间的物体被一系列密集的平行平面划分。如果平行平面足够密集，那么物体表面上的任意一点<span
+class="math inline">\(p\)</span>一定是位于某个平面上，使用这个平面的深度就可以进行单应变换，计算同名点之间的相似性。将每个像素<span
+class="math inline">\(p\)</span>所有可能的深度进行平面扫描，可以得到一系列代价值。</p>
+<h2 id="简单总结">简单总结</h2>
+<p>总结来说，MVSNet提出了一种端到端的深度图学习框架，利用多视图来完成深度图的推理，其中核心在Cost
+Volume的构造。</p>
+<p>MVSNet的项目地址：</p>
+<ul>
+<li>原始项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/YoYo000/MVSNet">YoYo000/MVSNet</a></li>
+<li>Pytorch实现：<a
+target="_blank" rel="noopener" href="https://github.com/xy-guo/MVSNet_pytorch/tree/master">xy-guo/MVSNet_pytorch</a></li>
+<li>Pytorch Lightning实现：<a
+target="_blank" rel="noopener" href="https://github.com/kwea123/MVSNet_pl">kwea123/MVSNet_pl</a></li>
+</ul>
+<h1 id="r-mvsnetcvpr2019">R-MVSNet(CVPR2019)</h1>
+<p>在原始的MVSNet中，使用3D-UNet来完成Cost Volume
+Regularization，这会导致非常高的显存占用，使得MVSNet无法处理更高分辨率的图片。R-MVSNet主要的改进是使用GRU门控循环单元来完成Cost
+Volume
+Regularization，降低显存的占用，同时可以捕捉深度序列的前后关系。</p>
+<h2 id="模型架构-1">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240213150410825.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="R-MVSNet架构">
+<p>R-MVSNet相对于原始的MVSNet，主要改进从Cost Volume
+Regularization这一步开始。在此之前，我们可以通过方差融合得到初步的Cost
+Volume <span class="math inline">\(C(C\times D \times H \times
+W)\)</span>。Cost Volume Regularization使用RNN架构来完成，我们将<span
+class="math inline">\(C\)</span>沿着深度维度展开，将其看作是一个时间序列，让它按照顺序经过由GRU构成的RNN
+Network之后，输出得到另一个时间序列，同样按照深度方向进行拼接，得到Regularization之后的Cost
+Volume，经过softmax，得到概率Volume <span
+class="math inline">\(P\)</span>。</p>
+<p>相比于原始的MVSNet，R-MVSNet使用的Loss也有所不同。它使用类似分类的损失函数，将GT深度编码为One-Hot
+Embedding的形式，使用交叉熵作为损失函数。</p>
+<p>这种方式可能会带来深度的不连续，因此R-MVSNet中还存在一个非学习的后处理部分，用来做深度图的Refine。考虑Referene
+Image <span class="math inline">\(I_1\)</span>，以及其他Source Image
+<span
+class="math inline">\(I_i\)</span>，通过上面的网络结构，我们可以得到初步的深度图<span
+class="math inline">\(D_1\)</span>。在这个深度图下，我们就可以计算视图之间的一致性误差。通过深度图<span
+class="math inline">\(D_1\)</span>，我们可以将<span
+class="math inline">\(I_i\)</span>投影到<span
+class="math inline">\(I_1\)</span>上，之后按照如下方式计算像素pixel
+<span class="math inline">\(p\)</span>处的一致性损失： <span
+class="math display">\[
+\begin{aligned}
+E^i(p) &amp;= E^i_{photo}(p) + E^i_{smooth}(p) \\
+&amp;=\mathcal{C}(I_1(p), I_{i\rightarrow 1}(p)) + \sum_{p&#39;\in
+\mathcal{N}(p)} \mathcal{S}(p,p&#39;)
+\end{aligned}
+\]</span>
+这里的一致性误差由两个部分组成，分别是两个像素之间的光度误差<span
+class="math inline">\(E_{photo}\)</span>，以及一个正则化项<span
+class="math inline">\(E_{smooth}\)</span>。前者可以使用许多传统方式中的代价函数，R-MVSNet使用的是Zero-Mean
+Normalized Cross-Correlation(ZNCC)。后者主要考虑<span
+class="math inline">\(p\)</span>的邻域像素的深度与<span
+class="math inline">\(p\)</span>的误差，该项越小表示越平滑。</p>
+<p>深度图Refine的过程就是从初始深度图<span
+class="math inline">\(D_1\)</span>，开始逐渐优化总体的一致性损失<span
+class="math inline">\(\sum_{i}\sum_{p}E^{i}(p)\)</span>，最终得到总体一致性损失最小的那个深度图<span
+class="math inline">\(D\)</span>。</p>
+<h2 id="简单总结-1">简单总结</h2>
+<p>R-MVSNet在原始MVSNet的基础上，使用GRU-RNN来代替3D UNet完成Cost Volume
+Regularization，在降低显存使用的同时还能取得很好的效果。另外在损失函数方面，使用了类分类的交叉熵损失函数来预测深度图，并使用一致性损失完成后续的深度图Refine。</p>
+<p>R-MVSNet项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/YoYo000/MVSNet">YoYo000/MVSNet</a></p>
+<h1 id="point-mvsneticcv2019">Point-MVSNet(ICCV2019)</h1>
+<p>虽然同样是考虑到原始的MVSNet对高分辨率图片的处理能力不足，但是Point-MVSNet从深度图的后处理方面出发。Point-MVSNet首先使用MVSNet生成一个粗略的深度图，将其转化为点云之后，再通过深度与GT之间的残差来迭代细化点云。</p>
+<h2 id="模型架构-2">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240213161405637.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Point-MVSNet架构">
+<p>首先进行粗糙的深度图重建，对应上图的上面一行。该部分与原始的MVSNet相同，不过在分辨率和深度采样上进行下调，减少内存消耗。通过粗糙的深度图，我们可以还原出一个初步的点云，后续就是通过迭代优化这个点云来迭代优化深度。</p>
+<p>初步点云中的点被称为unprojected
+point，因为是由粗糙的深度图重建得来的，因此每个点的深度并不是准确的，后续也就是朝着这方面去进行深度优化。对于每个点来说，Point-MVSNet会生成一系列与这些点深度方向一致，但是存在深度位移的假设点，被称为hypothesized
+point。简单来说，对于每个unprojected
+point来说，我们认为它更优的可能就是沿深度方向前后各<span
+class="math inline">\(m\)</span>个单位位移(单位位移记为<span
+class="math inline">\(s\)</span>)对应的那些点。每个unprojected
+point对应<span class="math inline">\(2m\)</span>个hypothesized
+point，一共有<span class="math inline">\(n\times
+(2m+1)\)</span>个点，每个点都有一个3D位置特征<span
+class="math inline">\((x, y, z)\)</span>。</p>
+<p>另外，Point-MVSNet还希望将2D特征融入到点云当中。具体来说，首先通过2D金字塔卷积网络为<span
+class="math inline">\(N\)</span>张原始视图提取图像特征，其中包括了三次下采样，取每次下采样之前的输出作为特征图，这样每张原始视图就对应有3个不同层级的特征图<span
+class="math inline">\(F_i = [F_i^1, F_i^2,
+F_i^3]\)</span>。对于3D点云中的每个点，可以通过相机参数投影到各个视图上，得到2D特征，其中每个unprojected
+point与它对应的hypothesized
+point对应的2D特征是一致的，因此只需要找到每个unprojected
+point对应的2D特征即可。</p>
+<p>考虑点云中的一个三维点<span
+class="math inline">\(X_p\)</span>，寻找它在第<span
+class="math inline">\(j \in \{1, 2,
+3\}\)</span>个特征层级下的2D特征。通过相机参数，我们可以将其投影到每个视图上得到对应的2D特征<span
+class="math inline">\(F_{i,p}^j\)</span>，将这些特征进行方差计算，得到该点在<span
+class="math inline">\(j\)</span>特征层级下的2D特征： <span
+class="math display">\[
+C^j_p = \frac{\sum_{i=1}^{N}(F_{i,p}^j - \overline{F_p^j})}{N}
+\]</span>
+最终，点云上的每个点对应的特征就是2D-3D的，即两类特征的拼接<span
+class="math inline">\([C_p^1, C_p^2,
+C_p^3,X_p]\)</span>，这也是后续PointFlow Module的输入。</p>
+<p>PointFlow Module直接在点云上操作，主要是为了估计unprojected
+point与真实物体表面在深度方向上的差值。PointFlow Module架构如下：</p>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214111944972.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="PointFlow Module">
+<p>PointFlow Module借用了DGCNN的策略。首先，使用KNN为每个unprojected
+point找到k个临近点，在这个K个临近点上连续使用3次边缘卷积Edge
+Conv，拼接3次卷积的结果之后，经过共享参数的MLP并进行softmax，可以得到该unprojected
+point对应一系列点(<span
+class="math inline">\(2m+1\)</span>)的概率值，最终各个unprojected
+point的偏移量就是<span class="math inline">\(2m+1\)</span>个<span
+class="math inline">\(\Delta d\)</span>的期望。得到每个unprojected
+point的深度残差之后，将其投影回原图，得到深度残差图，与初始深度图相加得到得到优化深度图，利用新的优化深度图，又可以进行新的点云投影。迭代进行这个过程，完成深度图的迭代优化。需要注意的是，随着迭代进行，构建假设点的时候，单位位移深度<span
+class="math inline">\(s\)</span>会逐渐减小，以达到更高精度的深度预测。</p>
+<p>最终的损失函数是一个类回归的损失函数，其中<span
+class="math inline">\(l\)</span>表示迭代优化的次数： <span
+class="math display">\[
+Loss = \sum_{i=1}^l(\frac{\lambda^{(i)}}{s^{(i)}}\sum_{p \in P_{valid}}
+||D_{GT}(p) - D^{(i)}(p)||_1)
+\]</span></p>
+<h2 id="简单总结-2">简单总结</h2>
+<p>Point-MVSNet将深度图投影成点云之后，在点云上进行迭代优化。通过构建特征金字塔，将2D特征融入3D点云，并通过在3D空间中聚合邻近点的信息来优化深度残差，从而迭代优化完整的深度图。并且这种方式可以做到在ROI区域局部稠密重建，便于动态交互。</p>
+<p>Point-MVSNet项目地址:<a
+target="_blank" rel="noopener" href="https://github.com/callmeray/PointMVSNet?tab=readme-ov-file">callmeray/PointMVSNet</a></p>
+<h1 id="p-mvsneticcv2019">P-MVSNet(ICCV2019)</h1>
+<p>P-MVSNet与MVSNet相比，在计算Cost
+Volume的时候加入了可学习的网络来完成这个过程，同时增加了另一条路径完成深度图的细化。</p>
+<h2 id="模型架构-3">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240213181823050.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="P-MVSNet架构">
+<p>首先仍然是对多张图进行特征提取，得到<span
+class="math inline">\(F_0,F_1, ...,F_{N-1}\)</span>，其中<span
+class="math inline">\(F_0\)</span>对应Reference
+Image。然后整个模型被分为上下两条路径。</p>
+<p>下面一条路径总体就是MVSNet的流程。</p>
+<p>多张特征图首先进行聚合，得到初步的Cost Volume <span
+class="math inline">\(\mathcal{M}\)</span>，之后经过一个可学习的卷积网络得到<span
+class="math inline">\(\mathcal{M}^*\)</span>​。这两个步骤放在一起对应MVSNet中的Cost
+Volume构造。MVSNet中使用的是方差构造，而这里使用另外一种手工设计的方式+可学习的卷积网络得到Cost
+Volume。</p>
+<p>得到Cost Volume之后，就进入Cost Volume
+Regularization步骤。在这里，P-MVSNet设计了一个Hybrid 3D
+UNet(详细结构可以参考论文)来完成该步骤，得到<span
+class="math inline">\(\mathcal{V}_2\)</span>。最后通过类回归的方式得到深度图<span
+class="math inline">\(D_{l_2}\)</span>。</p>
+<p>下面路径得到的深度图通常是较小分辨率的，上面一条路径则是用来指导<span
+class="math inline">\(D_{l_2}\)</span>深度图进行高分辨率的细化。首先拿到Reference
+Image对应的特征图<span
+class="math inline">\(F_0\)</span>，经过一个Decoder之后得到<span
+class="math inline">\(F&#39;_0\)</span>。下面步骤得到<span
+class="math inline">\(\mathcal{V}_2\)</span>经过上采样之后与<span
+class="math inline">\(F&#39;_{0}\)</span>拼接在一起，再通过一个卷积网络得到<span
+class="math inline">\(\mathcal{V}_1\)</span>，最终也是通过类回归的方式得到更高分辨率的深度图<span
+class="math inline">\(D_{l_2}\)</span>。</p>
+<p>最终整体使用两张深度图与GT的绝对差值作为Loss进行训练。</p>
+<p>作者提到P-MVSNet在构造Cost
+Volume的时候，将pixel-wise转化为了patch-wise，这一步的完成主要是在网络结构图中的Patch-wise
+Confidence，其中在卷积层中的卷积核Kernel细节上做文章。</p>
+<h2 id="简单总结-3">简单总结</h2>
+<p>P-MVSNet在进行Cost
+Volume构造的时候，选择将的方式是融合手工设计的方式以及可学习的卷积网络，其中使用卷积核的大小来控制Patch，使之从pixel-wise变为了patch-wise。</p>
+<p>P-MVSNet并没有提供项目地址。</p>
+<h1 id="cvp-mvsnetcvpr2020">CVP-MVSNet(CVPR2020)</h1>
+<p>CVP-MVSNet考虑到的问题，原始的MVSNet对显存的消耗大；R-MVSNet使用RNN构造Cost
+Volume，使用时间换空间；Point-MVSNet利用点云来迭代优化，但是时间与迭代次数呈线性关系。而CVP-MVSNet同样遵循由粗到细迭代构造出Cost
+Volume，不过它不是基于点云，而是在常规图像网格上完成这些操作的。</p>
+<h2 id="模型架构-4">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214120333956.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="CVP-MVSNet架构">
+<p>CVP-MVSNet首先构造多层特征金字塔。具体来说，对于每张视图，先构造出一个<span
+class="math inline">\(L+1\)</span>层的图像金字塔，其中金字塔的最顶层就是分辨率最高的原图(倒金字塔)。之后，对于图像金字塔的每一层，都是用一个卷积网络进行特征提取，得到特征图。也就是说，对于每张视图，我们有一个<span
+class="math inline">\(L+1\)</span>层的图像金字塔，同时对应有一个<span
+class="math inline">\(L+1\)</span>层的特征图金字塔<span
+class="math inline">\(F\)</span>。</p>
+<p>首先利用分辨率最低的一层，利用对应Reference和Source，采取类似MVSNet的流程得到初始的深度图<span
+class="math inline">\(D^{L+1}\)</span>，接下来的流程就是如何迭代细化深度图。不失一般性，我们可以假设当前已经得到了深度图<span
+class="math inline">\(D^{l+1}\)</span>，此时需要得到下一层对应的深度图<span
+class="math inline">\(D^l\)</span>。求这个深度图实际上也是用了深度残差的思想。</p>
+<p>首先将<span class="math inline">\(D^{l+1}\)</span>上采样到与<span
+class="math inline">\(D^l\)</span>​相同的维度，记为<span
+class="math inline">\(D_{\uparrow}^{l+1}\)</span>。此时考虑该图某个像素<span
+class="math inline">\((u,v)\)</span>，此时它对应的深度是<span
+class="math inline">\(d\)</span>。为了更精确地求取其残差，我们认为它真实深度应该是前后的一个小范围<span
+class="math inline">\([d_{min},d_{max}]\)</span>，在这个范围下进行深度的均匀采样。采样的每个深度都可以投影回到当前层其他视图的特征图上，此时可以得到一共<span
+class="math inline">\(1+N\)</span>个特征向量，将这些特征向量按照方差法计算就可以得到新的Cost
+Volume中的一个Channel。由此我们就可以构造出当前层的Cost
+Volume。该流程如下图所示。</p>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214145434076.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="CVP-MVSNet深度假设范围估计">
+<p>之后的流程就是对该Cost Volume进行Regularization，经过3D
+ConvNet之后softmax得到深度残差概率图，通过期望计算得到残差图，将残差图加回当前深度图，得到当前层的深度图。重复此流程，直到金字塔的第一层(即原图层)。</p>
+<p>在上面的流程中，还有一个没有解决的问题就是如何确定每一层的深度搜索范围。每一层深度搜索范围的确定与当前图片分辨率有关。论文中为了确定当前层每个像素的搜索范围，首先得到该点在其他Source
+Image中的极线，沿着极线中对应点左右两边各自移动两个像素作为该Source
+Image的范围，然后将其投影回到3D中，此时所有Source
+Image的投影光线与Target光线的交集就是深度范围。可以理解为将深度范围的确定转化为一定极线范围的投影。每个Source
+Image上考虑在极线范围中前后两个像素的范围，而整体的上年度范围就是所有Source
+Image的极线范围对应深度范围的交集。</p>
+<p>CVP-MVSNet使用的损失函数是类回归的损失函数，考虑预测的深度图与GT深度图之间的绝对差。
+<span class="math display">\[
+Loss = \sum_{l=0}^{L}\sum_{p \in \Omega} || D_{GT}^l(p) - D^{l}(p) ||_1
+\]</span></p>
+<h2 id="简单总结-4">简单总结</h2>
+<p>CVP-MVSNet同样采用从粗到细(coarse-to-fine)的方式来迭代优化深度图。它的迭代优化主要是通过图像金字塔来完成的。从最低分辨率的图像出发计算深度图，然后构造当前层的Cost
+Volume，从而估计当前层的深度残差。其中一个关键在于每个像素点的深度采样，密集的深度采样无法提供额外的信息，反而会增加内存消耗。CVP-MVSNet则将深度采样控制在极线左右两像素的范围内，该思想可供借鉴。</p>
+<p>CVP-MVSNet项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/JiayuYANG/CVP-MVSNet">JiayuYANG/CVP-MVSNet</a></p>
+<h1 id="cascade-mvsnetcvpr2020">Cascade-MVSNet(CVPR2020)</h1>
+<p>同样是为了解决显存占用过大的问题，Cascade-MVSNet提出级联的Cost
+Volume构造方式，同样也是由粗到细的构造方式，该方式可以直接集成到现有的MVSNet方法中。</p>
+<h2 id="模型架构-5">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214164036755.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Cascade-MVSNet架构">
+<p>Cascade-MVSNet的整体流程与原始的MVSNet是一致的，它只是提出了一种构造级联Cost
+Volume的方式。具体来说，首先可以使用特征抽取金字塔网络，抽取出不同分辨率的特征。之后从低分辨率的特征图开始，进行与原始MVSNet相同的操作，得到初始的低分辨率的深度图。接下来就进行下一阶段。Cascad-MVSNet的主要思想是借助上一阶段的预测出来的深度来动态得到该阶段每个像素的点的深度采样范围以及采样间隔。在最初阶段，深度采样范围是整个场景的深度范围，深度采样间隔则与分辨率有关。而在后续阶段中，则可以根据已经有的深度图来动态调整。假设上一阶段对每个像素的深度采样范围是<span
+class="math inline">\(R_k\)</span>，间隔是<span
+class="math inline">\(I_k\)</span>​，那么该阶段对应的深度采样范围与间隔就可以通过系数来进行控制：
+<span class="math display">\[
+R_{k+1} = R_k \cdot w_k, \quad I_{k+1} = I_{k} \cdot p_k
+\]</span> 其中深度采样范围和间隔都在缩小，以逐步逼近真实深度。</p>
+<h2 id="简单总结-5">简单总结</h2>
+<p>Cascade-MVSNet采用级联的方式来从粗到细构造不同分辨率的Cost
+Volume，逐步完成高分辨率的深度图回归。这种由粗到细的方式类似于CVP-MVSNet。不过与CVP-MVSNet不同的是，Cascade-MVSNet在不同分辨率下分别进行完整深度的回归，而不是学习深度残差，上一阶段的深度图只用来确定本阶段的深度采样范围以及采样间隔。</p>
+<p>Cascade-MVSNet项目地址：</p>
+<ul>
+<li>原始项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/alibaba/cascade-stereo">alibaba/cascade-stereo</a></li>
+<li>Pytorch Lightning实现：<a
+target="_blank" rel="noopener" href="https://github.com/kwea123/CasMVSNet_pl">kwea123/CasMVSNet_pl</a></li>
+</ul>
+<h1 id="d2hc-rmvsneteccv2020">D2HC-RMVSNet(ECCV2020)</h1>
+<p>D2HC-RMVSNet观察到在之前的MVSNet中，为了保证内存占用大部分特征抽取的网络抽取出的特征图相比于原图，分辨率都有所下降；另一方面，Cost
+Volume Regularization使用的3D
+CNN也对内存提出了很大需求；最后，在通过多视角深度图进行点云融合的时候，通常需要进行深度过滤，之前的方法通常会给定一些预定义好的条件等。</p>
+<p>针对这三个问题，D2HC-RMVSNet则提出了三个对应的改进：</p>
+<ul>
+<li>提出了一种新的轻量级的DRENet来进行特征图提取，该特征图能够保持与原图相同的分辨率</li>
+<li>设计了一种功能混合架构DHU-LSTM，用于进行Cost Volume
+Regularization</li>
+<li>设计了一种新的动态一致性检查算法来进行设定过滤，保持更可靠更准确的深度值</li>
+</ul>
+<h2 id="模型架构-6">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215100645825.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="D2HC-RMVSNet架构">
+<p>D2HC-RMVSNet的整体流程更加类似于R-MVSNet。在特征抽取方面，使用DRE-Net抽取出与原图分辨率保持一致的特征图。在DRE-Net使用了不同的扩张卷积层(dilated
+convolutional layers)来生成多尺度上下文信息，并且同时保持分辨率。在Cost
+Volume
+Regularization方面，使用设计的HU-LSTM，在降低显存占用的同时保持一定的精度。在损失函数方面，则使用了类分类的交叉熵损失函数。在获取了多视图的深度估计图之后，还需要进行深度的检查和过滤。D2HC-RMVSNet使用动态一致性检查算法来过滤，利用所有相邻视图的几何一致性来获得更加准确和可靠的深度值。</p>
+<h2 id="简单总结-6">简单总结</h2>
+<p>D2HC-RMVSNet整体架构更加类似于R-MVSNet，改进了特征提取网络以及Cost
+Volume Regularization网络。</p>
+<p>D2HC-RMVSNet项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/yhw-yhw/D2HC-RMVSNet">yhw-yhw/D2HC-RMVSNet</a></p>
+<h1 id="fast-mvsnetcvpr2020">Fast-MVSNet(CVPR2020)</h1>
+<p>Fast-MVSNet的主要目的是加速MVSNet类架构的运行。它首先构造一个稀疏但是高分辨率的深度图，然后通过可学习的传播模块将其稠密化成为一个稠密的深度图，最后使用一个Gauss-Newton
+Layer结合原始多视图来进行深度图Refine。Fast-MVSNet中的各个模块都是轻量化的，并且过程中使用稀疏表达，因此可以做到较快的运行速度。</p>
+<h2 id="模型架构-7">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215110559302.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Fast-MVSNet架构">
+<p>首先，Fast-MVSNet使用类似MVSNet的结构来生成初始的深度图。不过与传统的深度图不一样的是，Fast-MVSNet生成的是一种稀疏的，但是具有高分辨率的深度图。</p>
+<p>接下来就是将这个稀疏且高分辨率的深度图转化为稠密的深度图，通过传播模块(Propagation
+Module)来完成。一种很简单的方法就是利用邻近像素的深度来进行补全，但是这种方式没有考虑原始图像的信息，因此在边缘处可能会过于平滑；另一种方式是使用联合双边上采样(joint
+bilateral
+upsampler)，这种方法同时考虑原始图像和稀疏深度图，同时使用不同的核函数来综合信息，其中核函数可能会根据场景不同而有所不同(相反，通过使用高分辨率图像作为指导，联合双边上采样
+[26, 3]
+可以保留边缘特征。)。而Fast-MVSNet借助联合联合双边上采样的思想，将这一步骤改造成通过学习来完成。具体框架如下图所示：</p>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215115559980.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Fast-MVSNet Propagation Module">
+<p>借助Propagation
+Module得到稠密深度图之后，Fast-MVSNet还结合原始信息对这个深度图进行细化。为此Fast-MVSNet参考Gauss-Newton方法构造Gauss-Newton层，该层接收多视图图像特征，相机参数以及初始深度图作为输入，然后输出细化的深度图。</p>
+<p>最终损失函数选择的是类回归的损失函数，并且同时考虑稠密深度图，细化深度图与GT之间的差距。</p>
+<h2 id="简单总结-7">简单总结</h2>
+<p>Fast-MVSNet提出了一种高效的基于MVS的解决方案，它利用从稀疏到密集、从粗到细的策略来构造深度图，在保持效率的同时还能取得较好的效果。</p>
+<p>Fast-MVSNet项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/svip-lab/FastMVSNet">svip-lab/FastMVSNet</a></p>
+<h1 id="patchmatchnetcvpr2021">PatchMatchNet(CVPR2021)</h1>
+<p>PatchMatchNet将传统的PatchMatch过程融入端到端的MVSNet架构中。该模型的优点在于计算速度快，并且对内存的需求较低，同时还能够保持一定的精度。</p>
+<h2 id="patchmatch">PatchMatch</h2>
+<p>传统的PatchMatch主要基于这样一个流程，考虑两张图，我们希望重建出一张图的深度图。PatchMatch的主要思想是在自然图像中，一个有一定大小的像素块内的所有像素都可以用同一个平面来近似。PatchMatch主要分为三个步骤，随机初始化，迭代传播以及深度评估。</p>
+<p>首先是随机初始化，我们可以随机初始化每个像素对应的平面，得到最初的深度图。下一步是迭代传播，这一步的思想是希望能够将随机得到的所有深度中少数正确的深度传播到同一平面内的其他像素上。对于本图中每个像素，进行一次迭代后会从多个角度得到多个候选平面，然后我们在候选结果中进行深度评估，选择代价最小的那个深度作为本次迭代的结果。之后则是反复进行上面的过程，最终得到一个较好的深度图。</p>
+<p>传统PatchMatch关键在于如何进行深度平面的传播，主要方式有空间传播，视图传播，时序传播，平面优化等方法。空间传播的主要思想是空间上相邻的像素极有可能有相似的平面，因此空间传播下一个像素的候选深度平面来自于相邻像素；视图传播的思想在于同名点对具有相似的平面；时序传播则比较特殊，它仅仅用于视频序列的立体匹配，它所基于的假设是相邻帧同一位置的像素大概率有相似的平面；平面优化的目标则是通过优化像素对应平面的参数从而进一步减小像素的聚合代价。</p>
+<p>传统的PatchMatch多使用倾斜平面假设。</p>
+<h2 id="模型架构-8">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214184752340.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="PatchMatchNet架构">
+<p>PatchMatchNet总体的架构如上图所示，它首先通过金字塔特征抽取网络来得到多个不同分辨率下的特征图，之后通过可学习的PatchMatch网络得到深度图，由粗到细迭代得到最终的深度图。其中的核心在于这个可学习的PatchMatch结构的设计。</p>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240214184813113.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="PatchMatch Module">
+<p>整个PatchMatch模块输入是多张特征图，包括一张Reference Feature
+Image和多张Source Feature Image，然后经过构建特征体，构造Cost
+Volume，自适应代价聚合得到深度图。</p>
+<p>在介绍PatchMatch之前，我们首先介绍论文中自适应传播(Adaptive
+Propagation)模块。在PatchMatch方法中，一个核心的步骤就在于深度的传播。最简单的方法是对于每个像素，直接选取其周围一圈的像素深度作为传播的发起点。但是PatchMatchNet则是构造了一个可学习的模块，该模块基于可变形卷积网络，目的是让模型学习出对于每个像素点，应该由周围哪些像素点来传播得到对应深度，即自适应传播。</p>
+<p>首先介绍初步阶段stage3，即没有初始深度图的时候。</p>
+<ol type="1">
+<li>首先我们可以为每个像素点进行随机初始化<span
+class="math inline">\(D_f\)</span>个深度样本值作为深度假设，为了保证深度值尽可能分布在<span
+class="math inline">\([d_{min},
+d_{max}]\)</span>中，可以先均匀划分出<span
+class="math inline">\(D_f\)</span>个区间，然后在每个区间内进行随机采样得到初始的深度假设</li>
+<li>之后利用类似MVSNet中的可微单应变换，得到每个视图对应的特征体</li>
+<li>对于每个Source视图对应的特征体，将每个深度下的特征通道分为<span
+class="math inline">\(G\)</span>组，计算每个组与Reference视图特征体的相似度(内积)，最终得到相似体<span
+class="math inline">\(S\in \R^{D\times G\times H\times W}\)</span></li>
+<li>相似体<span class="math inline">\(S\)</span>经过<span
+class="math inline">\(1\times 1\times
+1\)</span>卷积对Group维度进行聚合，得到<span class="math inline">\(P\in
+\R^{D\times H\times
+W}\)</span>，这对应每个深度下有一张相似度权重图；然后在深度方向上进行Max
+Pooling，得到一张pixel-wise的权重图</li>
+<li>将相似体<span
+class="math inline">\(S\)</span>与权重图相乘，得到<span
+class="math inline">\(\overline{S} \in \R ^{D\times G\times H\times
+W}\)</span>。此时每个Source
+Image都对有这样一个Volume，将所有视图的Volume相加得到最终的<span
+class="math inline">\(\overline{S}\)</span></li>
+<li><span class="math inline">\(\overline{S}\)</span>经过<span
+class="math inline">\(1\times 1\times 1\)</span>卷积生成Cost Volume
+<span class="math inline">\(C \in \R^{D\times H \times W}\)</span></li>
+<li>此时的Cost
+Volume还不是最终的代价体，还需要对其中每个代价像素进行自适应的更新，利用自适应传播模块中每个像素对应周围像素的代价来更新代价体</li>
+<li>最后进行深度回归得到深度图，即概率softmax之后求取期望</li>
+</ol>
+<p>后续阶段stage2和stage1，大体上与stage0相同，不过由于存在初步的深度图指导，在初始深度假设构建的时候有所不同。对于每个像素，它的深度假设来自于两个模块，分别是指导深度图深度附近的局部扰动结果以及自适应传播(周围像素)的结果。</p>
+<p>最后在stage0中，不再使用PatchMatch模块，而是使用stage1输出的深度图和原Reference图进行最后的深度图优化。这里的优化网络使用的是MSG-Net，优化目标是深度残差。</p>
+<h2 id="简单总结-8">简单总结</h2>
+<p>PatchMatchNet主要是将传统PatchMatch中迭代传播的思想融入了MVSNet的框架中，同时综合应用了包括多尺度、可变卷积等优化方式。其中需要注意的是，由于PatchMatchNet对于每个像素在每阶段的深度假设都是不同的，并且像素之间的深度假设也有所不同，这就导致原始的MVSNet中Cost
+Volume的构建方法在这里效果是不好的，因此PatchMatchNet才提出了上文提到的包括组相似性，自适应代价聚合等看起来较为复杂的Cost
+Volume构建方法。</p>
+<p>PatchMatchNet项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/FangjinhuaWang/PatchmatchNet">FangjinhuaWang/PatchmatchNet</a></p>
+<h1 id="unsupervised-mvsnetcvpr2019">Unsupervised MVSNet(CVPR2019)</h1>
+<p>Unsupervise
+MVSNet主要贡献是提出了一种用自监督的方法来做MVS的方法，提出如何利用多视图来构造监督信号，进行自监督训练。</p>
+<h2 id="模型架构-9">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240215182657914.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Unsupervised MVSNet架构">
+<p>Unsupervised
+MVSNet整体架构与MVSNet类似，不过它是无监督的方式，利用多视图来构造监督信号，提出了一种鲁棒光度的损失公式。损失公式如下所示，一共包含三个部分：
+<span class="math display">\[
+L = \sum \alpha L_{photo} + \beta L_{SSIM} + \gamma L_{Smooth}
+\]</span> 其中<span
+class="math inline">\(L_{photo}\)</span>是论文提出的光度损失。假设给定Reference
+Image的深度预测图<span
+class="math inline">\(D_r\)</span>，我们可以利用MVSNet中的单应变换将Reference
+Image分别扭曲到所有其他的Source
+Image对应的空间上，我们期望扭曲后的图像和Source
+Image应该尽可能相似，重投影误差越小，这样才代表深度尽可能准确。因此，我们希望有一个代价函数来度量这种重投影误差。(Reference
+Image扭曲到Source Image，或者Source Image扭曲到Reference
+Image，效果是类似的，因为单应矩阵本身是可逆的)</p>
+<p>论文中提到这样两点观察，第一点，仅基于绝对图像强度的匹配成本，它的效果是不如绝对图像强度+图像梯度差的，因此在衡量代价的时候，论文选择结合这两种方式，同时计算图像强度以及梯度差：
+<span class="math display">\[
+||(I_s - \hat{I}_s) \odot V_s||_\epsilon + || (\triangledown I_s -
+\triangledown \hat{I_s}) \odot V_s||_\epsilon
+\]</span> 其中<span
+class="math inline">\(V_s\)</span>是一个掩码矩阵，它表示进行单应扭曲变换之后能够相互对应的那些像素才纳入代价衡量的范围，<span
+class="math inline">\(\hat{I}_s\)</span>表示Reference Image扭曲到Source
+Image <span class="math inline">\(s\)</span>对应空间之后得到的图像。</p>
+<p>第二点观察是，对于单个像素来说，它在空间中的投影点，不一定能够在其他所有视图上都看见，这是因为空间中存在遮挡关系。因此，对于单个像素来说，论文不考虑它在全部视图上的代价，而是考虑它在"一些"视图上的代价。具体来说，对于单个像素，我们可以按照上面的匹配代价计算方式计算该像素在所有(Reference,
+Source)图像对上的代价，之后我们只考虑代价最小的那<span
+class="math inline">\(K\)</span>个代价，对应"一些"视图。</p>
+<p>除了<span
+class="math inline">\(L_{photo}\)</span>光度损失，论文还使用了<span
+class="math inline">\(L_{SSIM}\)</span>和<span
+class="math inline">\(L_{Smooth}\)</span>误差。</p>
+<p><span
+class="math inline">\(L_{SSIM}\)</span>指的是SSIM损失。SSIM，结构相似系数(Structural
+Similarity Index,
+SSIM)，它是一种用于衡量两幅图像之间相似程度的指标，它考虑了亮度、对比度和结构三个方面的信息。SSIM的范围是<span
+class="math inline">\([-1,
+1]\)</span>，越接近1表示两幅图像越相似。每个Source
+Image经过扭曲变换之后都可以得到一张图，我们可以计算该图与Reference之间的SIM损失。论文中不计算所有的Source,
+Reference图像对，而是使用了视图选择得分最高的两个相邻视图来计算SSIM损失。</p>
+<p><span
+class="math inline">\(L_{smooth}\)</span>指的是平滑损失，它考虑的是预测出的深度图平滑程度，计算方式如下。这主要是为了促进深度梯度变化更加平滑，同时允许在图像中像素急剧变化的区域，深度也急剧变化。
+<span class="math display">\[
+L_{Smooth} = \sum e^{-|\triangledown I_r|} \cdot |\triangledown D_r|
+\]</span></p>
+<h2 id="简单总结-9">简单总结</h2>
+<p>Unsupervised
+MVSNet提出了一种无监督MVS的方式，通过多视图构造无监督的监督信号，损失函数可供参考。</p>
+<p>Unsupervised MVSNet项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/tejaskhot/unsup_mvs">tejaskhot/unsup_mvs</a></p>
+<h1 id="jdacs-msaaai2021">JDACS-MS(AAAI2021)</h1>
+<p>在自监督MVSNet构造监督信息的时候，大部分方法都会采用光度一致性损失来进行约束，它们假设不同视图之间的对应点共享相同的颜色。但是这一点在实践中可能并不是总是正确的。为了解决这个问题，JDACS-MS提出了两种新的约束，结合语义分割和数据增强进行自监督的指导。</p>
+<h2 id="模型架构-10">模型架构</h2>
+<img src="/2024/02/16/MVSNet%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D/image-20240216141203555.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="JDACS-MS架构">
+<p>JDACS-MS主要分为上图所示的三个branch，分别是原始的Depth Estimation
+Branch、Co-Segmentation Branch以及Data Agumentation Branch。</p>
+<p>在深度估计Branch中，采用原始的MVSNet(或者是其他任何一个类MVSNet的架构)进行深度图的预测，然后采用包含梯度的光度一致性损失，类似上面提到的Unsupervised
+MVSNet。</p>
+<p>在Co-Segmentation
+Branch中，JDACS-MS遵循的是这样一个思想，我们可以将每个视角下的图片进行语义分类，不同视角下图片的语义分类结果应该是类似的，由此作为语义一致性的损失指导。这一步希望能够从多视图图像中挖掘相互语义来指导语义一致性。由于MVS问题面对的场景变化巨大，基本不可能手动注释，所以这里采用的语义分类更加类似于聚类。这里使用的是NMF(非负矩阵分解)，NMF是多元分析和线性代数中的一组算法，它将矩阵<span
+class="math inline">\(A\)</span>分解为两个矩阵的乘积<span
+class="math inline">\(P,Q\)</span>，并且这三个矩阵中都不包含负元素。有论文证明，NMF这种分解实际上包含了聚类的性质在内。</p>
+<p>具体来说，在Co-Segmentation Branch中，对于一共<span
+class="math inline">\(N\)</span>张图片，首先利用一个Pretrained
+VGG进行特征提取，得到<span class="math inline">\(N\times H \times W
+\times C\)</span>的特征之后进行Flatten，得到一个<span
+class="math inline">\(NHW \times C\)</span>的矩阵<span
+class="math inline">\(A\)</span>，对<span
+class="math inline">\(A\)</span>进行非负矩阵分解得到<span
+class="math inline">\(P(NHW \times K),Q(K\times C)\)</span>。其中<span
+class="math inline">\(K\)</span>表示所有这些像素可以被聚类为<span
+class="math inline">\(K\)</span>个语义簇。类比K-Means，对于<span
+class="math inline">\(Q\)</span>来说，<span
+class="math inline">\(Q\)</span>的每一行可以看作一个簇的<span
+class="math inline">\(C\)</span>维的质心，而<span
+class="math inline">\(P\)</span>的每一行可以看作是来自<span
+class="math inline">\(N\)</span>个视图的对应所有像素的空间位置。进一步，<span
+class="math inline">\(P\)</span>可以被reshpae为N个<span
+class="math inline">\(H\times W \times K\)</span>的形式，对<span
+class="math inline">\(K\)</span>那个维度进行softmax，则可以得到<span
+class="math inline">\(N\)</span>​张视图，该结果可以认为是对每个视图的语义分类图。此时，对于Reference
+Iamge和其他的Source Image，我们都有一个语义分类图，将Source
+Image语义图扭曲到Reference
+Image上，然后计算像素级别的交叉熵，该损失就是语义一致性损失。</p>
+<p>在Data Augmentation
+Branch中，JDACS-MS会对输入的多视角图像进行随机数据增强，然后经过与深度估计Branch同样的pipeline得到预测的深度图，数据增强Branch的目标是对比原始数据的深度估计结果与增强之后的深度估计结果，强制无监督数据增强的一致性。具体来说，原始多视图图像经过深度估计Branch可以得到一个预测的深度图<span
+class="math inline">\(D\)</span>，这些多视图图像经过数据增强之后，同样经过深度估计Branch，得到一个预测深度图<span
+class="math inline">\(D_\tau\)</span>，数据增强一致性就是希望这两个深度图能够越接近越好。</p>
+<p>不过由于不同视图之间的极线约束，这里采用的数据增强方法不应该改变像素的空间位置。JDACS-MS使用的数据增强包括多视图的随机Mask、Gamma校正、颜色抖动和模糊。</p>
+<p>最终JDACS-MS使用的损失包括三个Branch中分别对应的光度一致性损失、语义一致性损失、数据增强一致性损失，同时还使用了Unsupervised
+MVSNet中也使用的SSIM和Smooth损失。</p>
+<h2 id="简单总结-10">简单总结</h2>
+<p>JDACS-MS为了解决多视角对应点颜色不一致的问题，提出了语义一致性损失和数据增强一致性损失，进一步提高了无监督MVS的效果。</p>
+<p>JDACS-MS项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/ToughStoneX/Self-Supervised-MVS">ToughStoneX/Self-Supervised-MVS</a></p>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/363830541">Multi-View
+Stereo中的平面扫描(plane sweep)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/XYZ-qiyh/Awesome-Learning-MVS">XYZ-qiyh/Awesome-Learning-MVS:
+📑 A list of awesome learning-based multi-view stereo papers</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.15328">[2106.15328] Deep
+Learning for Multi-View Stereo via Plane Sweep: A Survey</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41794040/category_12088112.html">MVSNet三维重建系列_LiverWhles</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/doubleZ0108/MVS">doubleZ0108/MVS:
+Multi-View Stereo based on deep learning. | Learning notes, codes and
+more.</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41794040/article/details/128270378">MVSNet系列论文详解-PatchmatchNet</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/3D/">#3D</a>
+      
+        <a href="/tags/MVS/">#MVS</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MVSNet以及系列工作介绍</div>
+      <div>http://example.com/2024/02/16/MVSNet以及系列工作介绍/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年2月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/" title="摄像机几何与极几何">
+                        <span class="hidden-mobile">摄像机几何与极几何</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
