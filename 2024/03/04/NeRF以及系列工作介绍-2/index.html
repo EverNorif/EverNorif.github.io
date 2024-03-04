@@ -1,0 +1,1159 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了NeRF相关工作，包括Plenoxels、InstantNGP、TensoRF、TriMipNeRF和ZipNeRF。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NeRF以及系列工作介绍(2)">
+<meta property="og:url" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了NeRF相关工作，包括Plenoxels、InstantNGP、TensoRF、TriMipNeRF和ZipNeRF。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240229162137988.png">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301131800722.png">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301130659215.png">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303153636502.png">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303154854693.png">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304130337010.png">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304162605381.png">
+<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304170433355.png">
+<meta property="article:published_time" content="2024-03-04T09:13:26.000Z">
+<meta property="article:modified_time" content="2024-03-04T09:15:14.256Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="论文笔记">
+<meta property="article:tag" content="NeRF">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240229162137988.png">
+  
+  
+  
+  <title>NeRF以及系列工作介绍(2) - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NeRF以及系列工作介绍(2)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-04 17:13" pubdate>
+          2024年3月4日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          61 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NeRF以及系列工作介绍(2)</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2024-03-04T17:15:14+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="plenoxelscvpr2022">Plenoxels(CVPR2022)</h1>
+<p>原始的NeRF使用MLP来表达场景。作为对比，<a
+target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content/CVPR2022/papers/Fridovich-Keil_Plenoxels_Radiance_Fields_Without_Neural_Networks_CVPR_2022_paper.pdf">Plenoxels(CVPR2022)</a>则提出不使用MLP，而是使用具有球谐函数的稀疏3维网格来表示场景。这种方式使得它的优化速度相较于原始NeRF提升了两个数量级。同时说明神经辐射场的关键要素不是神经网络，而是可微的体积渲染。</p>
+<h2 id="模型架构">模型架构</h2>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240229162137988.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Plenoxels模型架构">
+<p>Plenoxels的核心在于它将场景建模为一个稀疏的体素网格，在每个grid的角上，存储体密度<span
+class="math inline">\(\sigma\)</span>以及球谐函数系数SH。在这个定义下，我们得到离散的体密度以及球谐函数表示，而通过三线性插值，我们就可以得到连续表达。按照类似NeRF的操作，我们可以沿着某个方向朝着像素投影一条光线，在光线上进行位置采样。对于每个采样位置<span
+class="math inline">\(\mathbf{x}\)</span>，我们都可以在体素网格中查询到它所处的grid，然后通过三线性插值可以得到该位置下的体密度以及颜色，其中颜色是通过三个通道的球谐函数得到的。采样之后就可以进行体渲染，得到渲染结果之后，利用GT来监督优化整个体素网格。</p>
+<p>在Plenoxels中，还采用coarse to
+fine的策略来实现高分辨率。在这个策略中，首先从较低分辨率的密集网格开始优化，同时根据体密度或者累积透视率来进行网格修剪，修剪不必要的体素。之后将剩余的体素进行细化，重复这个过程，得到高分辨率的结果。</p>
+<p>在损失函数方面，Plenoxels使用的损失函数如下， <span
+class="math display">\[
+\begin{aligned}
+\mathcal{L} &amp;= \mathcal{L}_{recon} + \lambda_{TV} \mathcal{L}_{TV}
+\\
+\mathcal{L}_{recon} &amp;=\frac{1}{|\mathcal{R}|} \sum_{\mathbf{r} \in
+\mathcal{R}} || C(\mathbf{r}) - \hat{C}(\mathbf{r})||_2^2 \\
+\mathcal{L}_{TV} &amp;= \frac{1}{|\mathcal{V}|} \sum_{\mathbf{v} \in
+\mathcal{V}, d\in[D]}
+\sqrt{\Delta_x^2(\mathbf{v}, d) + \Delta_y^2(\mathbf{v}, d)
++\Delta_z^2(\mathbf{v}, d)}
+\end{aligned}
+\]</span> 其中，<span
+class="math inline">\(\mathcal{L}_{recon}\)</span>表示重建损失，即重建结果与GT之间的MSE
+Loss；<span
+class="math inline">\(\mathcal{L}_{TV}\)</span>表示总变分误差(Total
+Variation Regularizer)，是一个正则化项。<span
+class="math inline">\(\Delta_x^2(\mathbf{v}, d)\)</span>表示voxel <span
+class="math inline">\(\mathbf{v} :=(i,j,k)\)</span>与voxel <span
+class="math inline">\(\mathbf{v}:=(i+1, j,
+k)\)</span>之间，在参数向量第<span
+class="math inline">\(d\)</span>个元素上的差值平方。在每个voxel上，包含一个参数向量(体密度+<span
+class="math inline">\(3\times\)</span>球谐函数系数)。<span
+class="math inline">\(\Delta_y^2(\mathbf{v}, d),\Delta_z^2(\mathbf{v},
+d)\)</span>也是同理，不过在index维度上有所改变。</p>
+<blockquote>
+<p>Total
+Variation(TV)，总变分，是一个在图像处理、信号处理和数学分析等领域中广泛使用的概念。总变分主要用来衡量一个函数的变化程度，特别是图像或信号中的突变或噪声。在图像处理中，总变分特别用于图像去噪和图像恢复等任务。图像的总变分是指图像亮度值（或颜色值）变化的总和，这可以被理解为图像中边缘和细节的度量。通过最小化图像的总变分，可以在去除噪声的同时保留图像的主要结构和边缘，从而实现图像的平滑处理而不过度模糊重要细节。</p>
+</blockquote>
+<p>直接优化体素网络是一个具有挑战性的问题，因为它包含众多需要优化的值，并且优化目标是非凸的，同时没有较强的限制条件。Plenoxels使用RMSProp算法来进行优化。这是一种优化算法，通过引入衰减系数来调整学习率，使得每个参数的学习率都是根据其最近梯度的大小动态调整的。</p>
+<p>经过一些修改，Plenoxels可以扩展到无边界场景，包括forward-facing前向场景以及360度无边界场景。类似于NeRF++(使用额外的MLP来建模背景)，Plenoxels采用多球图像背景模型来增强模型表示。多球图像模型实际上就是体素网格经过等距矩形投影被扭曲成球体之后的表现。</p>
+<p>在无边界场景中(前向场景、360度场景)，Plenoxels还增加使用了下面的基于SNeRG的Cauchy
+Loss： <span class="math display">\[
+\mathcal{L}_s = \lambda_s \sum_{i,k} \log(1 + 2
+\sigma(\mathbf{r}_i(t_k))^2)
+\]</span> 其中<span
+class="math inline">\(\sigma(\mathbf{r}_i(t_k))\)</span>表示采样点<span
+class="math inline">\(k\)</span>沿着光线<span
+class="math inline">\(\mathbf{r}_i\)</span>的体密度。该Loss鼓励体素为空，以此来节省内存使用。</p>
+<p>在360度无边界场景中，Plenoxels还增加使用了下面的beta 损失： <span
+class="math display">\[
+\mathcal{L}_{\beta} = \lambda_\beta \sum_{\mathbf{r}}(\log
+(T_{FG}(\mathbf{r})) + \log(1 - T_{FG}(\mathbf{r})))
+\]</span> 其中<span
+class="math inline">\(T_{FG}(\mathbf{r})\)</span>表示光线<span
+class="math inline">\(r\)</span>的累积透视率。该损失鼓励场景被划分为完全不透明、完全透明来形成明显的前景-背景划分。</p>
+<h2 id="球谐函数">球谐函数</h2>
+<p>Spherical
+Harmonics：球谐函数，它是一组基函数。球面上的函数可以表示为球谐函数(这组基函数)的线性组合。
+<span class="math display">\[
+Y_l^m(\theta, \varphi) = (-1)^m \sqrt {\frac{(2l+1)}{4\pi}
+\frac{(l-|m|)!}{(l+|m|)!}} P_l^m(\cos \theta)e^{im\varphi}
+\]</span> 其中<span
+class="math inline">\(l\)</span>表示球谐函数的degree，在给定<span
+class="math inline">\(l\)</span>的情况下，<span
+class="math inline">\(m\)</span>可以取值<span
+class="math inline">\(-l,-(l-1), \dots, 0, \dots, (l-1),
+l\)</span>，也就是说degree为<span
+class="math inline">\(n\)</span>的基函数一共有<span
+class="math inline">\(2n+1\)</span>个。不过如果我们说一个球谐函数函数degree是<span
+class="math inline">\(n\)</span>，那么它的基函数最高degree为<span
+class="math inline">\(n\)</span>，在所有的基函数中同时还包含了低阶的基函数，所有的基函数一共有<span
+class="math inline">\((n+1)^2\)</span>个：</p>
+<ul>
+<li><span class="math inline">\(degree = 0: (2\times 0 + 1) = 1.
+\quad[Y_0^0]\)</span></li>
+<li><span class="math inline">\(degree = 1: 1 +(2\times 1 + 1) = 4.
+\quad[Y_0^0,Y_{1}^{-1}, Y_1^0, Y_1^1]\)</span></li>
+<li><span class="math inline">\(degree = 2: 4 + (2\times 2 + 1) = 9.
+\quad[...]\)</span></li>
+<li><span class="math inline">\(degree = 3: 9 + (2\times 3 + 1) = 16.
+\quad[...]\)</span></li>
+<li><span class="math inline">\(degree = n: (n+1)^2\)</span></li>
+</ul>
+<h2 id="简单总结">简单总结</h2>
+<p>Plenoxels不使用神经网络来表示辐射场，而是使用带有参数的体素网格。Plenoxels的实验表明解决3维重建问题核心在于：</p>
+<ol type="1">
+<li>可微的渲染模型</li>
+<li>场景的连续表示（例如三线性插值后的体素网格）</li>
+<li>合适的正则化</li>
+</ol>
+<p>Plenoxels的项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/sxyu/svox2">sxyu/svox2: Plenoxels: Radiance
+Fields without Neural Networks</a></p>
+<h1 id="instantngpsiggraph2022">InstantNGP(SIGGRAPH2022)</h1>
+<p>首先考虑常规的网络模型，在将输入送入网络之前，我们通常会对其进行编码，常见的做法包括不编码、频率编码(Frequency
+Encoding)、参数编码(Parametric Encoding)。<a
+target="_blank" rel="noopener" href="https://nvlabs.github.io/instant-ngp/assets/mueller2022instant.pdf">InstantNGP(SIGGRAPH2022)</a>则提出了一种新的编码方式，这种方式使用多分辨率网格，并且将可学习参数保存在哈希表中。这种编码方式可以适用于多类模型，包括SDF、NeRF类模型等。相比于原始NeRF，InstantNGP能够在保持优秀重建效果的同时，做到快速的训练。</p>
+<h2 id="编码方式">编码方式</h2>
+<p>首先介绍编码方式。最简单的编码方式是One-Hot编码，而后还有使用核技巧进行的编码。在原始NeRF中，采样点空间位置<span
+class="math inline">\(\mathbf{x}\)</span>在输入MLP之前，使用位置编码进行处理，这种编码方式我们称之为频率编码(Frequency
+Encoding)。</p>
+<p>另外一种常见的方式是参数编码(Parametric
+Encoding)，这种编码方式的想法是在辅助数据结构中安排额外的可训练参数。例如上面介绍的Plenoxels，就是将可训练参数安排在空间Grid网格中，通过插值得到连续的表达。这种方式需要更大的内存占用，但是计算成本并不会很大。相比于MLP网络，每次反向传播都需要更新网络中的所有参数，Parametric
+Encoding每次只需要更新局部的参数。例如在空间Grid网格中，每个采样点对应的更新只有周围的8个Grid角。因此，这种方式可以允许我们使用更多的参数来表征场景，同时不会增加训练成本。当然缺点就是会消耗更多的内存。</p>
+<p>下面通过NeRF3维重建流程来对比不同的编码方式，同时引出InstantNGP的编码方式。下图分别展示了在不同Encoding条件下，可学习参数的大小(MLP参数+Parametric
+Encoding参数大小)、训练时间/PSNR以及渲染效果。</p>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301131800722.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="不同编码方式的效果对比">
+<p>首先是(a)不对输入进行encoding。这种方式下，学习出的场景会非常平滑，效果较差。</p>
+<p>而(b)使用了频率编码(NeRF位置编码)，使用中等大小的MLP(438k参数量)即可表示出较准确的场景。</p>
+<p>(c)使用了Parametric Encoding编码，其中使用密集Grid网格(<span
+class="math inline">\(128^3\)</span>)，每个Grid角上存储<span
+class="math inline">\(16\)</span>维参数向量。此时使用更小的MLP(10k参数量)即可表示场景，同时训练时间大幅度减小。</p>
+<p>(d)同样使用Parametric
+Encoding编码，同时叠加多分辨率。其中维护8个密集Grid网格(<span
+class="math inline">\(16^3 \rightarrow
+173^3\)</span>)，每个Grid角上存储<span
+class="math inline">\(2\)</span>维参数向量，最终输入MLP的也是来自8个Grid网格一共<span
+class="math inline">\(16\)</span>维的拼接向量。MLP则同样使用10k参数量的较小网络。相比于(c),这种方式能够做到在保持训练时间、场景质量的同时，Parametric
+Encoding参数减少一半。</p>
+<p>但是这种密集Grid网络会造成性能浪费，因为空白区域与靠近表面的区域分配了一样多的特征，参数量按照<span
+class="math inline">\(O(N^3)\)</span>增长，但是覆盖的可视表面只按照<span
+class="math inline">\(O(N^2)\)</span>增长。一种常见的解决方式就是在训练过程中使用从粗到细的方式来构造稀疏网格。这种方式当然是有效的，但是会导致更加复杂的训练过程，在过程中必须定期更新稀疏数据结构。</p>
+<p>InstantNGP提出的编码方式则是多分辨率Grid网格结合Hash
+Encoding。具体来说，InstantNGP同样构造多分辨率网格，但是将可训练的特征向量存储在一个紧凑的空间哈希表中，该空间哈希表的大小为<span
+class="math inline">\(T\)</span>，是一个事先可以指定的超参数。通过调整这个参数，可以调整重建质量以及参数量之间的平衡。</p>
+<p>(e)和(f)分别展示了在不同<span
+class="math inline">\(T\)</span>条件下多分辨率Hash
+Encoding。相比于多分辨率密集网格，InstantNGP的编码方式能够做到进一步减少参数量，同时保持训练速度和重建质量</p>
+<h2 id="模型架构-1">模型架构</h2>
+<p>下面详细介绍InstantNGP的模型架构。首先是一些符号定义，为了构造多分辨率Grid网格，指定一共有<span
+class="math inline">\(L(=16)\)</span>个level，即<span
+class="math inline">\(L\)</span>个分辨率。对于每个分辨率，都有一个大小为<span
+class="math inline">\(T(=2^{14} \rightarrow
+2^{24})\)</span>的哈希表，哈希表中的每个特征维度大小为<span
+class="math inline">\(F(=2)\)</span>。同时我们指定最小分辨率(对应的立方体边长)是<span
+class="math inline">\(N_{min}(=16)\)</span>，最大分辨率(对应的立方体边长)是<span
+class="math inline">\(N_{max}(=512 \rightarrow
+524288)\)</span>​。这里最大分辨率是人为指定的超参数，通常用来匹配训练数据中最精细的细节。</p>
+<p>有了最小和最大分辨率之后，就可以计算出每个level的实际分辨率<span
+class="math inline">\(N_l\)</span>： <span class="math display">\[
+\begin{aligned}
+b &amp;:= \exp(\frac{\ln N_{max} - \ln N_{min}}{L-1})\\
+N_l &amp;:= \lfloor N_{min} \cdot b^{l} \rfloor \\
+\end{aligned}
+\]</span> 这里<span
+class="math inline">\(b\)</span>被称为生长因子，在InstantNGP论文中用例范围是<span
+class="math inline">\([1.26,
+2]\)</span>，上面的操作实际上就是将每个级别的分辨率确定为<span
+class="math inline">\([N_{min}, N_{max}]\)</span>范围内的几何级数。</p>
+<p>由于每个Level的处理相互独立，并且流程基本相同，这里考虑Level <span
+class="math inline">\(l\)</span>。在这个分辨率下，场景被划分为空间Grid网格，每个Grid角上对应一个可训练的参数向量，但是这个参数向量不是直接保存在Grid角上，而是保存在哈希表中。Grid角的空间坐标经过Hash之后得到哈希表的index，从而得到该参数向量。具体来说，对于空间坐标<span
+class="math inline">\(\mathbf{x} \in
+\mathbb{R}^{d}\)</span>（在这里<span
+class="math inline">\(d=3\)</span>），哈希函数如下，使用了空间哈希函数：
+<span class="math display">\[
+h(\mathbf{x}) = (\bigoplus ^d_{i=1} x_i\pi_i) \quad \text{mod} \ T
+\]</span> 其中，<span
+class="math inline">\(\bigoplus\)</span>表示按位异或运算，<span
+class="math inline">\(\pi_i\)</span>是素数（在InstantNGP中使用<span
+class="math inline">\(\pi_1=1, \pi_2=2654435761, \pi_3 =
+805459861\)</span>）。这样，每个Grid角上都能对应一个<span
+class="math inline">\(F\)</span>维的参数向量。</p>
+<p>之后，对于每个采样点的坐标<span
+class="math inline">\(\mathbf{x}\)</span>，可以先得到它周围的8个Grid角点对应的参数向量，然后通过三线性插值一个得到<span
+class="math inline">\(F\)</span>维的参数向量。每个Level都能得到这样一个参数向量，将所有参数向量拼接起来，就作为MLP的输入。下面的图演示了在2维情况下的处理流程。</p>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301130659215.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="2维情况下的InstantNGP处理流程">
+<p>不过即然在流程中会使用到哈希函数，那么就会存在哈希冲突的可能性。InstantNGP不显式处理哈希冲突，而是依靠神经网络来学习消除哈希冲突本身的歧义。这样做是为了避免流程太过发散，以此降低实现复杂度并且提高性能。另一方面，哈希表的内存是事先指定的(通过超参数<span
+class="math inline">\(T\)</span>)，它的指定与场景无关，独立于场景。这使得在机器上进行缓存优化成为可能。</p>
+<p>我们可以很容易将多分辨率Hash
+Encoding应用在NeRF上。不过前面我们一直说的是对输入位置<span
+class="math inline">\(\mathbf{x}\)</span>进行编码，在NeRF
+MLP中，还涉及观察方向<span
+class="math inline">\(\mathbf{d}\)</span>，InstantNGP将其映射为球谐函数的前16个系数，即使用degree=4的球谐函数函数来标记。</p>
+<h2 id="简单总结-1">简单总结</h2>
+<p>InstantNGP提出了一种编码表示，这种编码方式并不局限于某个任务，而是可以用在更多的应用任务上。这种编码方式类似于多分辨率的密集Grid
+Parametric
+Encoding，不过它将可学习参数保存在哈希表中。当然InstantNGP本身在实现方面也做了很多优化，最终得到的效果也是非常好。在三维重建方面，它改进的NeRF可以同时保持高速的训练速度以及可观的重建质量。</p>
+<p>Instant-NGP的项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/NVlabs/instant-ngp">NVlabs/instant-ngp</a></p>
+<h1 id="tensorfeccv2022">TensoRF(ECCV2022)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2203.09517">TensoRF(ECCV2022)</a>将场景的辐射场建模为4D张量(一个3D体素网格，每个体素具有多通道特征)，然后将4D张量分解为多个紧凑的低秩张量分量，再进行辐射场的构建。基于这个辐射场进行体渲染，Loss计算等后续操作。对比原始NeRF，原始NeRF采用的是基于坐标的MLP来表示场景的辐射场。TensoRF既能够节省内存占用，同时能够保证优秀的渲染质量。它的核心在于如何进行张量分解，论文中介绍了两种方式，一种是传统的CP分解，另一种是论文提出的VM分解。</p>
+<h2 id="张量分解">张量分解</h2>
+<p>张量分解是一种将张量（多维数组）分解为多个更小、更简单结构的数学方法，类似于矩阵分解但扩展到更高维度。张量分解在信号处理、计算机视觉、数据挖掘、推荐系统等多个领域有着广泛应用，特别是在处理多维数据时，它能揭示数据间潜在的结构和关联。常见的张量分解方法包括CP分解(CANDECOMP/PARAFAC分解)、Tucker分解(高阶奇异值分解)、张量奇异值分解(TT-SVD，Tensor
+Train分解)。</p>
+<p>张量分解在很多方面都有应用：</p>
+<ul>
+<li>在数据压缩方面：可以用来移除数据中的冗余信息来降低存储成本</li>
+<li>在特征提取方面：可以从多维数据中提取有用的特征</li>
+<li>在推荐系统方面：可以通过分解用户-物品-上下文等多维度交互数据，揭示潜在的用户偏好和物品属性</li>
+<li>在信号处理方面：能够用来提取信号源和背景噪声等成分</li>
+</ul>
+<p>下面分别介绍CP分解和VM分解，下图给出了对应的图示。</p>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303153636502.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="CP分解和VM分解">
+<h3 id="cp分解">CP分解</h3>
+<p>CP分解全称为CANDECOMP/PARAFAC分解。给定一个3D的张量<span
+class="math inline">\(T \in \mathbb{R}^{I\times J \times
+K}\)</span>，CP分解将其分解为一系列向量叉积的和： <span
+class="math display">\[
+T = \sum_{r=1}^R \mathbf{v}_r^1 \circ \mathbf{v}_r^2 \circ
+\mathbf{v}_r^3
+\]</span> 其中，<span
+class="math inline">\(\mathbf{v}_r^{i}\)</span>分别表示秩为1的张量分量，同时<span
+class="math inline">\(\mathbf{v}_r^1 \in \mathbb{R}^{I}, \mathbf{v}_r^2
+\in \mathbb{R}^{J},\mathbf{v}_r^3 \in \mathbb{R}^{K}\)</span>，<span
+class="math inline">\(\circ\)</span>表示向量叉积。</p>
+<p>CP分解将一个张量分解为多个rank为1的向量积的和。经过CP分解之后，空间复杂度可以从<span
+class="math inline">\(O(n^3)\)</span>降低到<span
+class="math inline">\(O(n)\)</span>。不过CP分解得到的结果过于紧凑，导致可能需要许多component来构建复杂场景，提高计算成本。</p>
+<h3 id="vm分解">VM分解</h3>
+<p>Vector-Matrix(VM)分解，是TensoRF论文提出的张量分解方式。VM分解将张量分解为多个向量和矩阵，如下所示：
+<span class="math display">\[
+T = \sum_{r=1}^{R_1} \mathbf{v}_r^1 \circ \mathbf{M}_r^{2,3} +
+\sum_{r=1}^{R_2} \mathbf{v}_r^2 \circ \mathbf{M}_r^{1,3} +
+\sum_{r=1}^{R_3} \mathbf{v}_r^3 \circ \mathbf{M}_r^{1,2}
+\]</span> 其中，<span class="math inline">\(\mathbf{M}_r^{2,3} \in
+\mathbb{R}^{J\times K}, \mathbf{M}_r^{1,3} \in \mathbb{R}^{I\times K},
+\mathbf{M}_r^{1,2} \in \mathbb{R}^{I\times J}\)</span>。<span
+class="math inline">\(R_1,R_2,R_3\)</span>则可以根据情况不同来分别指定。经过VM分解之后，空间复杂度可以从<span
+class="math inline">\(O(n^3)\)</span>降低到<span
+class="math inline">\(O(n^2)\)</span>。VM分解会使紧凑性降低，但是这使得VM分解可以在表达更复杂的高维数据的时候，减少所需的component数量。当然与密集Grid相比，VM分解还是具有相当高的紧凑性的。</p>
+<p>当然我们的任务是场景建模，在这种语境下，我们可以沿XYZ轴进行分解，并且设定<span
+class="math inline">\(R_1=R_2=R_3=R\)</span>: <span
+class="math display">\[
+T = \sum_{r=1}^{R} \mathbf{v}_r^X \circ \mathbf{M}_r^{Y,Z} +
+\sum_{r=1}^{R} \mathbf{v}_r^Y \circ \mathbf{M}_r^{X,Z} + \sum_{r=1}^{R}
+\mathbf{v}_r^Z \circ \mathbf{M}_r^{X,Y}
+\]</span></p>
+<h2 id="模型架构-2">模型架构</h2>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303154854693.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="TensoRF模型架构">
+<p>有了上面张量分解的基础，我们就可以介绍TensoRF的模型架构。其中核心在于如何对辐射场进行建模，这个辐射场接受位置<span
+class="math inline">\(\mathbf{x}\)</span>以及方向<span
+class="math inline">\(d\)</span>作为输入，输出体密度<span
+class="math inline">\(\sigma\)</span>和颜色<span
+class="math inline">\(c\)</span>。</p>
+<p>TensoRF使用3D空间Grid网格来建模辐射场，每个Grid上都包含一个多维的特征向量，记这个Grid网格为<span
+class="math inline">\(\mathcal{G}\)</span>，整个网格可以看作是一个4D的Tensor。对这个4D
+Tensor在特征维度上进行切分，分成两个4D Tensor，分别对应<span
+class="math inline">\(\mathcal{G}_{\sigma}、\mathcal{G}_{c}\)</span>，分别用来建模体密度和依赖视角的网络。对于<span
+class="math inline">\(\mathcal{G}_\sigma\)</span>，仅保留单个特征Channel。最终，获取体密度和颜色的方式可以写作：
+<span class="math display">\[
+\sigma = \mathcal{G}_{\sigma}(\mathbf{x}), \quad c =
+S(\mathcal{G}_c(\mathbf{x}), d)
+\]</span> 其中，<span
+class="math inline">\(S\)</span>用来将特征转化为颜色输出，可以是一个小的MLP；也可以是用来参数化球谐函数，得到基于方向的颜色值。</p>
+<p>接下来，TensoRF将VM分解(或者CP分解)应用在<span
+class="math inline">\(\mathcal{G}_{\sigma}、\mathcal{G}_{c}\)</span>上。以<span
+class="math inline">\(\mathcal{G}_\sigma\)</span>的处理为例，我们可以将其分解为多个componet，每个component包含一个向量和一个矩阵，通过坐标<span
+class="math inline">\(\mathbf{x}\)</span>，我们可以对应查询得到对应的值<span
+class="math inline">\(A_c^m\)</span>，将所有componet对应结果进行拼接得到新特征向量。将该特征向量与外观矩阵<span
+class="math inline">\(B\)</span>相乘之后发送给<span
+class="math inline">\(S\)</span>函数，得到颜色<span
+class="math inline">\(c\)</span>。这里的外观矩阵<span
+class="math inline">\(B\)</span>可以看作是一个全局外观字典，它抽象了整个场景的外观共性。而对于<span
+class="math inline">\(\mathcal{G}_\sigma\)</span>，由于它是单channel的特征对应4D
+Tensor，因此每个component得到的都是标量值，将所有标量相加，即认为是输出的体密度<span
+class="math inline">\(\sigma\)</span>。</p>
+<p>我们还需要使用插值来维护表达的连续性。基于张量分解的表达方式，我们可以用高效的三线性插值来对连续场景进行建模。即对分量张量进行三线性插值相当于对它的因子进行线性/双线性插值。</p>
+<p>以上，我们完成了对于辐射场的建模，即给定任意的位置<span
+class="math inline">\(\mathbf{x}\)</span>以及方向<span
+class="math inline">\(d\)</span>，可以输出体密度<span
+class="math inline">\(\sigma\)</span>和颜色<span
+class="math inline">\(c\)</span>。之后就可以按照NeRF相同的流程，进行体渲染，进行Loss的反向传播从而进行优化。Loss方面，TensoRF使用了L1
+Loss和TV(total variation)
+Loss。TensoRF还使用了coarse-to-fine的策略，不过这里是通过对分解后的向量和矩阵因子进行线性/双线性上采样来简单实现的。</p>
+<h2 id="简单总结-2">简单总结</h2>
+<p>TensoRF将辐射场表示为一个4D
+Tensor，然后通过张量分解的方式构造一个连续的辐射场表达。这种方式能够在保持良好渲染质量的同时做到训练速度的提高。同时这种张量分解的思想也可以用在其他相关问题上。</p>
+<p>TensoRF的项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/apchenstu/TensoRF">apchenstu/TensoRF</a></p>
+<h1 id="trimipnerficcv2023">TriMipNeRF(ICCV2023)</h1>
+<p>尽管NeRF在3D重建方面取得了巨大进展，但是仍然面临渲染质量和训练效率之间的权衡。<a
+target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content/ICCV2023/papers/Hu_Tri-MipRF_Tri-Mip_Representation_for_Efficient_Anti-Aliasing_Neural_Radiance_Fields_ICCV_2023_paper.pdf">TriMipNeRF(ICCV2023)</a>提出了一种基于MipMap的编码方式，在做到抗锯齿效果的同时还能够做到即时重建。解决锯齿和模糊问题有两种常见的策略，分别是超采样(super-sampling)和预过滤(pre-filtering)，其中MipMap就是基于预过滤的策略。</p>
+<h2 id="模型架构-3">模型架构</h2>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304130337010.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="TriMipNeRF模型架构">
+<p>考虑向某个像素投影光线成像的过程，TriMipNeRF的流程主要有两个重点。第一点是在光线投影过程中，投影出圆锥体，然后进行圆锥台采样，利用圆锥台的内切球来表示圆锥台；第二点是利用Tri-Mip编码将每个内切球编码为对应的特征向量。之后将特征输入MLP就可以得到体密度<span
+class="math inline">\(\sigma\)</span>和视角方向相关的颜色<span
+class="math inline">\(c\)</span>。</p>
+<p>与MipNeRF类似，TriMipNeRF对于每个像素，会投影出一个圆锥。不过与MipNeRF不同的是，TriMipNeRF利用圆锥台的内切球来近似圆锥台，而MipNeRF中使用多元高斯来近似。对于每个内切球，我们可以通过公式计算出它的中心点坐标以及球的半径，它们都与采样值<span
+class="math inline">\(t\)</span>有关，只需要进行公示计算即可，具体公示可以参考原论文。经过采样之后，我们就可以得到多个内切球，并且每个内切球都有其球心坐标<span
+class="math inline">\((x,y,z)\)</span>以及半径<span
+class="math inline">\(r\)</span>。</p>
+<p>下一步是利用Tri-Mip编码将每个内切球。首先，准备3个可训练的mipmap，<span
+class="math inline">\(\mathcal{M}_{XY},\mathcal{M}_{YZ},\mathcal{M}_{XZ}\)</span>，分别对应<span
+class="math inline">\(XY,YZ,XZ\)</span>三个平面，其中每个mipmap类似于类似于传统的多分辨率mipmap，不过每一层都是一个feature
+map，里面的值都是可学习的。对于每个mipmap，它的最底层<span
+class="math inline">\(\mathcal{M}^{L_0}\)</span>分辨率最高，记为<span
+class="math inline">\(H\times W \times
+C\)</span>，而后的每一层长宽都进行减半操作。</p>
+<p>接下来考虑一个内切球，有了它的球心坐标，我们就可以将其正交投影到三个平面上，得到三个圆。利用圆的半径<span
+class="math inline">\(r\)</span>，我们可以确定该圆应该处于mipmap中哪个level下(每个圆盘的半径决定它从哪个level开始查询)，计算如下：
+<span class="math display">\[
+l = \log_2 (\frac{r}{\ddot{r}})
+\]</span> 其中<span
+class="math inline">\(\ddot{r}\)</span>是最底层feature
+map对应的像素内切圆半径长度。每个平面上的圆，都可以确定它的level <span
+class="math inline">\(l\)</span>，该level一定会处于两个整数之间，即对应图中的上下两层。而通过圆心的坐标，我们可以定位到上下一共8个像素坐标点。通过三线性插值，从而得到特征向量<span
+class="math inline">\(\mathbf{f}\)</span>。三个平面进行相同的操作，得到三个特征向量<span
+class="math inline">\(\mathbf{f}_{XY},\mathbf{f}_{YZ},\mathbf{f}_{XZ}\)</span>，将这些向量拼接之后送入一个小的MLP，得到体密度<span
+class="math inline">\(\sigma\)</span>以及视角相关的颜色<span
+class="math inline">\(c\)</span>。对于每个采样点<span
+class="math inline">\(t\)</span>，我们得到了对应的体密度和颜色，之后就可以进行体渲染等系列流程了。</p>
+<p>使用上面的策略，TriMipNeRF已经能够做到30FPS左右的渲染，不过为了进一步提高效果，论文中还提出了一种Hybrid
+Volume-Surface
+Rendering的渲染方式。具体来说，先对场景构造一个粗略的proxy
+mesh，该mesh主要是为了确定相机光心到物体表面的粗略距离。有了这个距离之后，就可以控制采样策略，仅在表面附近进行采样，从而提高效率，减少无效操作。获取proxy
+mesh则可以从重建出来的密度场出发，通过mesh抽取来得到proxy
+mesh。使用该策略改进之后，TriMipNeRF能够做到60FPS的渲染效果。</p>
+<h2 id="简单总结-3">简单总结</h2>
+<p>TriMipNeRF提出Tri-Mip编码方式，在完成抗锯齿的同时还保证渲染效率。TriMipNeRF向每个像素投射圆锥体，然后利用内切球来近似圆锥台。每个内切球可以正交投影到三个基平面上，每个平面对应一个MipMap，通过投影圆的半径和圆心坐标，可以确定该投影圆所属level，以及附近8个feature，然后通过三线性插值得到连续的feature，所有feature拼接得到MLP的输入。</p>
+<p>TriMipNeRF的项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/wbhu/Tri-MipRF">wbhu/Tri-MipRF</a></p>
+<h1 id="zipnerficcv2023">ZipNeRF(ICCV2023)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2304.06706">ZipNeRF(ICCV2023)</a>是Google提出的一个效果非常好的NeRF类模型。它结合了MipNeRF以及InstantNGP，能够做到非常好的重建效果，并且时间上相比MipNeRF也能够降低非常多。</p>
+<h2 id="模型架构-4">模型架构</h2>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304162605381.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="ZipNeRF对圆锥体的采样">
+<p>MipNeRF中向每个像素投影出圆锥体，然后对圆锥台进行特征编码，其中利用多元高斯以及集成位置编码来完成。ZipNeRF则将其中圆锥体的特征编码替换成InstantNGP中采用的多分辨率哈希编码，当然直接简单组合还是会遇到一些问题的。考虑对某个像素投射出的圆锥体，并且被采样分割成了多个圆锥台，接下来就是解决如何求得这个圆锥台内所有点的平均Hash
+Encoding（Hash Encoding的期望）。</p>
+<p>ZipNeRF利用多个各向同性的Gaussain来近似圆锥体（类比MipNeRF中使用多元Gaussian来近似圆锥体）。首先，ZipNeRF通过沿着锥体的螺旋线，在锥体表面进行采样。采样得到的点对应的坐标值作为各向同性Gaussian的均值，采样<span
+class="math inline">\(t\)</span>所在截面圆的半径作为Gaussian的标准差。这里仅在表面上采样的原因是，ZipNeRF认为Hash
+Encoding的网格特征的期望是0，因此我们在计算圆锥台的编码期望的时候，可以不关心被圆锥台包含的Grid，而只需要关心那些被圆锥台部分包含的Grid。</p>
+<p>ZipNeRF通过将样本点转化为Gaussian之后，计算其Hash
+Encoding的期望。同时为了做到抗锯齿，应该需要引入类似“近大远小”的pre-filter特征，类似于MipNeRF中将圆锥台的大小和形状特征引入网络。为此，ZipNeRF对于每个采样点的Feature，都增加了一个权重weight，该权重与采样点<span
+class="math inline">\(t\)</span>到光心到距离有关，距离越远，特征衰减越大。最终，将同一个圆锥台内，所有采样Feature经过加权之后再利用Gaussian进行平均，就可以得到这个圆锥台的Hash
+Encoding期望。</p>
+<blockquote>
+<p>以上部分，在ZipNeRF中对应Spatial
+Anti-Aliasing章节。关于这一部分更加详细的解读可以参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/622325164">Zip-NeRF 个人笔记 -
+知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://hackmd.io/@EmilyXia/ryXY3CF4n">Zip-NeRF 論文解讀
+（一） - HackMD</a></li>
+</ul>
+</blockquote>
+<p>另一方面，ZipNeRF还改进了MipNeRF360中提出的Proposal
+MLP，改善了MipNeRF360中会出现的沿着Z轴的失真结果。具体失真结果可以参考<a
+target="_blank" rel="noopener" href="https://jonbarron.info/zipnerf/">Zip-NeRF</a>project
+page。出现这一问题的原因在于用于监督Proposal
+MLP输出直方图的损失函数不够连续，它对直方图部分重叠和完全覆盖有等效的损失计算。ZipNeRF则改进了该损失函数，使得它更加平滑。下图是两个不同损失函数的对比，其中第一行是Proposal
+MLP输出的直方图，第二行是NeRF
+MLP输出的直方图，第三行则是两者之间的Loss。具体的计算和改进方式可以参考ZipNeRF原论文。</p>
+<img src="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304170433355.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Mip-NeRF 360与ZipNeRF的Proposal MLP损失函数对比">
+<h2 id="简单总结-4">简单总结</h2>
+<p>ZipNeRF结合了NeRF类两个非常优秀的工作MipNeRF以及InstantNGP，在结合过程中，主要关注如何计算出圆锥台的Hash
+Encoding期望。另一方面，ZipNeRF还改进了MipNeRF 360中提出的Proposal
+MLP，解决了可能出现的沿Z轴的失真。</p>
+<p>ZipNeRF的项目地址：</p>
+<ul>
+<li>原始项目：<a
+target="_blank" rel="noopener" href="https://github.com/jonbarron/camp_zipnerf">jonbarron/camp_zipnerf</a></li>
+<li>Pytorch实现：<a
+target="_blank" rel="noopener" href="https://github.com/SuLvXiangXin/zipnerf-pytorch">SuLvXiangXin/zipnerf-pytorch:
+Unofficial implementation of ZipNeRF</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/3D/" class="print-no-link">#3D</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
+      
+        <a href="/tags/NeRF/" class="print-no-link">#NeRF</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NeRF以及系列工作介绍(2)</div>
+      <div>http://example.com/2024/03/04/NeRF以及系列工作介绍-2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年3月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/02/29/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-1/" title="NeRF以及系列工作介绍(1)">
+                        <span class="hidden-mobile">NeRF以及系列工作介绍(1)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
