@@ -1,0 +1,1141 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要介绍了3D Gaussian的核心内容以及流程，同时记录了相关Survey，包括常用数据集、相关工作以及改进方向。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3D Gaussian介绍以及综述">
+<meta property="og:url" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要介绍了3D Gaussian的核心内容以及流程，同时记录了相关Survey，包括常用数据集、相关工作以及改进方向。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305132309324.png">
+<meta property="og:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305133410533.png">
+<meta property="og:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240306165139561.png">
+<meta property="og:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240311140343008.png">
+<meta property="og:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305182303917.png">
+<meta property="article:published_time" content="2024-03-12T05:23:14.000Z">
+<meta property="article:modified_time" content="2024-03-12T05:26:05.427Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="论文笔记">
+<meta property="article:tag" content="3D Gaussian">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305132309324.png">
+  
+  
+  
+  <title>3D Gaussian介绍以及综述 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="3D Gaussian介绍以及综述"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-12 13:23" pubdate>
+          2024年3月12日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">3D Gaussian介绍以及综述</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2024-03-12T13:26:05+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="introduction">Introduction</h1>
+<h2 id="资源列表">资源列表</h2>
+<p>3D Gaussian相关跟踪项目：</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/MrNeRF/awesome-3D-gaussian-splatting">MrNeRF/awesome-3D-gaussian-splatting</a></li>
+</ul>
+<p>3D Gaussian综述以及相关项目：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.07181">[2402.07181] 3D Gaussian
+as a New Vision Era: A Survey</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.03890">[2401.03890] A Survey on
+3D Gaussian Splatting</a></li>
+</ul>
+<h1 id="d-gaussian-splatting">3D Gaussian Splatting</h1>
+<p><a
+target="_blank" rel="noopener" href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D
+Gaussian Splatting(SIGGRAPH2023)</a>提出了一种新的场景表达方式，它使用3D
+Gaussian当作场景基元，利用众多3D
+Gaussian来表示场景。在训练过程中通过对3D
+Gaussian进行交错优化和致密化，以实现场景的准确表示。在渲染方面，开发了一种支持3D
+Gaussian的可微光栅化器。</p>
+<p>3D Gaussian
+Splatting能够在较少训练时间的情况下同时保持优秀的渲染质量，最重要的是允许在1080p分辨率下进行高质量实时(<span
+class="math inline">\(\ge\)</span> 30 fps)的新视图合成。</p>
+<h2 id="模型架构">模型架构</h2>
+<p>3D Gaussian
+Splatting的总体流程如下，这里可以进行简单描述。首先，通过SfM来处理场景的多张图片，输出初始点云。将点云中的每个点作为中心点，将其初始化为3D
+Gaussian，每个3D
+Gaussian还具有其他可优化的参数。给定一个视角，我们可以将3D
+Gaussian投影到2D，通过球谐函数得到相应的颜色，然后进行<span
+class="math inline">\(\alpha\)</span>​混合得到渲染结果，该过程通过论文设计的可微分光栅化器来完成。得到渲染结果之后，可以与GT作Loss，而后进行反向传播。反向传播的梯度一方面用来优化3D
+Gaussian的各项参数，另一方面用来完成3D Gaussian的致密化。</p>
+<img src="/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305132309324.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="3D Gaussian Splatting流程">
+<p>上面简单介绍了模型的全流程，下面对其中的不同组件进行介绍。</p>
+<h3 id="d-gaussian-基元">3D Gaussian 基元</h3>
+<p>论文中使用3D Gaussian作为场景基元，每个3D
+Gaussian的可优化参数包括位置position(对应Gaussian的均值)<span
+class="math inline">\(\mathbf{x}\)</span>，协方差矩阵Covariance<span
+class="math inline">\(\Sigma\)</span>，不透明度Opacity <span
+class="math inline">\(\alpha\)</span>，以及球谐函数SH系数(用来表示视角相关的颜色)。3D
+Gaussian表示如下。直观上来看，每个3D
+Gaussian都表现为一个具有不透明度的椭球，同时具有不同的缩放和旋转。 <span
+class="math display">\[
+G(\mathbf{x}) = e ^{-\frac{1}{2}(\mathbf{x})^T \Sigma^{-1}(\mathbf{x})}
+\]</span> 3D
+Gaussian中的大部分参数都可以直接通过梯度下降来进行优化，不过其中需要注意的是，协方差矩阵只有在半正定的时候才有意义。如果直接使用梯度下降来优化这样的矩阵是非常困难的，因为我们很难直接在优化过程中给矩阵增加这样的约束，这导致过程中产生的矩阵可能是无效的。为此，论文将<span
+class="math inline">\(\Sigma\)</span>分解为旋转和缩放的组合，允许独立优化旋转和缩放，使得3D
+Gaussian适应场景中的不同形状： <span class="math display">\[
+\Sigma = RSS^TR^T
+\]</span> 其中，<span
+class="math inline">\(S\)</span>是一个对角缩放矩阵，其中包含<span
+class="math inline">\(3\)</span>个缩放参数；<span
+class="math inline">\(R\)</span>是一个<span
+class="math inline">\(3\times
+3\)</span>旋转矩阵。在实际实现中，为了允许对这两个因子独立优化，选择将其分别存储，其中利用一个3维向量<span
+class="math inline">\(s \in \mathbb{R}^3\)</span>来存储<span
+class="math inline">\(S\)</span>，利用4元数<span class="math inline">\(q
+\in \mathbb{R}^4\)</span>来表示<span
+class="math inline">\(R\)</span>，利用<span
+class="math inline">\(s,q\)</span>可以分别导出<span
+class="math inline">\(S,Q\)</span>。</p>
+<blockquote>
+<p>4元数提供了一种有效的方法，来处理三维空间旋转和定位问题。与欧拉角相比，四元数避免了万向锁问题，并且在计算上比旋转矩阵更高效、更紧凑。通过四元数可以实现平滑的插值和连续的旋转。</p>
+<p>4元数认为三维空间中的旋转可以通过一个实部和三个虚部来定义，形式上为<span
+class="math inline">\(q = w + xi + yj + zk\)</span>。在旋转中，实部<span
+class="math inline">\(w\)</span>表示旋转的角度，而虚部<span
+class="math inline">\((x,y,z)\)</span>表示旋转轴的方向。详细理解可以参考：<a
+target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV14t421h7M4/?spm_id_from=333.337.search-card.all.click&amp;vd_source=f05227407dcf2e1cd95d954a632cec91">四元数如何控制物体旋转？
+bilibili</a></p>
+</blockquote>
+<h3 id="自适应致密化">自适应致密化</h3>
+<p>从初始化开始，我们只有经过SfM得到的一些初始化点，在后续的流程中，3D
+Gaussian
+Splatting会自适应地增加高斯密度，以更好地捕捉场景细节，即自适应致密化。具体来说，它会在重建不足的区域进行Gaussian的克隆，在过度重建的区域进行Gaussian的分裂。<strong>这两者在反向传播过程中都表现出较大的空间位置梯度</strong>。对于重建不足的小Gaussian，会沿着梯度方向创建出相同大小的小Gaussian；对于过度重建的大Gaussian，会将其分割成更小的Gaussian，大小除以某个尺度因子<span
+class="math inline">\(\phi(=1.6)\)</span>。</p>
+<p>以上致密化的过程会周期性进行(在预热之后，每100次迭代进行一次致密化)，同时在致密化过程中会删除几乎透明的Gaussian(<span
+class="math inline">\(\alpha\)</span>小于某个阈值<span
+class="math inline">\(\varepsilon_\alpha\)</span>)。</p>
+<img src="/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305133410533.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="3D Gaussian致密化过程">
+<h3 id="可微分光栅化">可微分光栅化</h3>
+<p>本部分介绍3D Gaussian中的可微分光栅化过程。考虑在空间中已经有很多3D
+Gaussian，可微分光栅化完成的工作就是在给定视角的情况下，将这些3D
+Gaussian转化为图像。</p>
+<img src="/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240306165139561.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="3D Gaussian可微分光栅化">
+<p>对于众多的3D Gaussian，首先需要将它们投影到2D图线空间中，形成多个2D
+Gaussian，这个步骤被称为Splatting。对于每个3D
+Gaussian，设其中心点为<span
+class="math inline">\(\mathbf{x}\)</span>，协方差矩阵为<span
+class="math inline">\(\Sigma\)</span>，在给定观察变换<span
+class="math inline">\(W\)</span>的情况下，我们可以得到对应2D
+Gaussian的位置<span
+class="math inline">\(\mathbf{x}&#39;\)</span>以及协方差矩阵<span
+class="math inline">\(\Sigma&#39;\)</span>。协方差矩阵<span
+class="math inline">\(\Sigma&#39;\)</span>计算如下，其中<span
+class="math inline">\(J\)</span>为投影彪悍的仿射近似雅可比矩阵： <span
+class="math display">\[
+\Sigma&#39; = JW\Sigma W^T J^T
+\]</span> 接下来首先考虑对单个像素pixel的成像过程。对于每个像素<span
+class="math inline">\(x\)</span>来说，我们可以得到覆盖在它上面的所有2D
+Gaussian，这些2D Gaussian可以形成一个列表<span
+class="math inline">\(\mathcal{N}\)</span>，其中按照Gaussian的深度进行排序。于是，像素的颜色就可以通过下面的公式计算得来：
+<span class="math display">\[
+C = \sum_{i \in \mathcal{N}} c_i\alpha_i&#39; \prod_{j=1}^{i-1}(1 -
+\alpha_j&#39;)
+\]</span> 其中，<span
+class="math inline">\(c_i\)</span>表示学习得到的Gaussian的颜色，<span
+class="math inline">\(\alpha_i\)</span>表示学习得到的透明度，而<span
+class="math inline">\(\alpha_i&#39;\)</span>则是通过该透明度与高斯分布相乘得到的结果，如下，需要利用到投影空间中的坐标<span
+class="math inline">\(x&#39;,\mathbf{\mu}_i&#39;\)</span>: <span
+class="math display">\[
+\alpha_i&#39; = \alpha_i \times \exp(-\frac{1}{2}(x&#39; -
+\mu_i&#39;)^T\Sigma_i&#39;^{-1}(x&#39; - \mu_i&#39;))
+\]</span> 在每个像素成像之前，我们需要得到覆盖在该像素上的所有2D
+Gaussian，并且还需要按照深度进行排序，而场景中的Gaussian的数量级往往非常大，可以预想到，如果进行逐像素渲染的话，排序工作会是渲染过程中的瓶颈。而3D
+Gaussian Splatting则进行了很多并行优化，来加速这一过程。</p>
+<p>首先，论文将图像分为很多的patch(原论文中称为tile)，每个patch的大小为<span
+class="math inline">\(16 \times 16\)</span>​
+pixel。对于每个patch，首先会根据视锥体来保留相关Gaussian(具体来说，我们只保留与视锥体相交的置信区间大于99%的Gaussian)，然后我们就可以得到有哪些Gaussian覆盖了每个Patch。由于一个Gaussian可能会覆盖多个patch，因此在过程中会涉及到Gaussian的复制，生成Gaussian的副本。最终，所有的Gaussian(包含复制的Gaussian)会被分配一个patch相关的id标识符。结合patch
+id以及深度，就可以对每个patch对应的所有Gaussian进行深度排序。</p>
+<p>每个Patch和像素的渲染都是独立发生的，这使得过程非常适合并行化。具体来说，3D
+Gaussian的项目对将该过程在GPU上进行优化，由GPU的Block来执行每个Patch的渲染，同时由Block中的每个Thread来执行每个Pixel的渲染。由于每个Block具有共享内存，这使得整个过程会非常搞笑。对于每个像素(每个Thread)，当透明度<span
+class="math inline">\(\alpha\)</span>达到1的时候，则停止渲染。</p>
+<h3 id="其他细节">其他细节</h3>
+<p>3D Gaussian Splatting的整体流程中，还有一些其他的细节：</p>
+<ol type="1">
+<li>损失函数使用L1 Loss和SSIM Loss：<span
+class="math inline">\(\mathcal{L} = (1-\lambda)\mathcal{L}_1 + \lambda
+\mathcal{L}_{D-SSIM}\)</span>​</li>
+<li>在点剪枝阶段，会去除多余的或者影响较小的Gaussian，包括几乎透明(<span
+class="math inline">\(\alpha\)</span>低于指定阈值)的高斯、在空间中过大的高斯、在空间中具有较大足迹的高斯等。在某种程度上可以视为正则化过程</li>
+<li>为了防止摄像机附近Gaussian密度的不合理增加，会周期性将Gaussian的不透明度设置为接近于零。这种方式能够控制使得必要Gaussian的密度增加，同时剔除冗余的Gaussian。有助于节省计算资源，同时确保模型中的Gaussian更加精确和有效地表示场景</li>
+<li>在优化过程中会有一个“warm
+up”过程，该过程中使用较低的分辨率进行计算。具体来说，首先使用4倍小的分辨率进行优化，并且分别在迭代250次以及500次时进行两倍上采样</li>
+</ol>
+<h2 id="简单总结">简单总结</h2>
+<p>3D Gaussian Splatting提出了一种新的场景表征方式，它使用众多3D
+Gaussian来表示场景，同时使用可微分光栅化来渲染图像。这种方式提供了更快的训练和渲染速度，同时能够保持优秀的渲染质量。</p>
+<p>3D Gaussian的优点：</p>
+<ul>
+<li>能够生成高品质、逼真的场景</li>
+<li>可以进行快速、实时的渲染</li>
+<li>更快的训练速度</li>
+</ul>
+<p>3D Gaussian的缺点：</p>
+<ul>
+<li>在模型优化过程中，会出现“破碎”的Gaussian，包括太大、太长、冗余等</li>
+<li>在训练过程中需要更多的显存</li>
+<li>单个场景需要更多的磁盘占用空间</li>
+<li>与现有的渲染管线不兼容</li>
+</ul>
+<p>3D Gaussian Splatting的相关项目地址：</p>
+<ul>
+<li><p>原始项目：<a
+target="_blank" rel="noopener" href="https://github.com/graphdeco-inria/gaussian-splatting">graphdeco-inria/gaussian-splatting</a></p></li>
+<li><p>可微分光栅化引擎实现：<a
+target="_blank" rel="noopener" href="https://github.com/graphdeco-inria/diff-gaussian-rasterization">graphdeco-inria/diff-gaussian-rasterization</a></p></li>
+</ul>
+<h1 id="相关survey">相关Survey</h1>
+<blockquote>
+<p>本部分主要记录在3D
+Gaussian相关Survey中提到的改进方向以及相关工作等，所参考的Survey分别是：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.07181">[2402.07181] 3D Gaussian
+as a New Vision Era: A Survey</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.03890">[2401.03890] A Survey on
+3D Gaussian Splatting</a></li>
+</ul>
+</blockquote>
+<h2 id="常用数据集">常用数据集</h2>
+<ul>
+<li>来自论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.07181">3D Gaussian as a
+New Vision Era: A Survey</a></li>
+</ul>
+<img src="/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240311140343008.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="3D Gaussian相关数据集">
+<h2 id="相关工作">相关工作</h2>
+<p>对3D Gaussian相关工作进行分类：</p>
+<img src="/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305182303917.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="3D Gaussian相关工作的分类">
+<h3 id="gaussian本身的优化">Gaussian本身的优化</h3>
+<ol type="1">
+<li>在提高3DGS的内存效率
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://city-super.github.io/scaffold-gs/">Scaffold-GS(CVPR2024)</a>:使用锚点来分布局部3D
+Gaussian，并根据视锥体内的观察方向和距离动态预测相关属性，能够做到更快收敛、更少基元和更好的视觉质量</li>
+<li><a target="_blank" rel="noopener" href="https://maincold2.github.io/c3dgs/">Compact 3D
+Gaussian(CVPR2024)</a>：Gaussian的压缩</li>
+</ul></li>
+<li>进一步提高渲染图像的质量，解决锯齿和伪影问题
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2311.16493">Mip-Splatting(CVPR2024)</a>：借助3D平滑和2D
+Mip实现抗锯齿渲染</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2311.17977">GaussianShader</a>:
+提出了一种在3D
+Gaussian上应用着色函数的方法，增强镜面特征和反射表面的场景</li>
+<li><a
+target="_blank" rel="noopener" href="https://nju-3dv.github.io/projects/Relightable3DGaussian/">Relightable
+3D Gaussian</a>:
+提出了一种新的基于点的渲染框架，用于从多视图图像中进行材质和照明分解</li>
+<li><a
+target="_blank" rel="noopener" href="https://kcheng1021.github.io/gaussianpro.github.io/">GaussianPro</a>:
+利用渐进传播策略来指导3D
+Gaussian的致密化，利用场景的现有重建几何形状的先验以及PatchMatch技术来生成具有准确位置和方向的新Gaussian</li>
+</ul></li>
+<li>原始的3DGS需要大量的训练图像，降低合成新视角的图像成本则是希望能够在较少训练图像上得到优秀的场景表征
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://robot0321.github.io/DepthRegGS/">DepthRegGS</a>：使用少视图来优化Gaussian，其中使用深度图(由与训练的单目模型获得)作为指导和约束</li>
+<li><a
+target="_blank" rel="noopener" href="https://zehaozhu.github.io/FSGS/">FSGS</a>：少视图(3个训练视图)的实时场景视图合成</li>
+<li><a
+target="_blank" rel="noopener" href="https://formycat.github.io/SparseGS-Real-Time-360-Sparse-View-Synthesis-using-Gaussian-Splatting/">SparseGS</a>:
+少视图Gaussian</li>
+<li><strong>可能改进</strong>：改进3D
+Gaussian的致密化方式、利用几何信息提高渲染质量</li>
+</ul></li>
+<li>动态场景的表征
+<ul>
+<li><a target="_blank" rel="noopener" href="https://guanjunwu.github.io/4dgs/">4D Gaussian
+Splatting(CVPR2024)</a>: 基于3D
+Gaussian完成动态场景的表征，将空间和时间作为一个整体进行建模</li>
+<li><a target="_blank" rel="noopener" href="https://fudan-zvg.github.io/4d-gaussian-splatting/">4D
+Gaussian
+Splatting(ICLR2024)</a>：提出了一种用于实时3D动态场景渲染的新框架</li>
+<li><a
+target="_blank" rel="noopener" href="https://agelosk.github.io/dynmf/">DynMF</a>：提出一种功能紧凑而高效的表达方式，将动态场景分解为若干神经轨迹</li>
+<li><a
+target="_blank" rel="noopener" href="https://xpandora.github.io/PhysGaussian/">PhysGaussian(CVPR2024)</a>：将牛顿动力学集成到3D
+Gaussian中，实现高质量的运动合成</li>
+<li><a
+target="_blank" rel="noopener" href="https://ingra14m.github.io/Deformable-Gaussians/">Deformable 3D
+Gaussians(CVPR2024)</a>: 提出了一种可变形的3D
+Gaussian分布方式。该方式使用显式3D
+Gaussian重构场景，并通过变形场来学习处于规范空间内的Gaussian，来对单目动态场景进行建模</li>
+</ul></li>
+</ol>
+<h3 id="重建-reconstruction">重建 Reconstruction</h3>
+<ol type="1">
+<li>表面mesh重建：利用3D Gaussian来完成表面mesh提取
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://anttwo.github.io/sugar/">SuGaR(CVPR2024)</a>：结合正则项来促进高斯和场景表面之间的对齐，然后使用泊松重建从高斯中导出mesh网格</li>
+<li><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.00846">NeuSG</a>：引入尺度正则化器，通过强制3D
+Gaussian变得非常薄，将其中心拉近表面</li>
+<li><strong>可能改进</strong>：对于表面网格提取，引入光照分解的方法可能可以提取更真实的表面纹理</li>
+</ul></li>
+<li>Few-shot重建：从少量图片中重建3D场景，要求模型具有泛化性
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://pixelsplat.github.io/">pixelSplat</a>：从两个输入视图来推断3D
+Gaussian场景</li>
+<li><a
+target="_blank" rel="noopener" href="https://zouzx.github.io/TriplaneGaussian/">TriplaneGaussian</a>:使用混合表示来从单视图中重建3D场景，该混合表示结合了显示的点云和隐式的三平面场</li>
+<li><a
+target="_blank" rel="noopener" href="https://szymanowiczs.github.io/splatter-image.html">Splatter
+Image(CVPR2024)</a>:一种非常快速的单目3D对象重建方法</li>
+</ul></li>
+</ol>
+<h3 id="gaussian的编辑和操作">Gaussian的编辑和操作</h3>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://buaacyw.github.io/gaussian-editor/">GaussianEditor(CVPR2024)</a>：一种基于3D
+Gaussian的3D编辑算法</li>
+<li><a
+target="_blank" rel="noopener" href="https://control4darxiv.github.io/">Control4D(CVPR2024)</a>：提出了一种使用文本指令来编辑4D肖像的框架</li>
+<li><a target="_blank" rel="noopener" href="https://yihua7.github.io/SC-GS-web/">SC-GS(CVPR2024)</a>:
+提出了一种新的表示，将动态场景的运动和外观分别显式地分解为稀疏控制点和密集高斯</li>
+<li><a target="_blank" rel="noopener" href="https://cogs2023.github.io/">CoGS</a>：一种可控的Gaussian
+Splatting方法，可以直接操纵场景元素，提供动态场景的实时控制</li>
+</ul>
+<h3 id="生成-generation">生成 Generation</h3>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://taoranyi.com/gaussiandreamer/">GaussianDreamer(CVPR2024)</a>:
+提出一种快速的3D对象生成框架，通过3D
+Gaussian来连接2D和3D扩散模型，可以在短时间内生成高质量的3D实例</li>
+<li><a target="_blank" rel="noopener" href="https://gsgen3d.github.io/">GSGEN(CVPR2024)</a>: 使用3D
+Gaussian来完成文本到3D对象的生成</li>
+<li><a target="_blank" rel="noopener" href="https://ir1d.github.io/AGG/">AGG</a>:
+设计了一种级联的生成pipeline，可以做到泛化性地物体生成，无需针对每个实例进行优化</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/EnVision-Research/LucidDreamer">LucidDreamer(CVPR2024)</a>:
+提出一种称为Interval Score Matching(ISM)的方法，解决了SDS(Score
+Distillation Sampling)会带来的过度平滑的问题</li>
+<li><a
+target="_blank" rel="noopener" href="https://dreamgaussian.github.io/">DreamGaussian(ICLR2024)</a>:
+基于3D Gaussian的3D内容生成框架</li>
+<li><a
+target="_blank" rel="noopener" href="https://research.nvidia.com/labs/toronto-ai/AlignYourGaussians/">Align
+Your Gaussians</a>: 允许生成动态的3D内容</li>
+<li><a target="_blank" rel="noopener" href="https://vita-group.github.io/4DGen/">4DGen</a>:
+使用静态3D资源和单目视频序列来构建4D内容</li>
+<li><a
+target="_blank" rel="noopener" href="https://jiawei-ren.github.io/projects/dreamgaussian4d/">DreamGaussian4D</a>:
+在Gaussian Splatting中显式建模空间变换来完成图像到4D的生成</li>
+<li><a target="_blank" rel="noopener" href="https://fudan-zvg.github.io/Efficient4D/">Efficient4D</a>:
+利用视频来生成4D对象</li>
+</ul>
+<h3 id="感知-perception">感知 Perception</h3>
+<ol type="1">
+<li>Open-vocabulary semantic object detection and
+localization：开放词汇语义对象检测和定位
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://buaavrcg.github.io/LEGaussians/">LEGaussians(CVPR2024)</a>:
+提出了Language Embedded 3D
+Gaussian，一种用于开放词汇查询任务的新颖场景表示</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.01970">FMGS</a>:
+集成了用于Language Embedding的多分辨率hash encoding以及用于场景表征的3D
+Gaussian</li>
+</ul></li>
+<li>3D Segmentation
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.16047">2D-Guided 3D Gaussian
+Segmentation</a>: 利用2D分割来监督3D Gaussian的分割</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.00732">Gaussian Grouping</a>:
+利用SAM的2D
+Mask预测以及3D空间一致性监督，实现了3D场景中Gaussian的分割</li>
+<li><a target="_blank" rel="noopener" href="https://jumpat.github.io/SAGA/">Segment Any 3D
+Gaussians</a>: 将SAM与3D Gaussian进行集成，实现3D交互式分割</li>
+<li><a target="_blank" rel="noopener" href="https://feature-3dgs.github.io/">Feature
+3DGS(CVPR2024)</a>: 在3D
+Gaussian上增加特征字段，并利用2D基础模型来监督学习特征字段</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.17857">Segment Anything in 3D
+Gaussians</a>: 在3D
+Gaussian中完成对象分割，同时不需要任何训练过程或可学习参数</li>
+</ul></li>
+<li>Tracking：动态物体的跟踪
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.07920">DrivingGaussian(CVPR2024)</a>:
+利用3D Gaussian重建动态的大规模驾驶场景</li>
+<li><a target="_blank" rel="noopener" href="https://zju3dv.github.io/street_gaussians/">Street
+Gaussians</a>: 利用单目视频对动态城市街景场景进行建模</li>
+</ul></li>
+<li>SLAM
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2311.11700">GS-SLAM</a>:
+在SLAM中利用3D Gaussian</li>
+<li><a
+target="_blank" rel="noopener" href="https://rmurai.co.uk/projects/GaussianSplattingSLAM/">Gaussian
+Splatting SLAM(CVPR2024)</a>: 使用3D
+Gaussian，利用单个移动的单目或RGB-D相机进行增量3D重建</li>
+<li><a target="_blank" rel="noopener" href="https://spla-tam.github.io/">SplaTAM</a>:
+使用位姿未知的单目RGB-D相机来实现密集SLAM</li>
+</ul></li>
+</ol>
+<h3 id="虚拟人-virtual-humans">虚拟人 Virtual Humans</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2311.17113">Human Gaussian
+Splatting</a>: 利用3D Gaussian，从多视图视频中学习逼真的人体头像</li>
+<li><a target="_blank" rel="noopener" href="https://machinelearning.apple.com/research/hugs">HUGS:
+Human Gaussian Splats</a>: 利用单目视频来重建人体和静态背景</li>
+<li><a target="_blank" rel="noopener" href="https://longxiang-ai.github.io/Human101/">Human101</a>:
+利用单目视频完成快速重建和实时渲染</li>
+<li><a
+target="_blank" rel="noopener" href="https://neuralbodies.github.io/3DGS-Avatar/">3DGS-Avatar(CVPR2024)</a>:
+利用单目视频，来分别建模人体以及布料变形，训练时间短，交互式渲染帧率高</li>
+<li><a
+target="_blank" rel="noopener" href="https://huliangxiao.github.io/GaussianAvatar">GaussianAvatar(CVPR2024)</a>:
+使用3D Gaussian来联合优化运动和外观</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/skhu101/GauHuman">GauHuman</a>:
+从SMPL的LBS权重开始，使用有效的姿态细化模块来纠正SMPL姿态</li>
+<li><a
+target="_blank" rel="noopener" href="https://shenhanqian.github.io/gaussian-avatars">GaussianAvatars(CVPR2024)</a>:
+将3D
+Gaussian绑定到参数化可形变面部模型上，在表情、姿式和视角方面完全可控</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.02902">HeadGaS</a>: 利用3D
+Gaussian来进行3D头部动态重建</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.12900">PSAvatar</a>:
+使用基于点的可变形形状模型，不仅可以重建面部结构，还可以重建复杂的几何形状，例如眼镜和发型等</li>
+<li><a target="_blank" rel="noopener" href="https://yuelangx.github.io/gaussianheadavatar/">Gaussian
+Head Avatar(CVPR2024)</a>: 使用3D
+Gaussian以及基于MLP的变形场来进行头部重建，避免了LBS的有限表达能力</li>
+</ul>
+<h2 id="改进方向feature">改进方向/Feature</h2>
+<ol type="1">
+<li>处理3D Gaussian中的漂浮元素(Floating
+Elements)：通过透明度阈值过滤Gaussian/增加正则项使得这些Floating
+Elements靠近表面</li>
+<li>mech重建：如何利用3D Gaussian来增强或者补充其他的多视图重建技术</li>
+<li>渲染的真实性：考虑结合MVS等方法，提高几何精度</li>
+<li>实时渲染：进一步提高3D Gaussian渲染的速度</li>
+<li>少样本3D Gaussian：如何利用少样本来学习3D Gaussian</li>
+<li>镜面反射与非镜面反射区域的区分</li>
+<li>生成更加具有真实性的3D对象和场景</li>
+<li>将大模型(例如LLM、SAM等)与3D Gaussian进行集成</li>
+<li>将3D Gaussian作为工具来完成其他相关任务</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/3D/" class="print-no-link">#3D</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
+      
+        <a href="/tags/3D-Gaussian/" class="print-no-link">#3D Gaussian</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>3D Gaussian介绍以及综述</div>
+      <div>http://example.com/2024/03/12/3D-Gaussian介绍以及综述/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年3月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/" title="NeRF以及系列工作介绍(2)">
+                        <span class="hidden-mobile">NeRF以及系列工作介绍(2)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
