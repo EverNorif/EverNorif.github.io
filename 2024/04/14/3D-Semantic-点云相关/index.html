@@ -1,0 +1,1177 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要记录了3D Semantic中点云表示相关的论文，包括OpenMask3D、OVIR-3D、Open3DIS以及MaskClustering等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3D Semantic-点云相关">
+<meta property="og:url" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要记录了3D Semantic中点云表示相关的论文，包括OpenMask3D、OVIR-3D、Open3DIS以及MaskClustering等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240325142002028.png">
+<meta property="og:image" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240325142805709.png">
+<meta property="og:image" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240411105203761.png">
+<meta property="og:image" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240413114108681.png">
+<meta property="og:image" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240410161149253.png">
+<meta property="og:image" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240411162352554.png">
+<meta property="article:published_time" content="2024-04-14T05:35:37.000Z">
+<meta property="article:modified_time" content="2024-04-14T05:47:19.665Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Point Cloud">
+<meta property="article:tag" content="3D Semantic">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240325142002028.png">
+  
+  
+  
+  <title>3D Semantic-点云相关 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="3D Semantic-点云相关"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-14 13:35" pubdate>
+          2024年4月14日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          51 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">3D Semantic-点云相关</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2024-04-14T13:47:19+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="introduction">Introduction</h1>
+<p>3D
+Semantic主要关注的问题是如何在3D空间中表示语义，根据3D表示的不同，语义的表示也会有所不同。例如3D表示可能包括点云表示、NeRF表示以及3D
+Gaussian表示等。</p>
+<p>本系列主要关注Open Vocabulary
+Semantic相关工作，当然可能会混入一些其他的语义类任务，例如Closed Set
+Semantic Segmentation等。</p>
+<p>作为系列开始的第一篇，首先记录一些相关资源地址：</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://opensun3d.github.io">Open☀️3D</a>：Open3D研讨会，其中包含相关论文的记录</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/Chuan-10/awesome-language-embedded-3D-representations">Chuan-10/awesome-language-embedded-3D-representations</a>：3D语义嵌入的相关论文</li>
+</ul>
+<h1 id="openmask3dneurips2023">OpenMask3D(NeurIPS2023)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://openmask3d.github.io/">OpenMask3D</a>旨在解决开放词汇的3D
+Instance分割问题。现有的方法通常对3D场景中的每个点学习一个特征，这种方式可以用于执行语义分割，但是无法分离多个对象实例。而OpenMask3D提出了一种基于Instance的特征提取方法，它构建了一个pipeline，来为场景中的实例提取特征。在这种方式中，特征是实例级别的，而不是点级别的。</p>
+<h2 id="模型架构">模型架构</h2>
+<h3 id="pipeline">pipeline</h3>
+<p>OpenMask3D的输入是场景的RGB-D照片序列以及重建出的3D点云(假设相机参数已知)，输出则是预测出的一系列3D
+Instance Mask，以及每个Mask的特征。</p>
+<p>OpenMask3D的Pipeline如下：</p>
+<img src="/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240325142002028.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="OpenMask3D">
+<ol type="1">
+<li>首先，通过预训练的3D分割模型(3D Mask Proposal
+Network)可以得到类别无关的3D Instance Mask。-&gt; 对应Class Agnostic
+Instance Mask Proposals</li>
+<li>然后需要为这些Instance Mask进行特征提取，主要分为Top K
+视角提取、2D分割与裁剪、CLIP特征提取和聚合几个步骤。 -&gt;
+对应Mask-Feature Computation for Each Instance</li>
+<li>这样就得到了一系列Instance Mask以及每个Mask对应的特征</li>
+</ol>
+<p>Pipeline的第一步是提取类别无关的3D Instance
+Mask。具体来说，这一步将点云输入3D Mask Proposal Network，得到<span
+class="math inline">\(M\)</span>个类别无关的Mask Proposal。这里使用的3D
+Mask Proposal Network实际上是一个预训练的3D Instance Segmentation
+Model，<a
+target="_blank" rel="noopener" href="https://github.com/JonasSchult/Mask3D?tab=readme-ov-file">Mask3D</a>，不过这个模型是在封闭词汇表上训练的。该模型的原始输出包括<span
+class="math inline">\(M\)</span>个Instance
+Mask以及每个Mask所属的类别标签(来自训练集的封闭词汇表)。OpenMask3D则只选取了其中的Instance
+Mask输出，而不需要其中的类别标签。</p>
+<p>Pipeline的第二步是为每个3D Instance
+Mask提取对应的特征。这一步骤的目的是计算出可以用于开放词汇概念的特征表示。</p>
+<p>对于每个Instance Mask
+Proposal，首先需要选择该Instance在哪些RGB-D帧中高度可见；然后对于这些RGB-D帧，采用SAM进行2D
+Mask分割，基于分割结果进行Multi-Scale的裁剪；接着利用CLIP
+Encoder获取这些裁剪图像对应的Embedding；最后将这些Embedding聚合成为最终的Mask特征。</p>
+<img src="/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240325142805709.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Mask-Feature Computation Module">
+<p>对于每个Instance
+Mask，首先需要为其在RGB-D序列中选取代表帧构成的子集。OpenMask3D采用了一种基于可见度分数Visibility
+Score的方式来选择Top K Views。下面公式表示了第<span
+class="math inline">\(i\)</span>个Instance Mask在第<span
+class="math inline">\(j\)</span>个RGB-D帧上的可见度分数： <span
+class="math display">\[
+s_{ij} = \frac{vis(i, j)}{\max_{j&#39;}(vis(i,j&#39;))}
+\]</span> 其中<span class="math inline">\(vis(i,j)\)</span>表示第<span
+class="math inline">\(i\)</span>个Instance Mask在第<span
+class="math inline">\(j\)</span>帧上的可见点的数量。对于Instance
+Mask中的每个点，都可以根据第<span
+class="math inline">\(j\)</span>帧相关的相机参数将其投影到对应的图像坐标系下，得到齐次坐标表示<span
+class="math inline">\((u,v,w)^T\)</span>。通过归一化的齐次坐标<span
+class="math inline">\(x,y\)</span>和图像长宽的对比，可以判断该点是否在图像上。但是简单通过这种方式计算，并没有考虑到遮挡关系，因此OpenMask还采用阈值过滤的方式来判断遮挡。对于每个3D点，通过点云可以得到深度<span
+class="math inline">\(d\)</span>，通过上面的计算可以得到计算深度<span
+class="math inline">\(w\)</span>，对比这两个深度，如果<span
+class="math inline">\(w-d &gt;
+k_{threshold}\)</span>，则表示该点被遮挡。</p>
+<blockquote>
+<ul>
+<li>为什么<span class="math inline">\(w\)</span>​可以表示深度？</li>
+</ul>
+<p>参考<a
+target="_blank" rel="noopener" href="https://evernorif.github.io/2024/02/11/%E6%91%84%E5%83%8F%E6%9C%BA%E5%87%A0%E4%BD%95%E4%B8%8E%E6%9E%81%E5%87%A0%E4%BD%95/#%E5%9B%BE%E7%89%87%E5%9D%90%E6%A0%87%E7%B3%BB%E5%BC%95%E5%85%A5">摄像机几何与极几何
+-
+EverNorif</a>中的公式，得到图像坐标系中的齐次坐标最后一维就是摄像机坐标系中的深度。</p>
+</blockquote>
+<p>通过可见度分数，我们可以为每个Instance Mask得到<span
+class="math inline">\(k\)</span>个RGB-D帧。我们需要从这些帧中提取到对应Mask的最佳图像裁剪。这一步使用SAM来完成。SAM接受prompt点作为输入，输出则是2D
+Mask以及相关置信度。OpenMask3D从Instance
+Mask的投影点中进行采样作为prompt点来运行SAM。通过SAM可以得到较好的2D
+Mask。然后基于这个2D
+Mask，OpenMask3D进行Mulit-Scale图像的剪裁。具体来说，将2D
+Mask的最紧密Bounding
+Box作为最低的Scale，然后进行多级scale处理，其他层级的Bounding
+Box逐渐变大，一共得到<span
+class="math inline">\(L\)</span>个level的裁剪图片。</p>
+<p>经过上面的步骤，对于每个Instance Mask，就可以得到<span
+class="math inline">\(k \cdot
+L\)</span>个(裁剪)图像。将这些图像输入CLIP的视觉编码器中，得到CLIP图像Embedding。之后以平均池化来聚合得到Instance
+Mask的特征。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/OpenAI/CLIP">CLIP</a>，全称为Contrastive
+Language-Image
+Pre-Training，对比语言-图像预训练。该模型由OpenAI推出，在4亿级别图像-文本数据对上进行训练，意在学习出更好的图像和文本表征，实现图像和文本之间的深度理解和关联。</p>
+</blockquote>
+<h3 id="下游任务">下游任务</h3>
+<p>OpenMask3D输入一组RGBD图像序列以及3D点云，得到一系列Proposal
+Instance以及每个Instance的类别无关特征。基于这个特征，可以进行下游任务，例如开放词汇3D
+Instance分割。</p>
+<p>OpenMask3D已经有Instance
+Mask，要处理开放词汇问题，则需要将文本和Instance特征建立联系。具体来说，对于文本查询<span
+class="math inline">\(q\)</span>，OpenMask3D将其构造成类似"a {} in a
+scene"的提示，然后利用CLIP计算其文本Embedding，计算该文本Embedding和每个Instance特征的余弦相似度，相似度最高的Instance则作为该文本查询的返回。</p>
+<h2 id="简单总结">简单总结</h2>
+<p>OpenMask3D提出了一个可用于开放词汇3D
+Instance分割的特征提取Pipeline，它能在给定RGBD序列以及点云的情况下，输出3D
+Instance
+Mask以及每个Mask的特征。OpenMask3D首先将点云进行Instance分割，然后对于每个Instance，选取RGBD序列中的某些相关度高的帧，对帧中该对象的2D裁剪图片进行CLIP特征的提取，将所有提取的特征进行聚合之后赋给对应Instance的点云。</p>
+<p>OpenMask3D的项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/OpenMask3D/openmask3d">OpenMask3D/openmask3d</a></p>
+<h1 id="ovir-3dcorl2023">OVIR-3D(CoRL2023)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2311.02873">OVIR-3D</a>提出了一种有效的开放词汇3D
+Instance检索方法。给定语言查询，OVIR-3D能够基于不同Instanc和文本查询之间的特征相似性返回一组排序的3D
+Instance。OVIR-3D利用2D来指导3D，利用在广泛资料上训练的2D开放词汇检测器来生成2D
+Instance区域Proposal，然后将2D实例特征融合到3D点云上，以实现开放词汇的3D实例分割。OVIR-3D的核心贡献就是这个2D-to-3D的融合模块，它将3D区域Proposal任务视为2D
+Proposal的融合问题。</p>
+<h2 id="模型架构-1">模型架构</h2>
+<p>OVIR-3D的输入包括点云<span
+class="math inline">\(X^N\)</span>和RGB-D图像序列<span
+class="math inline">\(V=\{ I_1, I_2, ...,
+I_T\}\)</span>，其中相机参数均为已知。在推理阶段，对于给定的查询<span
+class="math inline">\(Q\)</span>，OVIR-3D则返回一组按照顺序排列的Mask，每个Mask都是代表点云的一个子集Mask。<span
+class="math inline">\(M^N = \{m_i|i \in [1, K]
+\}\)</span>。下图绘制了OVIR-3D的模型流程。</p>
+<img src="/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240411105203761.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="OVIR-3D Pipeline">
+<p>首先，对于每个图像帧<span
+class="math inline">\(I_t\)</span>，OVIR-3D使用预训练2D开放语言模型来进行开放语义分割，得到2D的区域Proposal
+<span class="math inline">\(R^{2D} = \{r_1, ...,
+r_k\}\)</span>，同时每个区域能够得到一个文本对齐的特征<span
+class="math inline">\(F^{2D} = \{f^{2D}_1, ...,
+f^{2D}_k\}\)</span>。OVIR-3D使用的预训练2D开放语言模型是<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/Detic">Detic</a>，该模型使用了多个大型数据集进行训练，在2D上能够做到较好的开放语义查询，并且在特征提取方面还是使用了CLIP。文本对齐的特征则从最终分类层之前的特征层中进行提取，最终分类的输出结果则被抛弃，只采用它的区域Proposal以及区域特征。</p>
+<blockquote>
+<p>OVIR-3D适用的2D开放语义检测器不局限于Detic，还可以使用其他模型，不过它需要满足如下两个条件：</p>
+<ol type="1">
+<li>能够生成像素级别的Mask</li>
+<li>能够为每个区域提供文本对齐的特征</li>
+</ol>
+<p>(实际上也可以换成正常的分割模型+某种区域语义特征提取策略)</p>
+</blockquote>
+<p>下一步，每个2D的Proposal区域都可以利用相机参数将其投影到3D点云上，得到投影3D区域<span
+class="math inline">\(R^{3D}\)</span>。该3D区域可能对应的情况有两种，第一种情况是该区域能够匹配上点云中已有的3D
+Instance <span class="math inline">\(O=\{o_1, ...,
+o_b\}\)</span>，第二种情况是该区域不属于已有的任何3D
+Instance。当然初始点云中任何3D
+Instance都没有，是随着过程慢慢累积的。点云中已有的3D
+Instance被存放统一的内存存储<span
+class="math inline">\(B\)</span>中，其中不仅存放了3D Instance <span
+class="math inline">\(O =\{o_1, ..., o_b\}\)</span>，还存放了每个3D
+Instance对应的3D特征<span class="math inline">\(F^{3D} = \{f_1^{3D},
+..., f_b^{3D}\}\)</span>。</p>
+<p>对于某个投影3D区域<span
+class="math inline">\(r_i^{3D}\)</span>，它能否匹配上现有的3D Instance
+<span class="math inline">\(o_j\)</span>，是通过特征相似性<span
+class="math inline">\(s_{ij}=\cos(f_i^{2D},
+f_j^{3D})\)</span>以及交并比<span class="math inline">\(IoU(r_i^{3D},
+o_j)\)</span>来进行的。其中每个3D
+Instance的特征实际上就是所有相关2D区域特征的平均，即<span
+class="math inline">\(f_i^{3D} = \frac{1}{n} \sum_{j=1}^n
+f_j^{2D}\)</span>。如果这两个指标都大于对应的阈值，则认为3D区域能够匹配3D
+Instance，此时会更新Bank <span class="math inline">\(B\)</span>中的3D
+Instance，匹配条件与更新操作如下： <span class="math display">\[
+\begin{aligned}
+s_{ij} &gt; \theta_s(=0.75), &amp;\quad IoU(r^{3D}_i, o_j) &gt;
+\theta_{iou}(=0.25) \\
+o_j:=o_j \cup r_i^{3D}, &amp;\quad f_j^{3D}:= \frac{n}{n+1}f_j^{3D} +
+\frac{1}{n}f_i^{2D}
+\end{aligned}
+\]</span> 如果投影区域不能匹配上任何一个现有的3D
+Instance，那么它将作为一个新的3D Instance加入<span
+class="math inline">\(B\)</span>中。</p>
+<p>上述的投影过程可能会生成冗余的3D
+Instance，导致低质量的分割以及不准确的数据关联。为了解决这个问题，OVIR-3D周期性(每<span
+class="math inline">\(T=300\)</span>帧)对<span
+class="math inline">\(B\)</span>中的3D
+Instance进行过滤和合并。过滤是针对3D
+Instance中的每个点进行的，对于每个点，可以计算其<span
+class="math inline">\(r_p^{det} =
+c_p^{o_i}/c_p^{vis}\)</span>，该值表示这个点被视为实例的一部分的次数比上它可见的次数，该值越小，表示这个点约不可靠，因此OVIR-3D删除<span
+class="math inline">\(r_p^{det} &lt;
+\theta_{det}(=0.2)\)</span>的点。合并则是针对3D
+Instance的，合并条件与上面的匹配条件相同。此外，对于两个3D Instance
+<span class="math inline">\(o_p, o_q\)</span>，如果<span
+class="math inline">\(recall(o_p, o_q) = |o_p \cup o_q| / |o_q| \ge
+\theta_{recall}(=0.25)\)</span>并且<span class="math inline">\(s_{pq}
+\ge \theta_s\)</span>，则认为<span
+class="math inline">\(o_q\)</span>大部分都包含在<span
+class="math inline">\(o_p\)</span>之中，并且两个instance具有相同的特征，也可以进行合并。</p>
+<p>最后，OVIR-3D使用简单的后处理步骤来分离3D空间中孤立的Instance，以及过滤可能是噪声的片段。具体来说，OVIR-3D对每个Instance进行DBSCAN处理来找到聚类结果，如果某个Instance的聚类结果无法相连，则将其分裂成多个Instance。</p>
+<p>在推理方面，首先使用CLIP文本Encoder对文本查询<span
+class="math inline">\(q\)</span>进行特征提取，在与每个3D
+Instance进行相似性比较的时候，OVIR-3D并没有采用所有相关2D区域特征的平均来代表3D
+Instance特征，而是对这些特征进行KMeans处理，选择其中K个聚类中心的特征来代表3D
+Instance的特征。最终的特征相似性，则是文本特征与这K个聚类中心的特征相似性的最大值。</p>
+<h2 id="简单总结-1">简单总结</h2>
+<p>OVIR-3D输入点云和一组RGB-D图像，对于给定的查询，则可以输出一组按照相关性排序的点云Mask。它的核心在于将3D区域划分视作2D区域Proposal的合成，语义特征则来自2D区域，整个Pipeline的核心就在于2D-to-3D融合模块的设计。</p>
+<p>OVIR-3D的局限性在于它并不是总能够合并非常大的Instance，对于较大的Instance，它可能会将其拆分成多个小Instance。另外，OVIR-3D也可能错过较为微小的物体，这是因为它们在过程中可能被视作噪声从而被移除。</p>
+<p>OVIR-3D的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/shiyoung77/OVIR-3D">shiyoung77/OVIR-3D</a></p>
+<h1 id="open3discvpr2024">Open3DIS(CVPR2024)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://open3dis.github.io/">Open3DIS</a>的目标是解决3D场景中的开放词汇实例分割问题，它的对标前置工作是OpenMask3D和OVIR-3D。前者采用类别无关的分割网络来识别场景中的实例，后者则采用2D
+Proposal区域聚合的方式来获得3D区域Proposal。Open3DIS发现现存的方法很难识别较小尺寸的物体以及几何形状模糊的物体，它则融合了上面两个工作，提出改进的Pipeline，得到了更好的效果，解决了现有方法的局限性。这三个工作pipeline之间的对比如下：</p>
+<img src="/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240413114108681.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="OpenMask3D_OVIR-3D_Open3DIS">
+<h2 id="模型架构-2">模型架构</h2>
+<p>Open3DIS的Pipeline如下图所示，其中的核心在于如何得到最终的3D Instance
+Mask。它融合了两类方式，分别是通过预训练的3D实例分割网络得到3D Instance
+Proposal，和通过2D Proposal合并得到3D
+Proposal，最终将这两类方式的结果再进行融合得到最终的3D Proposal。</p>
+<img src="/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240410161149253.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Open3DIS Pipeline">
+<p>首先，Open3DIS使用<a
+target="_blank" rel="noopener" href="https://github.com/VinAIResearch/ISBNet">ISBNet</a>作为3D实例提议网络，直接输出3D点云的实例Mask，对应图中的<span
+class="math inline">\(4.Class-agnostic\ 3D\
+Proposal\)</span>​​。ISBNet是一种3D点云实例分割网络，它提出了一种<strong>实例感知的最远点采样方式</strong>对候选点进行采样，然后使用点聚合层对候选特征进行编码。作为对比，OpenMask3D使用的则是Mask3D。不过直接采用网络输出的3D
+Instance可能会导致丢失场景中的一些较小对象。</p>
+<p>另一方面，Open3DIS提出了一个2D-guide-3D Instance
+Proposal模块，该模块能够更好地捕获场景中的较小对象。具体来说，该模块的输入包括点云<span
+class="math inline">\(P = \{p_n\}^N\)</span>，相关RGBD图像序列<span
+class="math inline">\(V\)</span>；输出则是一系列3D Instance
+Proposal，对应表示是多个Mask矩阵<span class="math inline">\(K_1 \times
+N\)</span>​。接下来介绍该模块的具体流程。</p>
+<p>首先，Open3DIS会对点云进行预处理，将其分组为不同的Super
+point超点，假设超点的个数为<span
+class="math inline">\(U\)</span>，即<span
+class="math inline">\(\{q_u\}^U \in \{0, 1\}^{U\times
+N}\)</span>​​。超点的引入能够提高后续流程的效率，后续的处理也基本都是基于超点进行的。接下来，Open3DIS采用与OVIR-3D类似的合并流程来得到初步的3D
+Instance Proposal。对于每帧的RGB图像，使用预训练的2D
+Instance分割器来对其进行分割，例如<a
+target="_blank" rel="noopener" href="https://github.com/IDEA-Research/GroundingDINO">Grounding-DINO</a>，<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/segment-anything">SAM</a>等分割模型，得到不同的2D
+Mask；同时对于3D点云，也使用点云的预训练网络(例如ISBNet，Mask3D)来进行特征提取。将2D
+Mask向点云上进行投影，计算其IoU来进行超点和Mask的对应。每个Mask取IoU最大的超点作为代表，然后利用点云特征之间的余弦相似度来进行超点之间的合并。这样对于每张Mask图都能够得到一个Mask相关的3D点云区域分割。</p>
+<p>直接选择上面过程产生的3D区域作为3D Instance
+Proposal可能会导致结果的碎片化，为了解决这个问题，Open3DIS采用了一个自下而上的方式来合并来自不同帧的点云区域，以创建更加完整和连贯的3D
+Instance
+Proposal。首先，考虑帧内结果区域的合并，两个区域的合并同样基于IoU和特征相似性来进行，这样每个帧就得到一个对应的合并后的点云区域。接下来考虑帧间结果区域的合并。考虑两帧的结果区域分别为<span
+class="math inline">\(\{r_i\}^I,\{r_j\}^J\)</span>，合并后的结果区域为<span
+class="math inline">\(\{r_l\}^L\)</span>，其中<span
+class="math inline">\(L \le I + J\)</span>。Open3DIS使用Agglomerative
+Clustering来进行合并的。根据下面的方式计算Cost矩阵<span
+class="math inline">\(C = \{c_{ij}\} \in \{0, 1\}^{(I+J)\times
+(I+J)}\)</span>： <span class="math display">\[
+c_{ij} = \mathbb{I}(o_{ij} &gt; \tau_{ioi}) \odot \mathbb{I}(s_{ij} &gt;
+\tau_{sim})
+\]</span> 其中<span
+class="math inline">\(\mathbb{I}(.)\)</span>表示指示函数，<span
+class="math inline">\(\odot\)</span>表示and操作，<span
+class="math inline">\(o_{ij},s_{ij}\)</span>分别表示IoU和特征相似性。整个agglomerative
+clustering则根据Cost矩阵来迭代的进行合并，直到不能继续合并，即<span
+class="math inline">\(C\)</span>中不再包含任何正元素。</p>
+<blockquote>
+<p>agglomerative
+clustering是一种自底向上的聚类方法。在初始阶段，每个数据点被认为是单独的一个聚类，然后根据某种相似度度量来合并成更大的聚类，知道所有的数据点最终合并成为一个整体的聚类结构。</p>
+</blockquote>
+<p>上面的操作可以得到两帧之间的合并结果，按照顺序次序或者分层次序进行全帧的合并，即可以得到最终的3D区域Proposal，对应图中的<span
+class="math inline">\(3.Augmented\ 3D \ proposals\)</span>。</p>
+<p>至此我们就得到了从两种不同方法得到的3D
+Proposal，将其进行简单合并，并利用非极大值抑制NMS来消除近似重复的Proposal，这样就得到最终的3D
+Instance Proposal。</p>
+<p>在最后一个阶段，Open3DIS为每个3D
+Proposal提取语义特征。OpenMask3D采用选取top-k视图然后进行多尺度CLIP特征的提取，而Open3DIS则使用了一个更加合理的方案，核心思想是在top-k视图中更加频繁出现的点应该对最终的特征做出更多的贡献。具体来说，考虑<span
+class="math inline">\(f_{\lambda ,k}^{CLIP} \in
+\mathbb{R}^{D^{CLIP}}\)</span>是从第<span
+class="math inline">\(\lambda\)</span>个视图对第<span
+class="math inline">\(k\)</span>个Mask抽取出的2D CLIP特征，<span
+class="math inline">\(v_\lambda \in \{0, 1\}^N\)</span>是视图<span
+class="math inline">\(\lambda\)</span>的可视图，<span
+class="math inline">\(m_k^{3D} \in \{0,
+1\}^N\)</span>则表示该Mask对应的3D Instance Proposal，最终该3D
+Instance对应的特征则提取为： <span class="math display">\[
+F^{CLIP} = || \sum_k(\sum_\lambda(v_\lambda * f_{\lambda,
+k}^{CLIP})*m_k^{3D})||_2
+\]</span></p>
+<h2 id="简单总结-2">简单总结</h2>
+<p>Open3DIS结合了OpenMask3D和OVIR-3D两个工作的优点来构建了一个新的Pipeline，利用了两类3D
+Proposal，包括来自预训练的3D Instance分割网络的3D Proposal，以及从2D
+Mask出发合并得到的3D Proposal。</p>
+<h1 id="maskclusteringcvpr2024">MaskClustering(CVPR2024)</h1>
+<p>解决开放词汇3D
+Instance分割问题的一种思路是使用来自2D模型的特征，根据几何和特征相似性等指标来合并2D
+Mask以生成3D
+Instance。但是现有的基于该指标的合并方式通常缺乏跨所有帧的全局最优性。<a
+target="_blank" rel="noopener" href="https://pku-epic.github.io/MaskClustering/">MaskClustering</a>主要关注如何获取高质量，zero-shot的3D
+Instance Mask，它提出了一种称为视图共识(view
+consensus)的新指标，能够更好地利用多视图信息。其中的核心思想是，假设有非常多来自其他视图的Mask同时包含了某两个mask，那么就可以认为这两个mask属于同一个Instance。</p>
+<h2 id="模型架构-3">模型架构</h2>
+<p>MaskClustering的Pipeline流程如下图所示。</p>
+<img src="/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/image-20240411162352554.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="MaskClustring Pipeline">
+<p>MaskClustering的核心过程是基于视图共识的2D
+Mask合并过程。MaskClustering的输入同样是RGBD序列图像<span
+class="math inline">\(\{I_1, ..., I_T\}\)</span>以及点云<span
+class="math inline">\(P\)</span>。</p>
+<p>首先使用类别无关的2D实例分割模型(例如<a
+target="_blank" rel="noopener" href="http://luqi.info/entityv2.github.io/">CropFormer</a>)来对每帧的图像进行分割，对图像<span
+class="math inline">\(I_t\)</span>进行分割可以得到<span
+class="math inline">\(n_t\)</span>个Instance，对应mask结果为<span
+class="math inline">\(\{m_{t,i}|i=1, 2, ...,
+n_t\}\)</span>。这里的分割结果是Instance级别的全景分割Mask，即每个像素都属于某个Mask。</p>
+<p>为了进行Mask之间的融合，MaskClustering需要构建一个Mask Graph <span
+class="math inline">\(G = (V, E)\)</span>，其中每个结点<span
+class="math inline">\(V\)</span>表示某个Mask <span
+class="math inline">\(m_{t, i}\)</span>，每条边<span
+class="math inline">\(E\)</span>​则表示边上的两个Mask属于同一个Instance并且需要进行合并。判断两个Mask是否能够合并则会使用到论文提出的新指标，视图共识。建立了初始Mask
+Graph之后，就可以迭代地进行结点的合并(Mask的合并)以及边关系的更新(视图共识的更新)。最终产生的结果类似于聚类，每个聚类结果对应一个3D
+Instance，同时还包含了多个相关的2D Mask。基于这种3D Instance与2D
+Mask之间的对应关系，也就能够执行特征融合来得到最终3D
+Instance对应的语义特征。</p>
+<p>论文的核心即是视图共识(view
+consensus)的计算方式。在介绍计算方式之前，先对一些前置定义和表示进行介绍。</p>
+<p>对于给定的点云<span
+class="math inline">\(P\)</span>以及图像序列帧索引<span
+class="math inline">\(t\)</span>，我们首先可以得到2D Mask <span
+class="math inline">\(m_{t,i}\)</span>表示在第<span
+class="math inline">\(t\)</span>帧图像中的第<span
+class="math inline">\(i\)</span>个Mask，该Mask可以反投影到点云上得到对应区域<span
+class="math inline">\(P_{t,i}\)</span>。这样，图像帧<span
+class="math inline">\(t\)</span>对应的所有点云<span
+class="math inline">\(P_t=P_{t,1}\cup...\cup P_{t,i} \cup ...\cup P_{t,
+n_t}\)</span>，即为该帧所有Mask对应点云区域的并集。显然有关系<span
+class="math inline">\(P_{t,i} \subset P_t \subset P\)</span>。</p>
+<p>接下来是两个可见的概念。首先是点的可见性，如果点<span
+class="math inline">\(p \in P_t\)</span>，那么就说点<span
+class="math inline">\(p\)</span>在图像帧<span
+class="math inline">\(t\)</span>上可见。然后是Mask的可见性。我们考虑帧<span
+class="math inline">\(t&#39;\)</span>的Mask <span
+class="math inline">\(m_{t&#39;,i}\)</span>在另一帧<span
+class="math inline">\(t\)</span>上的可见性，注意这里的帧<span
+class="math inline">\(t&#39;,t\)</span>表示不同帧。如果Mask <span
+class="math inline">\(m_{t&#39;,i}\)</span>对应的点云区域<span
+class="math inline">\(P_{t&#39;,i}\)</span>中有至少<span
+class="math inline">\(\tau_{vis}(=0.3)\)</span>的点在帧<span
+class="math inline">\(t\)</span>上可见，那么就认为Mask <span
+class="math inline">\(m_{t&#39;,i}\)</span>在帧<span
+class="math inline">\(t\)</span>上可见，并且将可见的部分记为<span
+class="math inline">\(P_{t&#39;,i}^t\)</span>。考虑Mask <span
+class="math inline">\(m_{t&#39;,i}\)</span>在所有其他帧上的可见性，它所有可见的帧集合记为<span
+class="math inline">\(F(m_{t&#39;,i})\)</span>​。</p>
+<p>最后是点云之间的近似包含关系。如果点云<span
+class="math inline">\(P_i\)</span>中有至少<span
+class="math inline">\(\tau_{contain}(=0.8)\)</span>的点都在点云<span
+class="math inline">\(P_j\)</span>中，则称<span
+class="math inline">\(P_j\)</span>近似包含<span
+class="math inline">\(P_i\)</span>，记为<span class="math inline">\(P_i
+\sqsubset P_j\)</span>。</p>
+<p>引入视图共识的核心目的是判断两个Mask是否属于同一个实例。考虑两个Mask
+<span class="math inline">\(m_{t&#39;,i}\)</span>和<span
+class="math inline">\(m_{t&#39;&#39;,j}\)</span>，其中<span
+class="math inline">\(t&#39;\)</span>和<span
+class="math inline">\(t&#39;&#39;\)</span>可能代表相同的帧，也可能代表不同的帧。视图共识简单来说就是看在其他视图的角度下，这两个Mask是否属于同一个Instance。首先，我们找到能够同时对这两个Mask可见的所有帧，记为<span
+class="math inline">\(O(m_{t&#39;,i},m_{t&#39;&#39;,j}) =
+F(m_{t&#39;,i}) \cap
+F(m_{t&#39;&#39;,j})\)</span>，这些帧被称为观察帧，观察帧的个数为<span
+class="math inline">\(n(m_{t&#39;i},m_{t&#39;&#39;,j}) =
+|O(m_{t&#39;i},m_{t&#39;&#39;,j})|\)</span>。考虑观察帧中的每一帧<span
+class="math inline">\(t\)</span>，检查它是否支持这两个Mask的合并。如果在帧<span
+class="math inline">\(t\)</span>中，存在一个Mask <span
+class="math inline">\(m_{t,k}\)</span>，它对应的点云区域<span
+class="math inline">\(P_{t,k}\)</span>能够近似包含两个Mask对应在帧<span
+class="math inline">\(t\)</span>上的可见点云区域，即<span
+class="math inline">\(P_{t&#39;,i}^t \sqsubset P_{t,k}\)</span>以及<span
+class="math inline">\(P_{t&#39;&#39;,j}^t \sqsubset
+P_{t,k}\)</span>，那么就认为该帧<span
+class="math inline">\(t\)</span>支持这两个Mask的合并。遍历所有观察帧，得到所有支持合并的帧数，最终视图共识<span
+class="math inline">\(c\)</span>​就是支持的帧数/观察帧总帧数。</p>
+<blockquote>
+<p>简单使用循环来计算视图共识的时间复杂度相对较高。为了加快速度，可以提前计算并存储中间结果来消除冗余计算。具体实现可以参考原始论文或者代码实现。</p>
+</blockquote>
+<p>给定所有的Mask作为结点，两两计算视图共识来构造Mask
+Graph。MaskClustering会合并视图共识<span class="math inline">\(c &gt;
+\tau_{rate}(=0.9)\)</span>的那些Mask，实际上也就是断开不满足视图共识阈值的那些边。同时为了避免观察帧过少导致的结果不稳定，MaskClustering还会在每一次迭代过程<span
+class="math inline">\(k\)</span>中设定观察帧数目的阈值<span
+class="math inline">\(n_k\)</span>。该过程迭代进行，最终得到聚类结果。</p>
+<p>在最终的聚类结果中，每一簇表示一个3D Instance，同时每个3D
+Instance也包含了对应的2D
+Mask。MaskClustering采用OpenMask3D对应的Top-K帧的方法来获取实例特征。</p>
+<h2 id="简单总结-3">简单总结</h2>
+<p>MaskClustering提出了一种新颖的指标，称为视图共识。用这个指标，我们能够判断两个Mask是否属于同一个Instance。这种方法充分地利用了其他帧的信息，基本能够做到全局最优。</p>
+<p>MaskClustering的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/PKU-EPIC/MaskClustering">PKU-EPIC/MaskClustering</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Point-Cloud/" class="print-no-link">#Point Cloud</a>
+      
+        <a href="/tags/3D-Semantic/" class="print-no-link">#3D Semantic</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>3D Semantic-点云相关</div>
+      <div>http://example.com/2024/04/14/3D-Semantic-点云相关/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/" title="3D Gaussian介绍以及综述">
+                        <span class="hidden-mobile">3D Gaussian介绍以及综述</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
