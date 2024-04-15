@@ -1,0 +1,1037 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要记录了3D Semantic中NeRF表示相关的论文，包括Semantic NeRF、DFF、LERF和3DOVS等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3D Semantic-NeRF相关">
+<meta property="og:url" content="http://example.com/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要记录了3D Semantic中NeRF表示相关的论文，包括Semantic NeRF、DFF、LERF和3DOVS等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240409193807292.png">
+<meta property="og:image" content="http://example.com/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240410214410736.png">
+<meta property="og:image" content="http://example.com/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240402185136957.png">
+<meta property="og:image" content="http://example.com/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240409150921245.png">
+<meta property="article:published_time" content="2024-04-15T03:15:13.000Z">
+<meta property="article:modified_time" content="2024-04-15T03:21:10.363Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="NeRF">
+<meta property="article:tag" content="3D Semantic">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="论文笔记">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240409193807292.png">
+  
+  
+  
+  <title>3D Semantic-NeRF相关 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="3D Semantic-NeRF相关"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-15 11:15" pubdate>
+          2024年4月15日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          43 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">3D Semantic-NeRF相关</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2024-04-15T11:21:10+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="semantic-nerficcv2021">Semantic NeRF(ICCV2021)</h1>
+<p><a target="_blank" rel="noopener" href="https://shuaifengzhi.com/Semantic-NeRF/">Semantic
+NeRF</a>对原始的NeRF进行扩展，将语义特征融入NeRF
+MLP，将语义与外观和集合结构联合编码，实现了仅使用少量场景分割注释就可以实现语义标签的预测。Semantic
+NeRF表明语义预测任务可以受益于原始NeRF学习到的多视角一致性，包括场景的平滑性、连续性和自相似性。Semantic
+NeRF利用NeRF来完成场景分割任务，不过并非在Open
+Vocabulary中，而是在封闭类别集合中进行的。</p>
+<h2 id="模型架构">模型架构</h2>
+<p>Semantic
+NeRF的输入包括一系列已知相机参数的RGB图像，以及部分图像的(具有噪声)的语义标注。在该输入的条件下，Semantic
+NeRF同样会学习神经辐射场表示，利用该表示，不仅可以渲染任意视角下的新视图，还可以渲染任意视角下的语义分割结果。</p>
+<p>Semantic NeRF对原始的NeRF
+MLP进行扩展。在引入视角信息之前，就进行语义label概率的输出，即下图中的<span
+class="math inline">\(s\)</span>。</p>
+<img src="/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240409193807292.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Semantic NeRF network architecture">
+<p>如公式所示，Semantic
+NeRF直接利用MLP来预测场景label，并使用类似的体渲染公式得到语义概率渲染图，然后通过softmax转化为多类别的概率，最终得到语义分割预测图。
+<span class="math display">\[
+\mathbf{c} = F_{\Theta}(\mathbf{x}, \mathbf{d}), \quad \mathbf{s} =
+F_{\Theta}(\mathbf{x})
+\]</span>
+损失函数方面，除了原始NeRF的渲染光度损失外，还考虑了渲染语义分割预测图以及标注分割图之间的损失。</p>
+<h2 id="简单总结">简单总结</h2>
+<p>Semantic NeRF本身对NeRF的改进较为简单，只是将语义信息引入NeRF
+MLP中，但是这项工作通过许多相关实验证明了这个方向的可行性。Semantic
+NeRF证明了网络有能力同时联合学习场景渲染和语义渲染的任务。Semantic
+NeRF尝试仅对部分图像提供分割标注，或者对提供的标注进行噪声的添加(包括像素的随机翻转和实例类别的随机翻转)，发现网络仍然能够学习到较好的语义分割效果。这是因为NeRF在训练过程中强制执行多视图的一致性，来自部分图像的语义标注能够得到传播，并且其中的噪声也能够被纠正，任何一帧中丢失或者损坏的语义标签都可以通过其他帧的融合来纠正。</p>
+<p>Semantic NeRF的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/Harry-Zhi/semantic_nerf/">Harry-Zhi/semantic_nerf</a></p>
+<h1 id="dffneruips2022">DFF(NeruIPS2022)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://pfnet-research.github.io/distilled-feature-fields/">DFF</a>论文全称为“Decomposing
+NeRF for Editing via Feature Field
+Distillation”。DFF的目标是通过对NeRF进行语义场景解耦，从而实现对3D场景进行基于查询的编辑。DFF将现有的2D图像特征提取器(例如CLIP-LSeg，DINO)提取的特征融入3D
+NeRF的训练过程中，来弥合缺少大型3D预训练模型的缺点。DFF最终训练得到的NeRF，会为每个坐标<span
+class="math inline">\(\mathbf{x}\)</span>​都分配一个语义特征descriptor，然后以不同的用户查询作为条件，利用该语义特征重新进行处理，而无需重新训练。</p>
+<p>DFF虽然也能够进行开放词汇的3D语义分割，但是它的目标并不在此，而是希望做到对神经场景表示进行语义分解，从而进行编辑，侧重点更多在场景编辑上。</p>
+<h2 id="模型架构-1">模型架构</h2>
+<p>DFF的整体流程如下图所示。</p>
+<img src="/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240410214410736.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="DFF Pipeline">
+<p>DFF首先通过扩展NeRF MLP来进行语义特征的引入。类似于Semantic
+NeRF，DFF同样在MLP中引出一个新的分支用于语义处理。但是不同的是，这个分支输出一个特征向量，而不是输出封闭集合分类概率。给定3D坐标<span
+class="math inline">\(\mathbf{x}\)</span>(以及观察方向<span
+class="math inline">\(\mathbf{d}\)</span>)，网络会同时输出特征向量<span
+class="math inline">\(\mathbf{f}(\mathbf{x})\)</span>，体密度<span
+class="math inline">\(\sigma(\mathbf{x})\)</span>以及颜色<span
+class="math inline">\(\mathbf{c}(\mathbf{x},
+\mathbf{d})\)</span>。利用体渲染公式，则可以渲染出特征<span
+class="math inline">\(\hat{\mathbf{F}}(\mathbf{r})\)</span>。为了监督特征向量的学习，DFF使用教师网络<span
+class="math inline">\(\mathbf{f}_{img}\)</span>来对图片进行像素级别的特征提取。使用的教师网络包括CLIP-LSeg，DINO等。当然在正常的光度损失的基础上，还需要增加特征渲染之间的损失。</p>
+<blockquote>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/isl-org/lang-seg">CLIP-LSeg</a>是一个语言驱动的语义图像分割模型，其训练过程类似于CLIP，使用对比目标进行训练。</p>
+</blockquote>
+<p>经过上面的训练之后，我们可以得到含有语义特征的NeRF。此时已经可以进行基于Query的zero-shot
+3D分割了。首先考虑一个query encoder<span
+class="math inline">\(\mathbf{f}_q\)</span>，我们要进行3D语义分割，实际上就是判断每个点<span
+class="math inline">\(\mathbf{x}\)</span>是否属于label
+l（首先考虑label是一个开放文本），或者说概率<span
+class="math inline">\(\mathbf{p}(l|\mathbf{x})\)</span>是多少。计算方式如下：
+<span class="math display">\[
+\mathbf{p}(l|\mathbf{x}) =
+\frac{\exp(\mathbf{f}(\mathbf{x})\mathbf{f}_q(l)^T)}{\sum_{l&#39;\in
+\mathcal{L}}\exp(\mathbf{f}(\mathbf{x})\mathbf{f}_q(l&#39;)^T)}
+\]</span>
+有了上面的计算结果，我们就可以利用该query来识别特定区域。识别到特定区域之后，就可以对场景进行编辑了，具体的编辑方式可以参考论文。</p>
+<h2 id="简单总结-1">简单总结</h2>
+<p>DFF扩展了原始NeRF，增加分支来输出语义特征，并使用2D预训练模型来进行语义特征的监督。通过语义特征的渲染，DFF能够做到特定区域的识别，并在此基础上进行场景编辑。</p>
+<p>DFF的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/pfnet-research/distilled-feature-fields">pfnet-research/distilled-feature-fields</a></p>
+<h1 id="lerficcv2023">LERF(ICCV2023)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://www.lerf.io/">LERF</a>在NERF的基础上构建了一个语义Language
+Field，它可以将来自于2D预训练语义模型的Embedding融合到NeRF当中，以此实现3D场景中的开放词汇查询。LERF的全称为Language
+Embedded Radiance Fields。LERF在原始的NeRF
+MLP中增加了新的语义特征，与颜色，体密度等一起进行联合训练，得到语义场表示。在训练过程中，使用多尺度特征金字塔来进行监督，特征来自于CLIP，同时还使用DINO来进行正则化监督。</p>
+<h2 id="模型架构-2">模型架构</h2>
+<h3 id="pipeline">pipeline</h3>
+<p>原始NeRF的MLP接收位置<span
+class="math inline">\(\mathbf{x}\)</span>，观察方向<span
+class="math inline">\(d\)</span>，输出对应的颜色<span
+class="math inline">\(c\)</span>和体密度<span
+class="math inline">\(\sigma\)</span>。为了在此基础上融入语义特征，LERF使用语义Embedding
+<span class="math inline">\(F_{lang}(\mathbf{x}, s) \in
+\mathbb{R}^D\)</span>来增强MLP的输出。具体来说，该MLP接收位置<span
+class="math inline">\(\mathbf{x}\)</span>以及scale <span
+class="math inline">\(s\)</span>，额外输出对应的<span
+class="math inline">\(D\)</span>维特征向量。LERF认为语义特征不应该随视角变化，类似于体密度。另外，这里的scale
+<span
+class="math inline">\(s\)</span>是另一个参数，它表示的是以位置<span
+class="math inline">\(\mathbf{x}\)</span>为中心的立方体，其在世界坐标中的边长。scale的概念类似于MipNeRF中投影出的圆锥台对应实际世界坐标中的不同尺度。</p>
+<p>经过对NeRF
+MLP的增强，我们就可以为每个点得到一个语义Embedding，考虑该语义Embedding来自于CLIP的监督。但是CLIP本质上是一个全局的图像Embedding，不利于做到点的Embedding对齐。为此，LERF在渲染过程中进行改进，对于语义Embedding的渲染，它是基于以样本点为中心的volume进行的。具体来说，该字段的输出是包含该volume所有对应视图，经过裁剪之后得到CLIP特征，然后进行平均得到的。</p>
+<p>考虑对于一条光线的体渲染过程，原始的NeRF只需要沿着光线对点进行积分即可。但是LERF是基于volume的场，它需要为光线的每个位置定义一个尺度参数，对应该位置对应的volume大小。对于光线<span
+class="math inline">\(\mathbf{r}(t) = o +
+t\mathbf{d}\)</span>，每个t对应的scale按照公式<span
+class="math inline">\(s(t) = s_{img} *
+t/f_{xy}\)</span>来计算，其中<span
+class="math inline">\(s_{img}\)</span>是对应像平面的初始比例scale，<span
+class="math inline">\(f_{xy}\)</span>则表示焦距。有了每个位置的<span
+class="math inline">\(s\)</span>之后，就可以按照类似的积分来进行体渲染，得到语义图。</p>
+<img src="/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240402185136957.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="LERF Pipeline">
+<p>介绍完语义渲染过程之后，下一步就是如何对语义Embedding进行监督。由于我们只能够查询图像块上的语义Embedding，而无法查询像素上的语义Embedding，所以LERF使用裁切图像的CLIP
+Embedding来监督这个多尺度的LERF。具体来说，对于一条光线，在给定<span
+class="math inline">\(s_{img}\)</span>的条件下，我们可以渲染得到对应图块的语义Embedding，而它对应的监督，则是以光源对应像素为中心，大小为<span
+class="math inline">\(s_{img}\)</span>的剪切图片，该图片经过CLIP
+Encoder之后得到的语义Embedding。</p>
+<p>在实现上，由于每次计算一条光线对应的监督Embedding是非常昂贵的，因此LERF预先计算一个多尺度的特征金字塔，其中在存储了不同scale下的裁剪图像对应的CLIP特征。该金字塔包括<span
+class="math inline">\(n\)</span>层，每一层对应一个scale，所有的scale则在<span
+class="math inline">\((s_{min},
+s_{max})\)</span>之间采样得到，采样满足相邻裁剪之间有50%的重叠。根据该方式，我们就可以提前计算出这个多尺度特征金字塔。在训练的时候呢，对于一个输入视图，则均匀随机地采样光线源点，并为每个视图均匀随机选择<span
+class="math inline">\(s_{img} \in (s_{min},
+s_{max})\)</span>。由于随机选择的<span
+class="math inline">\(s_{img}\)</span>可能不会正好落在金字塔中的某一层，因此实际使用的监督Embedding还需要经过插值处理才能得到。</p>
+<p>如果仅使用上述CLIP特征进行语义增强，虽然能够做到多视图的一致性，但是最终的结果可能并不能具有较好的边缘。为了缓解这个问题，LERF增加DINO特征进行正则化。具体来说，LERF为MLP额外训练一个输出，对应DINO特征。由于DINO是像素对齐的，因此不需要将scale作为输入。该DINO特征通过体渲染之后可以得到DINO特征图，与对应视角下的DINO特征图进行损失计算，以此来进行正则化。需要注意的是，DINO特征在推理的过程中并没有使用，而是仅在训练过程中充当额外的正则化器，能够做到这一点是因为CLIP特征和DINO特征共享了同一个底层表征（Multi-Scale
+Hash Embedding）。</p>
+<blockquote>
+<p>DINO(Self-Distillation with No
+Labels)是一种无监督学习方式，主要应用于视觉学习领域。DINO
+Feature指的是使用DINO方法训练得到的特征表示，这种方法的核心思想是通过self-distillation的方式来学习图像的特征表示，而不需要使用任何标签信息。</p>
+<p>该概念由Meta的论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2104.14294">Emerging
+Properties in Self-Supervised Vision Transformers</a>首次提出。Mask
+DINO则使用Mask预测分支来扩展DINO，它支持众多图像分割任务。在语义分割方面，它在数据集ADE20K上进行预训练，能够做到Zero-Shot的语义分割。</p>
+</blockquote>
+<p>上面介绍的是Language
+Field的训练。LERF认为3D中语义Embedding的优化和场景表示的优化应该是互不影响的，因此LERF使用两个网络分别训练语义Embedding(CLIP特征+DINO特征)和场景表征(颜色+体密度)。CLIP和DINO字段采用多分辨率哈希网格(Multi-Scale
+Hash
+Embedding)来表示，然后通过两个小MLP分别得到CLIP和DINO特征，当然在CLIP
+MLP中还会额外输入scale。</p>
+<h3 id="querying">querying</h3>
+<p>LERF在3D中构建了一个语义场，希望能够处理开放词汇查询的问题。为此，LERF提出了一个基于语义特征的查询方式，该方式也被后续诸多工作借鉴与使用。</p>
+<p>LERF训练完成之后，我们实际上可以得到场景任意视角下语义特征的渲染结果。考虑任意的文本查询，我们首先计算它的CLIP
+Embedding记为<span
+class="math inline">\(\phi_{quer}\)</span>，对于任意视角和相应scale，我们也可以得到渲染结果的CLIP
+Embedding，记为<span
+class="math inline">\(\phi_{lang}\)</span>，另外，LERF还提供了一组规范短语("object",
+"things", "stuff", "texture")，对应CLIP Embeding记为<span
+class="math inline">\(\phi_{canon}^{i}\)</span>。有了这些条件，我们就可以计算文本查询与渲染结果之间的相关性分数：
+<span class="math display">\[
+\text{Relevancy Score} = \min_{i}\frac{\exp(\phi_{lang} \cdot
+\phi_{quer})}{\exp(\phi_{lang}\cdot\phi_{canon}^i) +
+\exp(\phi_{lang}\cdot \phi_{quer})}
+\]</span>
+该相关性分数表示与规范Embedding相比，渲染Embedding与查询Embedding之间的接近程度。</p>
+<p>此外，由于LERF的渲染过程与scale参数有关，必须确定scale才能渲染出特征图。对于每个文本查询，LERF需要确定对应的scale参数的值。LERF的做法是在<span
+class="math inline">\((0,2m)\)</span>范围之间进行均匀采样，对于每个采样出来的scale都进行一次渲染，并计算相关性分数，选择其中最大相关性分数对应的scale作为最终选定的scale。</p>
+<h2 id="简单总结-2">简单总结</h2>
+<p>LERF在原始的NeRF的基础上构建语义场的表示，通过scale的引入以及MLP的修改，将CLIP
+Embedding以及DINO的正则化融入NeRF中。此外，LERF还构建了用于测试的数据集，其中包括了13个包含in-the-wild数据的场景。</p>
+<p>LERF的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/kerrj/lerf">kerrj/lerf</a></p>
+<h1 id="dovsneurips2023">3DOVS(NeurIPS2023)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.14093">3DOVS</a>以弱监督的方式将预训练的基础模型CLIP和DINO蒸馏到3D
+NeRF中。具体来说，在给定一系列开放文本查询以及场景多视角图像的情况下，3DOVS会利用CLIP和DINO训练一个NeRF，并且可以渲染出对应的分割图，分割结果对应给定的开放文本查询。</p>
+<h2 id="模型架构-3">模型架构</h2>
+<p>3DOVS整体的流程如下图所示。给定场景的多视图图像以及场景中物体的开放词汇文本描述，3DOVS的目标是对重建的NeRF进行分割，以便为每个3D点分类一个相应的类别标签，类别标签来自前面给定的文本描述。(可以认为是一个对应工作，提供开放文本查询类别和多视角图像，输出文本对应的分割)</p>
+<img src="/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/image-20240409150921245.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="3DOVS Pipeline">
+<p>3DOVS首先利用了CLIP来进行语义特征的提取，但是CLIP产生的是图像级别的特征，并不适合像素级语义分割。因此，3DOVS采用Multi-Scale
+Multi-Spatial的策略来从图像中提取分层的CLIP特征，然后设计并学习了一个3D
+Selecton Volume来识别每个3D
+point的分层级别，从而将CLIP特征与像素级特征进行对齐。该策略的核心思想是像素的语义应该与周围像素基本相同。</p>
+<p>具体来说，3DOVS预先定义一系列的scale大小一共<span
+class="math inline">\(N_s\)</span>个，每个scale对应不同的patch大小。对于每个像素，按照它周围patch大小进行CLIP特征提取，由于有多scale，因此每个像素提取到的是Multi-Scale的CLIP特征。在实际运行的过程中，并不是按照每像素运行的，而是按照滑动窗口运行，进行Multi-Spatial特征提取。由于滑动窗口的机制，不同像素被计算的次数相互不同，最终在每个scale下，每个像素的特征取Mult-Spatial的平均。同时为了防止标准滑动窗口可能带来的棋盘图案和分割伪影，3DOVS还在窗口大小上引入一定的随机性。在这个机制下，对于每张图像<span
+class="math inline">\(I \in \mathbb{R}^{3\times H \times
+W}\)</span>，可以提取出multi-scale并且是像素level的CLIP特征<span
+class="math inline">\(F_{I} \in \mathbb{R}^{N_s \times D \times H \times
+W}\)</span>，其中<span
+class="math inline">\(D\)</span>​对应CLIP特征维度。</p>
+<p>通过上面的过程，已经可以提取到Multi-Scale的CLIP特征图。这样每条光线能够得到一个Multi-Scale的特征<span
+class="math inline">\(F(\mathbf{r}) \in \mathbb{R}^{N_s \times
+D}\)</span>作为监督。</p>
+<p>同时考虑NeRF的体渲染过程，在进行光线上点的积分过程中，3DOVS并不是简单的进行累计，而是额外引入了一个3D
+Selection Volume <span class="math inline">\(S\)</span>来决定每个3D
+point的scale级别。具体来说，每个<span class="math inline">\(\mathbf{x}
+\in \mathbb{R}^3\)</span>会产生一个选择向量<span
+class="math inline">\(S_i \in \mathbb{R}^{N_s}\)</span>，同时每个<span
+class="math inline">\(\mathbf{x} \in
+\mathbb{R}^{3}\)</span>还需要输出一个语义特征<span
+class="math inline">\(F_{i} \in
+\mathbb{R}^D\)</span>，对应语义图的渲染。输出过程类似Semantic
+NeRF，通过增强NeRF
+MLP来进行。因此，体渲染过程就包括了颜色、语义特征以及选择向量的渲染(这里使用softmax使得所有scale的概率总和为1)。
+<span class="math display">\[
+\begin{aligned}
+\hat{C}(\mathbf{r}) &amp;= \sum_i T_i \alpha_i C_i \in \mathbb{R}^3 \\
+\hat{F}(\mathbf{r}) &amp;= \sum_i T_i \alpha_i F_i \in \mathbb{R}^D \\
+S(\mathbf{r}) &amp;= \text{Softmax}(\sum_i T_i \alpha_i S_i) \in
+[0,1]^{N_s} \\
+\end{aligned}
+\]</span>
+在损失函数方面，则选择使用渲染的光度损失以及多尺度CLIP特征之间的余弦相似度损失：
+<span class="math display">\[
+\mathcal{L}_{supervision} = \sum_{\mathbf{r} \in \mathcal{R}}(||
+\hat{C}(\mathbf{r}) - C(\mathbf{r})||_2^2 - \cos
+&lt;\hat{F}(\mathbf{r}), S(\mathbf{r})F(\mathbf{r})&gt;)
+\]</span>
+通过渲染得到的语义特征，可以被分类成预先提供的开放类别中的某一类。预先提供的文本label经过CLIP的文本Encoder之后，与渲染出来的特征进行余弦相似度的计算，然后选择其中相似度最高的即可。考虑预先提供的文本label有<span
+class="math inline">\(C\)</span>个，经过CLIP文本Encoder之后得到文本特征表示<span
+class="math inline">\(T \in \mathbb{R}^{C\times
+D}\)</span>。此时，来自NeRF，经过渲染后每条光线的分割概率则计算如下：
+<span class="math display">\[
+P(\mathbf{r}) = \text{Softmax}(\cos&lt;T, \hat{F}(\mathbf{r})&gt;) \in
+[0,1]^C
+\]</span> 另一方面，我们可以计算文本特征<span
+class="math inline">\(T\)</span>与每张图片的相关性，得到相关图。具体来说，对于给定图片<span
+class="math inline">\(I\)</span>，通过前面的流程可以得到多尺度CILP特征<span
+class="math inline">\(F_I \in \mathbb{R}^{N_s\times D\times H \times
+W}\)</span>，尺度选择向量<span class="math inline">\(S_I \in
+\mathbb{R}^{N_s\times H \times W}\)</span>，相关图计算如下： <span
+class="math display">\[
+R_I= S_I \cos &lt;T, F_I&gt; \in \mathbb{R}^{C\times H \times W}
+\]</span>
+由于原始的CLIP特征并非像素对齐的，直接使用上述计算可能会收到CLIP特征歧义的影响，因此3DOVS将相关图中每个类的相关性独立地标准化到<span
+class="math inline">\([0, 1]\)</span>，得到处理后的相关图： <span
+class="math display">\[
+\bar{R}_I = (R_I - \min(R_I)) / (\max(R_I) - \min(R_I)) \in [0,
+1]^{C\times H\times W}
+\]</span>
+3DOVS使用JS散度来衡量归一化相关性图与渲染光线分割概率之间的差异，引入相关性分布对齐(Relevancy-Distribution
+Alignment, RDA)损失： <span class="math display">\[
+\mathcal{L}_{RDA} = \sum_{\mathbf{r}\in \mathcal{R}}\sum_{c\in
+\mathcal{C}}(P(\mathbf{r})_c
+\log(\frac{P(\mathbf{r})_c}{M_{P\bar{R}}(\mathbf{r})_c}) +
+\bar{R}(\mathbf{r})_c
+\log(\frac{\bar{R}(\mathbf{r})_c}{M_{P\bar{R}}(\mathbf{r})_c})) / 2
+\]</span> 其中<span class="math inline">\(M_{P\bar{R}}(\mathbf{r}) =
+(P(\mathbf{r}) + \bar{R}(\mathbf{r}))/2\)</span>。</p>
+<p>此外，3DOVS提出了一种新的特征分布对齐(Feature-Distribution
+Alignment,FDA)损失来从DINO特征中提取对象边界信息。详细的损失函数可以参考原始论文。</p>
+<h2 id="简单总结-3">简单总结</h2>
+<p>3DOVS的输入是一组图像和一组开放文本类别，利用这些来训练一个NeRF场景表征，其中扩展出语义特征向量以及尺度选择向量。特征向量的监督则来自图像的多尺度CLIP特征抽取。此外3DOVS还引入了多种损失来进行监督，包括光度损失、CLIP特征损失、相关性分布对齐损失和DINO特征对齐损失。</p>
+<p>3DOVS利用到了CLIP和DINO作为特征，这与LERF非常类似。但是与LERF不同的是，开放文本查询也是3DOVS的输入之一，而LERF在训练过程中并没有考虑后续的文本。LERF在完成场景的训练之后，可以处理任意的文本查询，而3DOVS只能处理预先给定的开放文本，对于新的开放文本查询，需要重新训练。开放文本在训练的监督中发挥作用，使得在相同文本下，3DOVS可能能够取得更好的分割效果，当然缺点就是无法在不重新训练的情况下处理任意的开放文本查询。</p>
+<p>此外，3DOVS还构建了一个包含10个不同场景的数据集，每个场景都包含了一组拥有不同姿势和背景的long-tail物体。</p>
+<p>项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/Kunhao-Liu/3D-OVS">Kunhao-Liu/3D-OVS</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NeRF/" class="print-no-link">#NeRF</a>
+      
+        <a href="/tags/3D-Semantic/" class="print-no-link">#3D Semantic</a>
+      
+        <a href="/tags/3D/" class="print-no-link">#3D</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>3D Semantic-NeRF相关</div>
+      <div>http://example.com/2024/04/15/3D-Semantic-NeRF相关/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/04/14/3D-Semantic-%E7%82%B9%E4%BA%91%E7%9B%B8%E5%85%B3/" title="3D Semantic-点云相关">
+                        <span class="hidden-mobile">3D Semantic-点云相关</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
