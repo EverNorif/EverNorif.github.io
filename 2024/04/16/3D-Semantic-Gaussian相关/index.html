@@ -1,0 +1,1336 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇主要记录了3D Semantic中3D Gaussians表示相关的论文，包括LEGaussians、Feature 3DGS、LangSplat、FMGS等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3D Semantic-Gaussian相关">
+<meta property="og:url" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="本篇主要记录了3D Semantic中3D Gaussians表示相关的论文，包括LEGaussians、Feature 3DGS、LangSplat、FMGS等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240326191405601.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240415143516336.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240403104200166.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240401193917100.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240327163816442.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144000665.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144442305.png">
+<meta property="article:published_time" content="2024-04-16T02:51:24.000Z">
+<meta property="article:modified_time" content="2024-04-16T02:55:31.697Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="3D Semantic">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="论文笔记">
+<meta property="article:tag" content="3D Gaussian">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240326191405601.png">
+  
+  
+  
+  <title>3D Semantic-Gaussian相关 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="3D Semantic-Gaussian相关"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-16 10:51" pubdate>
+          2024年4月16日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          78 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">3D Semantic-Gaussian相关</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2024-04-16T10:55:31+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="legaussianscvpr2024">LEGaussians(CVPR2024)</h1>
+<p><a
+target="_blank" rel="noopener" href="https://buaavrcg.github.io/LEGaussians/">LEGaussians</a>是一种基于3D
+Gaussian的用于开放词汇查询任务的场景表示。论文认为<strong>直接将语义特征嵌入到每个Gaussian上，会导致过高的内存需求，降低优化和渲染的效率</strong>，因此LEGaussians利用一种特征量化的方式来降低计算和内存成本。另一方面，论文提出了一种方法，用来解决因多视图视觉不一致而导致的语义模糊问题，该方法是基于3D
+Gaussian的空间位置和语义不确定性进行的。</p>
+<h2 id="模型架构">模型架构</h2>
+<p>LEGaussians的Pipeline主要可以分为三个过程：</p>
+<ol type="1">
+<li>从多视图图像中提取密集的语义特征</li>
+<li>对高维的语义特征进行量化，为后续的Embedding过程创建紧凑的特征空间</li>
+<li>完成3D
+Gaussians的语义特征Embedding，在语义特征的学习过程中，会使用到前面的特征空间来作为约束</li>
+</ol>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240326191405601.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="LEGaussians模型架构">
+<h3 id="dense-language-feature-extraction">Dense Language Feature
+Extraction</h3>
+<p>LEGaussians的第一步是从多视图图像中抽取密集的语义特征。常用的语义特征抽取模型包括CLIP，DINO等。CLIP将图像编码为全局语义，而DINO更加偏向语义细节。</p>
+<p>LEGaussians首先使用类似于3DOVS的分层随机裁剪技术来提取CLIP特征。但是从CLIP中提取的特征仅提供不同语义区域的粗略边界，这会导致3D场景的语义嵌入模糊并且不准确。为此，LEGaussians使用DINO来进行特征的补充，增强语义特征的提取。</p>
+<p>对于每个视角下的图像，都利用CLIP和DINO分别抽取出特征，然后进行特征的拼接。考虑从图片I中抽取的CLIP特征<span
+class="math inline">\(\mathbf{F}^{CLIP}_{I,x,y} \in
+\mathbb{R}^{d_{CLIP}}\)</span>和DINO特征<span
+class="math inline">\(\mathbf{F}^{DINO}_{I,x,y} \in
+\mathbb{R}^{d_{DINO}}\)</span>，将其经过特征拼接得到混合特征<span
+class="math inline">\(\mathbf{F}_{I,x,y} \in \mathbb{R}^d\)</span>:
+<span class="math display">\[
+\mathbf{F}_{I,x,y} = \mathbf{F}^{CLIP}_{I,x,y}\oplus
+\mathbf{F}^{DINO}_{I,x,y}
+\]</span>
+因此经过特征提取这个环节之后，对于多视角的每张图，都有一个混合语义特征图<span
+class="math inline">\(\mathcal{F} \in \mathbb{R}^{H \times W \times
+d}\)</span>,每个像素的特征是<span class="math inline">\(\mathbf{F} \in
+\mathbb{R}^d\)</span>。</p>
+<h3 id="quantization-of-language-features">Quantization of Language
+Features</h3>
+<p>直接将语义特征嵌入每个Gaussian上需要大量内存的使用，这会降低优化和渲染的效率。为此，LEGaussians使用quantization量化的方式来降低内存的占用。</p>
+<p>考虑原始的语义特征<span class="math inline">\(\mathbf{F} \in
+\mathbb{R}^{d}\)</span>，我们首先会构造一个Feature集合，记为<span
+class="math inline">\(S = \{ \mathbf{f}_i \in \mathbb{R}^d | i = 1, 2,
+\dots, N\}\)</span>，对于每个原始的语义特征<span
+class="math inline">\(\mathbf{F}\)</span>，则可以使用一个整数index <span
+class="math inline">\(m \in \{1, 2, \dots, N
+\}\)</span>来近似代表，通过<span class="math inline">\(m,
+S\)</span>，我们可以计算原始语义特征<span
+class="math inline">\(\mathbf{F}\)</span>的近似版本<span
+class="math inline">\(\mathbf{\hat{F}}\)</span>，计算方式如下： <span
+class="math display">\[
+\mathbf{\hat{F}} = \sum_{i}^{N}\mathbf{f}_i \cdot \text{onehot}(m)_i
+\]</span> 其中<span class="math inline">\(\text{onehot}(m) \in
+\mathbb{R}^d\)</span>，是由整数<span
+class="math inline">\(m\)</span>派生出来的one-hot向量。这种量化方案实际上就是将原始原始的连续语义特征空间压缩为离散基，这能够有效去除原始语义特征嵌入中的过多冗余信息，压缩率则可以通过调整<span
+class="math inline">\(N\)</span>的大小来进行调整。</p>
+<p>确定了Base Feature集合<span
+class="math inline">\(S\)</span>之后，要找到原始语义特征<span
+class="math inline">\(\mathbf{F}\)</span>的对应整数index <span
+class="math inline">\(m\)</span>，使用的是最大相似度搜索，有如下过程：
+<span class="math display">\[
+\begin{aligned}
+\mathcal{D}(\mathbf{F}, \mathbf{f}_i) &amp;= \cos(\mathbf{F}^{CLIP}\cdot
+\mathbf{f}_i^{CLIP}) + \lambda_{DINO} \cos(\mathbf{F}^{DINO}\cdot
+\mathbf{f}_i^{DINO}) \\
+m &amp;= \text{argmax}_i(\mathcal{D}(\mathbf{F}, \mathbf{f}_i))
+\end{aligned}
+\]</span>
+经过量化过程之后，原始的混合特征语义图就可以降维到语义索引图，得到<span
+class="math inline">\(\mathcal{M} \in \mathbb{R}^{H\times W \times
+1}\)</span>。</p>
+<p>在执行量化的过程中，LEGaussians同时会优化Base
+Feature集合的选取，为此构造了两个损失，第一个是原始语义特征<span
+class="math inline">\(\mathbf{F}\)</span>和量化语义特征<span
+class="math inline">\(\mathbf{\hat{F}}\)</span>之间的余弦相似度损失，第二个是负载均衡损失。后者是为了防止量化崩溃并确保空间中每个特征的最大化利用。
+<span class="math display">\[
+\begin{aligned}
+\mathcal{L}_{cos}(\mathbf{F}_i) &amp;= (1 -
+\cos(\mathbf{F}_i^{CLIP}\cdot \mathbf{\hat{F}}_i^{CLIP})) +
+\lambda_{DINO}(1 - \cos(\mathbf{F}_i^{DINO}\cdot
+\mathbf{\hat{F}}_i^{DINO})) \\
+\mathcal{L} _{lb} &amp;=\sum^{N} (\mathbf{r} \circ \mathbf{p})
+\end{aligned}
+\]</span> 其中<span class="math inline">\(\mathbf{r} \in
+\mathbb{R}^N\)</span>表示对每个特征的利用率，<span
+class="math inline">\(\mathbf{p} \in
+\mathbb{R}^N\)</span>表示对每个特征的平均选择概率。最终的优化损失则是这两个损失的加权和：
+<span class="math display">\[
+\mathcal{L}_q = \lambda_{cos} \mathcal{L}_{cos} +
+\lambda_{lb}\mathcal{L}_{lb}
+\]</span></p>
+<h3 id="language-embedded-3d-gaussians">Language Embedded 3D
+Gaussians</h3>
+<p>经过上面的量化过程之后，我们得到了Base Feature集合<span
+class="math inline">\(S\)</span>以及多视角的语义索引图<span
+class="math inline">\(\mathcal{M}\)</span>​。接下来就是将压缩的语义特征嵌入到3D
+Gaussian中，以实现开放词汇场景理解。</p>
+<p>对于每个3D
+Gaussian，LEGaussians为其添加代表语义索引的特征向量。但是直接将语义索引<span
+class="math inline">\(m\)</span>添加到Gaussian上会容易导致错误的渲染结果，这是因为原始的语义索引是离散的，并不在连续空间中。因此LEGaussian并不是直接嵌入语义索引，而是学习另一个连续并且紧凑的语义特征向量<span
+class="math inline">\(\mathbf{s}_G \in
+\mathbb{R}^{d_s}\)</span>，其中<span
+class="math inline">\(d_s\)</span>可以用来控制语义存储能力，同时也能够控制增加语义特征之后的内存占用，论文中设置<span
+class="math inline">\(d_s=8\)</span>。</p>
+<p>每个3D Gaussian额外添加一个语义特征向量<span
+class="math inline">\(\mathbf{s}_G\)</span>，这些特征向量在执行光栅化渲染之后可以得到2D特征图。2D特征图要转化为语义索引图，则再经过一个MLP
+Decoder： <span class="math display">\[
+\hat{\mathcal{M}} = \text{softmax}(D_{MLP}(R_s(\mathcal{G};p_{cam}))),
+\quad R_s(\mathcal{G};p_{cam}) \in \mathbb{R}^{H\times W\times d_s},
+\quad \hat{\mathcal{M}} \in \mathbb{R}^{H\times W \times N}
+\]</span> 在训练过程中，会同时优化MLP
+Decoder以及语义特征，通过如下的交叉熵损失： <span
+class="math display">\[
+\mathcal{L}_{CE} = \text{CrossEntropy}(\mathcal{\hat{M}}, \mathcal{M})
+\]</span>
+在实际情况中，由于视角、光照、镜面等条件，多视角图像中同一空间位置对应语义特征可能会出现较大差异。LEGaussians引入了一种平滑策略，来限制3D
+Gaussians上语义特征的空间频率。具体来说，首先为每个Gaussian记录一个语义不确定性<span
+class="math inline">\(u \in [0,1]\)</span>。<span
+class="math inline">\(u\)</span>越高表示语义特征在优化过程中表现得越不稳定。不确定性与语义特征进行联合优化，首先将上面的损失进行改造：
+<span class="math display">\[
+\mathcal{L}_{CE} = \frac{\sum \text{CrossEntropy}(\mathcal{\hat{M}},
+\mathcal{M}) \circ (1 - R_u(\mathcal{G};p_{cam}))}{H \times W}, \quad
+R_u(\mathcal{G};p_{cam}) \in \mathbb{R}^{H\times W\times 1}
+\]</span>
+同时为了避免结果收敛到所有不确定性为1的平凡解，增加对于不确定性的正则化：
+<span class="math display">\[
+\mathcal{L}_{u} = \frac{\sum R_u(\mathcal{G};p_{cam})}{H\times W}
+\]</span> 最终优化3D Gaussian语义特征和MLP
+Decoder的损失如下。在训练开始时将不确定性值初始化为0，而优化期间不一致的语义特征索引会导致不确定性值<span
+class="math inline">\(u\)</span>的增加。 <span class="math display">\[
+\mathcal{L}_s = \lambda_{CE} \mathcal{L}_{CE} + \lambda_u
+\mathcal{L}_{u}
+\]</span>
+另外，LEGaussians观察到，空间相邻位置通常共享相似的语义特征，因此在训练过程中，LEGaussians有意地降低嵌入语义特征的空间频率，尤其是在具有高不确定性的位置。这一点是通过MLP的归纳偏差做到的，MLP偏向于学习目标信号的低频表示，通过MLP来对3D
+Gaussians的语义特征进行正则化。</p>
+<p>首先，LEGaussians通过将每个3D
+Gaussian的位置输入到一个小的MLP中来计算平滑的语义特征，其中<span
+class="math inline">\(\mathbf{p} \in
+\mathbb{R}^{3}\)</span>，PE表示位置编码。 <span class="math display">\[
+\mathbf{s}_{MLP} = \text{MLP}(\text{PE}(\mathbf{p}))
+\]</span>
+然后，通过如下损失来实施空间平滑正则化，其中平滑程度根据学习到的不确定性值来进行自适应控制，其中<span
+class="math inline">\(*\)</span>表示梯度停止算子，<span
+class="math inline">\(w_s\)</span>表示语义平滑项的最小权重。 <span
+class="math display">\[
+\mathcal{L}_{smo} = ||\mathbf{s}_{MLP} - \mathbf{s}_{G}^* ||_2 +
+\max(\mathbf{u}_G^*, w_s) || \mathbf{s}_{MLP}^* - \mathbf{s}_G||_2
+\]</span> 最终，语义特征、语义不确定性以及MLP的组合损失如下所示： <span
+class="math display">\[
+\mathcal{L} = \lambda_s \mathcal{L}_s + \lambda_{smo} \mathcal{L}_{smo}
+\]</span>
+完成优化之后，每个Gaussian上就会有一个代表语义索引的特征，该特征经过光栅化渲染得到特征图，特征图经过MLP
+Decoder得到索引图，索引图根据Base
+Feature集合就能得到对应的语义特征图。</p>
+<h2 id="简单总结">简单总结</h2>
+<p>LEGaussians提出了一种基于3D
+Gaussian的用于开放词汇查询任务的场景表示。</p>
+<p>首先，LEGaussians通过从多视图图像中抽取CLIP和DINO语义特征，再将其量化之后得到Base
+Feature集合以及多视角的混合语义特征索引图；然后LEGaussian为每个Gaussian上添加<strong>代表语义索引的特征</strong>以及<strong>表征不确定性的特征</strong>，不确定性特征用于解决多视图视觉不一致带来的语义歧义，而由语义特征光栅化后渲染出来的特征图可以被MLP
+Decoder解码为索引图。LEGaussians在训练阶段采用三类损失来进行监督，分别是索引图之间的交叉熵损失，对于不确定性的正则化以及空间平滑正则化。</p>
+<p>完成优化之后，每个Gaussian上就会有一个代表语义索引的特征，经过与训练基本相似的pipeline，就能得到对应视角下的语义特征图。</p>
+<p>LEGaussians的项目地址是：<a
+target="_blank" rel="noopener" href="https://github.com/buaavrcg/LEGaussians">buaavrcg/LEGaussians</a></p>
+<h1 id="feature-3dgscvpr2024">Feature 3DGS(CVPR2024)</h1>
+<p><a target="_blank" rel="noopener" href="https://feature-3dgs.github.io/">Feature
+3DGS</a>面向的任务是在3D
+Gaussians中增加语义描述。它提出了一种通用的Pipeline，可以通过特征蒸馏的方式来集成大型2D基础模型，在语义方面增强3D
+Gaussians。此外，Feature 3DGS在下游任务中，还提供基于点Prompt或者Box
+Prompt来进行3D场景操作的方式。</p>
+<h2 id="模型架构-1">模型架构</h2>
+<p>Feature 3DGS的整体Pipeline如下图所示：</p>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240415143516336.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Feature 3DGS Pipeline">
+<p>为了在3D Gaussians上融合语义特征，Feature
+3DGS在每个Gaussan的参数上进行扩展，融入语义特征<span
+class="math inline">\(f_i\)</span>，即每个Gaussian的特征包括了<span
+class="math inline">\(\Theta_i =
+\{x_i,q_i,s_i,\alpha_i,c_i,f_i\}\)</span>，分别表示每个Gaussian的位置、旋转四元数、缩放向量、不透明度、颜色和语义特征向量。对于一个由众多Gaussian组成的场景，我们可以根据与原始3D
+Gaussian相同的光栅化方法分别渲染得到场景图和特征图，并且都是像素级别的。因此，我们也可以使用来自2D基础预训练语义模型(例如SAM和CLIPLSeg)来获取图片的2D语义特征，以此作为逐像素的监督。</p>
+<p>在优化阶段，Feature 3DGS使用的是联合优化，而非先优化好3D
+Gaussians的基础参数之后，再优化语义特征。最终渲染出来的场景图和特征图长和宽保持一致，维度上有所不同。优化阶段的损失函数则结合了渲染的光度损失和语义特征图之间的损失：
+<span class="math display">\[
+\begin{aligned}
+\mathcal{L} &amp;= \mathcal{L}_{rgb} + \gamma \mathcal{L}_f \\
+\mathcal{L}_{rgb} &amp;= (1 -\lambda)\mathcal{L}_1(I, \hat{I}) + \lambda
+\mathcal{L}_{D-SSIM}(I, \hat{I}) \\
+\mathcal{L}_f &amp;=|| F_t(I) - F_s(\hat{I}) ||_1
+\end{aligned}
+\]</span> 其中<span
+class="math inline">\(F_t(I)\)</span>表示从2D基础模型导出的监督特征图，<span
+class="math inline">\(F_s(\hat{I})\)</span>表示渲染得到的特征图。</p>
+<blockquote>
+<p>论文中提到这种联合优化的方式是有益的。高维语义特征的参加有助于场景理解并增强对场景物理属性的描述，例如对Gaussian不透明度和位置的优化。</p>
+</blockquote>
+<p>考虑融入Gaussian上的语义特征为<span class="math inline">\(f \in
+\mathbb{R}^N\)</span>，对应渲染得到特征图<span
+class="math inline">\(F_s(\hat{I}) \in \mathbb{R}^{H\times W\times
+N}\)</span>，而从2D基础模型中导出的监督语义特征图为<span
+class="math inline">\(F_t(I) \in \mathbb{R}^{H\times W \times
+M}\)</span>。在非常理想的情况下，有<span class="math inline">\(N =
+M\)</span>。但是对于3D
+Gaussian来说，如果在每个Gaussian上增加较高维度的语义特征，这会对内存造成很大压力，影响优化和渲染的效果，因此每个Gaussian上的语义特征通常是较低维度的；而对于2D基础模型来说，通常特征维度<span
+class="math inline">\(M\)</span>是较高的。因此在实际情况中，通常是<span
+class="math inline">\(N \ll
+M\)</span>，因此需要一种手段来弥合维度上的差距。</p>
+<p>Feature 3DGS引入Speed-up
+module来解决维度差异。该模块由一个轻量级卷积Decoder构成，使用kernel
+size为<span class="math inline">\(1\times
+1\)</span>的卷积核对特征通道进行上采样，直到渲染特征图的特征维度与监督特征图的特征维度相匹配。该模块可以用于提升Gaussian语义特征的表示。在训练时需要使用该模块来匹配损失函数，在推理的时候该模块则是可选的，可以直接使用原始的<span
+class="math inline">\(N\)</span>维特征作为输出的特征图，也可以使用经过Speed-up
+module提升后的<span
+class="math inline">\(M\)</span>​维特征作为输出的特征图。</p>
+<p>经过优化之后，我们就可以得到包含语义的场景3D
+Gaussian表示。考虑某个prompt或者query，我们想要定位该prompt或者query相关的Gaussian，只需要将其先经过Encoder得到特征空间内的特征描述，然后与每个Gaussian的语义特征计算即可得到每个Gaussian的激活分数。这也是下面一系列下游任务的基础。</p>
+<h2 id="下游任务">下游任务</h2>
+<p>基于一个包含语义场景的3D
+Gaussian表示，我们可以完成许多下游任务。包括语义分割、类似SAM的分割、语言驱动的场景编辑等。</p>
+<p>给定任意新视角，我们可以将每个Gaussian上的语义特征渲染成新视角下的语义分割图，即完成语义分割任务。</p>
+<p>类SAM的分割指的是提供像SAM一样，基于prompt的分割功能。由于在进行特征蒸馏的时候，我们可以选择SAM来作为2D基础模型，因此场景渲染出来的特征图实际上与SAM得到的特征图是处于同一个特征空间的，因此可以直接将其与prompt同时输入SAM的Decoder，来得到分割结果。</p>
+<p>语言驱动的场景编辑，顾名思义，就是利用语言文本来对3D场景进行修改。简单来说，我们可以通过上面计算激活分数的方式来得到每个Gaussian与该文本的相关性，从而确定操作所涉及的Gaussian。由于Gaussian是一种显式表达，在确定了所涉及的区域后，只需要对这些Gaussian进行相关的操作即可，包括区域提取、区域删除、颜色修改等。</p>
+<h2 id="简单总结-1">简单总结</h2>
+<p>Feature
+3DGS同样利用2D基础语义模型来为Gaussian的语义特征进行监督，同时为了弥合较低的Gaussian语义特征与较高的基础模型语义特征之间的维度差距，Feature
+3DGS使用了由轻量级卷积Decoder构成的Speed-up Module来完成。</p>
+<p>Feature 3DGS的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/ShijieZhou-UCLA/feature-3dgs">ShijieZhou-UCLA/feature-3dgs</a></p>
+<h1 id="langsplatcvpr2024">LangSplat(CVPR2024)</h1>
+<p><a target="_blank" rel="noopener" href="https://langsplat.github.io/">LangSplat</a>基于3D
+Gaussian构建了一个3D的语义Language
+Field，用于在3D空间内进行精确、高校的开放词汇查询。LangSplat主要有两个贡献，第一个是使用自动编码器来学习CLIP
+Embedding和语义特征，降低融合语义特征后3D
+Gaussian对内存的占用；第二个是使用SAM来获得分层特征，以此获得对象之间清晰的边界。</p>
+<h2 id="模型架构-2">模型架构</h2>
+<p>LangSpalt的整体pipeline如下所示，其中左半部分表示基于SAM的分层语义特征学习，右半部分表示利用自动编码器的3D
+Gaussian语义融合。</p>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240403104200166.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="LangSplat模型架构">
+<h3 id="learning-hierarchical-semantic-with-sam">Learning Hierarchical
+Semantic with SAM</h3>
+<p>在介绍具体pipeline之前，我们可以先回顾现有相关方法存在的问题。</p>
+<p>为了构建3D Language
+Filed，目前常用的思路都是使用基于2D的基础语言模型获取特征，然后将特征投影或者融合到3D表示中。最常用的基础语言模型就是CLIP。但是CLIP特征是图像对齐的，而不是像素对齐的，这导致训练后的3D
+Language
+Field缺乏清晰的边界，并且包含大量噪声。尽管可以通过学习像素对齐的DINO特征来缓解，但是仍然不能得到很好的结果。我们希望获得的是像素对齐的Embedding
+<span class="math inline">\(\mathbf{L}_t \in \mathbb{R}^{D \times H
+\times W}\)</span>，其中<span
+class="math inline">\(D\)</span>表示特征维度。</p>
+<p>另一方面，有了像素对齐的Embedding之后，还会面临点歧义(point
+ambiguity)的问题，因为对象上的一个点可能会对应多种语义级别。举例来说，场景中的猫耳朵上的某个点，就会同时对应如下语义级别，包括猫耳朵、猫头部、整只猫，因此我们希望这个点的语义特征能够同时被这些不同语义级别的查询激活。为了解决这个问题，大多数现有的方法采用Multi-Scale的裁剪方法来提取分层的CLIP特征。对于某个像素来说，它的分层CLIP特征即为不同大小scale的裁剪图像的对应特征。这种方式存在两个局限，首先裁剪出的图像并不是精确的，它们通常包含额外的上下文对象信息，这将会导致Language
+Field过于平滑，对象边界不明确；其次在推理过程中，需要在不同scale下进行渲染，进行多种scale的尝试，以找到最佳scale，这显著地降低了推理速度。</p>
+<p>LangSplat解决上面问题的思路是使用SAM进行分层语义特征提取。在给定point
+proposal的情况下，SAM可以给出对应物体的准确mask，并且SAM还可以为point
+proposal生成三个不同的mask，分别代表整体(whole),部分(part)和子部分(subpart)这三个不同的层级。LangSplat使用SAM来获取精确的对象Mask，用于获取像素对齐的特征，同时通过显示地建模SAM的语义层次，来解决点歧义问题。这样，通过SAM就能够捕获3D场景中对象的语义层次结构，为每个输入图像提供准确的多尺度分割图。</p>
+<p>具体来说，对每张图像，LangSplat使用<span
+class="math inline">\(32\times
+32\)</span>的规则网格作为proposal，将其输入SAM，获得三个在不同语义级别下的mask集合，<span
+class="math inline">\(\mathbf{M}_0^s,\mathbf{M}_0^p,\mathbf{M}_0^w\)</span>，分别对应语义层级subpart、part和whole。然后根据重叠、IoU分数、stability
+score等进行过滤，我们可以得到不同语义级别下的全图分割mask图，即<span
+class="math inline">\(\mathbf{M}^s,\mathbf{M}^p,\mathbf{M}^w\)</span>​。这些分割图在对应语义层级上精确地描绘了对象的边界，将场景图像有效地划分成了有意义的区域。借助这些分割结果，我们可以进行CLIP特征的提取，考虑图像<span
+class="math inline">\(\mathbf{I}_t\)</span>中的像素<span
+class="math inline">\(v\)</span>，它在三个语义层级下都具有相应的特征，特征计算如下，其中<span
+class="math inline">\(V(*)\)</span>表示利用CLIP模型对图像进行特征提取，<span
+class="math inline">\(\mathbf{M}^l(v)\)</span>表示像素<span
+class="math inline">\(v\)</span>所在的<span
+class="math inline">\(l\)</span>层级下的mask区域。 <span
+class="math display">\[
+\mathbf{L}_t^l(v) = V(\mathbf{I}_t \odot \mathbf{M}^l(v)), \quad l \in
+\{s, p, w\}
+\]</span>
+经过上面的处理，我们对每一张图像都能够获得在三个语义层级下的像素对齐特征图。得益于SAM的分割结果，特征图会拥有清晰的边界。另一个优点是这种方式拥有预定义的语义层级，即subpart、part和whole。</p>
+<h3 id="d-gaussian-splatting-for-language-fields">3D Gaussian Splatting
+for Language Fields</h3>
+<p>经过上面的步骤，可以获取一系列2D的语义特征图<span
+class="math inline">\(\{\mathbf{L}_t^l, | t=1, ...,
+T\}\)</span>，接下来则需要考虑如何为3D
+Gaussian进行特征增强。LangSplat为每个Gaussian进行语义特征增强，为其添加特征<span
+class="math inline">\(\{\mathbf{f}^s, \mathbf{f}^p,
+\mathbf{f}^w\}\)</span>。由于每个Gaussian都具有了语义特征，因此可以使用类似颜色渲染的光栅化操作来得出语义图的渲染结果：
+<span class="math display">\[
+\mathbf{F}^l(v) = \sum_{i \in \mathcal{N}} \mathbf{f}_i^l \alpha_i
+\prod_{j=1}^{i-1}(1-\alpha_j), \quad l \in \{s,p,w\}
+\]</span>
+CLIP特征本身是一个高维度的特征，但是直接使用高维度特征进行增强会导致3D
+Gaussian内存占用过高，降低训练和渲染的效率。为了减少内存消耗并提高效率，LangSplat引入场景语义的AutoEncoder，该AutoEncoder将场景的CLIP特征映射到低维度的潜在空间，从而减少内存需求。原始的CLIP在非常多的图片文本对下进行训练，它得到的特征维度<span
+class="math inline">\(D\)</span>属于高维，并难以继续压缩。但是对于论文中的任务，由于仅考虑当前的特定场景，语言特征的压缩是可以做到的。</p>
+<p>具体来说，LangSplat会训练一个AutoEncoder，其中的Encoder <span
+class="math inline">\(E\)</span> 将<span
+class="math inline">\(D\)</span>维的CLIP特征<span
+class="math inline">\(\mathbf{L}_t^l(v) \in
+\mathbb{R}^D\)</span>压缩到<span class="math inline">\(\mathbf{H}_t^l(v)
+= E(\mathbf{L}^l_t(v)) \in \mathbb{R}^d\)</span>，其中<span
+class="math inline">\(d \ll D\)</span>；然后Decoder<span
+class="math inline">\(\Psi\)</span>将压缩后的特征还原到CLIP特征。AutoEncoder的Loss则定义如下，其中<span
+class="math inline">\(d_{ae}(*)\)</span>表示距离衡量，论文中使用L1和余弦距离损失。
+<span class="math display">\[
+\mathcal{L}_{ae} = \sum_{l \in \{s, p, w\}} \sum_{t=1}^T
+d_{ae}(\Psi(E(\mathbf{L}_t^l(v))), \mathbf{L}_t^l(v))
+\]</span> 在AutoEncoder的作用下，我们就可以将高维的CLIP特征空间<span
+class="math inline">\(\{\mathbf{L}_t^l\}\)</span>转化到低维度的空间<span
+class="math inline">\(\{\mathbf{H}_t^l\}\)</span>，而每个3D
+Gaussian上的语义特征也在低维度的特征空间中进行学习。我们使用<span
+class="math inline">\(d\)</span>作为每个3D Gaussian语义特征的维度，即$^l
+^d <span
+class="math inline">\(，在论文中，有\)</span>d=3$。在低维度空间中学习每个3D
+Gaussian上的语义特征，使用的Loss如下： <span class="math display">\[
+\mathcal{L}_{lang} = \sum_{l \in \{s,p,w\}} \sum_{t=1}^T
+d_{lang}(\mathbf{F}_t^l(v), \mathbf{H}_t^l(v))
+\]</span> 在完成训练之后，每个Gaussian上就包含3个<span
+class="math inline">\(d\)</span>维的语义特征，通过光栅化得到低维度的特征图后，使用Deocder<span
+class="math inline">\(\Psi\)</span>将其恢复到CLIP特征空间中，得到<span
+class="math inline">\(\Psi(\mathbf{F}_t^l) \in \mathbb{R}^{D\times H
+\times W}\)</span>。</p>
+<p>有了语义特征的渲染图之后，就可以采用与LERF类似的Open-Vocabulary
+Querying方式来进行开放词汇查询。</p>
+<h2 id="简单总结-2">简单总结</h2>
+<p>LangSplat构建了一个基于3D
+Gaussian的3D开放语义表征。首先，LangSplat基于SAM来对图像进行三种语义级别(subpart、part、whole)的分割，并利用CLIP进行特征提取；之后训练一个基于场景的AutoEncoder，将高维度的CLIP语义特征压缩到更低的维度，3D
+Gaussian上的语义特征在这个更低维度的特征空间上进行学习，以此降低众多3D
+Gaussian对内存的占用，提高训练和渲染效率。</p>
+<p>LangSplat使用基于3D
+Gaussian的场景表示，这使得语义图像的渲染变得非常快速，在整个pipeline中，渲染是非常快的，大部分时间花费在Decoder的部分。</p>
+<p>另外在实验方面，LangSplat使用了LERF数据集和3DOVS数据集。为了使LERF数据适用于开放词汇语义分割，LangSplat还手动注释了文本查询的真实mask。</p>
+<p>LangSplat的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/minghanqin/LangSplat">minghanqin/LangSplat</a></p>
+<h1 id="fmgs">FMGS</h1>
+<p><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.01970">FMGS</a>完成的工作同样是将2D基础预训练模型嵌入合并到3D
+Gaussian中，以此实现开放词汇查询。FMGS是<strong>F</strong>oundation
+<strong>M</strong>odel Embedding 3D <strong>G</strong>aussian
+<strong>S</strong>platting的缩写。与其他方法类似，FMGS使用3D
+Gaussian上的语义特征，然后将其渲染为语义特征图，语义特征图的监督则来自2D基础预训练模型CLIP和DINO。此外，为了确保高质量和快速训练，FMGS集成了3D
+Gaussian和HashEncoding。</p>
+<h2 id="模型架构-3">模型架构</h2>
+<p>对于一个场景，FMGS首先对其训练一个3D
+Gaussian的表示，该表示将作为后续语义处理的基础。最简单的为3D
+Gaussian增加语义的方式就是在每个Gaussian上增加特征向量来表示语义，但是不进行任何处理直接添加会导致非常大的内存占用，为了解决空间的问题，FMGS采用Multi-Resolution
+Hash Embedding(MHE)来解决这个问题，思想来源于InstantNGP。</p>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240401193917100.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="FMGS Pipeline">
+<p>场景空间被划分为Multi-Scale的Grids，特征向量则存储在Grid上的每个角点上。对于每个Gaussian来说，通过其位置<span
+class="math inline">\(\mathbf{X}\)</span>利用三线性插值后来查询对应的特征，将所有Scale下的特征拼接后得到输出<span
+class="math inline">\(\mathbf{q}\)</span>，该输出再经过一个MLP，得到最终的输出。这样对于每个Gaussian，我们就能查询并计算出它的语义特征。FMGS采用了两类特征，分别是CLIP和DINO，以此来获得像素对齐的特征提取。利用每个Gaussian上的语义特征，就能够利用光栅化进行渲染，得到两种语义特征图<span
+class="math inline">\(\hat{\mathbf{F}} \in \mathbb{R}^{W\times H\times
+D}，\hat{\mathbf{D}} \in \mathbb{R}^{W \times H \times
+L}\)</span>，前者表示生成的CLIP语义图，后者则表示生成的DINO语义图，其中<span
+class="math inline">\(D,L\)</span>代表特征图的维度。</p>
+<p>语义特征图的监督则来自于2D基础模型CLIP和DINO。对于CLIP的特征图，采用类似于LERF中使用的多尺度特征金字塔方法得到CLIP监督<span
+class="math inline">\(\mathbf{F}\)</span>；对于DINO的特征图，直接将不缩放的图片输入DINO
+Encoder得到DINO监督<span
+class="math inline">\(\mathbf{D}\)</span>。CLIP和DINO的Loss如下： <span
+class="math display">\[
+\begin{aligned}
+\mathcal{L}_{CLIP} &amp;= \left\{ \begin{array}{ll}
+0.5 | \hat{\mathbf{F}} - \mathbf{F} |^2, &amp; if\ |\hat{\mathbf{F}} -
+\mathbf{F}| &lt; \delta\\
+\delta \cdot (|\hat{\mathbf{F}} - \mathbf{F}| -0.5 \cdot \delta), &amp;
+otherwise
+\end{array} \right. \\
+\mathcal{L}_{DINO} &amp;= |\hat{\mathbf{D}} - \mathbf{D}|^2
+\end{aligned}
+\]</span>
+FMGS还提出了一种损失来对齐CILP和DINO的损失。该损失主要希望得到的CLIP和DINO特征相互之间相差不大。为此，FMGS在每个像素周围定义一个<span
+class="math inline">\(K\times
+K\)</span>的kernel窗口，计算该窗口内的CLIP和DINO特征之间的差距，损失函数如下，其中<span
+class="math inline">\(\mathcal{P}\)</span>表示图片下的每个像素。 <span
+class="math display">\[
+\mathcal{L}_{pixel} = \frac{1}{K^2-1} \sum_{i\in \mathcal{P}} \sum_{j\in
+\mathcal{N}(i), j\neq i} | \hat{\mathbf{d}_i}^T\hat{\mathbf{d}_j} -
+\hat{\mathbf{f}_i}^T\hat{\mathbf{f}_j} |
+\]</span></p>
+<blockquote>
+<p>另外为了缓解内存限制，FMGS根据Gaussian的不透明度和2D半径等指标选择大约10%的Gaussian参与语义特征训练。</p>
+</blockquote>
+<h2 id="简单总结-3">简单总结</h2>
+<p>FMGS利用CLIP和DINO来提供语义特征的监督，并且使用Multi-Scale Hash
+Embedding来降低内存的占用，并提高训练和渲染效率。</p>
+<h1 id="semantic-gaussians">Semantic Gaussians</h1>
+<p><a target="_blank" rel="noopener" href="https://semantic-gaussians.github.io/">Semantic
+Gaussians</a>是一种基于3D Gaussian的新型开放词汇场景理解方式。Semantic
+Gaussians提出了一种多功能投影方式，将来自各种2D
+Image预训练Encoder的语义特征映射到3D
+Gaussian上；同时基于投影结果进行蒸馏，构建了一个3D语义网络，可以直接从原始3D
+Gaussian中预测每个Gaussian的语义特征。与基于NeRF的方法相比，Semantic
+Gaussians无需额外训练，就可以将语义特征融入3D Gaussian。</p>
+<h2 id="模型架构-4">模型架构</h2>
+<p>Semantic
+Gaussians的目标在于为场景的每个Gaussians赋予一个语义特征，它的思想在于利用来自2D
+Image的各种预训练Encoder对场景图像进行语义特征的抽取，然后将其投影到3D
+Gaussian上。</p>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240327163816442.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Semantic Gaussians">
+<p>考虑已经有了一个针对某个场景训练好的3D
+Gaussian以及该场景的一系列2D图像（得益于3D
+Gaussian逼真的渲染质量，这些2D图像也可以通过渲染得来）。对于每个2D图像<span
+class="math inline">\(\mathbf{I}\)</span>，我们可以利用现有的预训练2D
+Image Encoder进行语义特征的抽取，获取像素级别的语义图<span
+class="math inline">\(s \in \mathbb{R}^{H\times W \times
+C}\)</span>。</p>
+<p>Senmantic Gaussians考虑可以使用各种预训练的2D
+Feature，可用的模型类型包括：</p>
+<ul>
+<li>pixel-level segmentation network：例如OpenSeg、LSeg</li>
+<li>instance-level recognition network：例如Grounding DINO、VLPart</li>
+<li>image-level classification network：例如CLIP</li>
+</ul>
+<p>Senmantic Gaussians采用SAM来处理这些不同的2D
+Feature，最终得到像素级别的语义图<span
+class="math inline">\(s\)</span>。</p>
+<ul>
+<li>对于pixel-level segmentation
+network，我们已经有基础的像素级别的语义图。论文采用SAM来细化分割边界。对于每张图片，采用SAM的Everything模式得到该图片的<span
+class="math inline">\(N\)</span>个Binary Mask <span
+class="math inline">\(M_1, M_2, ...,
+M_N\)</span>，然后将其对应到基础语义图上。对于每个Binary
+Mask，将其对应像素位置上的特征设置为Mask范围内所有特征的平均池化结果</li>
+<li>对于instanc-level recognition
+network，我们有图片的实例分割结果，但是缺乏语义特征。论文采用实例分割结果对应的Bounding
+Box作为SAM的Prompt，得到实例的更加细化的分割结果，然后对于每个实例区域，采用CLIP进行特征提取，该区域像素位置上的特征均设置为CLIP实例特征</li>
+<li>对于image-level classification
+network，则首先采用SAM的Everything划分图片中可能的分割结果，对于每个分割区域，则赋予经过该image-level
+classification network网络之后得到的特征</li>
+</ul>
+<p>总之，经过上述过程之后，我们可以得到<span
+class="math inline">\(N\)</span>个像素级别的语义图<span
+class="math inline">\(s \in \mathbb{R}^{H\times W \times
+C}\)</span>。该语义图类似于实例分割的结果，每个实例区域具有相同的语义特征。</p>
+<p>接下来的步骤则是从2D到3D的特征投影与融合。对于2D图的每个像素，可以利用相机内外参数进行2D到3D的投影。经过投影之后，每个像素将对应空间中的一束光线。首先可以利用3D
+Gaussian渲染出对应视角的深度图，然后利用深度图，将2D像素投影到3D空间中的表面点。每张图都完成上述的操作，那么3D空间中表面的3D
+Gaussian就会具有来自2D的语义特征<span
+class="math inline">\(s^{2D}\)</span>。可能会存在来自多视角的2D特征均投影到同一个3D
+Gaussian上，此时的语义特征为经过平均池化的特征。</p>
+<p>Semantic Gaussians第二个贡献是构建了一个3D Gaussian Network，它接受3D
+Gaussian点云作为输入，每个点云上的特征是Gaussian的颜色、不透明度、协方差矩阵等。它的输出则是每个Gaussian的语义特征。该网络采用上述投影过程获得的语义Feature进行监督，损失则采用余弦相似度：
+<span class="math display">\[
+\begin{aligned}
+s^{3D} = f^{3D}(\mathbf{G}), \quad L = 1 - \cos(s^{3D}, s^{2D})
+\end{aligned}
+\]</span> 在实际使用中，Semantic Gaussians采用了<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1904.08755">MinkowskiNet</a>，这是一个专门为点云设计的3D稀疏卷积网络。当然，3D语义网络的语义预测特征可以与投影得到的语义特征相结合，进一步提高Gaussian语义特征的质量。</p>
+<p>利用具有语义特征的3D
+Gaussians，可以完成后续的下游任务，例如开放词汇分割，场景语义分割等。首先将文本query或者语义标签通过CLIP进行特征抽取，得到文本Embedding，比较该文本Embedding与3D
+Gaussian语义特征的相似度，分配其中相似度高的标签给对应的3D
+Gaussians，最终通过3D Gaussian的渲染过程，即可得到不同的分割结果。</p>
+<h2 id="简单总结-4">简单总结</h2>
+<p>Senmantic Gaussian介绍了一种如何将语义特征融入3D
+Gaussians的过程。它利用预训练的2D
+Encoder从2D图像中提取出语义特征，然后将其通过2D-3D的投影，将其投射到3D空间中<strong>表面</strong>的Gaussians上。另外，论文还构建了一个3D
+Gaussian语义推测网络，通过Gaussian的其他特征来预测语义特征。</p>
+<h1 id="cosseggaussians">CoSSegGaussians</h1>
+<p><a
+target="_blank" rel="noopener" href="https://david-dou.github.io/CoSSegGaussians/">CoSSegGaussians</a>是一种利用3D
+Gaussian来进行3D场景分割的模型。它的输入是多视角的RGB图像，经过处理后可以得到以3D
+Gaussian为基元的场景表征，并且可以得到不同视角下的分割结果(语义分割/实例分割)。</p>
+<p>论文发现，一些基于3D
+Gaussian的3D分割模型生成的Mask不够紧凑，会存在碎片和割裂(类似于Floater)，这可能是由于它们将分割特征直接分配给每个Gaussian，但是缺乏跨视图一致的2D监督。于是CoSSegGaussian设计了一个双特征融合网络(Dual
+Feature Fusion Network)来表示3D
+Gaussian分割特征场，而不是让分割特征特征在每个Gaussian上进行独立优化。</p>
+<h2 id="模型架构-5">模型架构</h2>
+<h3 id="pipeline">pipeline</h3>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144000665.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="CoSSegGaussians流程">
+<p>CoSSegGaussian分为两个阶段，分别是Gaussian Locating
+Stage和Segmentation Stage。</p>
+<p>首先第一个阶段Gaussian Locating Stage，与原始的3D
+Gaussian类似，通过多视图图像的输入完成Gaussian的初始训练，此时我们得到的是用来表征场景的众多Gaussian，每个Gaussian都包含已经学习好的参数<span
+class="math inline">\(\mathbf{c},\mathbf{x},\Sigma,\alpha\)</span>。</p>
+<p>第二阶段Segmentation Stage，主要通过论文设计的Dual Feature Fusion
+Network来学习出每个Gaussian上的分割特征<span
+class="math inline">\(\mathbf{s} \in \mathbb{R}^K\)</span>，其中<span
+class="math inline">\(K\)</span>表示最终的分割结果有K类。有了这个分割特征之后，我们就可以用扩展的3D
+Gaussian可微光栅化渲染得到分割输出(对应图中的Segmentation Gaussian
+Rasterizer)，主要就是将原公式中的颜色特征<span
+class="math inline">\(c\)</span>替换成分割特征<span
+class="math inline">\(\mathbf{s}\)</span>。具体来说，对于每个像素<span
+class="math inline">\(p\)</span>，我们可以找到覆盖在该像素上，并按照深度排序的Gaussian集合<span
+class="math inline">\(\mathcal{N}\)</span>，然后按照如下公式计算对应像素对每个类别的预测概率：
+<span class="math display">\[
+\mathbf{S}(p) = \sum_{i\in\mathcal{N}} \mathbf{s}_i \alpha&#39;_i(p)
+\prod_{j=1}^{i-1}(1-\alpha&#39;_j(p))
+\]</span>
+对于每个像素都进行该操作，我们就可以在给定视角下渲染出一张Mask图。</p>
+<p>那么接下来的重点就是这个双特征融合网络是如何工作的。</p>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144442305.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="CosSegGaussians-Dual Feature Fusion Network">
+<p>考虑此时我们已经有了表征场景的众多Gaussian。双特征融合网络的输入是一张训练集中的图像，以及该图像对应视角视锥中的所有<span
+class="math inline">\(N\)</span>个Gaussian，输出则是这<span
+class="math inline">\(N\)</span>个Gaussian的分割特征，每个特征的维度为<span
+class="math inline">\(K\)</span>。双特征融合网络分为三个部分，第一个部分是Multi-scale
+DINO Feature
+Unprojection，该部分主要通过DINO-Based的模型来对2D图像进行特征抽取，得到多尺度的2D
+DINO
+Feature，然后将这些Feature反投影到对应的Gaussian上；第二个部分是Spatial
+Feature
+Extraction，该部分主要是通过现有的基于点的模型来对Gaussian点云提取空间特征Spatial
+Feature；第三个部分是Feature Aggregation，该部分将DINO Feature和Spatial
+Feature进行聚合，通过多层MLP构成的解码器来得到最终的Segmentation
+Feature输出。</p>
+<p>Multi-scale DINO Feature
+Unprojection利用DINO-Based模型来对2D图像进行特征抽取，论文使用的模型为<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2206.02777">Mask DINO</a>。Mask
+DINO可以对提取出多层(<span
+class="math inline">\(n\)</span>层，在论文中<span
+class="math inline">\(n=4\)</span>)的特征，对应图中的Block
+n。每个尺度的特征都可以被反投影到对应的Gaussian上。考虑第<span
+class="math inline">\(i\)</span>个Gaussian，第<span
+class="math inline">\(n\)</span>层的特征经过反投影后得到该Gaussian对应的DINO
+Feature <span
+class="math inline">\(\mathbf{f}_{d_n,i}\)</span>，计算公式如下， <span
+class="math display">\[
+\mathbf{f}_{d_n,i} = \sum_{p} \alpha&#39;_i(p) * \prod_{j=1}^{i-1}(1 -
+\alpha&#39;_j(p)) * \mathbf{f}_{d_n}(p), \quad n=1,\dots,4
+\]</span> 其中对像素<span
+class="math inline">\(p\)</span>进行求和，求和的像素包含所有被这第<span
+class="math inline">\(i\)</span>个Gaussian所影响的像素。公式后面的连乘项表示需要将其他Gaussian对所考虑像素的影响也考虑在内。</p>
+<p>Spatial Feature
+Extraction模块利用基于点的模型来对Gaussian点云提取空间特征Spatial
+Feature。这里使用的是<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1911.11236">RandLA-Net</a>，这是一个用于大场景点云语义分割的高效方式。</p>
+<p>Feature Aggregation模块则拼接了每个Gaussian不同层级的DINO
+Feature和Spatial
+Feature，将其分别送入解码器的不同层级，最终解码出Gaussian的Segmentation
+Feature。所有的Gaussian都有了对应的Segmentation
+Feature之后，我们就可以使用分割Gaussian的光栅化操作来输出场景的Mask预测。</p>
+<h3 id="损失函数">损失函数</h3>
+<p>在第一个阶段Gaussian Locating Stage，使用的损失函数就是原始3D
+Gaussian Splatting的损失函数，包括L1 Loss和SSIM Loss。</p>
+<p>在第二个阶段Segmentation
+Stage，我们可以通过上面的pipeline得到给定视角下的Mask预测，同时我们可以通过Mask
+DINO来对2D图像进行Zero
+Shot的语义分割结果，作为第二阶段训练的监督信号。不过需要注意的是，这里经过Mask
+DINO生成的语义分割结果，会额外经过一个Mask
+Association模块进行多视角一致性的增强。在这里，论文将多视图图像视作一个视频序列，然后通过一个Zero-Shot的Tracker来完成对应。</p>
+<p>有了预测的Mask结果<span
+class="math inline">\(\mathbf{S}\)</span>和由Mask
+DINO构造的监督Label，我们就可以使用NCE
+Loss来指导参数更新，不过需要注意的是，在Segmentation
+Stage，我们只更新解码器MLP中的参数，前面的特征提取网络参数则不进行改变。
+<span class="math display">\[
+\mathscr{l}_s = -\sum_p \sum_{k\in K} k_r[k] \log (\mathbf{S}(p)[k])
+\]</span></p>
+<h2 id="简单总结-5">简单总结</h2>
+<p>CoSSegGaussians主要通过Dual Feature Fusion
+Network的设计来学习每个Gaussian上的分割特征，然后进行Mask的预测。这种方式能够生成更加紧凑的预测结果，并且相比于之前基于NeRF的方法，具有更快的训练和渲染速度。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/3D%E8%A7%86%E8%A7%89/" class="category-chain-item">3D视觉</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/3D-Semantic/" class="print-no-link">#3D Semantic</a>
+      
+        <a href="/tags/3D/" class="print-no-link">#3D</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
+      
+        <a href="/tags/3D-Gaussian/" class="print-no-link">#3D Gaussian</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>3D Semantic-Gaussian相关</div>
+      <div>http://example.com/2024/04/16/3D-Semantic-Gaussian相关/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/04/15/3D-Semantic-NeRF%E7%9B%B8%E5%85%B3/" title="3D Semantic-NeRF相关">
+                        <span class="hidden-mobile">3D Semantic-NeRF相关</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
