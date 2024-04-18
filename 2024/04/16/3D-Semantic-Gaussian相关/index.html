@@ -31,12 +31,12 @@
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144000665.png">
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144442305.png">
 <meta property="article:published_time" content="2024-04-16T02:51:24.000Z">
-<meta property="article:modified_time" content="2024-04-16T02:55:31.697Z">
+<meta property="article:modified_time" content="2024-04-18T07:31:25.319Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="3D Semantic">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="论文笔记">
 <meta property="article:tag" content="3D Gaussian">
+<meta property="article:tag" content="3D Semantic">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240326191405601.png">
   
@@ -339,7 +339,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-04-16T10:55:31+08:00
+                    本文最后更新于：2024-04-18T15:31:25+08:00
                   
                   
 
@@ -459,8 +459,7 @@ Decoder以及语义特征，通过如下的交叉熵损失： <span
 class="math display">\[
 \mathcal{L}_{CE} = \text{CrossEntropy}(\mathcal{\hat{M}}, \mathcal{M})
 \]</span>
-在实际情况中，由于视角、光照、镜面等条件，多视角图像中同一空间位置对应语义特征可能会出现较大差异。LEGaussians引入了一种平滑策略，来限制3D
-Gaussians上语义特征的空间频率。具体来说，首先为每个Gaussian记录一个语义不确定性<span
+在实际情况中，由于视角、光照、镜面等条件，多视角图像中同一空间位置对应语义特征可能会出现较大差异。LEGaussians引入了一种平滑策略，来限制不确定性。具体来说，首先为每个Gaussian记录一个语义不确定性<span
 class="math inline">\(u \in [0,1]\)</span>。<span
 class="math inline">\(u\)</span>越高表示语义特征在优化过程中表现得越不稳定。不确定性与语义特征进行联合优化，首先将上面的损失进行改造：
 <span class="math display">\[
@@ -517,7 +516,7 @@ Prompt来进行3D场景操作的方式。</p>
 <p>Feature 3DGS的整体Pipeline如下图所示：</p>
 <img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240415143516336.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Feature 3DGS Pipeline">
 <p>为了在3D Gaussians上融合语义特征，Feature
-3DGS在每个Gaussan的参数上进行扩展，融入语义特征<span
+3DGS在每个Gaussian的参数上进行扩展，融入语义特征<span
 class="math inline">\(f_i\)</span>，即每个Gaussian的特征包括了<span
 class="math inline">\(\Theta_i =
 \{x_i,q_i,s_i,\alpha_i,c_i,f_i\}\)</span>，分别表示每个Gaussian的位置、旋转四元数、缩放向量、不透明度、颜色和语义特征向量。对于一个由众多Gaussian组成的场景，我们可以根据与原始3D
@@ -921,13 +920,13 @@ Network的设计来学习每个Gaussian上的分割特征，然后进行Mask的�
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/3D-Semantic/" class="print-no-link">#3D Semantic</a>
-      
         <a href="/tags/3D/" class="print-no-link">#3D</a>
       
         <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
       
         <a href="/tags/3D-Gaussian/" class="print-no-link">#3D Gaussian</a>
+      
+        <a href="/tags/3D-Semantic/" class="print-no-link">#3D Semantic</a>
       
     </div>
   
