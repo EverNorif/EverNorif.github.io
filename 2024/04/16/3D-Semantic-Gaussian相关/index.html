@@ -30,13 +30,14 @@
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240327163816442.png">
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144000665.png">
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144442305.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240424155538656.png">
 <meta property="article:published_time" content="2024-04-16T02:51:24.000Z">
-<meta property="article:modified_time" content="2024-04-22T06:34:04.955Z">
+<meta property="article:modified_time" content="2024-05-04T08:13:28.303Z">
 <meta property="article:author" content="EverNorif">
-<meta property="article:tag" content="3D">
-<meta property="article:tag" content="论文笔记">
 <meta property="article:tag" content="3D Gaussian">
 <meta property="article:tag" content="3D Semantic">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="论文笔记">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240326191405601.png">
   
@@ -280,7 +281,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          9.3k 字
+          11k 字
         
       </span>
     
@@ -292,7 +293,7 @@
         
         
           <!-- compatible with older versions-->
-          78 分钟
+          96 分钟
         
       </span>
     
@@ -339,7 +340,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-04-22T14:34:04+08:00
+                    本文最后更新于：2024-05-04T16:13:28+08:00
                   
                   
 
@@ -367,7 +368,8 @@ Gaussians的语义特征Embedding，在语义特征的学习过程中，会使�
 Extraction</h3>
 <p>LEGaussians的第一步是从多视图图像中抽取密集的语义特征。常用的语义特征抽取模型包括CLIP，DINO等。CLIP将图像编码为全局语义，而DINO更加偏向语义细节。</p>
 <p>LEGaussians首先使用类似于3DOVS的分层随机裁剪技术来提取CLIP特征。但是从CLIP中提取的特征仅提供不同语义区域的粗略边界，这会导致3D场景的语义嵌入模糊并且不准确。为此，LEGaussians使用DINO来进行特征的补充，增强语义特征的提取。</p>
-<p>对于每个视角下的图像，都利用CLIP和DINO分别抽取出特征，然后进行特征的拼接。考虑从图片I中抽取的CLIP特征<span
+<p>对于每个视角下的图像，都利用CLIP和DINO分别抽取出特征，然后进行特征的拼接。考虑从图片<span
+class="math inline">\(I\)</span>中抽取的CLIP特征<span
 class="math inline">\(\mathbf{F}^{CLIP}_{I,x,y} \in
 \mathbb{R}^{d_{CLIP}}\)</span>和DINO特征<span
 class="math inline">\(\mathbf{F}^{DINO}_{I,x,y} \in
@@ -881,6 +883,110 @@ Stage，我们只更新解码器MLP中的参数，前面的特征提取网络参
 <h2 id="简单总结-5">简单总结</h2>
 <p>CoSSegGaussians主要通过Dual Feature Fusion
 Network的设计来学习每个Gaussian上的分割特征，然后进行Mask的预测。这种方式能够生成更加紧凑的预测结果，并且相比于之前基于NeRF的方法，具有更快的训练和渲染速度。</p>
+<h1 id="clip-gs">CLIP-GS</h1>
+<p><a
+target="_blank" rel="noopener" href="https://gbliao.github.io/CLIP-GS.github.io/">CLIP-GS</a>希望做到的目标是在3D
+Gaussians中添加语义。为了解决直接学习高维度语义特征导致的效率降低问题，CLIP-GS提出了一种语义紧凑性方法(SAC，Semantic
+Attribute
+Compactness)，可以获取语义特征的紧凑表示，从而实现高效的渲染。此外，为了解决CLIP特征图本身固有的多视图不一致，CLIP-GS引入了3D
+Coherent
+Self-Training(3DCS)的训练策略，利用来自3D模型的多视图一致性来缓解该问题。</p>
+<h2 id="模型架构-6">模型架构</h2>
+<p>CLIP-GS的总体Pipeline如下，接下来将逐一进行介绍。</p>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240424155538656.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="CLIP-GS Pipeline">
+<h3 id="semantic-attribute-compactness">Semantic Attribute
+Compactness</h3>
+<p>将语义信息融入3D
+Gaussians中的常见思路是在每个Gaussians上嵌入一个语义特征，然后使用来自2D预训练基础模型(e.g.CLIP)得到的特征图来进行监督。遵循此类方法的流程，需要克服的问题是嵌入的语义维度无法做到很高，因为会大大增加内存占用，影响训练和渲染效率。目前的解决方案有量化、AutoEncoder、Grids
+Hash Encoding、卷积Decoder等。</p>
+<p>CLIP使用Semantic Attribute
+Compactness来解决该问题。SAC的主要思想是利用对象内自然统一的语义来简化表示，简单说，SAC通过利用SAM生成的Mask来捕获每个对象的单个代表性特征，以此作为所有相关像素的语义特征。通过学习代表性的语义特征来表示每个对象，最大限度地减少了对象内冗余相似特征的学习，同时保留了有效特征。然后，使用索引图来表征这些高维度语义特征，嵌入Gaussians的特征则只需学习相关索引即可。</p>
+<p>具体来说，考虑某张训练图像<span
+class="math inline">\(I_k\)</span>，首先可以利用CLIP(遵循某种像素对齐的方式)得到原始的语义特征图<span
+class="math inline">\(\overline{S}_k \in \mathbb{R}^{D\times H \times
+W}\)</span>，其中<span
+class="math inline">\(D\)</span>表示CLIP的特征维度。然后，利用SAM对<span
+class="math inline">\(I_k\)</span>进行处理，可以得到一系列区域Mask <span
+class="math inline">\(R_k =
+\{R_k^q\}^M_{q=1}\)</span>。每个Mask对应一个区域，对于每个区域，可以计算该区域所有CLIP特征在空间维度上的加权平均，得到该区域的单个代表性统一特征表示。通过这种方式，我们就可以得到代表性语义特征<span
+class="math inline">\(\hat{S}_k \in \mathbb{R}^{D\times
+M}\)</span>。需要注意的是，由SAM切割出来每张图的Mask并不会很多，所以会有<span
+class="math inline">\(M \ll H\times W\)</span>。</p>
+<p>基于代表性语义特征<span
+class="math inline">\(\hat{S}_k\)</span>，我们可以构造出一个语义索引图<span
+class="math inline">\(M_k \in \mathbb{R}^{1\times H\times
+W}\)</span>。这张图上的每个像素对应一个语义index，用于查询代表性语义特征。于是，有了代表性语义特征和语义索引图之后，我们就可以计算得到全面语义特征图<span
+class="math inline">\(\overline{S} = \hat{S} \circ
+M\)</span>。这一步骤相当于压缩了Gaussians的学习目标，与量化有异曲同工之处。</p>
+<blockquote>
+<p>这一步是否需要一个Mask对齐的操作？对齐不同图之间得到的语义索引？</p>
+</blockquote>
+<p>接下来我们需要构建一个训练目标。首先可以给定一系列文本描述，分别对应<span
+class="math inline">\(C\)</span>个类别。这些文本描述经过CLIP Text
+Encoder之后得到文本特征<span
+class="math inline">\(T\)</span>。对于每张图，我们都可以提前得到一个代表性语义特征<span
+class="math inline">\(\hat{S}\)</span>以及语义索引图<span
+class="math inline">\(M\)</span>，计算得到全面语义特征图之后，则可以计算每个像素的语义特征与文本特征之间的余弦相似度，利用argmax得到一个target目标索引图<span
+class="math inline">\(\widetilde{S}\)</span>，即<span
+class="math inline">\(\widetilde{S} = \text{argmax}(\cos[(M \circ
+\hat{S}), T]) \in \mathbb{R}^{1\times H \times
+W}\)</span>。注意这里的target目标索引图都是可以提前offline计算的。</p>
+<p>有了训练目标之后，就可以进行损失函数的构造了。上面的训练目标图相当于给每张图的每个像素一个类别index，并且该index属于给定的C个文本描述类别之一。我们在每个Gaussians上添加一个语义特征<span
+class="math inline">\(f_i \in
+\mathbb{R}^{d},(d=3)\)</span>，按照Gaussians的渲染过程得到语义图<span
+class="math inline">\(\in \mathbb{R}^{d \times H \times
+W}\)</span>。通过一个可训练的轻量级卷积层来进行维度提升，得到<span
+class="math inline">\(S \in \mathbb{R}^{C\times H \times
+W}\)</span>。维度对齐之后，就可以利用交叉熵损失作为损失函数，即<span
+class="math inline">\(\mathcal{L}_s^{2D} = \mathcal{L}_{ce}(S,
+\widetilde{S})\)</span></p>
+<blockquote>
+<p>中间的语义索引图在整个过程中起到什么样的作用？SAC真的压缩了占用吗？从训练的角度来看，就像是使用了卷积进行维度提升而已。</p>
+</blockquote>
+<h3 id="d-coherent-self-training">3D Coherent Self-Training</h3>
+<p>CLIP提取出的特征图存在一个硬伤，就是CLIP本身具有视图之间的不一致性。因此如果始终使用多视图不一致的CLIP特征图来监督Gaussians语义的监督，可能会导致模糊错误的渲染结果。CLIP-GS则提出了3D
+Coherent
+Self-Training方式，该方式利用3D模型表示固有的3D一致性，以解决语义歧义并强制不同视图之间遵循连贯的语义一致性。</p>
+<p>考虑已经在上面的损失函数下进行了一段时间的训练，我们已经得到了场景3D
+Gaussians表征的大体雏形。CLIP-GS将多视图训练图像视作一系列连续帧，于是我们就可以利用zero-shot的tracker模型(<a
+target="_blank" rel="noopener" href="https://github.com/hkchengrex/Tracking-Anything-with-DEVA">DEVA</a>)来关联和对齐相邻视图的相关Mask(由SAM分类得到的)。假设目前需要优化视图<span
+class="math inline">\(I_k\)</span>，经过Gaussians渲染得到的语义图为<span
+class="math inline">\(S_k\)</span>。3D Coherent
+Self-Training的目的是得到一个增强的，多视图一致的监督目标<span
+class="math inline">\(\mathcal{S}\)</span>，而不是仍然沿用原来的<span
+class="math inline">\(\widetilde{S}\)</span>，因为原来的<span
+class="math inline">\(\widetilde{S}\)</span>是通过多视图不一致的CLIP特征导出的。</p>
+<p>首先，我们可以先利用现有的Gaussians来渲染得到前后帧的语义图<span
+class="math inline">\(S_{k-1}, S_{k+1}\)</span>。考虑在训练视图<span
+class="math inline">\(I_k\)</span>上经过SAM切割得到的第<span
+class="math inline">\(q\)</span>个区域Mask <span
+class="math inline">\(R_k^q\)</span>，我们能够对齐相邻视图的相关Mask，因此我们可以得到前后帧上对应的Mask<span
+class="math inline">\(R_{k-1}^q,R_{k+1}^q\)</span>，然后利用这些Mask去相应的语义图<span
+class="math inline">\(S_{k-1},S_{k+1}\)</span>上截取语义，将其融合到当前视图对应的语义特征<span
+class="math inline">\(S_k\)</span>当中，这样我们就将渲染出来的语义图<span
+class="math inline">\(S_k\)</span>进行了融合增强。为了得到新的监督目标<span
+class="math inline">\(\mathcal{S}\)</span>，CLIP-GS利用区域Mask来强制进行区域一致性的正则化。具体的计算方式如下：
+<span class="math display">\[
+\mathcal{S}_k^q = \text{argmax}_c \sum_{v\in R_k^q}
+\mathbb{1}\{\text{argmax}(\sigma(\mathcal{C}(S_k^{q_v})))=c\}
+\]</span> 实际上，就是需要使得<span
+class="math inline">\(\mathcal{S}\)</span>中与区域Mask对应的区域具有统一的label，具体这个label是多少，则是由对应区域中的像素渲染结果进行投票决定的。对于每个区域，我们都执行上面的一致性正则化，于是就可以得到视图<span
+class="math inline">\(I_k\)</span>下新的优化目标<span
+class="math inline">\(\mathcal{S}_k\)</span>。我们使用这个更加多视图一致监督信号来继续训练Gaussians，同样使用交叉熵损失<span
+class="math inline">\(\mathcal{L}_s^{3D} = \mathcal{L}_{ce}(S,
+\mathcal{S})\)</span></p>
+<h3 id="overall-training">Overall Training</h3>
+<p>CLIP-GS的训练大致分为两个阶段，第一个阶段使用基于SAC得到的监督信号来监督，第二个阶段使用增强的更加多视图一致的监督信号来监督。在经过<span
+class="math inline">\(\mathcal{T}\)</span>轮的迭代之后，进行阶段的转化，损失函数也相应进行改变。</p>
+<p>同时为了调节Gaussinas的数量并且提高效率，同时保持高质量的场景表示，CLIP-GS引入了渐进致密调节策略。该策略在早期使用较低的图像分辨率和较低的致密化频率来进行优化，随后分辨率和致密化频率在训练迭代期间逐渐增加，直到达到初始分辨率和默认致密化频率。这种方式可以防止过度关注细节而导致在早期致密化出现大量Gaussians。</p>
+<h2 id="简单总结-6">简单总结</h2>
+<p>CLIP-GS将语义融入了Gaussians，但是解决的并不是传统意义的Open
+Vocabulary问题，而是类似于3DOVS，文本描述在训练过程中就已经参与进来了。</p>
+<p>CLIP-GS利用SAC来压缩语义空间，将紧凑的语义信息添加大到3D
+Gaussians中。此外，为了解决CLIP特征图本身的跨视图不一致，提出了3D
+Conherent Self-Training方式，获得更加准确的3D分割结果。</p>
+<p>CLIP-GS的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/gbliao/CLIP-GS">gbliao/CLIP-GS</a></p>
 
                 
               </div>
@@ -921,13 +1027,13 @@ Network的设计来学习每个Gaussian上的分割特征，然后进行Mask的�
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/3D/" class="print-no-link">#3D</a>
-      
-        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
-      
         <a href="/tags/3D-Gaussian/" class="print-no-link">#3D Gaussian</a>
       
         <a href="/tags/3D-Semantic/" class="print-no-link">#3D Semantic</a>
+      
+        <a href="/tags/3D/" class="print-no-link">#3D</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
       
     </div>
   
