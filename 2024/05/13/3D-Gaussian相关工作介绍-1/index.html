@@ -16,16 +16,17 @@
   <meta name="author" content="EverNorif">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本篇主要介绍了3D Gaussian系列的相关工作，包括GaussianPro等。">
+    <meta name="description" content="本篇主要介绍了3D Gaussian系列的相关工作，包括GaussianPro、GaussianGrouping等。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="3D Gaussian相关工作介绍(1)">
 <meta property="og:url" content="http://example.com/2024/05/13/3D-Gaussian%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-1/index.html">
 <meta property="og:site_name" content="EverNorif">
-<meta property="og:description" content="本篇主要介绍了3D Gaussian系列的相关工作，包括GaussianPro等。">
+<meta property="og:description" content="本篇主要介绍了3D Gaussian系列的相关工作，包括GaussianPro、GaussianGrouping等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2024/05/13/3D-Gaussian%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-1/image-20240506160948595.png">
+<meta property="og:image" content="http://example.com/2024/05/13/3D-Gaussian%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-1/image-20240517222307792.png">
 <meta property="article:published_time" content="2024-05-13T02:19:27.000Z">
-<meta property="article:modified_time" content="2024-05-13T03:10:00.437Z">
+<meta property="article:modified_time" content="2024-05-17T15:02:07.695Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="论文笔记">
@@ -273,7 +274,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.5k 字
+          2.3k 字
         
       </span>
     
@@ -285,7 +286,7 @@
         
         
           <!-- compatible with older versions-->
-          13 分钟
+          19 分钟
         
       </span>
     
@@ -332,7 +333,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-05-13T11:10:00+08:00
+                    本文最后更新于：2024-05-17T23:02:07+08:00
                   
                   
 
@@ -401,6 +402,46 @@ class="math inline">\(m(=50)\)</span>轮迭代进行一次渐进传播，并进�
 Gaussians中，以此改进Gaussian的致密化操作。它以渲染出来的深度图和法线图为基础进行渐进传播，得到传播后的深度图和法线图，并以两者的差异为标准进行新Gaussian的添加。此外，它还引入了平面约束，鼓励Gaussian的形状更加贴近真实表面。</p>
 <p>GaussianPro的项目地址为<a
 target="_blank" rel="noopener" href="https://github.com/kcheng1021/GaussianPro">kcheng1021/GaussianPro</a></p>
+<h1 id="gaussiangrouping">GaussianGrouping</h1>
+<p><a target="_blank" rel="noopener" href="https://ymq2017.github.io/gaussian-grouping/">Gaussian
+Grouping</a>完成的任务是进行基于3D
+Gaussian的场景分割以及编辑，它主要通过扩展3D
+Gaussian上的id属性特征，利用SAM提供Mask监督来完成。主要思想就是将每个Gaussian进行分类，然后基于分类的结果进行编辑，包括3D对象的删除、修复、着色以及场景重组。</p>
+<h2 id="模型架构-1">模型架构</h2>
+<p>GaussianGrouping整体的Pipeline如下所示：</p>
+<img src="/2024/05/13/3D-Gaussian%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-1/image-20240517222307792.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="GaussianGrouping Pipeline">
+<p>首先，对于训练场景的多视角图片，采用SAM的Everything
+Mode来提取出Mask图，图片中的每个像素都被赋予一个Mask
+id。不过由于不同图像之间是独立的，Mask
+id也是相互独立的。要想用来指导训练，则需要统一对齐不同Mask图之间的id。GaussianGrouping将多视图Mask图看作是一系列视频帧，然后采用预训练的zero-shot
+tracker <a
+target="_blank" rel="noopener" href="https://github.com/hkchengrex/Tracking-Anything-with-DEVA">DEVA</a>来进行Tracking，从而统一多视图之间的Mask
+id。</p>
+<p>之后，GaussianGrouping为每个Gaussian扩展一个Identity属性，这是一个特征向量(维度=16)，该特征表征Gaussian的分类结果，可以视作是分割特征。对该特征进行光栅化渲染，则可以得到对应的分割特征图。该分割特征图经过一个MLP之后，则可以得到预测的ID图，该ID图由前面得到的Mask图进行监督，计算交叉熵作为损失函数。</p>
+<p>除了交叉熵损失之外，GaussianGrouping还引入了一个3D正则化损失来进一步提高Gaussian分组的精度。该损失的主要思想是利用3D空间上的一致性，强制每个Gaussian与跟他最近的k个Gaussian具有相似的分割特征。在原始3D
+Gaussian的Pipeline上增加分割相关处理，就可以训练得到一个具备分割特征的3D
+Gaussian。</p>
+<p>有了训练好的3D Gaussian之后，就可以进行场景相关的编辑，包括：</p>
+<ul>
+<li>3D对象删除：删除目标对应的Gaussian</li>
+<li>3D场景重新合成：交换不同场景之间相应的Gaussian</li>
+<li>3D对象着色/风格迁移：调整对象相应Gaussian的颜色属性(球谐函数)</li>
+<li>3D对象修复：在删除了3D对象之后，可能会造成遮挡的空洞，3D对象修复就是希望能够填补这部分空洞，使得结果更加自然和逼真
+<ul>
+<li>首先删除相关的3D
+Gaussian，然后找到删除后会出现空洞的训练视图，利用图片修复模型<a
+target="_blank" rel="noopener" href="https://github.com/advimman/lama">LAMA</a>进行修复</li>
+<li>添加新的Gaussian，然后利用修复后的训练图片来训练该部分新添加的Gaussian</li>
+</ul></li>
+</ul>
+<h2 id="简单总结-1">简单总结</h2>
+<p>GaussianGrouping在每个Gaussian上扩展一个Identity特征作为分割依据，然后使用SAM对多视图进行分割得到Mask图，利用zero-shot
+tracker进行Mask图之间的对齐，然后利用这些Mask图来监督Identity特征的学习。完成GaussianGrouping完成分割特征学习之后，就可以基于分割结果就能进行相关场景编辑。</p>
+<p>GaussianGrouping还提供了<a
+target="_blank" rel="noopener" href="https://github.com/lkeab/gaussian-grouping/blob/main/docs/dataset.md">LERF-Mask
+dataset</a>数据集，其中手工注释了LERF中三个场景的Mask。</p>
+<p>GaussianGrouping的项目地址为：<a
+target="_blank" rel="noopener" href="https://github.com/lkeab/gaussian-grouping">lkeab/gaussian-grouping</a></p>
 
                 
               </div>
