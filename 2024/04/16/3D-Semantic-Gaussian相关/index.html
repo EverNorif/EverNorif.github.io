@@ -31,8 +31,9 @@
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144000665.png">
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240312144442305.png">
 <meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240424155538656.png">
+<meta property="og:image" content="http://example.com/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240617105457980.png">
 <meta property="article:published_time" content="2024-04-16T02:51:24.000Z">
-<meta property="article:modified_time" content="2024-06-17T02:15:52.054Z">
+<meta property="article:modified_time" content="2024-06-18T07:27:41.198Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="论文笔记">
@@ -281,7 +282,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          12k 字
+          14k 字
         
       </span>
     
@@ -293,7 +294,7 @@
         
         
           <!-- compatible with older versions-->
-          97 分钟
+          117 分钟
         
       </span>
     
@@ -340,7 +341,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-06-17T10:15:52+08:00
+                    本文最后更新于：2024-06-18T15:27:41+08:00
                   
                   
 
@@ -990,6 +991,115 @@ Gaussians中。此外，为了解决CLIP特征图本身的跨视图不一致，�
 Conherent Self-Training方式，获得更加准确的3D分割结果。</p>
 <p>CLIP-GS的项目地址为：<a
 target="_blank" rel="noopener" href="https://github.com/gbliao/CLIP-GS">gbliao/CLIP-GS</a></p>
+<h1 id="opengaussian">OpenGaussian</h1>
+<p><a
+target="_blank" rel="noopener" href="https://3d-aigc.github.io/OpenGaussian/">OpenGaussian</a>完成的任务是基于3D
+Gaussians来进行3D点级别的开放词汇理解。3D
+Gaussians下的词汇理解有两种text
+query策略，第一种方式将含有语义特征的Gaussians渲染成特征图，然后在特征图中进行文本相似度的查询，最终得到文本对应的结果（例如LangSplat）；第二种方式是每个Gaussian上具有一个语义特征，直接在点级别层面上进行文本相似度的查询，得到相关Gaussians，然后将这些Gaussians渲染成图片，得到文本对应的渲染结果。OpenGaussian关注的则是第二种方式。</p>
+<p>OpenGaussian认为，之前的方法(LEGaussian、LangSplat、...)等基于第一种query方式虽然能够达到较好的效果，但是不同对象Gaussian之间的特征缺乏区分性，并且同一对象内部一致性较低。论文将其归结为两个原因，第一个是特征表征能力不足，如果在每个Gaussian上附加较高维度的语义特征将会导致训练和渲染的低效率，因此相关方法会采取蒸馏、量化等方式进行降维，但是这不可避免地损害了特征等表示能力和区分性；第二个是2D-3D之间不准确的对应，对特征维度采取alpha混合，像素上的颜色是通过不透明度作为权重累积的，这可能会损害2D和3D之间的一一对应关系。</p>
+<p>针对这两个问题，OpenGaussian首先提出相关损失来获取区分性高的实例特征；进一步采用由粗到细的codebook来离散化实例特征，产生离散的3D实例簇；最后通过基于IoU和特征距离的关联方法来将高维无损的CLIP特征与3D
+Gaussian点相关联，从而实现开放词汇3D场景理解。</p>
+<h2 id="模型架构-7">模型架构</h2>
+<p>下面是OpenGaussian的完整Pipeline。</p>
+<img src="/2024/04/16/3D-Semantic-Gaussian%E7%9B%B8%E5%85%B3/image-20240617105457980.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="OpenGaussian Pipeline">
+<h3 id="d-consistency-preserving-instance-feature-learning">3D
+Consistency-Preserving Instance Feature Learning</h3>
+<p>首先，OpenGaussian为每个Gaussian引入一个低维度的实例特征<span
+class="math inline">\(f \in
+\mathbb{R}^6\)</span>，用于表征实例属性。需要注意的是，这个属性主要作用就是区分场景实例，其中并不包含开放词汇信息。论文采用SAM
+Mask来监督实例属性的训练，但是与相关方法不同，这里并不需要2D
+Mask跨帧之间的一致性，而是使用3D
+Gaussian的多视图全局一致性来约束实例特征。OpenGaussian的出发点是，来自同一对象的Gaussian渲染特征应该接近，而来自不同对象的Gaussian渲染特征应该相互远离。这一点是通过两种损失来完成的。</p>
+<p>具体来说，每个Gaussian上会附加一个实例特征<span
+class="math inline">\(f\in
+\mathbb{R}^6\)</span>，在给定视角下可以渲染出特征图<span
+class="math inline">\(M \in \mathbb{R}^{6\times H \times
+W}\)</span>；对于给定的训练视图，将其通过SAM得到一系列Mask，<span
+class="math inline">\(B_i \in \{0,1\}^{1\times H \times
+W}\)</span>表示得到的第<span
+class="math inline">\(i\)</span>个Mask。在Mask的基础上，我们可以计算出每个Mask的平均特征，即<span
+class="math inline">\(\bar{M} = (B_i \cdot M) / \sum B_i \in
+\mathbb{R}^6\)</span>。</p>
+<p>为了确保每个Mask内的特征接近其平均值（保证对象内部的一致性），论文引入Mask内平滑损失：
+<span class="math display">\[
+L_s = \sum_{i=1}^m \sum_{h=1}^H \sum_{w=1}^W B_{i,h,w} \cdot ||
+M_{:,h,w} - \bar{M_i} || ^2
+\]</span>
+为了促进不同实例之间的特征多样性，来增加Mask之间的平均特征距离，论文引入Mask间对比损失：
+<span class="math display">\[
+L_c = \frac{1}{m(m+1)} \sum_{i=1}^m \sum_{j=1,j\neq i}^m \frac{1}{||
+\bar{M_i} - \bar{M_j}||^2}
+\]</span>
+在这两种损失函数的支持下，我们可以训练出具有跨视图一致性的实例特征。</p>
+<h3 id="two-level-codebook-for-discretization">Two-Level Codebook for
+Discretization</h3>
+<p>尽管经过上面的步骤，我们的特征能够体现一定的实例区分性和一致性，但是由于特征图渲染过程中采用的是alpha混合，这会导致权重的累积，仍然可能会出现来自同一实例的Gaussian表现出不同的特征，来自不同实例的Gaussian却表现出相似的特征。为了改善这一问题，论文提出了两阶段的CodeBook来进行实例的离散化，确保来自同一实例的Gaussian具有<strong>相同</strong>的特征，而非仅仅是相似的特征。</p>
+<p>首先对于场景中的所有Gaussian上的实例特征<span class="math inline">\(F
+\in \mathbb{R}^{n\times 6}\)</span>，从中随机挑选<span
+class="math inline">\(k(=64)\)</span>个特征作为量化codebook <span
+class="math inline">\(C \in \mathbb{R}^{k\times
+6}\)</span>。有了Codebook，每个实例特征可以对应一个最近的codebook特征，所有实例特征<span
+class="math inline">\(F\)</span>就可以转化成索引向量<span
+class="math inline">\(I \in \mathbb{R}^{n \times
+1}\)</span>。在实际特征图渲染和损失计算的前向过程中，使用codebook <span
+class="math inline">\(C\)</span>和索引向量<span
+class="math inline">\(I\)</span>来计算，在反向梯度传播的时候，则更新原始的实例特征<span
+class="math inline">\(F\)</span>。然后迭代根据<span
+class="math inline">\(I\)</span>和<span
+class="math inline">\(F\)</span>来更新Codebook <span
+class="math inline">\(C\)</span>。Codebook实际上就对应的场景的离散化。</p>
+<p>这一阶段仅仅是初步的离散化，仍然不能完整地解决问题。一方面，由于遮挡和距离的存在，两个对象可能永远不会共享相同的视角，因此无法通过对比损失进行优化以确保它们的特征是不同的；另一方面，<span
+class="math inline">\(k=64\)</span>表示场景中仅区分64个对象，但是这仍然有些局限，不足以区分场景中所有对象，降低了实例特征的独特性。论文通过实验证明，单纯地提升<span
+class="math inline">\(k\)</span>的值并不能达到很好的结果，因此OpenGaussian进行下一阶段的离散化。</p>
+<p>具体来说，我们将实例特征<span
+class="math inline">\(F\)</span>与Gaussian的3D坐标<span
+class="math inline">\(X \in \mathbb{R}^{n\times
+3}\)</span>进行拼接进行Codebook的构建，从实现位置相关的聚类。然后在每个粗粒度的簇中再仅根据实例特征进一步进行离散化，整个过程可以表示为：
+<span class="math display">\[
+\left\{ \begin{array}{ll}
+[F\in \mathbb{R}^{n\times 6};X \in \mathbb{R}^{n\times 3}] \mapsto
+\{C_{coarse} \in \mathbb{R}^{k_1 \times (6+3)}, I_{coarse} \in \{1, ...,
+k_1\}^n \}, \quad coarse,k_1=64\\
+F\in \mathbb{R}^{n\times 6} \mapsto \{C_{fine} \in \mathbb{R}^{k_1\times
+k_2 \times 6}, I_{fine} \in \{1, ..., k_2\}^n\}, \quad fine,k_2 = 10\\
+\end{array} \right.
+\]</span>
+当然在这个步骤中，Gaussian的位置仅参与Codebook的构造，而不会参与优化，从而保留了预训练Gaussian模型的几何结构。</p>
+<p>Codebook构建过程，我们得到了更加独特的实例特征<span
+class="math inline">\(F\)</span>，这些特征可以作为更强的监督。经过Codebook构建阶段的实例特征我们称为pseudo
+GT feature，此时我们可以替换前面基于Mask的两类损失为更强的监督损失：
+<span class="math display">\[
+L_p = || M_p - M_c ||^1
+\]</span> 其中<span class="math inline">\(M_p\)</span>是由pesudo GT
+feature渲染得来的，而<span
+class="math inline">\(M_c\)</span>是由量化feature渲染得来的。</p>
+<h3
+id="instance-level-2d-3d-association-without-depth-test">Instance-Level
+2D-3D Association without Depth Test</h3>
+<p>经过上面的训练过程，我们已经可以为场景中的每个Gaussian学习一个实例特征，并且这个实例特征可以保证同一对象内相同，不同对象之间相距大。但是正如在开头所提到的，这种实例特征只用来区分场景实例，而不具有开放词汇相关特征。为了进一步实现更加自然的交互，则需要将3D
+Gaussian与语义特征进行关联。这种关联方式通常有两种，第一种是将CLIP等语义特征压缩或者提取到低维度来训练3D
+Gaussian语义场，但是压缩后的特征可能会模糊原始语义；第二种是使用相机内外参数来建立3D点到2D像素之间的关联，但是需要深度信息来进行遮挡测试。</p>
+<p>OpenGaussian提出了一种实例级别的3D-2D关联方法，该方法可以保留高维度无损的语义特征，同时避免基于深度的遮挡测试。具体来说，考虑一张输入视图，我们首先在给定视角下渲染出每个实例的实例特征图<span
+class="math inline">\(M_i \in \mathbb{R}^{6\times H \times
+W}\)</span>，其中<span
+class="math inline">\(i\)</span>表示量化阶段的索引，其范围为<span
+class="math inline">\((1,k_1\cdot
+k_2)\)</span>。同时利用SAM对该输入视图进行分割，得到多个Mask分割<span
+class="math inline">\(B_j \in \{0,1\}^{1\times H \times
+W}\)</span>。直观上，我们可以通过IoU来找到与实例相关联的Mask，但是考虑到遮挡关系，这种方式并不是总是生效，因此我们还使用特征距离来找到关联实例。对于SAM的每个Mask，我们利用前面的pseudo
+GT feature <span class="math inline">\(M_p\)</span>来填充，得到<span
+class="math inline">\(P_j \in \mathbb{R}^{6\times H \times
+W}\)</span>，额外考虑渲染出的实例特征和填充的Mask特征之间的距离，以此来解决遮挡等问题。具体评估相关性分数为：
+<span class="math display">\[
+S_{ij} = IoU(M_i, B_j) \cdot (1 - ||M_i -P_j||^1)
+\]</span>
+得分最高的Mask将被分配给对应的Instance，经过多视图的集成，每个Instance的Gaussian将被分配到对应的CLIP特征。</p>
+<h2 id="简单总结-7">简单总结</h2>
+<p>OpenGaussian关注的问题是基于3D
+Gaussian的点级别开放词汇理解。首先利用基于SAM
+Mask的两类损失来学习实例特征，希望能够做到mask内特征相近、mask之间特征分离；之后利用从粗到细的Codebook构建策略进一步提升实例特征的内部一致性以及相互之间的独特性；最后用一个基于IoU和特征距离的映射方式来得到无损的CLIP特征。</p>
+<p>OpenGaussian整个方法比较像是把基于点云的方法拿到了Gaussian中来使用，遵循点云聚类+特征映射的操作流程。</p>
 
                 
               </div>
