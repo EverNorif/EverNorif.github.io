@@ -24,7 +24,7 @@
 <meta property="og:description" content="Python中的标准日志模块是logging，利用相关配置，我们可以做到一系列日志操作。而loguru是一个第三方日志记录package，相比于原始的logging，它提供了更加简单的使用方式，同时提供许多高效的功能。本篇主要介绍loguru的使用方法，以及它相对于Python标准日志模块logging的方便之处。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-28T05:37:57.000Z">
-<meta property="article:modified_time" content="2023-10-28T05:40:01.197Z">
+<meta property="article:modified_time" content="2024-06-27T06:22:38.991Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="logging">
@@ -270,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.1k 字
+          1.2k 字
         
       </span>
     
@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          10 分钟
+          11 分钟
         
       </span>
     
@@ -329,7 +329,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2023-10-28T13:40:01+08:00
+                    本文最后更新于：2024-06-27T14:22:38+08:00
                   
                   
 
@@ -360,6 +360,11 @@ simple</a>。在使用之前，需要使用pip进行该package的安装。</p>
 <p>输出如下：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cmd">[logger2]<span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">13</span>:<span class="hljs-number">09</span>:<span class="hljs-number">36</span> | WARNING | loguru-test:&lt;module&gt;:<span class="hljs-number">20</span> - warning message<br>[logger2]<span class="hljs-number">2023</span>-<span class="hljs-number">10</span>-<span class="hljs-number">28</span> <span class="hljs-number">13</span>:<span class="hljs-number">09</span>:<span class="hljs-number">36</span> | ERROR | loguru-test:&lt;module&gt;:<span class="hljs-number">21</span> - error message<br></code></pre></td></tr></table></figure>
 <p>注意上面我们使用f-string的方式来完成格式信息的配置，相比于logging的配置方式更加方便。</p>
+<blockquote>
+<p>如果我们想要修改默认的logger的模式，那么就需要先调用<code>logger.remove()</code>，然后再使用add方法新增logger日志处理逻辑，即<code>logger.add(sys.stdout, level='INFO')</code>。</p>
+<p>当然这实际上是移除了默认的logger日志处理逻辑(stdout,
+level='DEBUG')，然后新增了想要的逻辑。</p>
+</blockquote>
 <p>同样，我们可以在处理逻辑中配置将日志记录到文件中(可以看到其中可以配置对应时间作为日志文件名称)：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">logger.add(<br>    <span class="hljs-string">&#x27;./my_log_&#123;time:YYYY-MM-DD HH:mm:ss&#125;.log&#x27;</span><br>)<br></code></pre></td></tr></table></figure>
 <p>在将日志记录到文件的时候，还可能会进行其他的配置，例如rotation、retention、compression等，这些操作都可以通过非常简单的配置项来指定。详细使用可以参考<a
