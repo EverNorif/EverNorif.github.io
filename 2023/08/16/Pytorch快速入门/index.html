@@ -24,7 +24,7 @@
 <meta property="og:description" content="Pytorch是目前非常流行的深度学习框架。本篇主要参考官方quick start完成Pytroch的快速入门。主要介绍了Pytorch使用的基础流程、Tensor的基础使用、Dataset&#x2F;DataLoader概念和Model构建等。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-16T13:17:34.000Z">
-<meta property="article:modified_time" content="2023-09-20T00:16:02.914Z">
+<meta property="article:modified_time" content="2024-07-06T03:39:23.250Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Pytorch">
@@ -270,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.3k 字
+          4.5k 字
         
       </span>
     
@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          36 分钟
+          38 分钟
         
       </span>
     
@@ -329,7 +329,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2023-09-20T08:16:02+08:00
+                    本文最后更新于：2024-07-06T11:39:23+08:00
                   
                   
 
@@ -484,6 +484,9 @@ target="_blank" rel="noopener" href="https://pytorch.org/vision/stable/transform
 <h1 id="model-save-and-load">Model Save and Load</h1>
 <p>模型的保存和加载分为两种方式。第一种方式是仅保存模型的参数权重，在加载的时候需要先创建出具有相同结构的Model实例，然后再将对应参数加载到模型当中；第二种情况是直接将整个模型进行保存，包括Model的结构和参数，在使用的时候也是直接加载即可。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 方式一: save model params</span><br><span class="hljs-comment"># save</span><br>torch.save(model_save.state_dict, <span class="hljs-string">&quot;xxx.pth&quot;</span>)<br><span class="hljs-comment"># load</span><br>model_load = xxx <span class="hljs-comment"># model define 注意model使用的device要和保存的时候一致</span><br>model_load.load_state_dict(torch.load(<span class="hljs-string">&quot;xxx.pth&quot;</span>))<br><br><span class="hljs-comment"># 方式二: save model</span><br><span class="hljs-comment"># save</span><br>torch.save(model_save, <span class="hljs-string">&quot;xxx.pth&quot;</span>)<br><span class="hljs-comment"># load</span><br>model_load = torch.load(<span class="hljs-string">&quot;xxx.pth&quot;</span>)<br></code></pre></td></tr></table></figure>
+<h1 id="using-device">Using Device</h1>
+<p>在使用Pytorch框架的时候，我们通常会需要指定使用哪个或者哪些设备。如果在统一在代码中指定device，那么在许多地方都会用到，并且要做到统一管理较为麻烦，可能在某个地方忽略了，导致设备不统一。一种更加便捷的方式是，在书写代码的时候，要使用gpu的地方默认<code>.cuda()</code>，即默认使用<code>.device("cuda")</code>。然后在运行代码的时候，利用环境变量<code>CUDA_VISIBLE_DEVICES</code>来指定当前进程可见的GPU。它的原理是，假如设置了CUDA_VISIBLE_DEVICES=3,4,5，那么后续的进程就会将实际的3，4，5号GPU看作是0，1，2号GPU。这样我们就可以达到控制使用某个或者某些GPU的目的。例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">CUDA_VISIBLE_DEVICES=<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span> python xxx_using_multi_gpu.py<br>CUDA_VISIBLE_DEVICES=<span class="hljs-number">7</span> python xxx_using_single_gpu.py<br></code></pre></td></tr></table></figure>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
 <li><a

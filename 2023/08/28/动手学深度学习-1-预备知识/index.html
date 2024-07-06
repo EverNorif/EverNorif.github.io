@@ -25,8 +25,9 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/%E8%AE%A1%E7%AE%97%E5%9B%BE.png">
 <meta property="og:image" content="http://example.com/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/%E5%8F%8D%E5%90%91%E7%B4%AF%E7%A7%AF.png">
+<meta property="og:image" content="http://example.com/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/image-20240706120437617.png">
 <meta property="article:published_time" content="2023-08-28T06:56:33.000Z">
-<meta property="article:modified_time" content="2023-08-28T07:00:34.947Z">
+<meta property="article:modified_time" content="2024-07-06T05:49:33.136Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary_large_image">
@@ -272,7 +273,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.8k 字
+          4.8k 字
         
       </span>
     
@@ -284,7 +285,7 @@
         
         
           <!-- compatible with older versions-->
-          32 分钟
+          41 分钟
         
       </span>
     
@@ -331,7 +332,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2023-08-28T15:00:34+08:00
+                    本文最后更新于：2024-07-06T13:49:33+08:00
                   
                   
 
@@ -814,12 +815,70 @@ class="math inline">\(y\)</span>进行sum，之后再进行反向传播。这样
 <p>并且即使构建函数的计算图需要用过Python控制流，仍然可以计算得到的变量的梯度。这也是隐式构造的优势，因为它会存储梯度计算的计算图，再次计算时执行反向过程就可以。</p>
 <p>同时Pytroch还支持将某些计算移动到计算图之外，即不计算这部分的梯度。这种方式可以用于将神经网络的一些参数进行固定：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 后可用于用于将神经网络的一些参数固定住</span><br>x.grad.zero_()<br>y = x * x<br>u = y.detach() <span class="hljs-comment"># 把y当作常数</span><br>z = u * x<br><br>z.<span class="hljs-built_in">sum</span>().backward()<br>x.grad == x * x  <span class="hljs-comment"># 如果没有y.detach() 此处应该是x.grad = 3 * x * x</span><br></code></pre></td></tr></table></figure>
+<h1 id="cudagpu以及相关概念厘清">CUDA、GPU以及相关概念厘清</h1>
+<h2 id="相关概念">相关概念</h2>
+<p>在深度学习相关框架中，我们基本避不开GPU显卡的使用，但是在使用的过程中，经常会遇到例如显卡驱动、Cuda
+Driver、Cuda、cuda-toolkit、cudann等等相关概念。下面我们就对这些概念进行一个统一的说明：</p>
+<ul>
+<li>显卡：可以理解为我们通常所说的GPU，由于NVIDIA公司的GPU芯片占据了大部分市场份额，深度学习中使用的几乎都是NVIDIA的GPU</li>
+<li>显卡驱动：通常指的是NVIDIA
+Driver，GPU是硬件，而它则是驱动软件，表现为一个经典nvidia绿色，可以登陆账号的软件。</li>
+<li>CUDA：全称为Compute Unified Device
+Architecture，它是一个并行计算平台和编程模型，能够使得使用GPU进行通用计算变得简单和优雅。它允许开发者使用NVIDIA
+GPU进行通用计算，同时提供了一个扩展编程接口，使开发可以直接在GPU上编写代码。</li>
+</ul>
+<img src="/2023/08/28/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/image-20240706120437617.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="CUDA架构">
+<ul>
+<li>cudnn：nvidia提供的专门为深度学习计算而设计的软件库，里面提供了很多专门的计算函数，例如卷积操作等，用于对深度学习网络进行加速
+<ul>
+<li>如上图所示，cudnn属于library级别。还有许多其他的软件库和中间件，包括实现C++
+STL的Thrust、实现GPU版本<a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/BLAS">BLAS</a>的cublas(高性能线性代数计算)、实现快速傅立叶变换的cuFFT、实现稀疏矩阵运算操作的cuSparse等</li>
+</ul></li>
+<li>CUDA Toolkit：CUDA
+Toolkit是nvidia提供的开发工具包，也就是我们常说的带版本的cuda(cuda11.7、cuda11.8、cuda12.1...)。它包括编译器、运行时库、CUDA核心核心、API、样例代码和开发工具等，帮助开发者利用CUDA技术来编写应用程序：
+<ul>
+<li>Compiler：CUDA-C和CUDA-C++的编译器<code>nvcc</code>，它位于<code>bin/</code>目录下。nvcc之于cuda程序就类似于gcc之于c程序，g++之于c++程序。</li>
+<li>Tools：提供一些类似profiler、debuggers等的工具，这些工具也可以从<code>bin/</code>目录下获取</li>
+<li>Libraries：提供相关的科学库和程序库文件，可以在<code>lib/</code>目录下找到，头文件可以在<code>include/</code>目录中找到。实际上这些库文件就是一系列静态链接库和动态链接库，头文件就是一系列<code>.h</code>文件
+<ul>
+<li><strong>cudart</strong>: CUDA Runtime</li>
+<li><strong>cudadevrt</strong>: CUDA device runtime</li>
+<li><strong>cupti</strong>: CUDA profiling tools interface</li>
+<li><strong>nvml</strong>: NVIDIA management library</li>
+<li><strong>nvrtc</strong>: CUDA runtime compilation</li>
+<li><strong>cublas</strong>: BLAS (Basic Linear Algebra
+Subprograms，基础线性代数程序集)</li>
+<li><strong>cublas_device</strong>: BLAS kernel interface</li>
+</ul></li>
+<li>CUDA Samples：演示如何使用各种CUDA和Library
+API的代码示例，在<code>samples/</code>目录中存放</li>
+</ul></li>
+<li>CUDA Driver：驱动程序本身是操作系统与硬件之间的接口，而CUDA
+Driver是操作系统与NVIDIA
+GPU之间的接口，提供了对GPU硬件的低级别控制。它需要独立安装，负责管理GPU资源和执行CUDA代码的低级别操作</li>
+<li>CUDA Runtime：它是一个高层API，位于CUDA Driver之上。它包含在CUDA
+Toolkit中，通常会与特定版本的CUDA一起安装。开发者编写的CUDA程序主要都是通过高级API
+CUDA Runtime来和GPU进行交互，而不是直接使用CUDA Driver</li>
+</ul>
+<h2 id="cuda安装">CUDA安装</h2>
+<p>假设我们已经有了显卡，想利用它进行深度学习程序的运行，那么就需要安装CUDA，也就是上面CUDA
+Toolkit的安装。安装只需要进入官方网站<a
+target="_blank" rel="noopener" href="https://developer.nvidia.com/cuda-downloads">CUDA Toolkit
+Downloads</a>根据操作系统等信息来选择下载相关的文件(例如<code>.run</code>)，之后运行文件即可。根据引导指示安装完成之后，需要修改<code>.bashrc</code>配置文件，主要是为了将CUDA
+Toolkit的bin目录和库目录lib加入对应的环境变量中，类似于：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">export</span> PATH=<span class="hljs-string">&quot;/usr/local/cuda-11.8/bin:<span class="hljs-variable">$PATH</span>&quot;</span><br><span class="hljs-built_in">export</span> LD_LIBRARY_PATH=<span class="hljs-string">&quot;/usr/local/cuda-11.8/lib64:<span class="hljs-variable">$LD_LIBRARY_PATH</span>&quot;</span><br></code></pre></td></tr></table></figure>
+<p>这里的环境变量<code>LD_LIBRARY_PATH</code>表示程序加载运行期间查找动态链接库时，除了系统默认路径之外的其他路径。由于CUDA的动态链接库存放在<code>lib/</code>(or
+<code>lib64/</code>)目录下，要想在运行的时候要找到这些动态链接库，就需要将其添加到对应的环境变量中。</p>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
 <li><a
 target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/263777564">矩阵求导--本质篇</a></li>
 <li><a
 target="_blank" rel="noopener" href="http://zh.d2l.ai/chapter_preliminaries/autograd.html">动手学深度学习-预备知识-自动微分</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/marsggbo/p/11838823.html">显卡，显卡驱动,nvcc,
+cuda driver,cudatoolkit,cudnn到底是什么？博客园</a></li>
 </ol>
 
                 
