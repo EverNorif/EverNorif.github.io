@@ -24,7 +24,7 @@
 <meta property="og:description" content="PyTorch Lightning是一个轻量级的PyTorch深度学习框架，旨在简化和规范深度学习模型的训练过程。它提供了一组模块和接口，使用户能够更容易地组织和训练模型，同时减少样板代码的数量。本篇主要介绍了Pytorch lightning的基础使用方式和流程、核心类LightningModule和Trainer、数据封装DataModule、以及其他相关操作。同时还介绍了一个可供参考和复用的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-01-19T07:14:23.000Z">
-<meta property="article:modified_time" content="2024-04-26T10:38:42.926Z">
+<meta property="article:modified_time" content="2024-07-06T13:41:01.868Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Pytorch">
 <meta property="article:tag" content="Pytorch Lightning">
@@ -270,7 +270,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.6k 字
+          4.8k 字
         
       </span>
     
@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          39 分钟
+          41 分钟
         
       </span>
     
@@ -329,7 +329,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-04-26T18:38:42+08:00
+                    本文最后更新于：2024-07-06T21:41:01+08:00
                   
                   
 
@@ -454,6 +454,10 @@ checkpoint来恢复运行状态，代码如下：</p>
 Lightning灵活性的体现。详细的函数说明和流程说明可以查看官方文档<a
 target="_blank" rel="noopener" href="https://lightning.ai/docs/pytorch/stable/common/lightning_module.html#hooks">LightningModule|Hooks
 — PyTorch Lightning documentation</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># runs on every device: devices can be GPUs, TPUs, ...</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">fit</span>(<span class="hljs-params">self</span>):<br>    configure_callbacks()<br><br>    <span class="hljs-keyword">if</span> local_rank == <span class="hljs-number">0</span>:<br>        prepare_data()<br><br>    setup(<span class="hljs-string">&quot;fit&quot;</span>)<br>    configure_model()<br>    configure_optimizers()<br><br>    on_fit_start()<br><br>    <span class="hljs-comment"># the sanity check runs here</span><br><br>    on_train_start()<br>    <span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> epochs:<br>        fit_loop()<br>    on_train_end()<br><br>    on_fit_end()<br>    teardown(<span class="hljs-string">&quot;fit&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">fit_loop</span>():<br>    torch.set_grad_enabled(<span class="hljs-literal">True</span>)<br><br>    on_train_epoch_start()<br><br>    <span class="hljs-keyword">for</span> batch <span class="hljs-keyword">in</span> train_dataloader():<br>        on_train_batch_start()<br><br>        on_before_batch_transfer()<br>        transfer_batch_to_device()<br>        on_after_batch_transfer()<br><br>        out = training_step()<br><br>        on_before_zero_grad()<br>        optimizer_zero_grad()<br><br>        on_before_backward()<br>        backward()<br>        on_after_backward()<br><br>        on_before_optimizer_step()<br>        configure_gradient_clipping()<br>        optimizer_step()<br><br>        on_train_batch_end(out, batch, batch_idx)<br><br>        <span class="hljs-keyword">if</span> should_check_val:<br>            val_loop()<br><br>    on_train_epoch_end()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">val_loop</span>():<br>    on_validation_model_eval()  <span class="hljs-comment"># calls `model.eval()`</span><br>    torch.set_grad_enabled(<span class="hljs-literal">False</span>)<br><br>    on_validation_start()<br>    on_validation_epoch_start()<br><br>    <span class="hljs-keyword">for</span> batch_idx, batch <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(val_dataloader()):<br>        on_validation_batch_start(batch, batch_idx)<br><br>        batch = on_before_batch_transfer(batch)<br>        batch = transfer_batch_to_device(batch)<br>        batch = on_after_batch_transfer(batch)<br><br>        out = validation_step(batch, batch_idx)<br><br>        on_validation_batch_end(out, batch, batch_idx)<br><br>    on_validation_epoch_end()<br>    on_validation_end()<br><br>    <span class="hljs-comment"># set up for train</span><br>    on_validation_model_train()  <span class="hljs-comment"># calls `model.train()`</span><br>    torch.set_grad_enabled(<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+<div class="note note-primary">
+            <p>fit()流程是LightningModule的核心，它将模型训练的全流程进行了抽象，并且将每个抽象对应的实现都作为LightningModule的Hooks。PytorchLightning在调用fit的时候，背后就是按照上述流程进行执行的，其中每个抽象函数将会替换为具体的实现。</p><p>可以说这个抽象流程就是理解PytorchLightning的核心，而对应的抽象方法在用到的时候再查询相关文档即可。</p>
+          </div>
 <h1 id="trainer">Trainer</h1>
 <p>Trainer是Pytorch
 Lightning中另一大核心类。Trainer中提供了许多模版流程，包括训练、验证、测试、推理等，这些流程是对应操作的抽象组织，在真实调用的时候，会使用在LightningModule中实际定义的Hooks函数。Trainer的好处在于它帮助我们封装了许多繁琐操作，这些操作与模型无关，例如在不同阶段开启和禁用梯度、运行训练，验证和测试DataLoader、将数据放置在正确的设备上等等。另外，Trainer还允许用户定义不同的callback函数，而Trainer会自动在对应的时机执行对应的callback，类似于事件绑定。Trainer中常用的参数可以在官方文档<a
@@ -536,8 +540,8 @@ target="_blank" rel="noopener" href="https://lightning.ai/docs/pytorch/stable/ex
 <h1 id="project-template">Project Template</h1>
 <p>虽然Pytorch
 Lightning的目的就是在于能够让深度学习代码复用和管理变得简单，但是如果没有很好的使用规范，同样会陷入管理困难，重用复杂的困境。尤其是Pytorch
-Lightning在Pytroch的基础上引入了更多的抽象和封装，这就像一柄双刃剑，如果不能很好地组织和管理，反而会带来更多的复杂度。这里介绍一个结合了Hydra和Pytorch
-Lightning的项目框架：<a
+Lightning在Pytroch的基础上引入了更多的抽象和封装，这就像一柄双刃剑，如果不能很好地组织和管理，反而会带来更多的复杂度。</p>
+<p>这里介绍一个结合了Hydra和Pytorch Lightning的项目框架：<a
 target="_blank" rel="noopener" href="https://github.com/ashleve/lightning-hydra-template">ashleve/lightning-hydra-template:
 PyTorch Lightning + Hydra. A very user-friendly template for ML
 experimentation. ⚡🔥⚡</a></p>
