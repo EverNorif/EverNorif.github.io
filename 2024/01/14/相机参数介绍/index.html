@@ -23,12 +23,14 @@
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="在3D相关的模型当中，我们通常会使用到相机参数作为参数，其中相机参数又可以分为相机外参和相机内参。本篇主要介绍了相机参数的概念，包括相机外参和相机内参、外参矩阵、内参矩阵、投影矩阵等。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/image-20240718164218999.png">
 <meta property="article:published_time" content="2024-01-14T09:26:57.000Z">
-<meta property="article:modified_time" content="2024-07-09T09:46:35.286Z">
+<meta property="article:modified_time" content="2024-07-18T09:09:06.023Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="相机">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/image-20240718164218999.png">
   
   
   
@@ -270,7 +272,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.1k 字
+          2.6k 字
         
       </span>
     
@@ -282,7 +284,7 @@
         
         
           <!-- compatible with older versions-->
-          18 分钟
+          22 分钟
         
       </span>
     
@@ -329,7 +331,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-07-09T17:46:35+08:00
+                    本文最后更新于：2024-07-18T17:09:06+08:00
                   
                   
 
@@ -529,6 +531,37 @@ z\\
 \]</span> 当然，由于我们已经知道了相机坐标系中的<span
 class="math inline">\((x, y,
 z)\)</span>，那么也可以在转化为齐次坐标之后，利用c2w矩阵，计算出齐次坐标下的世界坐标。</p>
+<h1 id="常用坐标系">常用坐标系</h1>
+<p>下面介绍一些常用的坐标系，实际上就是明确成像平面的坐标系，包括OpenCV坐标系和OpenGL坐标系。</p>
+<p>人眼向图像中看去，其中：</p>
+<ul>
+<li>OpenCV坐标系：z轴指向前方，x轴指向右方，y轴指向底部</li>
+<li>OpenGL坐标系：z轴指向自己，x轴指向右方，y轴指向上方</li>
+</ul>
+<p>OpenCV和OpenGL坐标系相互转化的时候相当于z轴和y轴需要反转。</p>
+<img src="/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/image-20240718164218999.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="OpenCV&amp;OpenGL坐标系">
+<blockquote>
+<p>NerfStudio中采用的实际上是OpenGL坐标系。</p>
+</blockquote>
+<h1 id="畸变参数">畸变参数</h1>
+<p>上面我们考虑的是标准的成像模型，但是在实际操作过程中，可能会发生畸变。在相机标定中，使用畸变参数来描述这种畸变。</p>
+<p>畸变分为径向畸变和切向畸变，径向畸变可以使用畸变系数<span
+class="math inline">\(k_1, k_2,
+k_3\)</span>来描述(一、二、三阶径向畸变系数)，切向畸变可以使用畸变系数<span
+class="math inline">\(p_1,p_2\)</span>来描述(一、二阶切向畸变系数)。</p>
+<p>对于拍摄的图像点<span
+class="math inline">\((x,y)\)</span>，有了畸变系数之后，我们就可以对它进行校正，得到校正后的点<span
+class="math inline">\((x&#39;,y&#39;)\)</span>。计算公式如下： <span
+class="math display">\[
+\begin{aligned}
+\text{径向畸变模型：} &amp; r = \sqrt{x^2+y^2}\\
+&amp; x_d = x (1+k_1r^2+k_2r^4 + k_3r^6) \\
+&amp; y_d = y (1+k_1r^2+k_2r^4+k_3r^6) \\
+\text{切向畸变模型：} &amp; x&#39; = x_d + [2p_1xy+p_2(r^2+2x^2)] \\
+&amp; y&#39; = y_d + [p_1(r^2+2y^2)+2p_2xy]
+\end{aligned}
+\]</span> 当然在OpenCV中可以直接调用相关方法来进行畸变校正：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br><span class="hljs-comment"># 读取畸变图像</span><br>img = cv2.imread(<span class="hljs-string">&#x27;distorted_image.jpg&#x27;</span>)<br><br><span class="hljs-comment"># 相机内参矩阵</span><br>K = np.array([[fx, <span class="hljs-number">0</span>, cx],<br>              [<span class="hljs-number">0</span>, fy, cy],<br>              [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]])<br><br><span class="hljs-comment"># 畸变参数</span><br>dist_coeffs = np.array([k1, k2, p1, p2, k3])<br><br><span class="hljs-comment"># 进行畸变校正</span><br>h, w = img.shape[:<span class="hljs-number">2</span>]<br>new_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(K, dist_coeffs, (w, h), <span class="hljs-number">1</span>, (w, h))<br><br><span class="hljs-comment"># 去畸变</span><br>undistorted_img = cv2.undistort(img, K, dist_coeffs, <span class="hljs-literal">None</span>, new_camera_matrix)<br><br><span class="hljs-comment"># 显示结果</span><br>cv2.imshow(<span class="hljs-string">&#x27;Undistorted Image&#x27;</span>, undistorted_img)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br></code></pre></td></tr></table></figure>
 <h1 id="参考文章">参考文章</h1>
 <ol type="1">
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/642715876">相机位姿(camera
@@ -544,6 +577,12 @@ target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/374269239">立
 <li><a
 target="_blank" rel="noopener" href="https://www.jianshu.com/p/4566a1281066">像素坐标转世界坐标的计算 -
 简书</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/Todd-Qi/p/16770278.html">位姿估计(三)：不同坐标系之间的转换
+- 达可奈特 - 博客园</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html">OpenCV:
+Camera Calibration and 3D Reconstruction</a></li>
 </ol>
 
                 
