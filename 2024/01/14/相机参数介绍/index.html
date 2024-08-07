@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/image-20240718164218999.png">
 <meta property="article:published_time" content="2024-01-14T09:26:57.000Z">
-<meta property="article:modified_time" content="2024-07-18T09:09:06.023Z">
+<meta property="article:modified_time" content="2024-08-07T12:38:40.968Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="相机">
@@ -272,7 +272,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.6k 字
+          2.7k 字
         
       </span>
     
@@ -284,7 +284,7 @@
         
         
           <!-- compatible with older versions-->
-          22 分钟
+          23 分钟
         
       </span>
     
@@ -331,7 +331,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-07-18T17:09:06+08:00
+                    本文最后更新于：2024-08-07T20:38:40+08:00
                   
                   
 
@@ -532,7 +532,10 @@ z\\
 class="math inline">\((x, y,
 z)\)</span>，那么也可以在转化为齐次坐标之后，利用c2w矩阵，计算出齐次坐标下的世界坐标。</p>
 <h1 id="常用坐标系">常用坐标系</h1>
-<p>下面介绍一些常用的坐标系，实际上就是明确成像平面的坐标系，包括OpenCV坐标系和OpenGL坐标系。</p>
+<p>下面介绍一些常用的<strong>相机</strong>坐标系，实际上就是明确成像平面的坐标系，包括OpenCV坐标系和OpenGL坐标系。</p>
+<blockquote>
+<p>注意这些都是相机坐标系。</p>
+</blockquote>
 <p>人眼向图像中看去，其中：</p>
 <ul>
 <li>OpenCV坐标系：z轴指向前方，x轴指向右方，y轴指向底部</li>
@@ -541,8 +544,19 @@ z)\)</span>，那么也可以在转化为齐次坐标之后，利用c2w矩阵，
 <p>OpenCV和OpenGL坐标系相互转化的时候相当于z轴和y轴需要反转。</p>
 <img src="/2024/01/14/%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/image-20240718164218999.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="OpenCV&amp;OpenGL坐标系">
 <blockquote>
-<p>NerfStudio中采用的实际上是OpenGL坐标系。</p>
+<ul>
+<li>NerfStudio中采用的相机坐标系是OpenGL坐标系。</li>
+<li>Colmap中采用的相机坐标系是OpenCV坐标系。</li>
+</ul>
 </blockquote>
+<p>考虑在OpenCV相机坐标系下，我们有<span
+class="math inline">\(c2w_{opencv}\)</span>；如果使用OpenGL相机坐标系描述，对应有<span
+class="math inline">\(c2w_{opengl}\)</span>，那么我们有，实际上就是YZ轴的反转：
+<span class="math display">\[
+c2w_{opencv}[0:3, 1:3] * -1 = c2w_{opengl} [0:3, 1:3]
+\]</span></p>
+<p>进行转换的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># change from OpenGL/Blender camera axes (Y up, Z back) to COLMAP (Y down, Z forward)</span><br>c2w[:<span class="hljs-number">3</span>, <span class="hljs-number">1</span>:<span class="hljs-number">3</span>] *= -<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
 <h1 id="畸变参数">畸变参数</h1>
 <p>上面我们考虑的是标准的成像模型，但是在实际操作过程中，可能会发生畸变。在相机标定中，使用畸变参数来描述这种畸变。</p>
 <p>畸变分为径向畸变和切向畸变，径向畸变可以使用畸变系数<span
