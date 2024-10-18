@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2023/02/04/Git%E5%9F%BA%E7%A1%80/Git%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
 <meta property="article:published_time" content="2023-02-04T05:49:23.000Z">
-<meta property="article:modified_time" content="2023-04-03T13:05:40.000Z">
+<meta property="article:modified_time" content="2024-10-18T09:22:20.822Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="git">
 <meta name="twitter:card" content="summary_large_image">
@@ -271,7 +271,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.1k 字
+          3.6k 字
         
       </span>
     
@@ -283,7 +283,7 @@
         
         
           <!-- compatible with older versions-->
-          27 分钟
+          31 分钟
         
       </span>
     
@@ -330,7 +330,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2023-04-03T21:05:40+08:00
+                    本文最后更新于：2024-10-18T17:22:20+08:00
                   
                   
 
@@ -422,6 +422,24 @@ fix</li>
 <p>Trunk Based
 Development是另外一种分支管理的方式。这种分支管理将main分支看作开发分支和发布分支，具体来说，每次进行功能开发，都是从main分支上生成的，开发完成之后Feature也都直接合并到main分支当中。每次发布也都是发布main分支。这种分支管理方式的风格更加快速，适合持续交付和持续集成。由于发布的是main分支，因此需要始终保证main分支能够随时release，这就要求Feature开发的时候，在每次merge之前都能够保证这次的merge能够release。这种保证通常是通过自动测试和构建工具提供的，在提出Pull
 Request之后，就能自动对代码进行测试和构建，提供一份测试报告，包括是否通过，覆盖率等。这样快速的开发方式也能=能够保证每次进行代码review的时候不需要大规模的进行。不过核心点也是需要保证main分支上的代码能够随时release。</p>
+<h1 id="git子模块">Git子模块</h1>
+<p>通常，如果一个项目的运行需要依赖其他的项目，我们会用gitsubmodule来组织这种关系。在配置的Git子模块后，在Github中表现出来就是一个链接，这个链接会对应到一个仓库以及对应的HEAD。</p>
+<p>默认git submodule
+update并不会将submodule切到任何branch，所以，默认下submodule的HEAD是处于游离状态的(detached
+HEAD state)。所以在修改前，记得一定要用git checkout
+master将当前的submodule分支切换到master，然后才能做修改和提交。</p>
+<h2 id="gitsubmodule操作">gitsubmodule操作</h2>
+<h3 id="初始化子模块">初始化子模块</h3>
+<p>如果第一次clone包含子模块的仓库，首先需要初始化并更新子模块：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone &lt;主仓库地址&gt;<br>cd &lt;仓库目录&gt;<br>git submodule update --init --recursive<br></code></pre></td></tr></table></figure>
+<h3 id="添加子模块">添加子模块</h3>
+<p>添加新的子模块：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">git submodule add ***.git 目录名<br></code></pre></td></tr></table></figure>
+<h3 id="更新子模块">更新子模块</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">更新全部的子模块</span><br>git submodule update --recursive --remote<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">更新某个子模块</span><br>git submodule update --remote 目录名<br></code></pre></td></tr></table></figure>
+<h3 id="删除子模块">删除子模块</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">删除子模块目录及源码</span><br>rm -rf 子模块目录<br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除项目目录下.gitmodules文件中子模块相关条目</span><br>vim .gitmodules<br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除配置项中子模块相关目录</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除模块下的子模块目录，每个子模块对应一个目录，注意只删除对应的子模块目录即可</span><br>vim .git/config<br>rm .git/module/子模块名<br><br>git rm --cached 子模块名称<br></code></pre></td></tr></table></figure>
+<p>需要注意的是，每次对子模块的修改，反应到主目录中都会对应一个commit信息的修改，因此如果我们修改了子模块，除了提交子模块的修改，还需要提交主目录中对应子模块的commit变化。</p>
 <h1 id="常用解决方案">常用解决方案</h1>
 <h2 id="在mac中忽略.ds_store文件">在Mac中忽略.DS_Store文件</h2>
 <p>在Mac下的每个目录中，都会有一个<code>.DS_Store</code>文件。该文件是用来给Mac存储文件夹的显示信息的，其中包含了一些为系统所需要的元数据。但是这个文件通常不是一个项目必备的，也就不需要将其提交到Git中。在Git中忽略某些文件可以使用<code>.gitignore</code>，我们也可以通过在该文件中添加如下内容表示忽略.DS_Store文件，其中<code>**/</code>表示匹配所有的文件夹</p>
@@ -441,6 +459,9 @@ Request之后，就能自动对代码进行测试和构建，提供一份测试�
 <p>为了完成全局配置，我们需要首先创建一个文件<code>~/.gitignore_global</code>，然后在其中添加和上面相同的内容，然后对Git进行全局设置，让其忽略<code>.gitignore_global</code>中的所有文件：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">git config --global core.excludesfile ~/.gitignore_global<br></code></pre></td></tr></table></figure>
 <p>这样就将配置设置到了全局，而不需要每个项目都设置一遍了。</p>
+<h2 id="忽略文件权限变更">忽略文件权限变更</h2>
+<p>在默认情况下，文件权限的变更也会被记录在Git中，不过我们可以通过如下设置进行忽略：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">git config core.filemode false<br><br>git submodule foreach --recursive git config core.filemode false # 每个子模块都忽略<br></code></pre></td></tr></table></figure>
 <h1 id="参考资料">参考资料</h1>
 <ol type="1">
 <li><a
@@ -453,6 +474,9 @@ target="_blank" rel="noopener" href="https://orianna-zzo.github.io/sci-tech/2018
 target="_blank" rel="noopener" href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">gitflow-workflow</a></li>
 <li><a
 target="_blank" rel="noopener" href="https://www.atlassian.com/continuous-delivery/continuous-integration/trunk-based-development">trunk-based-development</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903918376321038">git --
+子模块的配置与使用配置完子模块后，可以在一个大项目中管理很多嵌套的git子项目，当然也可以管理非git子模
+- 掘金</a></li>
 </ol>
 
                 

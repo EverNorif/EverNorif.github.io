@@ -29,11 +29,11 @@
 <meta property="og:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240311140343008.png">
 <meta property="og:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305182303917.png">
 <meta property="article:published_time" content="2024-03-12T05:23:14.000Z">
-<meta property="article:modified_time" content="2024-08-14T08:42:50.912Z">
+<meta property="article:modified_time" content="2024-09-29T07:16:39.214Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
-<meta property="article:tag" content="论文笔记">
 <meta property="article:tag" content="3D Gaussian">
+<meta property="article:tag" content="论文笔记">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/2024/03/12/3D-Gaussian%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E7%BB%BC%E8%BF%B0/image-20240305132309324.png">
   
@@ -336,7 +336,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-08-14T16:42:50+08:00
+                    本文最后更新于：2024-09-29T15:16:39+08:00
                   
                   
 
@@ -468,7 +468,7 @@ class="math inline">\(16 \times 16\)</span>​
 pixel。对于每个patch，首先会根据视锥体来保留相关Gaussian(具体来说，我们只保留与视锥体相交的置信区间大于99%的Gaussian)，然后我们就可以得到有哪些Gaussian覆盖了每个Patch。由于一个Gaussian可能会覆盖多个patch，因此在过程中会涉及到Gaussian的复制，生成Gaussian的副本。最终，所有的Gaussian(包含复制的Gaussian)会被分配一个patch相关的id标识符。结合patch
 id以及深度，就可以对每个patch对应的所有Gaussian进行深度排序。</p>
 <p>每个Patch和像素的渲染都是独立发生的，这使得过程非常适合并行化。具体来说，3D
-Gaussian的项目对将该过程在GPU上进行优化，由GPU的Block来执行每个Patch的渲染，同时由Block中的每个Thread来执行每个Pixel的渲染。由于每个Block具有共享内存，这使得整个过程会非常搞笑。对于每个像素(每个Thread)，当透明度<span
+Gaussian的项目对将该过程在GPU上进行优化，由GPU的Block来执行每个Patch的渲染，同时由Block中的每个Thread来执行每个Pixel的渲染。由于每个Block具有共享内存，这使得整个过程会非常高效。对于每个像素(每个Thread)，当透明度<span
 class="math inline">\(\alpha\)</span>达到1的时候，则停止渲染。</p>
 <h3 id="其他细节">其他细节</h3>
 <p>3D Gaussian Splatting的整体流程中，还有一些其他的细节：</p>
@@ -784,9 +784,9 @@ Elements靠近表面</li>
       
         <a href="/tags/3D/" class="print-no-link">#3D</a>
       
-        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
-      
         <a href="/tags/3D-Gaussian/" class="print-no-link">#3D Gaussian</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="print-no-link">#论文笔记</a>
       
     </div>
   
