@@ -1,0 +1,1088 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="SMPL是一个人体Mesh模型，通过给定不同的形状和姿势参数，我们可以得到表示不同人体的Mesh。本篇主要对SMPL进行了原理以及使用方式的介绍，包括如何通过SMPL参数转换得到人体Mesh，如何通过Pose序列生成动画以及如何驱动Texture Mesh等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SMPL模型介绍及使用">
+<meta property="og:url" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="SMPL是一个人体Mesh模型，通过给定不同的形状和姿势参数，我们可以得到表示不同人体的Mesh。本篇主要对SMPL进行了原理以及使用方式的介绍，包括如何通过SMPL参数转换得到人体Mesh，如何通过Pose序列生成动画以及如何驱动Texture Mesh等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220150314710.png">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220155642131.png">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221225204969.png">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221230438634.png">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241223170825983.png">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq.gif">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241225161200875.png">
+<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq_man.gif">
+<meta property="article:published_time" content="2024-12-19T09:04:21.000Z">
+<meta property="article:modified_time" content="2024-12-26T09:34:39.603Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="SMPL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220150314710.png">
+  
+  
+  
+  <title>SMPL模型介绍及使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SMPL模型介绍及使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-12-19 17:04" pubdate>
+          2024年12月19日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          67 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">SMPL模型介绍及使用</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2024-12-26T17:34:39+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="smpl系列模型">SMPL系列模型</h1>
+<h2 id="原理介绍">原理介绍</h2>
+<p><a target="_blank" rel="noopener" href="https://smpl.is.tue.mpg.de/">SMPL</a>(Skinned Multi-Person
+Linear
+Model)是一种裸体的，基于顶点的人体Mesh模型，它能够精确的表示人体的不同形状和姿态。</p>
+<p>SMPL模型首先提供了一个平均模版作为初始化的人体mesh，然后通过不同的参数<span
+class="math inline">\(\beta,
+\theta\)</span>对这个模板进行调整，以适应不同形状和姿态：</p>
+<ul>
+<li>形状参数<span class="math inline">\(\beta \in
+\mathbb{R}^{10}\)</span>：控制人体的高矮胖瘦，每个标量值都可以解释为人体沿某个方向的膨胀或者收缩量</li>
+<li>姿势参数<span class="math inline">\(\theta \in \mathbb{R}^{24 \times
+3}\)</span>：控制人体的动作姿态，其中24对应提前定义好的人体关节点，3则表示该节点相对于其父节点旋转角度的<a
+target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation">轴角表达式(Axis–angle
+representation)</a>
+<ul>
+<li>轴角表达式：记录了旋转轴以及旋转角度信息，一般来说是四元组，分别表示旋转轴和旋转角度，这里使用的是三元数表示。<span
+class="math inline">\(\theta =
+(x,y,z)\)</span>,旋转轴是其对应的单位向量<span
+class="math inline">\(\frac{\theta}{||\theta||}\)</span>，旋转大小是<span
+class="math inline">\(||\theta||\)</span></li>
+</ul></li>
+</ul>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220150314710.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="SMPL-人体关节点">
+<p>SMPL模型中的基础模版记做<span
+class="math inline">\(\bar{T}\in\mathbb{R}^{3N}\)</span>,其中包含包含<span
+class="math inline">\(N=6890\)</span>个顶点，<span
+class="math inline">\(13776\)</span>个面片和<span
+class="math inline">\(K=24\)</span>个关节点。我们接下来考虑的就是如何从该模版出发，利用形状参数和姿态参数进行不同形状和姿态的转换。整个流程包括如下阶段：</p>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220155642131.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="smpl模型形状+姿势转换">
+<p>在此之前，我们还需要引入一些相关参数，这些参数都是SMPL团队在大量数据上学习得到的：</p>
+<ul>
+<li>首先是<span
+class="math inline">\(S\in\mathbb{R}^{3N\times10}\)</span>和<span
+class="math inline">\(P\in \mathbb{R}^{3N\times
+9K}\)</span>，他们分别表示形状参数和姿态参数分别是如何影响整个人体Mesh的；</li>
+<li>然后是<span class="math inline">\(\mathcal{W} \in
+\mathbb{R}^{N\times
+K}\)</span>，这是LBS/QBS混合权重矩阵，它表示的是关节点对其余顶点的影响权重，一般来说，离关节点越近的顶点，受该顶点的影响越大；</li>
+<li>然后是<span
+class="math inline">\(J\in\mathbb{R}^{3N\times3K}\)</span>，它是一个回归矩阵，表示如何在Rest
+Pose下根据Mesh顶点计算出K个关节点的位置
+<ul>
+<li>初始模版对应人体Mesh的姿态称为Rest
+Pose(静默姿态，也可以称为T-Pose，或者标准姿态，canonical pose)</li>
+</ul></li>
+</ul>
+<p>首先我们需要对人体Mesh进行<strong>形状调整</strong>：给定形状参数<span
+class="math inline">\(\beta \in \mathbb{R}^{10}\)</span>和姿态参数<span
+class="math inline">\(\theta \in \mathbb{R}^{24 \times
+3}\)</span>，我们首先通过<span
+class="math inline">\(\beta\)</span>参数来指定模版形状的变化，该参数实际上就描述了基本姿态的偏移量。具体来说，我们可以计算这些参数对不同顶点的影响<span
+class="math inline">\(B_S(\beta)\)</span>，并将其叠加到初始模板上：
+<span class="math display">\[
+B_S(\beta) = \sum_{i=1}^{|\beta|}\beta_iS_i = S \beta \quad(\in
+\mathbb{R}^{3N})
+\]</span>
+由于不同人体形状具有较大的差异性，因此我们需要根据形状变化后的mesh来估计出符合该Mesh的骨骼点，以便于我们后续对这些骨骼点进行旋转，形成我们最终期望的姿态。我们通过骨骼点位置估计来根据形状变化后，并且处于Rest
+Pose下Mesh的顶点位置，来估计出控制点的理想位置，实际上就是通过回归矩阵<span
+class="math inline">\(J\)</span>进行计算： <span class="math display">\[
+J_{S,\bar{T}, J}(\beta) = J \cdot(\bar{T}+B_S(\beta)) \quad(\in
+\mathbb{R}^{3\times K})
+\]</span> 接下来我们需要通过姿态参数<span
+class="math inline">\(\theta\)</span>对其进行Mesh修正。我们首先通过Rodrigues公式将轴角表达式转化为<span
+class="math inline">\(3\times3=9\)</span>的旋转矩阵，然后同样计算姿态参数<span
+class="math inline">\(\theta\)</span>对不同顶点的影响<span
+class="math inline">\(B_P(\theta)\)</span>，其中<span
+class="math inline">\(\theta^*\)</span>表示Rest Pose下的轴角表达式：
+<span class="math display">\[
+B_P(\theta) = \sum_{i=1}^{9K} (R_i(\theta)-R_i(\theta^*))P_i =
+P_{(3N\times 9K)}[R(\theta) - R(\theta^*)]_{(3\times 3\times K)} \quad
+(\in \mathbb{R}^{3N})
+\]</span>
+完成上面的计算之后之后，我们通过叠加这些影响得到微调后的人体Mesh： <span
+class="math display">\[
+T_P(\beta, \theta) = \bar{T} + B_S(\beta) + B_P(\theta)
+\]</span> 同时我们还得到了经过骨骼点估计之后的控制点位置<span
+class="math inline">\(J_{S,\bar{T}, J}(\beta)\)</span>。</p>
+<blockquote>
+<p>【注意】这里的两个步骤都是对Rest
+Pose下的Mesh进行微调，经过这个计算之后，人体的Mesh仍然处于Rest
+Pose下。</p>
+<p>第一步基于形状参数对Mesh修正较好理解；</p>
+<p>第二步根据Target Pose修正Mesh，它考虑到的是人体从Rest
+Pose转化到Target
+Pose后，某些局部区域也可能被影响，例如被挤压或者被拉伸等，因此在这里提前对Mesh进行微调。因为在后面真正进行Pose转换的时候，不会再对Mesh的形状进行自适应调整，而只会调整关键点的位置。</p>
+</blockquote>
+<p>经过上面的步骤，我们已经将人体Mesh的形状调整好了，接下来就需要将它转化到Target
+Pose。在这个过程中称为<strong>蒙皮(Skinning)</strong>。我们通过<span
+class="math inline">\(\theta\)</span>描述人体骨骼点的运动，而由顶点(vertex)组成的“皮肤”也会随着骨骼点的运动而变化，该过程可以认为是皮肤顶点随着骨骼点的变化而产生的加权线性组合。</p>
+<p>具体来说，我们首先需要计算骨骼点的旋转矩阵，姿势参数<span
+class="math inline">\(\theta\)</span>描述的是每个骨骼点在自身坐标系下的旋转，因为需要计算局部变换和它父节点的变换，最终得到每个关节的全局变换。这个过程会用到重新计算的控制点位置<span
+class="math inline">\(J(\beta)\)</span>，以及姿势参数<span
+class="math inline">\(\theta\)</span>。然后我们需要计算Mesh的其他顶点如何旋转，对于每个顶点，它最终的变换是通过对24个全局变换加权得到的，使用的权重矩阵就是之前提到的<span
+class="math inline">\(\mathcal{W}\)</span>。</p>
+<p>完成相关计算之后，得到最终的Mesh表达<span
+class="math inline">\(W(T_P(\beta, \theta), J(\theta), \theta,
+\mathcal{W}) \in \mathbb{R}^{3N}\)</span>。</p>
+<h2 id="其他模型">其他模型</h2>
+<p>在SMPL模型之后，还有该系列的模型对其进行改进，包括：</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://mano.is.tue.mpg.de/">MANO</a>：对手进行建模，额外增加姿态参数</li>
+<li><a
+target="_blank" rel="noopener" href="https://mano.is.tue.mpg.de/">SMPL+H</a>：在SMPL上加入对手的建模，即SMPL+Hand(MANO)</li>
+<li><a
+target="_blank" rel="noopener" href="https://smpl-x.is.tue.mpg.de/">SMPL-X</a>：在SMPL上加入对手和脸的建模</li>
+</ul>
+<h1 id="使用方式">使用方式</h1>
+<p>上面我们介绍了SMPL模型的基本原理和相关系列模型，下面我们介绍具体应该如何使用它们。</p>
+<ul>
+<li>SMPL官方代码项目地址为：https://github.com/vchoutas/smplx，其中提供了对上述系列模型的支持。</li>
+</ul>
+<p>我们按照<a
+target="_blank" rel="noopener" href="https://github.com/YuliangXiu/ECON/blob/master/fetch_data.sh">ECON</a>所提供的数据下载脚本来对原始下载内容进行组织，其中不仅包含了对原始下载内容的组织，也包括了ECON提供的一些其他数据：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs shell">smpl_related<br>├── models<br>│   ├── smpl<br>│   │   ├── SMPL_FEMALE.pkl<br>│   │   ├── SMPL_MALE.pkl<br>│   │   ├── SMPL_NEUTRAL.pkl<br>│   │   └── __init__.py<br>│   └── smplx<br>│       ├── SMPLX_FEMALE.npz<br>│       ├── SMPLX_FEMALE.pkl<br>│       ├── SMPLX_MALE.npz<br>│       ├── SMPLX_MALE.pkl<br>│       ├── SMPLX_NEUTRAL.npz<br>│       ├── SMPLX_NEUTRAL.pkl<br>│       ├── smplx_npz.zip  # 多余的zip，并没有实际使用到<br>│       └── version.txt<br>└── smpl_data<br>    ├── FLAME_SMPLX_vertex_ids.npy<br>    ├── FLAME_face_mask_ids.npy<br>    ├── MANO_SMPLX_vertex_ids.pkl<br>    ├── eyeball_fid.npy<br>    ├── fill_mouth_fid.npy<br>    ├── smpl_faces.npy<br>    ├── smpl_verts.npy<br>    ├── smplx_cmap.npy<br>    ├── smplx_faces.npy<br>    ├── smplx_to_smpl.pkl<br>    ├── smplx_vertex_lmkid.npy<br>    └── smplx_verts.npy<br></code></pre></td></tr></table></figure>
+<h2 id="smpl以及其他模型参数">SMPL以及其他模型参数</h2>
+<h3 id="形状参数和姿态参数">形状参数和姿态参数</h3>
+<p>SMPL参数中包括形状参数<span class="math inline">\(\beta \in
+\mathbb{R}^{10}\)</span>和姿态参数<span class="math inline">\(\theta \in
+\mathbb{R}^{24 \times 3}\)</span>。</p>
+<p>其中，对于10个形态参数，有：</p>
+<ul>
+<li>0
+代表整个人体的胖瘦和大小，初始为0的情况下，正数变瘦小，负数变大胖（±5）</li>
+<li>1 侧面压缩拉伸，正数压缩</li>
+<li>2 正数变胖大</li>
+<li>3 负数肚子变大很多，人体缩小</li>
+<li>4 代表
+chest、hip、abdomen的大小，初始为0的情况下，正数变大，负数变小（±5）</li>
+<li>5 负数表示大肚子+整体变瘦</li>
+<li>6 正数表示肚子变得特别大的情况下，其他部位非常瘦小</li>
+<li>7 正数表示身体被纵向挤压</li>
+<li>8 正数表示横向表胖</li>
+<li>9 正数表示肩膀变宽</li>
+</ul>
+<p>在<a
+target="_blank" rel="noopener" href="https://github.com/vchoutas/smplx/blob/main/smplx/joint_names.py">smplx/smplx/joint_names.py</a>中记录了相关关键点对应的实际人体位置。</p>
+<h3 id="modeloutput">ModelOutput</h3>
+<p>在<a
+target="_blank" rel="noopener" href="https://github.com/vchoutas/smplx/blob/main/smplx/utils.py">smplx/smplx/utils.py</a>中记录了相关模型的Output，后续会使用到，这里进行相关注释：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ModelOutput</span>:<br>    vertices: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>      <span class="hljs-comment"># 模版模型的顶点坐标 形状通常是 [batch_size, 顶点数量, 3]</span><br>                                           <span class="hljs-comment"># SMPL约6890个顶点SMPL-X约10475个顶点</span><br>    joints: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>        <span class="hljs-comment"># 关节点的3D坐标 形状是 [batch_size, 关节数量, 3]</span><br>    full_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>     <span class="hljs-comment"># 完整的姿态参数 包含所有关节的旋转参数</span><br>    global_orient: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span> <span class="hljs-comment"># 全局旋转参数 控制整个模型的方向 通常是3维轴角表示</span><br>    transl: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>        <span class="hljs-comment"># 全局平移参数 [batch_size, 3]</span><br>    v_shaped: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>      <span class="hljs-comment"># 经过形状参数变形后的模板网格 还未经过姿态变形 形状同vertices</span><br><br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SMPLOutput</span>(<span class="hljs-title class_ inherited__">ModelOutput</span>):<br>    betas: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>       <span class="hljs-comment"># 形状参数 [batch_size, 10] 控制身体形状（高矮胖瘦等）</span><br>    body_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>   <span class="hljs-comment"># 身体姿态参数 [batch_size, 23*3] 不包含全局旋转的身体姿态</span><br>    									 <span class="hljs-comment"># 和上面讲述的相差1，因为在实现的时候忽略最中心骨盆的关键点</span><br>        <br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SMPLHOutput</span>(<span class="hljs-title class_ inherited__">SMPLOutput</span>):<br>    left_hand_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>   <span class="hljs-comment"># 左手姿态参数 [batch_size, 15*3] 控制左手15个关节的姿态</span><br>    right_hand_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># 右手姿态参数 [batch_size, 15*3] 控制右手15个关节的姿态</span><br>    transl: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>           <span class="hljs-comment"># 与基类相同，全局平移</span><br>    <br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SMPLXOutput</span>(<span class="hljs-title class_ inherited__">SMPLHOutput</span>):<br>    expression: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>    <span class="hljs-comment"># 面部表情参数 [batch_size, 10] 控制面部表情变化</span><br>    jaw_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>      <span class="hljs-comment"># 下巴姿态参数 [batch_size, 3] 控制下巴的运动</span><br>    <br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MANOOutput</span>(<span class="hljs-title class_ inherited__">ModelOutput</span>):<br>    betas: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>        <span class="hljs-comment"># 手部形状参数 [batch_size, 10] 控制手的形状特征</span><br>    hand_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>    <span class="hljs-comment"># 手部姿态参数 [batch_size, 15*3] 控制手指关节的姿态</span><br><br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FLAMEOutput</span>(<span class="hljs-title class_ inherited__">ModelOutput</span>):<br>    betas: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>        <span class="hljs-comment"># 头部形状参数 [batch_size, 10] 控制头部/脸部的形状 </span><br>    expression: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>   <span class="hljs-comment"># 面部表情参数 [batch_size, 10] 控制面部表情</span><br>    jaw_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>     <span class="hljs-comment"># 下巴姿态 [batch_size, 3] 控制下巴运动  </span><br>    neck_pose: <span class="hljs-type">Optional</span>[Tensor] = <span class="hljs-literal">None</span>    <span class="hljs-comment"># 颈部姿态 [batch_size, 3] 控制颈部运动</span><br></code></pre></td></tr></table></figure>
+<h2 id="meshpose转换">Mesh+Pose转换</h2>
+<p>以SIMP-X模型为例，接下来介绍如何根据不同的形状/姿态参数导出Mesh。注意已经组织好了smpl_related的文件形式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> smplx<br><span class="hljs-keyword">import</span> torch<br><br><span class="hljs-comment"># 通过smplx.create来创建出基本模型</span><br><span class="hljs-comment"># 其他可用参数可以在模型具体的实现文件中找到 https://github.com/vchoutas/smplx/blob/main/smplx/body_models.py</span><br>model = smplx.create(<br>    model_path=<span class="hljs-string">&#x27;smpl_related/models&#x27;</span>,<br>    model_type=<span class="hljs-string">&#x27;smplx&#x27;</span>,<br>    gender=<span class="hljs-string">&#x27;neutral&#x27;</span>,<br>)<br><br><span class="hljs-comment"># 随机生成姿态参数+表情参数</span><br>betas = torch.randn([<span class="hljs-number">1</span>, model.num_betas], dtype=torch.float32)<br>expression = torch.randn([<span class="hljs-number">1</span>, model.num_expression_coeffs], dtype=torch.float32)<br><span class="hljs-built_in">print</span>(betas.shape, expression.shape)<br><span class="hljs-comment"># torch.Size([1, 16]) torch.Size([1, 10])</span><br><br><span class="hljs-comment"># 调用model的forward方法得到output</span><br>output = model(<br>    betas=betas, <br>    expression=expression, <br>    return_verts=<span class="hljs-literal">True</span>, <br>    return_full_pose=<span class="hljs-literal">True</span>)<br><br><span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> output.__dict__.items():<br>    <span class="hljs-keyword">if</span> value <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;key&#125;</span>: <span class="hljs-subst">&#123;value.shape&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 对应上面的SMPLXOutput中的内容:</span><br>    <span class="hljs-comment"># vertices: torch.Size([1, 10475, 3])</span><br>    <span class="hljs-comment"># joints: torch.Size([1, 127, 3])</span><br>    <span class="hljs-comment"># full_pose: torch.Size([1, 165])</span><br>    <span class="hljs-comment"># global_orient: torch.Size([1, 3])</span><br>    <span class="hljs-comment"># transl: torch.Size([1, 3])</span><br>    <span class="hljs-comment"># v_shaped: torch.Size([1, 10475, 3])</span><br>    <span class="hljs-comment"># betas: torch.Size([1, 16])</span><br>    <span class="hljs-comment"># body_pose: torch.Size([1, 63])</span><br>    <span class="hljs-comment"># left_hand_pose: torch.Size([1, 45])</span><br>    <span class="hljs-comment"># right_hand_pose: torch.Size([1, 45])</span><br>    <span class="hljs-comment"># expression: torch.Size([1, 10])</span><br>    <span class="hljs-comment"># jaw_pose: torch.Size([1, 3])</span><br>    <br><span class="hljs-comment"># 通过vertices导出对应的mesh</span><br>vertices = output.vertices.detach().cpu().numpy().squeeze()<br><br><span class="hljs-keyword">import</span> open3d <span class="hljs-keyword">as</span> o3d<br><br>mesh = o3d.geometry.TriangleMesh()<br>mesh.vertices = o3d.utility.Vector3dVector(<br>    vertices)<br>mesh.triangles = o3d.utility.Vector3iVector(model.faces)<br>mesh.compute_vertex_normals()<br>mesh.paint_uniform_color([<span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>])<br><br>o3d.io.write_triangle_mesh(<span class="hljs-string">&#x27;smplx_mesh.ply&#x27;</span>, mesh)<br></code></pre></td></tr></table></figure>
+<p>打开得到的Mesh文件，我们可以看到如下内容：</p>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221225204969.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="RestPose-SMPLX-Mesh">
+<p>可以看到，我们得到了一个Rest
+Pose的Mesh。接下来，我们来进行人体姿态的转换。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> smplx<br><span class="hljs-keyword">import</span> torch<br><br><span class="hljs-comment"># 加载SMPL-X模型</span><br>model = smplx.create(<br>    model_path=<span class="hljs-string">&#x27;smpl_related/models&#x27;</span>,<br>    model_type=<span class="hljs-string">&#x27;smplx&#x27;</span>,<br>    gender=<span class="hljs-string">&#x27;neutral&#x27;</span>,<br>)<br><br><span class="hljs-comment"># 随机生成相关的pose</span><br>body_pose = torch.randn([<span class="hljs-number">1</span>, model.body_pose.shape[<span class="hljs-number">1</span>]], dtype=torch.float32)             <span class="hljs-comment"># torch.Size([1, 63])</span><br>left_hand_pose = torch.randn([<span class="hljs-number">1</span>, model.left_hand_pose.shape[<span class="hljs-number">1</span>]], dtype=torch.float32)   <span class="hljs-comment"># torch.Size([1, 6])</span><br>right_hand_pose = torch.randn([<span class="hljs-number">1</span>, model.right_hand_pose.shape[<span class="hljs-number">1</span>]], dtype=torch.float32) <span class="hljs-comment"># torch.Size([1, 6])</span><br>jaw_pose = torch.randn([<span class="hljs-number">1</span>, model.jaw_pose.shape[<span class="hljs-number">1</span>]], dtype=torch.float32)               <span class="hljs-comment"># torch.Size([1, 3])</span><br>leye_pose = torch.randn([<span class="hljs-number">1</span>, model.leye_pose.shape[<span class="hljs-number">1</span>]], dtype=torch.float32)             <span class="hljs-comment"># torch.Size([1, 3])</span><br>reye_pose = torch.randn([<span class="hljs-number">1</span>, model.reye_pose.shape[<span class="hljs-number">1</span>]], dtype=torch.float32)             <span class="hljs-comment"># torch.Size([1, 3])</span><br><br><span class="hljs-comment"># 调用model forward获取对应的output</span><br>output = model(<br>    body_pose=body_pose,<br>    left_hand_pose=left_hand_pose,<br>    right_hand_pose=right_hand_pose,<br>    jaw_pose=jaw_pose,<br>    leye_pose=leye_pose,<br>    reye_pose=reye_pose,<br>    return_verts=<span class="hljs-literal">True</span>, <br>    return_full_pose=<span class="hljs-literal">True</span>)<br><br><br><span class="hljs-keyword">import</span> open3d <span class="hljs-keyword">as</span> o3d<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">save_mesh</span>(<span class="hljs-params">file_path, vertices, faces, colors=<span class="hljs-literal">None</span></span>):<br>    mesh = o3d.geometry.TriangleMesh()<br>    mesh.vertices = o3d.utility.Vector3dVector(<br>        vertices)<br>    mesh.triangles = o3d.utility.Vector3iVector(faces)<br>    mesh.compute_vertex_normals()<br>    <span class="hljs-keyword">if</span> colors <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        mesh.vertex_colors = o3d.utility.Vector3dVector(colors)<br>    <span class="hljs-keyword">else</span>:<br>        mesh.paint_uniform_color([<span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>])<br>    o3d.io.write_triangle_mesh(file_path, mesh)<br><br><span class="hljs-comment"># 分别导出vertices和v_shaped的Mesh</span><br>vertices = output.vertices.detach().cpu().numpy().squeeze()<br>save_mesh(<span class="hljs-string">&#x27;smplx_mesh.ply&#x27;</span>, vertices, model.faces)<br><br>v_shaped_vertices = output.v_shaped.detach().cpu().numpy().squeeze()<br>save_mesh(<span class="hljs-string">&#x27;smplx_v_shaped_mesh.ply&#x27;</span>, v_shaped_vertices, model.faces)<br></code></pre></td></tr></table></figure>
+<p>分别打开保存的两个Mesh，可以看到如下的内容，<code>v_shaped_vertices</code>中保存是经过形状参数调整后的Mesh，但是仍然保持RestPose；而<code>vertices</code>中保存的是最后同时经过形状参数和Pose转换后的Mesh（不过这里由于都是随机生成的，看起来是一个非常扭曲的状态
+:(</p>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221230438634.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="Rest Pose vs Userdefined Pose">
+<h2 id="pose序列生成动画">Pose序列生成动画</h2>
+<p>接下来我们介绍如何通过Pose序列来驱动SMPL模型，并且生成相应的动画。首先我们需要获得一段Pose序列，可以从相关预测模型中得到，我们这里在<a
+target="_blank" rel="noopener" href="https://amass.is.tue.mpg.de/download.php">AMASS</a>中下载对应的Pose序列。AMASS是一个大型人体运动运动数据库。我们下载其中的ACCAD来作为测试样例。</p>
+<p>在下面的示例中，我们选择<code>ACCAD/Female1Walking_c3d/B1_-_stand_to_walk_stageii.npz</code>作为测试序列，它表征了一个人从站立到行走的过程。下面是示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> smplx<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> open3d <span class="hljs-keyword">as</span> o3d<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br><span class="hljs-comment"># 注意这里的use_pca设置为False，因为后续Pose中存储了完整的hand pose参数</span><br>model = smplx.create(<br>    model_path=<span class="hljs-string">&#x27;smpl_related/models&#x27;</span>,<br>    model_type=<span class="hljs-string">&#x27;smplx&#x27;</span>,<br>    gender=<span class="hljs-string">&#x27;neutral&#x27;</span>,<br>    use_pca=<span class="hljs-literal">False</span><br>)<br><br>pose_npz_path = <span class="hljs-string">&#x27;test_pose/ACCAD/Female1Walking_c3d/B1_-_stand_to_walk_stageii.npz&#x27;</span><br>smplx_pose_seq = np.load(pose_npz_path, allow_pickle=<span class="hljs-literal">True</span>)<br><br><span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> smplx_pose_seq.items():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;key&#125;</span>: <span class="hljs-subst">&#123;value.shape&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># gender: ()</span><br>    <span class="hljs-comment"># surface_model_type: ()</span><br>    <span class="hljs-comment"># mocap_frame_rate: ()</span><br>    <span class="hljs-comment"># mocap_time_length: ()</span><br>    <span class="hljs-comment"># markers_latent: (41, 3)</span><br>    <span class="hljs-comment"># latent_labels: (41,)</span><br>    <span class="hljs-comment"># markers_latent_vids: ()</span><br>    <span class="hljs-comment"># trans: (747, 3)</span><br>    <span class="hljs-comment"># poses: (747, 165)</span><br>    <span class="hljs-comment"># betas: (16,)</span><br>    <span class="hljs-comment"># num_betas: ()</span><br>    <span class="hljs-comment"># root_orient: (747, 3)</span><br>    <span class="hljs-comment"># pose_body: (747, 63)</span><br>    <span class="hljs-comment"># pose_hand: (747, 90)</span><br>    <span class="hljs-comment"># pose_jaw: (747, 3)</span><br>    <span class="hljs-comment"># pose_eye: (747, 6)</span><br></code></pre></td></tr></table></figure>
+<p>可以看到在pose序列中，记录了SMPLX模型的相关参数，这些参数基本上都与model.forward()方法相关。注意这里在初始化模型的时候需要设置<code>use_pcd=False</code>，这是因为pose中提供了完整的hand
+pose，无需使用pca进行维度对齐。</p>
+<p>之后，我们调用model的forward方法来进行Mesh转换：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs python">seq_len = smplx_pose_seq[<span class="hljs-string">&#x27;pose_body&#x27;</span>].shape[<span class="hljs-number">0</span>]<br><br><span class="hljs-comment"># 批量构造Tensor 利用Batch进行forward运行</span><br>trans = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;trans&#x27;</span>], dtype=torch.float32)<br>betas = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;betas&#x27;</span>], dtype=torch.float32).repeat(seq_len, <span class="hljs-number">1</span>)<br>expression = torch.zeros([seq_len, model.expression.shape[<span class="hljs-number">1</span>]], dtype=torch.float32)<br>root_orient = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;root_orient&#x27;</span>], dtype=torch.float32)<br>body_pose = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;pose_body&#x27;</span>], dtype=torch.float32)<br>left_hand_pose = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;pose_hand&#x27;</span>][:, :<span class="hljs-number">45</span>], dtype=torch.float32)<br>right_hand_pose = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;pose_hand&#x27;</span>][:, <span class="hljs-number">45</span>:], dtype=torch.float32)<br>jaw_pose = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;pose_jaw&#x27;</span>], dtype=torch.float32)<br>leye_pose = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;pose_eye&#x27;</span>][:, :<span class="hljs-number">3</span>], dtype=torch.float32)<br>reye_pose = torch.tensor(smplx_pose_seq[<span class="hljs-string">&#x27;pose_eye&#x27;</span>][:, <span class="hljs-number">3</span>:], dtype=torch.float32)<br><br>output = model(<br>    betas=betas,<br>    global_orient=root_orient,<br>    body_pose=body_pose,<br>    left_hand_pose=left_hand_pose,<br>    right_hand_pose=right_hand_pose,<br>    transl = trans,<br>    expression=expression,<br>    jaw_pose=jaw_pose,<br>    leye_pose=leye_pose,<br>    reye_pose=reye_pose,<br>    return_verts=<span class="hljs-literal">True</span>,<br>    return_full_pose=<span class="hljs-literal">True</span>,<br>)<br><br><span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> output.__dict__.items():<br>    <span class="hljs-keyword">if</span> value <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;key&#125;</span>: <span class="hljs-subst">&#123;value.shape&#125;</span>&quot;</span>)<br>        <span class="hljs-comment"># vertices: torch.Size([747, 10475, 3])</span><br>        <span class="hljs-comment"># joints: torch.Size([747, 127, 3])</span><br>        <span class="hljs-comment"># full_pose: torch.Size([747, 165])</span><br>        <span class="hljs-comment"># global_orient: torch.Size([747, 3])</span><br>        <span class="hljs-comment"># transl: torch.Size([747, 3])</span><br>        <span class="hljs-comment"># v_shaped: torch.Size([747, 10475, 3])</span><br>        <span class="hljs-comment"># betas: torch.Size([747, 16])</span><br>        <span class="hljs-comment"># body_pose: torch.Size([747, 63])</span><br>        <span class="hljs-comment"># left_hand_pose: torch.Size([747, 45])</span><br>        <span class="hljs-comment"># right_hand_pose: torch.Size([747, 45])</span><br>        <span class="hljs-comment"># expression: torch.Size([747, 10])</span><br>        <span class="hljs-comment"># jaw_pose: torch.Size([747, 3])</span><br></code></pre></td></tr></table></figure>
+<p>完成推理之后，我们可以取出里面每一帧对应的Mesh进行保存，保存方式与上面基本相同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">save_mesh</span>(<span class="hljs-params">file_path, vertices, faces, colors=<span class="hljs-literal">None</span></span>):<br>    mesh = o3d.geometry.TriangleMesh()<br>    mesh.vertices = o3d.utility.Vector3dVector(<br>        vertices)<br>    mesh.triangles = o3d.utility.Vector3iVector(faces)<br>    mesh.compute_vertex_normals()<br>    <span class="hljs-keyword">if</span> colors <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        mesh.vertex_colors = o3d.utility.Vector3dVector(colors)<br>    <span class="hljs-keyword">else</span>:<br>        mesh.paint_uniform_color([<span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>])<br>    o3d.io.write_triangle_mesh(file_path, mesh)<br><br>vertices = output.vertices.detach().cpu().numpy().squeeze()<br>save_mesh(<span class="hljs-string">&#x27;smplx_mesh_0.ply&#x27;</span>, vertices[<span class="hljs-number">0</span>], model.faces)<br></code></pre></td></tr></table></figure>
+<p>我们分别保存索引在100，300，550，700上的Mesh并在同一个场景中可视化，可以得到如下的效果：</p>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241223170825983.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="SMPLX-Pose序列可视化">
+<p>由于我们已经获得了整个序列中所有Mesh的姿态，因此我们也可以通过代码来将整个运动可视化。这里使用Open3D来完成整个运动的可视化。下面是一个可视化的工具函数，它利用Open3D的Render，每次更新其中的Mesh并进行图像的渲染，最终组合成一个视频。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> open3d <span class="hljs-keyword">as</span> o3d<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">visualize_mesh_sequence_o3d</span>(<span class="hljs-params">vertices_seq, faces, output_path, fps=<span class="hljs-number">60</span>, colors=<span class="hljs-literal">None</span></span>):<br>    <span class="hljs-comment"># 准备open3d headless render</span><br>    render = o3d.visualization.rendering.OffscreenRenderer(<span class="hljs-number">800</span>, <span class="hljs-number">600</span>)<br>    <br>    render.scene.set_background([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>])  <span class="hljs-comment"># 白色</span><br>    <span class="hljs-keyword">if</span> colors <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        render.scene.view.set_post_processing(<span class="hljs-literal">False</span>)<br><br>    mat = o3d.visualization.rendering.MaterialRecord()<br>    mat.shader = <span class="hljs-string">&#x27;defaultUnlit&#x27;</span><br>    <br>    <span class="hljs-comment"># 准备渲染的mesh</span><br>    mesh = o3d.geometry.TriangleMesh()<br>    mesh.triangles = o3d.utility.Vector3iVector(faces)<br>    <span class="hljs-keyword">if</span> colors <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        mesh.vertex_colors = o3d.utility.Vector3dVector(colors)<br>    <span class="hljs-keyword">else</span>:<br>        mesh.paint_uniform_color([<span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>, <span class="hljs-number">0.3</span>])<br><br>    <span class="hljs-comment"># 创建视频写入器</span><br>    fourcc = cv2.VideoWriter_fourcc(*<span class="hljs-string">&#x27;mp4v&#x27;</span>)<br>    video = cv2.VideoWriter(output_path, fourcc, fps, (<span class="hljs-number">800</span>, <span class="hljs-number">600</span>))<br>    <br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-comment"># 计算整个序列的边界框</span><br>        all_vertices = np.vstack(vertices_seq)<br>        min_bound = np.<span class="hljs-built_in">min</span>(all_vertices, axis=<span class="hljs-number">0</span>)<br>        max_bound = np.<span class="hljs-built_in">max</span>(all_vertices, axis=<span class="hljs-number">0</span>)<br>        center = (min_bound + max_bound) / <span class="hljs-number">2</span><br>        extent = max_bound - min_bound<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;场景信息:&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;中心点: <span class="hljs-subst">&#123;center&#125;</span>&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;范围: <span class="hljs-subst">&#123;extent&#125;</span>&quot;</span>)<br><br>        diagonal = np.linalg.norm(extent)<br>        distance = diagonal * <span class="hljs-number">1.0</span>  <span class="hljs-comment"># 增加观察距离</span><br><br>        theta = np.pi/<span class="hljs-number">4</span>  <span class="hljs-comment"># 45度</span><br>        phi = np.pi/<span class="hljs-number">6</span>    <span class="hljs-comment"># 30度</span><br>        eye = center + distance * np.array([<br>            np.cos(phi) * np.cos(theta),<br>            np.cos(phi) * np.sin(theta),<br>            np.sin(phi)<br>        ])<br>        <br>        <span class="hljs-comment"># 转换为正确的数据类型</span><br>        center = np.array(center, dtype=np.float32).reshape(<span class="hljs-number">3</span>, <span class="hljs-number">1</span>)<br>        eye = np.array(eye, dtype=np.float32).reshape(<span class="hljs-number">3</span>, <span class="hljs-number">1</span>)<br>        up = np.array([<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], dtype=np.float32).reshape(<span class="hljs-number">3</span>, <span class="hljs-number">1</span>)<br>        <br>        <span class="hljs-comment"># 构造观察的camera 从cam_pos看向target</span><br>        up = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]<br>        target = center<br>        cam_pos = eye<br>        render.setup_camera(<br>            vertical_field_of_view=<span class="hljs-number">45.</span>, <br>            center=target, <br>            eye=cam_pos, <br>            up=up,<br>            near_clip=<span class="hljs-number">0.1</span>,<br>            far_clip=<span class="hljs-number">100</span><br>        )<br>        <br>        <span class="hljs-keyword">for</span> vertices <span class="hljs-keyword">in</span> tqdm(vertices_seq, desc=<span class="hljs-string">&quot;渲染帧&quot;</span>):<br>            mesh.vertices = o3d.utility.Vector3dVector(vertices)<br>            mesh.compute_vertex_normals()<br>            <br>            <span class="hljs-comment"># 清除并添加新的mesh</span><br>            render.scene.clear_geometry()<br>            render.scene.add_geometry(<span class="hljs-string">&quot;mesh&quot;</span>, mesh, mat)<br>            <br>            <span class="hljs-comment"># 渲染并保存帧</span><br>            img = render.render_to_image()<br>            img = np.asarray(img)<br>            <br>            <span class="hljs-comment"># 转换为OpenCV格式并写入</span><br>            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)<br>            video.write(img)<br>            <br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;渲染错误: <span class="hljs-subst">&#123;<span class="hljs-built_in">str</span>(e)&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">finally</span>:<br>        <span class="hljs-comment"># 确保视频正确关闭</span><br>        video.release()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n视频保存完成!&quot;</span>)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>在默认情况下，Open3D的Render存在near和far的平面切除，在范围之外的区域则直接消失。因此这里在设置相机<code>set_camera</code>的时候，指定了较大的<code>far_clip</code>，防止某段运动序列消失</li>
+<li>Open3D Render渲染Mesh的原始颜色，可以参考<a
+target="_blank" rel="noopener" href="https://github.com/isl-org/Open3D/issues/5760">issue</a></li>
+</ul>
+<p>利用上面得到的顶点序列和渲染工具函数，我们可以完成动作的渲染：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">vertices = output.vertices.detach().cpu().numpy().squeeze()<br><br>vertices_seq = [vertices[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(vertices.shape[<span class="hljs-number">0</span>])]<br><br>visualize_mesh_sequence_o3d(vertices_seq, model.faces, <span class="hljs-string">&#x27;smplx_mesh_seq.mp4&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p>最终的效果如下：</p>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq.gif" srcset="/img/bilibiliTV.gif" lazyload class="" title="smplx_mesh_seq">
+<h2 id="textured-mesh的驱动">Textured Mesh的驱动</h2>
+<p>上面我们利用Pose序列来驱动了SMPL-X模型，但是这仍然是一个裸体的模型。考虑我们现在有一个方法，它可以从SMPLX模型出发，通过图像作为监督逐步进行Mesh的细化，最终可以得到一个包含纹理Texture的Mesh。接下来我们希望做的就是能够通过Pose序列来驱动这个Textured
+Mesh。因为经过细化后的Mesh会比原始的SMPL-X模型多出更多的顶点vertices和面face，所以这里的关键就在于如何通过Pose来转换这类非标准的Mesh。</p>
+<blockquote>
+<p>以下驱动代码参考<a
+target="_blank" rel="noopener" href="https://github.com/YuliangXiu/ECON/blob/master/apps/avatarizer.py">YuliangXiu/ECON</a>中的实现，感谢他们优秀的工作🙏。</p>
+</blockquote>
+<p>驱动Textured Mesh的步骤大致可以分为两个步骤，第一个是将Textured
+Mesh和SMPL模型进行绑定，在Textured
+Mesh中找到对应的关节点；第二个步骤就是根据动作序列进行操作。接下来就会逐步介绍相关步骤。</p>
+<h3 id="旋转矩阵支持">旋转矩阵支持</h3>
+<p>首先我们的Textured
+Mesh是从SMPLX模型得到的。一般来说，我们会从图像中预测一个初步的SMPLX模型，然后逐步细化其中的Mesh。因此，我们首先可以得到这个初始SMPLX模型的参数<code>smplx_pose_param</code>，它其中应该包含执行forward模型所需的相关参数，例如：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">offset, <span class="hljs-keyword">scale, </span><span class="hljs-keyword">body_pose, </span>global_orient, global_trans, <span class="hljs-keyword">betas, </span>expression, <span class="hljs-keyword">jaw_pose, </span>left_hand_pose, right_hand_pose<br></code></pre></td></tr></table></figure>
+<p>在保存SMPLX相关参数的时候，需要注意参数的维度，旋转相关的参数可能是通过轴角表达式来存储的，也有可能是通过旋转矩阵的方式来存储的。在<code>smplx.forward()</code>中提供了<code>pose2rot</code>参数来控制具体是否需要转换。在原始的smplx模型中对<code>pose2rot</code>的处理仍然存在一些问题，无法直接支持旋转矩阵的传入，这里主要需要在维度上进行对齐（以下修改对应原始的SMPLX实现）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> pose2rot:<br>    full_pose = torch.cat([global_orient.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>),<br>                        body_pose.reshape(-<span class="hljs-number">1</span>, self.NUM_BODY_JOINTS, <span class="hljs-number">3</span>),<br>                        jaw_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>),<br>                        leye_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>),<br>                        reye_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>),<br>                        left_hand_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">15</span>, <span class="hljs-number">3</span>),<br>                        right_hand_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">15</span>, <span class="hljs-number">3</span>)],<br>                        dim=<span class="hljs-number">1</span>).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">165</span>)<br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-comment"># 如果已经是旋转矩阵的表达，则最后一个维度需要是3*3=9</span><br>    full_pose = torch.cat([global_orient.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                        body_pose.reshape(-<span class="hljs-number">1</span>, self.NUM_BODY_JOINTS, <span class="hljs-number">9</span>),<br>                        jaw_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                        leye_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                        reye_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                        left_hand_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">15</span>, <span class="hljs-number">9</span>),<br>                        right_hand_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">15</span>, <span class="hljs-number">9</span>)],<br>                        dim=<span class="hljs-number">1</span>).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">9</span>)<br>    <br><span class="hljs-comment"># Add the mean pose of the model. Does not affect the body, only the</span><br><span class="hljs-comment"># hands when flat_hand_mean == False</span><br><span class="hljs-keyword">if</span> pose2rot:<br>    full_pose += self.pose_mean<br><span class="hljs-keyword">else</span>:<br>    rot_mean = batch_rodrigues(self.pose_mean.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">3</span>)).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">9</span>)<br>    rot_mean_matrix = rot_mean.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>)<br>    full_mean_matrix = full_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>)<br>    full_mean_matrix = torch.einsum(<span class="hljs-string">&#x27;bijk,bikl-&gt;bijl&#x27;</span>, rot_mean_matrix, full_mean_matrix)<br>    full_pose = full_mean_matrix.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">9</span>)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>这里以SMPLX模型作为示例，对于其他模型，在维度上可能有所改变</li>
+<li>注意轴角表达式和旋转矩阵之间相互计算存在不同，轴角表达式的叠加可以使用加法，旋转矩阵的叠加则需要使用矩阵乘法</li>
+</ul>
+<p>注意各个参数的维度都需要与原始实现对齐。</p>
+<blockquote>
+<p>在smplx.body_models.py文件中，每个模型中都定义了骨骼点的个数<code>NUM_JOINTS</code>。</p>
+<p>在SMPL模型中记录的NUM_JOINTS=23，和我们上面提到的24有所不同，其他模型SMPL+H，SMPL-X也类似的情况。这是在代码实现中的处理，因为最中心的关键点保持不动。在后续提到相关数据的时候，需要按照实际意义来理解，不过基本上都表达关键点(骨骼点)的含义。</p>
+</blockquote>
+<h3 id="不同的pose支持">不同的Pose支持</h3>
+<p>为了在Textured
+Mesh中找到对应的关节点，我们首先需要将它们进行对齐。Textured
+Mesh的姿势可能有很多，我们需要在一个比较标准的pose下进行对齐。所以接下来我们继续增强原始smplx实现，使它分别支持T-pose、A-pose、DA-pose和原始pose。</p>
+<ul>
+<li>T-pose：双臂水平展开，呈"T"字形，这是3D模型最标准的绑定姿势，也就是SMPLX模型在进行姿态变换前的标准姿势，通常用于骨骼绑定和权重绘制</li>
+<li>A-pose：双臂略微向下倾斜，呈"A"字形，比T-pose更自然，但仍是标准姿势，常用于动画和游戏角色</li>
+<li>DA-pose：双臂略微向下倾斜，双腿略微向外张开，整体成"大"字行。是A-pose的一个变体专门为SMPL/SMPL-X模型设计的标准姿势，用于更好的模型对齐和形状捕捉</li>
+</ul>
+<p>我们在原始官方的实现中增加<code>pose_type</code>的支持，对于不同的pose类型，我们只需要修改full_pose的组成即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">..., pose_type: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;pose&#x27;</span>, ...</span>) -&gt; SMPLXOutput:<br>    <span class="hljs-comment"># ...</span><br>    <span class="hljs-keyword">if</span> pose2rot:<br>        full_pose += self.pose_mean<br>    <span class="hljs-keyword">else</span>:<br>        rot_mean = batch_rodrigues(self.pose_mean.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">3</span>)).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">9</span>)<br>        rot_mean_matrix = rot_mean.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>)<br>        full_mean_matrix = full_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>)<br>        full_mean_matrix = torch.einsum(<span class="hljs-string">&#x27;bijk,bikl-&gt;bijl&#x27;</span>, rot_mean_matrix, full_mean_matrix)<br>        full_pose = full_mean_matrix.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">9</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_identity_matrix_torch</span>(<span class="hljs-params">batch_dims, matrix_size=<span class="hljs-number">3</span></span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(batch_dims, <span class="hljs-built_in">int</span>):<br>            batch_dims = (batch_dims,)<br>        identity = torch.eye(matrix_size)<br>        identity = identity.expand(*batch_dims, matrix_size, matrix_size)<br>        <span class="hljs-keyword">return</span> identity<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">build_full_pose</span>(<span class="hljs-params">body_pose, global_orient, jaw_pose, leye_pose, reye_pose, left_hand_pose, right_hand_pose, pose2rot</span>):<br>        <span class="hljs-keyword">if</span> pose2rot:<br>            full_pose = torch.cat(<br>                [<br>                    global_orient,<br>                    body_pose,<br>                    jaw_pose * <span class="hljs-number">0.</span>,<br>                    leye_pose * <span class="hljs-number">0.</span>,<br>                    reye_pose * <span class="hljs-number">0.</span>,<br>                    left_hand_pose * <span class="hljs-number">0.</span>,<br>                    right_hand_pose * <span class="hljs-number">0.</span>,<br>                ],<br>                dim=<span class="hljs-number">1</span>,<br>            )<br>        <span class="hljs-keyword">else</span>:<br>            body_rot = batch_rodrigues(body_pose.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">3</span>))<br>            full_pose = torch.cat(<br>                [<br>                    global_orient.reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                    body_rot.reshape(-<span class="hljs-number">1</span>, self.NUM_BODY_JOINTS, <span class="hljs-number">9</span>),<br>                    create_identity_matrix_torch(<br>                        batch_dims=(jaw_pose.shape[<span class="hljs-number">0</span>], jaw_pose.shape[<span class="hljs-number">1</span>]),<br>                        matrix_size=<span class="hljs-number">3</span><br>                    ).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                    create_identity_matrix_torch(<br>                        batch_dims=(leye_pose.shape[<span class="hljs-number">0</span>], leye_pose.shape[<span class="hljs-number">1</span>]),<br>                        matrix_size=<span class="hljs-number">3</span><br>                    ).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                    create_identity_matrix_torch(<br>                        batch_dims=(reye_pose.shape[<span class="hljs-number">0</span>], reye_pose.shape[<span class="hljs-number">1</span>]),<br>                        matrix_size=<span class="hljs-number">3</span><br>                    ).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>),<br>                    create_identity_matrix_torch(<br>                        batch_dims=(left_hand_pose.shape[<span class="hljs-number">0</span>], left_hand_pose.shape[<span class="hljs-number">1</span>]),<br>                        matrix_size=<span class="hljs-number">3</span><br>                    ).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">15</span>, <span class="hljs-number">9</span>),<br>                    create_identity_matrix_torch(<br>                        batch_dims=(right_hand_pose.shape[<span class="hljs-number">0</span>], right_hand_pose.shape[<span class="hljs-number">1</span>]),<br>                        matrix_size=<span class="hljs-number">3</span><br>                    ).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">15</span>, <span class="hljs-number">9</span>),<br>                ],<br>                dim=<span class="hljs-number">1</span>,<br>            ).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">55</span>, <span class="hljs-number">9</span>)<br>        <span class="hljs-keyword">return</span> full_pose<br><br>    <span class="hljs-keyword">if</span> pose_type == <span class="hljs-string">&quot;t-pose&quot;</span>:<br>        body_pose = torch.zeros(body_pose.shape[<span class="hljs-number">0</span>], self.NUM_BODY_JOINTS, <span class="hljs-number">3</span>)<br>        body_pose = body_pose.view(body_pose.shape[<span class="hljs-number">0</span>], -<span class="hljs-number">1</span>)<br>        full_pose = build_full_pose(body_pose, global_orient, jaw_pose, leye_pose, reye_pose, left_hand_pose, right_hand_pose, pose2rot)<br>    <span class="hljs-keyword">elif</span> pose_type == <span class="hljs-string">&quot;a-pose&quot;</span>:<br>        body_pose = torch.zeros(body_pose.shape[<span class="hljs-number">0</span>], self.NUM_BODY_JOINTS, <span class="hljs-number">3</span>)<br>        body_pose[:, <span class="hljs-number">15</span>] = torch.tensor([<span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>, -<span class="hljs-number">45</span> * np.pi / <span class="hljs-number">180.</span>])<br>        body_pose[:, <span class="hljs-number">16</span>] = torch.tensor([<span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">45</span> * np.pi / <span class="hljs-number">180.</span>])<br>        body_pose = body_pose.view(body_pose.shape[<span class="hljs-number">0</span>], -<span class="hljs-number">1</span>)<br>        full_pose = build_full_pose(body_pose, global_orient, jaw_pose, leye_pose, reye_pose, left_hand_pose, right_hand_pose, pose2rot)<br>    <span class="hljs-keyword">elif</span> pose_type == <span class="hljs-string">&quot;da-pose&quot;</span>:<br>        body_pose = torch.zeros(body_pose.shape[<span class="hljs-number">0</span>], self.NUM_BODY_JOINTS, <span class="hljs-number">3</span>)<br>        body_pose[:, <span class="hljs-number">0</span>] = torch.tensor([<span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">30</span> * np.pi / <span class="hljs-number">180.</span>])<br>        body_pose[:, <span class="hljs-number">1</span>] = torch.tensor([<span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>, -<span class="hljs-number">30</span> * np.pi / <span class="hljs-number">180.</span>])<br>        body_pose = body_pose.view(body_pose.shape[<span class="hljs-number">0</span>], -<span class="hljs-number">1</span>)<br>        full_pose = build_full_pose(body_pose, global_orient, jaw_pose, leye_pose, reye_pose, left_hand_pose, right_hand_pose, pose2rot)<br><br>    batch_size = <span class="hljs-built_in">max</span>(betas.shape[<span class="hljs-number">0</span>], global_orient.shape[<span class="hljs-number">0</span>],<br>                     body_pose.shape[<span class="hljs-number">0</span>])<br><br>    <span class="hljs-comment"># ...</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>此处仍然需要注意轴角表达式和旋转矩阵的使用，关键在于<code>batch_rodrigues</code>函数的使用，它的实现在官方的<a
+target="_blank" rel="noopener" href="https://github.com/vchoutas/smplx/blob/main/smplx/lbs.py#L299">utils</a>中</li>
+<li>这里我们还实现了一个工具函数<code>create_identity_matrix_torch</code>，它可以生成指定batch维度的单位矩阵</li>
+<li>这里我们保持全局旋转global_orient不变</li>
+</ul>
+<p>在ECON中还增加了两个开关，分别用于返回关节点joint的转换和顶点vertex的转换，注意这里只是一个示例，并没有涉及到所有的改动，例如SMPLXOutput、lbs等相关代码也需要修改：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">..., return_joint_transformation: <span class="hljs-built_in">bool</span>=<span class="hljs-literal">False</span>, return_vertex_transformation: <span class="hljs-built_in">bool</span>=<span class="hljs-literal">False</span>, ...</span>):<br>    <span class="hljs-comment"># ...</span><br>    shapedirs = torch.cat([self.shapedirs, self.expr_dirs], dim=-<span class="hljs-number">1</span>)<br><br>    <span class="hljs-keyword">if</span> return_joint_transformation <span class="hljs-keyword">or</span> return_vertex_transformation:<br>        vertices, joints, joint_transformation, vertex_transformation = lbs(<br>            shape_components,<br>            full_pose,<br>            self.v_template,<br>            shapedirs,<br>            self.posedirs,<br>            self.J_regressor,<br>            self.parents,<br>            self.lbs_weights,<br>            pose2rot=pose2rot,<br>            return_transformation=<span class="hljs-literal">True</span>,<br>        )<br>    <span class="hljs-keyword">else</span>:<br>        vertices, joints = lbs(<br>            shape_components,<br>            full_pose,<br>            self.v_template,<br>            shapedirs,<br>            self.posedirs,<br>            self.J_regressor,<br>            self.parents,<br>            self.lbs_weights,<br>            pose2rot=pose2rot,<br>        )<br>        <br>    <span class="hljs-comment"># ...</span><br>    output = SMPLXOutput(vertices=vertices <span class="hljs-keyword">if</span> return_verts <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>,<br>                      joints=joints,<br>                      betas=betas,<br>                      expression=expression,<br>                      global_orient=global_orient,<br>                      transl=transl,<br>                      body_pose=body_pose,<br>                      left_hand_pose=left_hand_pose,<br>                      right_hand_pose=right_hand_pose,<br>                      jaw_pose=jaw_pose,<br>                      v_shaped=v_shaped,<br>                      full_pose=full_pose <span class="hljs-keyword">if</span> return_full_pose <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>,<br>                      joint_transformation=joint_transformation <span class="hljs-keyword">if</span> return_joint_transformation <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>,<br>                      vertex_transformation=vertex_transformation <span class="hljs-keyword">if</span> return_vertex_transformation <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>,)<br></code></pre></td></tr></table></figure>
+<p>以上我们主要是对smplx的原始实现进行了增强，使它可以支持旋转矩阵，也可以支持不同pose下的的姿态。利用现有条件，我们可以获取不同pose下的SMPLX模型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> trimesh<br><span class="hljs-keyword">import</span> smplx<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_identity_matrix_torch</span>(<span class="hljs-params">batch_dims, matrix_size=<span class="hljs-number">3</span></span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(batch_dims, <span class="hljs-built_in">int</span>):<br>        batch_dims = (batch_dims,)<br>    identity = torch.eye(matrix_size)<br>    identity = identity.expand(*batch_dims, matrix_size, matrix_size)<br>    <span class="hljs-keyword">return</span> identity<br><br>model = smplx.create(<br>    model_path=<span class="hljs-string">&#x27;smpl_related/models&#x27;</span>,<br>    model_type=<span class="hljs-string">&#x27;smplx&#x27;</span>,<br>    gender=<span class="hljs-string">&#x27;neutral&#x27;</span>,<br>    use_pca=<span class="hljs-literal">False</span><br>)<br><br>smplx_npz_path = <span class="hljs-string">&#x27;...&#x27;</span> <span class="hljs-comment"># 加载对应SMPLX Params 这里假设它们都是旋转矩阵的表达方式</span><br>smplx_pose_param = np.load(smplx_npz_path, allow_pickle=<span class="hljs-literal">True</span>)<br><br>betas = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;betas&#x27;</span>][:, :model.num_betas], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br>global_orient = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;global_orient&#x27;</span>], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, <span class="hljs-number">9</span>)<br>body_pose = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;body_pose&#x27;</span>], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br>left_hand_pose = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;left_hand_pose&#x27;</span>], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, <span class="hljs-number">9</span>)<br>right_hand_pose = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;right_hand_pose&#x27;</span>], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, <span class="hljs-number">9</span>)<br>transl = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;global_trans&#x27;</span>], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br>expression = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;expression&#x27;</span>][:, :model.num_expression_coeffs], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br>jaw_pose = torch.tensor(smplx_pose_param[<span class="hljs-string">&#x27;jaw_pose&#x27;</span>], dtype=torch.float32).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, <span class="hljs-number">9</span>)<br>leye_pose = torch.zeros([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>], dtype=torch.float32)<br>reye_pose = torch.zeros([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">9</span>], dtype=torch.float32)<br><br>global_orient_one = create_identity_matrix_torch(global_orient.shape[<span class="hljs-number">0</span>], <span class="hljs-number">3</span>).reshape(<span class="hljs-number">1</span>, <span class="hljs-number">9</span>)<br><br>smpl_out_dict = <span class="hljs-built_in">dict</span>()<br><span class="hljs-keyword">for</span> pose_type <span class="hljs-keyword">in</span> [<span class="hljs-string">&quot;a-pose&quot;</span>, <span class="hljs-string">&quot;t-pose&quot;</span>, <span class="hljs-string">&quot;da-pose&quot;</span>, <span class="hljs-string">&quot;pose&quot;</span>]:<br>    smpl_out_dict[pose_type] = model(<br>        betas=betas,<br>        global_orient=global_orient_one, <span class="hljs-comment"># 全局旋转在外面处理，这里统一设置为不旋转</span><br>        body_pose=body_pose,<br>        left_hand_pose=left_hand_pose,<br>        right_hand_pose=right_hand_pose,<br>        expression=expression,<br>        jaw_pose=jaw_pose,<br>        leye_pose=leye_pose,<br>        reye_pose=reye_pose,<br>        return_verts=<span class="hljs-literal">True</span>,<br>        return_full_pose=<span class="hljs-literal">True</span>,<br>        return_joint_transformation=<span class="hljs-literal">True</span>,<br>        return_vertex_transformation=<span class="hljs-literal">True</span>,<br>        pose2rot=<span class="hljs-literal">False</span>,<br>        pose_type=pose_type,<br>        )<br><br><span class="hljs-comment"># 保存不同pose下的mesh</span><br><span class="hljs-keyword">for</span> pose_type, output <span class="hljs-keyword">in</span> smpl_out_dict.items():<br>    smplx_mesh = trimesh.Trimesh(<br>        vertices=output.vertices.detach().cpu().numpy().squeeze(), <br>        faces=model.faces,<br>        maintain_order=<span class="hljs-literal">True</span>,<br>        process=<span class="hljs-literal">False</span><br>    )<br>    smplx_mesh.export(<span class="hljs-string">f&#x27;smplx_mesh_<span class="hljs-subst">&#123;pose_type&#125;</span>.ply&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p>如果将其保存成Mesh之后同时可视化，可以得到如下的结果：</p>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241225161200875.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="不同pose的可视化结果">
+<h3 id="joint对齐和绑定">joint对齐和绑定</h3>
+<p>接下来我们需要得到在Texturd Mesh中的关节点信息，这要求我们将Textured
+Mesh对齐到SMPLX模型下。</p>
+<p>首先我们需要处理Textured
+Mesh，使其大致与SMPLX模型能够对齐。因为在一些方法中，可能会对Textured
+Mesh作一些处理，包括移动和缩放等，我们需要将这些操作反向执行。这一步与特定的方法相关，下面是可能的流程，这里就不再展开。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># align textured mesh to smplx </span><br>textured_mesh = trimesh.load(<span class="hljs-string">&#x27;...&#x27;</span>)<br><br>textured_vertices = np.asarray(textured_mesh.vertices)<br>textured_vertices = textured_vertices / <span class="hljs-number">2</span> / smplx_pose_param[<span class="hljs-string">&#x27;scale&#x27;</span>] - smplx_pose_param[<span class="hljs-string">&#x27;offset&#x27;</span>]<br>textured_vertices = textured_vertices * np.array([<span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>])  <span class="hljs-comment"># y z轴翻转</span><br>textured_vertices = textured_vertices - smplx_pose_param[<span class="hljs-string">&#x27;global_trans&#x27;</span>]<br><br>textured_mesh.vertices = textured_vertices<br>textured_mesh.export(<span class="hljs-string">&#x27;textuded_mesh_aligned.ply&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p>总之，经过上面的步骤之后，我们可以得到一个大致与SMPLX对齐的Textured
+Mesh，但是pose仍然保持原样。而在上面我们也获得了一个与该Mesh
+pose相同的SMPLX模型，因此我们可以通过距离来找到Textured
+Mesh顶点与SMPLX顶点之间的对应关系：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> scipy.spatial <span class="hljs-keyword">import</span> cKDTree<br><br><span class="hljs-comment"># 选择在最准确的pose上进行对齐</span><br>smpl_vertices = smpl_out_dict[<span class="hljs-string">&#x27;pose&#x27;</span>].vertices.detach()[<span class="hljs-number">0</span>]<br>smpl_tree = cKDTree(smpl_vertices.cpu().numpy())<br>dist, idx = smpl_tree.query(textured_vertices, k=<span class="hljs-number">3</span>) <span class="hljs-comment"># 找到Textured Mesh的每个顶点在相应Pose的SMPL-X模型上最近的对应点3个 分别存储距离和索引</span><br></code></pre></td></tr></table></figure>
+<p>然后利用在转换过程中得到的旋转矩阵，我们可以将Textured
+Mesh转化成不同的Pose：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">textured_vertices = torch.tensor(textured_vertices).<span class="hljs-built_in">float</span>()<br>t_pose2pose = smpl_out_dict[<span class="hljs-string">&#x27;pose&#x27;</span>].vertex_transformation.detach()[<span class="hljs-number">0</span>][idx[:, <span class="hljs-number">0</span>]]  <span class="hljs-comment"># mesh的旋转与最近点保持一致</span><br>homo_coord = torch.ones_like(textured_vertices)[..., :<span class="hljs-number">1</span>]<br>textured_t_vertices = torch.inverse(t_pose2pose) @ torch.cat([textured_vertices, homo_coord], dim=-<span class="hljs-number">1</span>).unsqueeze(-<span class="hljs-number">1</span>)<br>textured_t_vertices = textured_t_vertices[:, :<span class="hljs-number">3</span>, <span class="hljs-number">0</span>].cpu()<br>textured_t_mesh = trimesh.Trimesh(vertices=textured_t_vertices, faces=textured_mesh.faces, maintain_order=<span class="hljs-literal">True</span>, process=<span class="hljs-literal">False</span>)<br><span class="hljs-comment"># textured_t_mesh.export(&#x27;textured_t_mesh.ply&#x27;)</span><br><br>t_pose2da_pose = smpl_out_dict[<span class="hljs-string">&#x27;da-pose&#x27;</span>].vertex_transformation.detach()[<span class="hljs-number">0</span>][idx[:, <span class="hljs-number">0</span>]]<br>textured_da_vertices = t_pose2da_pose @ t_pose2pose @ torch.cat([textured_vertices, homo_coord], dim=-<span class="hljs-number">1</span>).unsqueeze(-<span class="hljs-number">1</span>)<br>textured_da_vertices = textured_da_vertices[:, :<span class="hljs-number">3</span>, <span class="hljs-number">0</span>].cpu()<br><br>textured_da_mesh = trimesh.Trimesh(vertices=textured_da_vertices, faces=textured_mesh.faces, maintain_order=<span class="hljs-literal">True</span>, process=<span class="hljs-literal">False</span>)<br><span class="hljs-comment"># textured_da_mesh.export(&#x27;textured_da_mesh.ply&#x27;)</span><br></code></pre></td></tr></table></figure>
+<p>同时由于我们计算出了Textured
+Mesh与SMPLX模型顶点的之间的对应关系，据此可以计算出相应的J_regressor，lbs_weights，posedirs</p>
+<blockquote>
+<p>在ECON中选择在DA-pose下进行计算对应关系。如果DA-pose的Textured
+Mesh比较准确是确实可以这样做的。不过我们这里选择直接在原始pose下进行关键点的对应，因为在过程中查看发现DA-pose的Textured
+Mesh已经具有较大的撕裂和形变，并不准确。</p>
+<p>选择在哪个pose下进行对应关系计算需要有所取舍，我们可以在过程中进行可视化，如果DA-pose下Textured
+Mesh和SMPL-X
+Mesh比较贴合，那么优先在该Pose下对应。如果已经有较大的差距，那么选择在更贴合的原始Pose下进行对应。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python">smpl_vertices = smpl_out_dict[<span class="hljs-string">&#x27;pose&#x27;</span>].vertices.detach()[<span class="hljs-number">0</span>]<br>smpl_tree = cKDTree(smpl_vertices.cpu().numpy())<br>dist, idx = smpl_tree.query(textured_vertices, k=<span class="hljs-number">3</span>) <span class="hljs-comment"># 找到Textured Mesh的每个顶点在相应Pose的SMPL-X模型上最近的对应点3个 分别存储距离和索引</span><br>knn_weights = np.exp(-(dist**<span class="hljs-number">2</span>))<br>knn_weights /= knn_weights.<span class="hljs-built_in">sum</span>(axis=<span class="hljs-number">1</span>, keepdims=<span class="hljs-literal">True</span>)<br><br>textured_J_regressor = (model.J_regressor[:, idx] * knn_weights[<span class="hljs-literal">None</span>]).<span class="hljs-built_in">sum</span>(dim=-<span class="hljs-number">1</span>)<br>textured_lbs_weights = (model.lbs_weights.T[:, idx] * knn_weights[<span class="hljs-literal">None</span>]).<span class="hljs-built_in">sum</span>(dim=-<span class="hljs-number">1</span>).T<br><br>num_posedirs = model.posedirs.shape[<span class="hljs-number">0</span>]<br>textured_posedirs = ((<br>    model.posedirs.view(num_posedirs, -<span class="hljs-number">1</span>, <span class="hljs-number">3</span>)[:, idx, :] * knn_weights[<span class="hljs-literal">None</span>, ..., <span class="hljs-literal">None</span>]<br>).<span class="hljs-built_in">sum</span>(dim=-<span class="hljs-number">2</span>).view(num_posedirs, -<span class="hljs-number">1</span>).<span class="hljs-built_in">float</span>())<br><br>textured_J_regressor /= textured_J_regressor.<span class="hljs-built_in">sum</span>(dim=<span class="hljs-number">1</span>, keepdims=<span class="hljs-literal">True</span>).clip(<span class="hljs-built_in">min</span>=<span class="hljs-number">1e-10</span>)<br>textured_lbs_weights /= textured_lbs_weights.<span class="hljs-built_in">sum</span>(dim=<span class="hljs-number">1</span>, keepdims=<span class="hljs-literal">True</span>)<br><br>textured_mesh_info = &#123;<br>    <span class="hljs-string">&#x27;v_template&#x27;</span>: torch.tensor(textured_t_mesh.vertices).double().unsqueeze(<span class="hljs-number">0</span>),<br>    <span class="hljs-string">&#x27;posedirs&#x27;</span>: textured_posedirs,<br>    <span class="hljs-string">&#x27;J_regressor&#x27;</span>: textured_J_regressor,<br>    <span class="hljs-string">&#x27;parents&#x27;</span>: model.parents,<br>    <span class="hljs-string">&#x27;lbs_weights&#x27;</span>: textured_lbs_weights,<br>    <span class="hljs-string">&#x27;rgb&#x27;</span>: textured_mesh.visual.vertex_colors,<br>    <span class="hljs-string">&#x27;faces&#x27;</span>: textured_mesh.faces,<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>上面生成的texturd_mesh_infos实际上就存储了我们进行Textured
+Mesh驱动所需要的所有数据，包括关键点、蒙皮权重、pose主成分、J_regressor等等。注意这里的<code>v_template</code>需要的是处于T-pose下的Textured
+Mesh，因为原始SMPLX中的驱动逻辑是从T-pose出发的。</p>
+<h3 id="mesh驱动">Mesh驱动</h3>
+<p>此时我们已经获取了驱动Textured
+Mesh所需的所有数据，接下来的核心逻辑就是进行蒙皮操作。在ECON中实现了一个<a
+target="_blank" rel="noopener" href="https://github.com/YuliangXiu/ECON/blob/master/lib/smplx/lbs.py#L240">general_lbs</a>方法，我们可以利用这个方法来进行Mesh的变化。相比官方原始的lbs方法，general_lbs删除了beta
+<span
+class="math inline">\(\beta\)</span>，即忽略形状参数，只进行姿态的计算。</p>
+<p>这里我们仍旧需要获取一个Pose序列，这里我们假设已经完成了在上一部分Pose序列生成动画的操作，我们可以得到smplx_model的输出为<code>output</code>。这里面的vertices存储的是SMPLX的Mesh。我们需要通过这个output来得到整体的full_pose，以进行pose计算，核心逻辑如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">vertices_list = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tqdm(<span class="hljs-built_in">range</span>(seq_len)):<br>    vertices_batch, _ = general_lbs(<br>        pose = output.full_pose[i:i+<span class="hljs-number">1</span>, :],<br>        v_template = textured_mesh_info[<span class="hljs-string">&#x27;v_template&#x27;</span>],<br>        posedirs = textured_mesh_info[<span class="hljs-string">&#x27;posedirs&#x27;</span>],<br>        J_regressor = textured_mesh_info[<span class="hljs-string">&#x27;J_regressor&#x27;</span>],<br>        parents = textured_mesh_info[<span class="hljs-string">&#x27;parents&#x27;</span>],<br>        lbs_weights = textured_mesh_info[<span class="hljs-string">&#x27;lbs_weights&#x27;</span>],<br>    )<br>    vertices = vertices_batch.detach().cpu().numpy().squeeze()<br>    vertices += smplx_pose_seq[<span class="hljs-string">&#x27;trans&#x27;</span>][i]<br>    vertices_list.append(vertices)<br></code></pre></td></tr></table></figure>
+<p>然后有了这个vertices列表，我们就可以进行视频的生成，或者是Mesh的保存。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">textured_mesh_face = textured_mesh_info[<span class="hljs-string">&#x27;faces&#x27;</span>]<br>textured_mesh_rgb = textured_mesh_info[<span class="hljs-string">&#x27;rgb&#x27;</span>][:, :<span class="hljs-number">3</span>]/<span class="hljs-number">255.0</span><br><br>visualize_mesh_sequence_o3d(<br>    vertices_seq=vertices_list, <br>    faces=textured_mesh_face,<br>    output_path=<span class="hljs-string">&#x27;smplx_mesh_seq.mp4&#x27;</span>, <br>    fps=<span class="hljs-number">60</span>, <br>    colors=textured_mesh_rgb<br>)<br></code></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<img src="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq_man.gif" srcset="/img/bilibiliTV.gif" lazyload class="" title="smplx_mesh_seq_man">
+<blockquote>
+<p>通过上面的步骤，我们可以通过Pose序列来驱动Textured
+Mesh。但是这里核心步骤在于Textured Mesh和SMPLX之间对应关系的计算。</p>
+<p>最理想的情况下，是我们的Textured Mesh和T-pose的SMPLX
+Mesh能够完美对齐，这样计算出来的对应关系是最精确的。而在其他Pose下，可能由于不同部位之间非常接近，导致对应关系计算错误，最终Mesh驱动的效果也不是很好。一般来说，只要我们的Textured
+Mesh在T-pose下能够表现出较好的质量，后续的Pose驱动也就没有太大的问题。</p>
+</blockquote>
+<h1 id="参考文章">参考文章</h1>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://fesianxu.github.io/2023/01/03/smpl-model-20230103/">人体动作捕捉与SMPL模型
+(mocap and SMPL model) | 机器学习杂货铺总店</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://khanhha.github.io/posts/SMPL-model-introduction/">SMPL
+人体模型介绍 - 软件开发人员 --- SMPL Human Model Introduction - Software
+Developer</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/458868557">基于SMPL的三维人体重建-SMPL模型的计算与构建（3）
+- 知乎</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/sariel-sakura/p/14321818.html">SMPL模型学习
+- sariel_sakura - 博客园</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E6%95%B0%E5%AD%97%E4%BA%BA/" class="category-chain-item">数字人</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/3D/" class="print-no-link">#3D</a>
+      
+        <a href="/tags/SMPL/" class="print-no-link">#SMPL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SMPL模型介绍及使用</div>
+      <div>http://example.com/2024/12/19/SMPL模型介绍及使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年12月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/02/Colmap%E6%A0%B9%E6%8D%AE%E5%B7%B2%E7%9F%A5%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E8%BF%9B%E8%A1%8C%E9%87%8D%E5%BB%BA/" title="Colmap根据已知相机参数进行重建">
+                        <span class="hidden-mobile">Colmap根据已知相机参数进行重建</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.1/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
