@@ -24,7 +24,7 @@
 <meta property="og:description" content="tmux是一个非常有用的终端复用器。利用tmux，我们可以很方便地执行一些终端任务，但是这些终端并不会和会话绑定，这也意味着可以很容易利用tmux执行一些后台任务，而不需要利用其他一些复杂的命令进行任务挂起。本篇主要介绍了tmux的简单使用。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-12-16T06:01:34.000Z">
-<meta property="article:modified_time" content="2024-01-29T07:21:31.288Z">
+<meta property="article:modified_time" content="2025-02-26T03:38:06.094Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="工具">
 <meta name="twitter:card" content="summary_large_image">
@@ -269,7 +269,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          239 字
+          282 字
         
       </span>
     
@@ -281,7 +281,7 @@
         
         
           <!-- compatible with older versions-->
-          2 分钟
+          3 分钟
         
       </span>
     
@@ -328,7 +328,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-01-29T15:21:31+08:00
+                    本文最后更新于：2025-02-26T11:38:06+08:00
                   
                   
 
@@ -343,7 +343,7 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># Ubuntu 或 Debian</span><br>sudo apt-get install tmux<br><br><span class="hljs-comment"># CentOS 或 Fedora</span><br>sudo yum install tmux<br><br><span class="hljs-comment"># Mac</span><br>brew install tmux<br></code></pre></td></tr></table></figure>
 <p>在安装完成之后，直接在命令行中执行tmux就可以进入对应的窗口。在窗口中，可以看到相关的状态信息、窗口信息、系统信息等。</p>
 <p>常用的功能如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 新建会话</span><br>tmux new -s &lt;session-name&gt;<br><br><span class="hljs-comment"># 分离会话（退出当前窗口，但是会话中的进程仍然在后台运行）</span><br>tmux detach<br><br><span class="hljs-comment"># 查看所有的tmux会话</span><br>tmux <span class="hljs-built_in">ls</span><br>tmux list-session<br><br><span class="hljs-comment"># 重新进入某个会话</span><br>tmux attach -t 0<br>tmux attach -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 杀死某个会话</span><br>tmux kill-session -t 0<br>tmux kill-session -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 切换会话</span><br>tmux switch -t 0<br>tmux switch -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 重命名会话</span><br>tmux rename-session -t 0 &lt;new-name&gt;<br></code></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 新建会话</span><br>tmux new -s &lt;session-name&gt;<br><br><span class="hljs-comment"># 分离会话（退出当前窗口，但是会话中的进程仍然在后台运行）</span><br>tmux detach<br><br><span class="hljs-comment"># 查看所有的tmux会话</span><br>tmux <span class="hljs-built_in">ls</span><br>tmux list-session<br><br><span class="hljs-comment"># 重新进入某个会话</span><br>tmux attach -t 0<br>tmux attach -t &lt;session-name&gt;<br>tmux a -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 杀死某个会话</span><br>tmux kill-session -t 0<br>tmux kill-session -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 切换会话</span><br>tmux switch -t 0<br>tmux switch -t &lt;session-name&gt;<br><br><span class="hljs-comment"># 重命名会话</span><br>tmux rename-session -t 0 &lt;new-name&gt;<br><br><span class="hljs-comment"># 将某个会话中的现有输出导出到文件中(包括在缓冲区中的)</span><br>tmux capture-pane -t &lt;session-name&gt; -S - -p &gt; ~/output.log<br></code></pre></td></tr></table></figure>
 <p>常用流程：</p>
 <ol type="1">
 <li>新建会话：<code>tmux new -s my_session</code></li>

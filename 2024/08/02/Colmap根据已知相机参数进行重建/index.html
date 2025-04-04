@@ -24,7 +24,7 @@
 <meta property="og:description" content="本篇主要介绍了如何在已知相机内外参数的情况下利用Colmap来进行重建。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-08-02T13:22:21.000Z">
-<meta property="article:modified_time" content="2024-11-25T08:30:58.901Z">
+<meta property="article:modified_time" content="2025-02-10T06:17:58.390Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="Colmap">
@@ -282,7 +282,7 @@
         
         
           <!-- compatible with older versions-->
-          15 分钟
+          16 分钟
         
       </span>
     
@@ -329,7 +329,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2024-11-25T16:30:58+08:00
+                    本文最后更新于：2025-02-10T14:17:58+08:00
                   
                   
 
@@ -355,7 +355,14 @@ extractor和exhaustive_matcher命令，分别进行图像的特征抽取和特�
 table，我们需要将真实的相机内参导入并更新database.db。一种方法是通过Colmap
 UI来更新，不过这种方式需要人工手动进行。另一种方式是参考官方提供的<a
 target="_blank" rel="noopener" href="https://github.com/colmap/colmap/blob/main/scripts/python/database.py">database.py</a>来完成相应的操作。实际上需要完成的操作也非常简单，只需要执行sql语句来更新database中cameras条目的记录即可。不过需要注意的是这里相机类型和具体label的对应。</p>
-<p>接下来需要构建出<code>images.txt</code>文件。在colmap默认读取images文件夹下图像得到的database.db中，image_id和image_name的对应关系是随机的，而<code>images.txt</code>中的内容需要保持与database.db中对应关系的一致。因此我们需要首先从database.db中读取现有的对应关系，然后根据这个对应关系再来构建<code>images.txt</code>。这一步骤实际上也比较简单，涉及到SELECT
+<p>接下来需要构建出<code>images.txt</code>文件。在colmap默认读取images文件夹下图像得到的database.db中，image_id和image_name的对应关系是随机的，而<code>images.txt</code>中的内容需要保持与database.db中对应关系的一致。</p>
+<blockquote>
+<p>关于顺序问题可以参考issue：<a
+target="_blank" rel="noopener" href="https://github.com/colmap/colmap/issues/2250">The images are
+ordered weirdly in the database.db after doing feature extraction ·
+Issue #2250 · colmap/colmap</a></p>
+</blockquote>
+<p>因此我们需要首先从database.db中读取现有的对应关系，然后根据这个对应关系再来构建<code>images.txt</code>。这一步骤实际上也比较简单，涉及到SELECT
 SQL语句。从database.db中导出的images
 list中只有image_id和image_name的对应关系，没有相机外参。根据这个list来创建<code>images.txt</code>，其中image_id和image_name需要保持对应关系，同时增加已知的相机外参，即可构建出<code>images.txt</code>。</p>
 <p><code>images.txt</code>每一行的格式如下：</p>

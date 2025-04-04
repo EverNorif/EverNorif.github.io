@@ -1,0 +1,1053 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="taichi旨在帮助计算机图形研究人员快速实现可在GPU上执行的视觉计算和物理模拟算法。它是一种Domain-Specific Language(DSL)，使用Python作为前端。本篇主要记录了taichi的一些基础使用与一些核心概念。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="taichi学习笔记(1)-基础使用">
+<meta property="og:url" content="http://example.com/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="taichi旨在帮助计算机图形研究人员快速实现可在GPU上执行的视觉计算和物理模拟算法。它是一种Domain-Specific Language(DSL)，使用Python作为前端。本篇主要记录了taichi的一些基础使用与一些核心概念。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/julia_fractal.gif">
+<meta property="og:image" content="http://example.com/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/physical_simulation.gif">
+<meta property="og:image" content="http://example.com/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/image-20250404221828942.png">
+<meta property="article:published_time" content="2025-04-04T07:39:38.000Z">
+<meta property="article:modified_time" content="2025-04-04T15:41:28.000Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="taichi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/julia_fractal.gif">
+  
+  
+  
+  <title>taichi学习笔记(1)-基础使用 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="taichi学习笔记(1)-基础使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-04 15:39" pubdate>
+          2025年4月4日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          54 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">taichi学习笔记(1)-基础使用</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2025-04-04T23:41:28+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <p>taichi的安装非常简单，只需要在python环境中安装即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip install taichi<br></code></pre></td></tr></table></figure>
+<p>本篇的内容均来自官网教程，主要记录的是一些关键信息，更多细节可以查看原始文档：</p>
+<ul>
+<li>Docs: https://docs.taichi-lang.org/docs/overview</li>
+</ul>
+<h1 id="quick-start">Quick Start</h1>
+<h2 id="julia-fractal">Julia Fractal</h2>
+<p>第一个简单例子是使用taichi绘制Julia分形图案。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> taichi <span class="hljs-keyword">as</span> ti<br><span class="hljs-keyword">import</span> taichi.math <span class="hljs-keyword">as</span> tm<br><br>ti.init(arch=ti.gpu)<br><br>n = <span class="hljs-number">320</span><br>pixels = ti.field(dtype=<span class="hljs-built_in">float</span>, shape=(n * <span class="hljs-number">2</span>, n))<br><br><span class="hljs-meta">@ti.func  </span><span class="hljs-comment"># taichi function注解</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">complex_sqr</span>(<span class="hljs-params">z</span>):  <span class="hljs-comment"># complex square of a 2D vector</span><br>    <span class="hljs-keyword">return</span> tm.vec2(z[<span class="hljs-number">0</span>] * z[<span class="hljs-number">0</span>] - z[<span class="hljs-number">1</span>] * z[<span class="hljs-number">1</span>], <span class="hljs-number">2</span> * z[<span class="hljs-number">0</span>] * z[<span class="hljs-number">1</span>])<br><br><span class="hljs-meta">@ti.kernel </span><span class="hljs-comment"># taichi kernel注解</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">paint</span>(<span class="hljs-params">t: <span class="hljs-built_in">float</span></span>):<br>    <span class="hljs-keyword">for</span> i, j <span class="hljs-keyword">in</span> pixels:  <span class="hljs-comment"># Parallelized over all pixels</span><br>        c = tm.vec2(-<span class="hljs-number">0.8</span>, tm.cos(t) * <span class="hljs-number">0.2</span>)<br>        z = tm.vec2(i / n - <span class="hljs-number">1</span>, j / n - <span class="hljs-number">0.5</span>) * <span class="hljs-number">2</span><br>        iterations = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">while</span> z.norm() &lt; <span class="hljs-number">20</span> <span class="hljs-keyword">and</span> iterations &lt; <span class="hljs-number">50</span>:<br>            z = complex_sqr(z) + c  <span class="hljs-comment"># 在taichi kernel中调用taichi function</span><br>            iterations += <span class="hljs-number">1</span><br>        pixels[i, j] = <span class="hljs-number">1</span> - iterations * <span class="hljs-number">0.02</span><br><br>gui = ti.GUI(<span class="hljs-string">&quot;Julia Set&quot;</span>, res=(n * <span class="hljs-number">2</span>, n))<br><br>i = <span class="hljs-number">0</span><br><span class="hljs-keyword">while</span> gui.running:<br>    paint(i * <span class="hljs-number">0.03</span>) <span class="hljs-comment"># 调用taichi kernel</span><br>    gui.set_image(pixels)<br>    gui.show()<br>    i += <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<img src="/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/julia_fractal.gif" srcset="/img/bilibiliTV.gif" lazyload class="" title="julia_fractal">
+<p>如果在headless的服务器上，可以通过保存图像来并转化为video来进行可视化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> taichi <span class="hljs-keyword">as</span> ti<br><span class="hljs-keyword">import</span> taichi.math <span class="hljs-keyword">as</span> tm<br><br>ti.init(arch=ti.gpu)<br><br>n = <span class="hljs-number">320</span><br>pixels = ti.field(dtype=<span class="hljs-built_in">float</span>, shape=(n * <span class="hljs-number">2</span>, n))<br><br><span class="hljs-meta">@ti.func</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">complex_sqr</span>(<span class="hljs-params">z</span>):  <span class="hljs-comment"># complex square of a 2D vector</span><br>    <span class="hljs-keyword">return</span> tm.vec2(z[<span class="hljs-number">0</span>] * z[<span class="hljs-number">0</span>] - z[<span class="hljs-number">1</span>] * z[<span class="hljs-number">1</span>], <span class="hljs-number">2</span> * z[<span class="hljs-number">0</span>] * z[<span class="hljs-number">1</span>])<br><br><span class="hljs-meta">@ti.kernel</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">paint</span>(<span class="hljs-params">t: <span class="hljs-built_in">float</span></span>):<br>    <span class="hljs-keyword">for</span> i, j <span class="hljs-keyword">in</span> pixels:  <span class="hljs-comment"># Parallelized over all pixels</span><br>        c = tm.vec2(-<span class="hljs-number">0.8</span>, tm.cos(t) * <span class="hljs-number">0.2</span>)<br>        z = tm.vec2(i / n - <span class="hljs-number">1</span>, j / n - <span class="hljs-number">0.5</span>) * <span class="hljs-number">2</span><br>        iterations = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">while</span> z.norm() &lt; <span class="hljs-number">20</span> <span class="hljs-keyword">and</span> iterations &lt; <span class="hljs-number">50</span>:<br>            z = complex_sqr(z) + c<br>            iterations += <span class="hljs-number">1</span><br>        pixels[i, j] = <span class="hljs-number">1</span> - iterations * <span class="hljs-number">0.02</span><br><br>window = ti.ui.Window(<span class="hljs-string">&quot;Julia Set&quot;</span>, res=(n * <span class="hljs-number">2</span>, n), show_window=<span class="hljs-literal">False</span>) <span class="hljs-comment"># show_window=False来设置headless模式</span><br>canvas = window.get_canvas()<br>frames = []<br><br>i = <span class="hljs-number">0</span><br><span class="hljs-keyword">while</span> window.running:<br>    paint(i * <span class="hljs-number">0.03</span>)<br>    canvas.set_image(pixels)<br>    <span class="hljs-comment"># window.save_image(f&quot;julia_&#123;i&#125;.png&quot;)  # 直接保存图像到文件系统</span><br>    frames.append(window.get_image_buffer_as_numpy()[..., :<span class="hljs-number">3</span>])  <span class="hljs-comment"># 存储frame内容到内存中</span><br>    i += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">if</span> i &gt;= <span class="hljs-number">100</span>:<br>        <span class="hljs-keyword">break</span><br><br><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br>frames = np.array(frames) <span class="hljs-comment"># length, width, height, channel</span><br>frames = frames.transpose(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>) <span class="hljs-comment"># mediapy默认使用高宽格式，这里需要转换</span><br><br><span class="hljs-keyword">import</span> mediapy <span class="hljs-keyword">as</span> mp<br><br>mp.show_video(frames, fps=<span class="hljs-number">30</span>)<br></code></pre></td></tr></table></figure>
+<h2 id="physical-simulation">Physical Simulation</h2>
+<p>以下程序可以用来完成一个物理仿真程序，它模拟了一块布料落到小球上的过程。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> taichi <span class="hljs-keyword">as</span> ti<br>ti.init(arch=ti.gpu)  <span class="hljs-comment"># Alternatively, ti.init(arch=ti.cpu)</span><br><br><span class="hljs-comment"># 布料的仿真：使用质点弹簧系统</span><br>n = <span class="hljs-number">128</span><br>quad_size = <span class="hljs-number">1.0</span> / n<br>dt = <span class="hljs-number">4e-2</span> / n<br>substeps = <span class="hljs-built_in">int</span>(<span class="hljs-number">1</span> / <span class="hljs-number">60</span> // dt)<br><br>gravity = ti.Vector([<span class="hljs-number">0</span>, -<span class="hljs-number">9.8</span>, <span class="hljs-number">0</span>])  <span class="hljs-comment"># 重力表示</span><br><span class="hljs-comment"># 弹性相关参数</span><br>spring_Y = <span class="hljs-number">3e4</span><br>dashpot_damping = <span class="hljs-number">1e4</span><br>drag_damping = <span class="hljs-number">1</span><br><br><span class="hljs-comment"># 小球的参数定义</span><br>ball_radius = <span class="hljs-number">0.3</span><br>ball_center = ti.Vector.field(<span class="hljs-number">3</span>, dtype=<span class="hljs-built_in">float</span>, shape=(<span class="hljs-number">1</span>, ))<br>ball_center[<span class="hljs-number">0</span>] = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>]<br><br>x = ti.Vector.field(<span class="hljs-number">3</span>, dtype=<span class="hljs-built_in">float</span>, shape=(n, n))  <span class="hljs-comment"># 使用n*n的质点位置数组表示布料的位置</span><br>v = ti.Vector.field(<span class="hljs-number">3</span>, dtype=<span class="hljs-built_in">float</span>, shape=(n, n))  <span class="hljs-comment"># 使用n*n的质点速度数组表征各个质点的速度</span><br><br><span class="hljs-comment"># 定义组成整个布料的三角形网络</span><br>num_triangles = (n - <span class="hljs-number">1</span>) * (n - <span class="hljs-number">1</span>) * <span class="hljs-number">2</span><br>indices = ti.field(<span class="hljs-built_in">int</span>, shape=num_triangles * <span class="hljs-number">3</span>) <span class="hljs-comment"># 组成三角形的索引</span><br>vertices = ti.Vector.field(<span class="hljs-number">3</span>, dtype=<span class="hljs-built_in">float</span>, shape=n * n) <span class="hljs-comment"># 顶点的位置</span><br>colors = ti.Vector.field(<span class="hljs-number">3</span>, dtype=<span class="hljs-built_in">float</span>, shape=n * n) <span class="hljs-comment"># 顶点的颜色</span><br><br>bending_springs = <span class="hljs-literal">False</span><br><br><span class="hljs-comment"># 初始化布料的质点和速度数组</span><br><span class="hljs-meta">@ti.kernel</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">initialize_mass_points</span>():<br>    random_offset = ti.Vector([ti.random() - <span class="hljs-number">0.5</span>, ti.random() - <span class="hljs-number">0.5</span>]) * <span class="hljs-number">0.1</span><br><br>    <span class="hljs-keyword">for</span> i, j <span class="hljs-keyword">in</span> x:<br>        x[i, j] = [<br>            i * quad_size - <span class="hljs-number">0.5</span> + random_offset[<span class="hljs-number">0</span>], <span class="hljs-number">0.6</span>,<br>            j * quad_size - <span class="hljs-number">0.5</span> + random_offset[<span class="hljs-number">1</span>]<br>        ]<br>        v[i, j] = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>]<br><br><span class="hljs-comment"># 初始化布料的三角形网络</span><br><span class="hljs-meta">@ti.kernel</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">initialize_mesh_indices</span>():<br>    <span class="hljs-keyword">for</span> i, j <span class="hljs-keyword">in</span> ti.ndrange(n - <span class="hljs-number">1</span>, n - <span class="hljs-number">1</span>):<br>        quad_id = (i * (n - <span class="hljs-number">1</span>)) + j<br>        <span class="hljs-comment"># 1st triangle of the square</span><br>        indices[quad_id * <span class="hljs-number">6</span> + <span class="hljs-number">0</span>] = i * n + j<br>        indices[quad_id * <span class="hljs-number">6</span> + <span class="hljs-number">1</span>] = (i + <span class="hljs-number">1</span>) * n + j<br>        indices[quad_id * <span class="hljs-number">6</span> + <span class="hljs-number">2</span>] = i * n + (j + <span class="hljs-number">1</span>)<br>        <span class="hljs-comment"># 2nd triangle of the square</span><br>        indices[quad_id * <span class="hljs-number">6</span> + <span class="hljs-number">3</span>] = (i + <span class="hljs-number">1</span>) * n + j + <span class="hljs-number">1</span><br>        indices[quad_id * <span class="hljs-number">6</span> + <span class="hljs-number">4</span>] = i * n + (j + <span class="hljs-number">1</span>)<br>        indices[quad_id * <span class="hljs-number">6</span> + <span class="hljs-number">5</span>] = (i + <span class="hljs-number">1</span>) * n + j<br><br>    <span class="hljs-keyword">for</span> i, j <span class="hljs-keyword">in</span> ti.ndrange(n, n):<br>        <span class="hljs-keyword">if</span> (i // <span class="hljs-number">4</span> + j // <span class="hljs-number">4</span>) % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>:<br>            colors[i * n + j] = (<span class="hljs-number">0.22</span>, <span class="hljs-number">0.72</span>, <span class="hljs-number">0.52</span>)<br>        <span class="hljs-keyword">else</span>:<br>            colors[i * n + j] = (<span class="hljs-number">1</span>, <span class="hljs-number">0.334</span>, <span class="hljs-number">0.52</span>)<br><br>initialize_mesh_indices()<br><br><span class="hljs-comment"># 计算影响单个质点的周围质点offset</span><br>spring_offsets = []<br><span class="hljs-keyword">if</span> bending_springs:<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(-<span class="hljs-number">1</span>, <span class="hljs-number">2</span>):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(-<span class="hljs-number">1</span>, <span class="hljs-number">2</span>):<br>            <span class="hljs-keyword">if</span> (i, j) != (<span class="hljs-number">0</span>, <span class="hljs-number">0</span>):<br>                spring_offsets.append(ti.Vector([i, j]))<br><br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(-<span class="hljs-number">2</span>, <span class="hljs-number">3</span>):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(-<span class="hljs-number">2</span>, <span class="hljs-number">3</span>):<br>            <span class="hljs-keyword">if</span> (i, j) != (<span class="hljs-number">0</span>, <span class="hljs-number">0</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">abs</span>(i) + <span class="hljs-built_in">abs</span>(j) &lt;= <span class="hljs-number">2</span>:<br>                spring_offsets.append(ti.Vector([i, j]))<br><br><span class="hljs-comment"># 计算在每个dt中的变化step</span><br><span class="hljs-meta">@ti.kernel</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">substep</span>():<br>    <span class="hljs-comment"># 每个质点都受到重力的影响</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ti.grouped(x):<br>        v[i] += gravity * dt<br>    <br>    <span class="hljs-comment"># 模拟布料弹簧质点系统的内力</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ti.grouped(x):<br>        force = ti.Vector([<span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>])<br>        <span class="hljs-keyword">for</span> spring_offset <span class="hljs-keyword">in</span> ti.static(spring_offsets):<br>            j = i + spring_offset<br>            <span class="hljs-keyword">if</span> <span class="hljs-number">0</span> &lt;= j[<span class="hljs-number">0</span>] &lt; n <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> &lt;= j[<span class="hljs-number">1</span>] &lt; n:<br>                x_ij = x[i] - x[j]<br>                v_ij = v[i] - v[j]<br>                d = x_ij.normalized()<br>                current_dist = x_ij.norm()<br>                original_dist = quad_size * <span class="hljs-built_in">float</span>(i - j).norm()<br>                <span class="hljs-comment"># Spring force</span><br>                force += -spring_Y * d * (current_dist / original_dist - <span class="hljs-number">1</span>)<br>                <span class="hljs-comment"># Dashpot damping</span><br>                force += -v_ij.dot(d) * d * dashpot_damping * quad_size<br><br>        v[i] += force * dt<br>    <span class="hljs-comment"># 模拟布料与球的碰撞</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ti.grouped(x):<br>        v[i] *= ti.exp(-drag_damping * dt)<br>        offset_to_center = x[i] - ball_center[<span class="hljs-number">0</span>]<br>        <span class="hljs-keyword">if</span> offset_to_center.norm() &lt;= ball_radius:<br>            <span class="hljs-comment"># Velocity projection</span><br>            normal = offset_to_center.normalized()<br>            v[i] -= <span class="hljs-built_in">min</span>(v[i].dot(normal), <span class="hljs-number">0</span>) * normal<br>        x[i] += dt * v[i]  <span class="hljs-comment"># 计算每个质点的最终速度，然后利用dt作用在质点上，得到最终的位移</span><br><br><span class="hljs-comment"># 根据质点位置更新布料三角形网络的位置</span><br><span class="hljs-meta">@ti.kernel</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">update_vertices</span>():<br>    <span class="hljs-keyword">for</span> i, j <span class="hljs-keyword">in</span> ti.ndrange(n, n):<br>        vertices[i * n + j] = x[i, j]<br><br><span class="hljs-comment"># 利用GUI进行渲染</span><br>window = ti.ui.Window(<span class="hljs-string">&quot;Taichi Cloth Simulation on GGUI&quot;</span>, (<span class="hljs-number">1024</span>, <span class="hljs-number">1024</span>), vsync=<span class="hljs-literal">True</span>)<br>canvas = window.get_canvas()<br>canvas.set_background_color((<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>))<br>scene = window.get_scene()<br>camera = ti.ui.Camera()<br><br>current_t = <span class="hljs-number">0.0</span><br>initialize_mass_points()<br><br><span class="hljs-keyword">while</span> window.running:<br>    <span class="hljs-keyword">if</span> current_t &gt; <span class="hljs-number">1.5</span>:<br>        <span class="hljs-comment"># Reset</span><br>        initialize_mass_points()<br>        current_t = <span class="hljs-number">0</span><br>    <br>    <span class="hljs-comment"># 进行每一步的模拟</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(substeps):<br>        substep()<br>        current_t += dt<br>    update_vertices()<br>    <br>    <span class="hljs-comment"># 在每个step中都需要设置camera的位置</span><br>    camera.position(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">3</span>)<br>    camera.lookat(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">0</span>)<br>    scene.set_camera(camera)<br>    <span class="hljs-comment"># 设置场景的光源</span><br>    scene.point_light(pos=(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>), color=(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>))<br>    scene.ambient_light((<span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>))<br>    <span class="hljs-comment"># 更新scene中的mesh表示</span><br>    scene.mesh(vertices,<br>               indices=indices,<br>               per_vertex_color=colors,<br>               two_sided=<span class="hljs-literal">True</span>)<br><br>    <span class="hljs-comment"># Draw a smaller ball to avoid visual penetration</span><br>    scene.particles(ball_center, radius=ball_radius * <span class="hljs-number">0.95</span>, color=(<span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>)) <span class="hljs-comment"># color:[rgb]</span><br>    canvas.scene(scene)<br>    window.show()<br></code></pre></td></tr></table></figure>
+<p>最终的仿真效果如下：</p>
+<img src="/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/physical_simulation.gif" srcset="/img/bilibiliTV.gif" lazyload class="" title="physical_simulation">
+<p>关于该程序，除了注释，还有一些需要注意的地方：</p>
+<ul>
+<li>Arch的尝试顺序：如果指定了<code>ti.gpu</code>,那么系统会以此尝试<code>ti.cuda</code>,
+<code>ti.vulkan</code>, <code>ti.opengl/ti.Metal</code>
+<ul>
+<li>其中<a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Vulkan">Vulkan</a>是一个低开销，跨平台的二维/三维图形与计算的API，与OpenGL类似，Vulkan针对全平台即时3D图形程序而设计，并提供高性能与更均衡的CPU和GPU占用</li>
+</ul></li>
+<li><code>for i in ti.grouped(x)</code> 是taichi
+的一个重要特性。这意味着这个 for 循环会自动遍历<code>x</code>
+的所有元素，无论其形状如何，都是一个一维数组，省去了你编写多层 for
+循环的麻烦，而返回的索引则基本是tuple的格式，能够一步索引到对应的元素</li>
+</ul>
+<h1 id="core-concept-introduction">Core Concept Introduction</h1>
+<h2 id="kernels-functions">Kernels &amp; Functions</h2>
+<p>taichi的语法与Python非常类似，但是并不完全相同。taichi提供了两个装饰器，分别对应taichi
+kernel和taichi function。</p>
+<ul>
+<li><code>@ti.kernel</code>：被修饰的函数称为taichi
+kernel，这些函数是taichi运行时运行任务的入口，必须要由python代码直接调用。</li>
+<li><code>@ti.func</code>：被修饰的函数称为taichi
+function，这些函数是taichi kernel的组成部分，只能由另一个taichi
+function或者kernel调用。</li>
+</ul>
+<p>有了这两个装饰器，我们就可以定义两个概念，taichi作用域和python作用域。在taichi
+kernel或者taichi
+function内部的代码都属于taichi作用域，这些代码在运行的时候会在多核CPU或者GPU上并行编译并执行，以实现高性能计算，可以对应CUDA中的device
+side；其余部份的代码则均属于python作用域，可以对应CUDA中的host
+side。</p>
+<blockquote>
+<p>taichi 函数和taichi
+kernel不由Python的解释器执行，而是被JIT编译器接管并部署到并行多核CPU或者GPU上。</p>
+</blockquote>
+<p>关于taichi kernels，有如下需要注意的地方：</p>
+<ul>
+<li><p>taichi
+kernel是taichi执行的入口点，只能被Python作用域中的代码调用，不允许在taichi作用域中被调用。即无论是taichi
+kernel还是taichi function都不允许调用taichi kernel；</p></li>
+<li><p>taichi
+kernel中的for循环会被自动并行处理，但是需要注意的是，只有最外层的for会被并行，嵌套的for不会被并行处理。同时被并行的循环不支持break，不过内层循环支持；</p></li>
+<li><p>一个taichi
+kernel最多允许有一个返回值，最多允许一个返回语句;</p></li>
+<li><p>taichi
+kernel的参数和返回值需要类型提示，如果没有参数或者没有返回值，则相应不需要类型提示；</p></li>
+<li><p>taichi
+kernel可以接受多个参数，包括标量，ti.types中支持的类型，但是其中不包括Python中的objects</p>
+<ul>
+<li>值传递的类型：标量、<code>ti.types.matrix()</code>,
+<code>ti.types.vector()</code>, <code>ti.types.struct()</code>,</li>
+<li>引用传递的类型：<code>ti.types.ndarray()</code>,
+<code>ti.template()</code></li>
+</ul></li>
+<li><p>可以定义多个taichi
+kernel，这些kernel彼此独立，按照<strong>首次调用的顺序</strong>进行编译和执行，编译后的kernel会被缓存，以减少后续调用的启动开销；</p></li>
+<li><p>如果taichi
+kernel中用到了python全局变量，会被视为编译时常量，即在kernel<strong>被编译</strong>的时候，这些变量的值在kernel就被记录为常量，而不会跟踪后续的更改；</p></li>
+</ul>
+<p>关于taichi function，有如下需要注意的地方：</p>
+<ul>
+<li>taichi function只能在taichi作用域中被调用，即只能在taichi
+kernel或者taichi function中调用taichi function；</li>
+<li>taichi function并不支持函数内的递归调用，因为taichi
+function在编译的时候是inline展开，最终得到单个大型function。而递归调用会导致编译时函数调用堆栈的无限扩展；</li>
+<li>taichi function不强制需要类型提示，不过也建议使用；</li>
+<li>taichi function可以有多个返回值，但是同样不能有多个return语句</li>
+</ul>
+<h2 id="type-system">Type System</h2>
+<p>ti.types模块中定义了所有支持的数据类型，这些数据类型分为两类：原始数据类型和复合数据类型。</p>
+<ul>
+<li>原始数据类型：包括常用的数字数据类型</li>
+<li>复合数据类型：包括类似数组或者结构体的数据类型</li>
+</ul>
+<blockquote>
+<p>taichi是一种静态类型编程语言，即taichi作用域中的变量类型在编译的时候被确定，一旦某个变量被声明了是某个类型(例如第一次被赋值)，后续就始终维持该类型，不能被分配其他类型的值。如果赋值了不同类型的值，会首先尝试转换，如果无法自动转换，则会抛出错误。</p>
+<p>当然也可以显式地进行数据类型转换。</p>
+</blockquote>
+<p>taichi中的原始数据类型均为标量，例如<code>ti.i32</code>，<code>ti.f32</code>等，以下是不同后端支持的taichi原始数据类型说明，其中
+○。表示需要后端扩展。</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>Backend</th>
+<th>i8</th>
+<th>i16</th>
+<th>i32</th>
+<th>i64</th>
+<th>u8</th>
+<th>u16</th>
+<th>u32</th>
+<th>u64</th>
+<th>f16</th>
+<th>f32</th>
+<th>f64</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CPU</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="even">
+<td>CUDA</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="odd">
+<td>OpenGL</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+<td>○</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="even">
+<td>Metal</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+<tr class="odd">
+<td>Vulkan</td>
+<td>○</td>
+<td>○</td>
+<td>✓</td>
+<td>○</td>
+<td>○</td>
+<td>○</td>
+<td>✓</td>
+<td>○</td>
+<td>✓</td>
+<td>✓</td>
+<td>○</td>
+</tr>
+</tbody>
+</table>
+<p>默认的原始数据类型是<code>ti.i32</code>和<code>ti.f32</code>，可以在调用init的时候指定默认的原始数据类型。同时python中的<code>int</code>和<code>float</code>，如果在对应指的就是taichi中默认的原始数据类型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">ti.init(default_ip=ti.i64)  <span class="hljs-comment"># Sets the default integer type to ti.i64</span><br>ti.init(default_fp=ti.f64)  <span class="hljs-comment"># Sets the default floating-point type to ti.f64</span><br></code></pre></td></tr></table></figure>
+<p>taichi中的复合数据类型则是由用户定义的数据类型，由多个元素组成，支持的复合数据类型包括vector、matrix、ndarray和struct。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 定义向量和矩阵类型type</span><br>vec4d = ti.types.vector(<span class="hljs-number">4</span>, ti.f64)  <span class="hljs-comment"># a 64-bit floating-point 4D vector type</span><br>mat4x3i = ti.types.matrix(<span class="hljs-number">4</span>, <span class="hljs-number">3</span>, <span class="hljs-built_in">int</span>)  <span class="hljs-comment"># a 4x3 integer matrix type</span><br><br><span class="hljs-comment"># 利用定义的type来实例化</span><br>v_float = vec4d(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>)<br>m_int = mat4x3i([[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>], [<span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>], [<span class="hljs-number">10</span>, <span class="hljs-number">11</span>, <span class="hljs-number">12</span>]])<br><br><span class="hljs-comment"># vector和matrix的类型转换</span><br>v_int = <span class="hljs-built_in">int</span>(v_float)<br><br><span class="hljs-comment"># 或者使用struct/dataclass来定义复合类型</span><br><br><span class="hljs-comment"># 使用struct定义复合类型</span><br>vec3 = ti.types.vector(<span class="hljs-number">3</span>, <span class="hljs-built_in">float</span>)<br><span class="hljs-comment"># 定义一个球的类型</span><br>sphere_type = ti.types.struct(center=vec3, radius=<span class="hljs-built_in">float</span>)<br><span class="hljs-comment"># 实例化不同的球type</span><br>sphere1 = sphere_type(center=vec3([<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>]), radius=<span class="hljs-number">1.0</span>)<br>sphere2 = sphere_type(center=vec3([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>]), radius=<span class="hljs-number">1.0</span>)<br><br><span class="hljs-comment"># 使用dataclass定义复合类型</span><br><span class="hljs-meta">@ti.dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sphere</span>:<br>    center: vec3<br>    radius: <span class="hljs-built_in">float</span><br><span class="hljs-comment"># 该类的定义与上面sphere_type的定义能够完成相同的事情</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>注意利用<code>@ti.dataclass</code>能够完成与<code>ti.types.struct</code>相同的事情，同时我们可以在这个类中定义成员函数，更好的实现面向对象编程(OOP)</li>
+<li>而关于类的初始化，则同时提供按照顺序，按照关键字参数进行初始化的功能。需要注意也支持部分指定，未指定的成员自动设置为0</li>
+<li>复合类型中只有vector和matrix支持类型转换，其中类型转换是按照元素执行的</li>
+</ul>
+<h2 id="data-containers">Data Containers</h2>
+<p>taichi中的数据容器是field，这个概念借用于数学和物理学。field是taichi中的一种全局数据容器，可以直接从python作用域和taichi作用域访问。taichi中的field被定义为某种元素的多维数组，字段的元素可以是标量scalar、向量vector、矩阵matrix或者结构体struct。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># scalar fields：存储的元素是标量</span><br><br><span class="hljs-comment"># 定义</span><br>f_0d = ti.field(ti.f32, shape=())  <span class="hljs-comment"># 0D field，即单个标量</span><br>f_1 = ti.field(ti.f32, shape=<span class="hljs-number">1</span>) <span class="hljs-comment"># A 1D field of length 1</span><br>f_1d = ti.field(ti.i32, shape=<span class="hljs-number">9</span>)  <span class="hljs-comment"># A 1D field of length 9</span><br>f_2d = ti.field(<span class="hljs-built_in">int</span>, shape=(<span class="hljs-number">3</span>, <span class="hljs-number">6</span>))  <span class="hljs-comment"># A 2D field in the shape (3, 6)</span><br><br><span class="hljs-comment"># 元素访问</span><br>f_0d[<span class="hljs-literal">None</span>] = <span class="hljs-number">1</span> <span class="hljs-comment"># 使用None访问单个标量</span><br>f_1[<span class="hljs-number">0</span>] = <span class="hljs-number">2</span> <span class="hljs-comment"># 使用0来访问长度为1的scalar field</span><br>f_1d[<span class="hljs-number">1</span>] = <span class="hljs-number">3</span> <span class="hljs-comment"># 直接使用index访问</span><br>f_2d[i, j] = <span class="hljs-number">4</span> <span class="hljs-comment"># 直接使用tuple形式的index访问</span><br><br><span class="hljs-comment"># 不支持切片，下面用法都是错误的</span><br><span class="hljs-comment"># for x in f_2d[0] ...</span><br><span class="hljs-comment"># f_2d[0][3:] = [4, 5, 6]</span><br><br><span class="hljs-comment"># 给所有元素填充某个值</span><br>x = ti.field(<span class="hljs-built_in">int</span>, shape=(<span class="hljs-number">5</span>, <span class="hljs-number">5</span>))<br>x.fill(<span class="hljs-number">1</span>)  <span class="hljs-comment"># Sets all elements in x to 1</span><br><br><span class="hljs-comment"># 检查类型、形状</span><br>f_1d.shape<br>f_3d.dtype<br></code></pre></td></tr></table></figure>
+<ul>
+<li>注意taichi总仅支持维度小于等于8的field</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># vector fields：存储的元素是向量</span><br><br>f = ti.Vector.field(n=<span class="hljs-number">2</span>, dtype=<span class="hljs-built_in">float</span>, shape=(<span class="hljs-number">3</span>, <span class="hljs-number">3</span>)) <span class="hljs-comment"># n表示vector的长度</span><br><br><span class="hljs-comment"># 访问field的vector，以及vector的某个分量</span><br>f[i, j][<span class="hljs-number">0</span>]<br><br><span class="hljs-comment"># 如果向量维度不超过4,可以使用xyzw，rgba访问0-3的分量</span><br>volumetric_field[i, j, k].x = <span class="hljs-number">1</span>  <span class="hljs-comment"># Equivalent to volumetric_field[i, j, k][0] = 1</span><br>volumetric_field[i, j, k].y = <span class="hljs-number">2</span>  <span class="hljs-comment"># Equivalent to volumetric_field[i, j, k][1] = 2</span><br>volumetric_field[i, j, k].z = <span class="hljs-number">3</span>  <span class="hljs-comment"># Equivalent to volumetric_field[i, j, k][2] = 3</span><br>volumetric_field[i, j, k].w = <span class="hljs-number">4</span>  <span class="hljs-comment"># Equivalent to volumetric_field[i, j, k][3] = 4</span><br>volumetric_field[i, j, k].xyz = <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>  <span class="hljs-comment"># Assigns 1, 2, 3 to the first three components</span><br>volumetric_field[i, j, k].rgb = <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>  <span class="hljs-comment"># Equivalent to the above</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>vector
+field表示元素是矢量的vector，vector可能代表像素的RGB，可能代表粒子的位置，空间中的引力场等</li>
+<li><code>xyzw</code>,<code>rgba</code>是语法糖，不过需要满足向量的维度不能超过4</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># matrix fields：存储的元素是矩阵</span><br><br>tensor_field = ti.Matrix.field(n=<span class="hljs-number">3</span>, m=<span class="hljs-number">2</span>, dtype=ti.f32, shape=(<span class="hljs-number">300</span>, <span class="hljs-number">400</span>, <span class="hljs-number">500</span>)) <span class="hljs-comment"># n*m表示矩阵的维度</span><br><br><span class="hljs-comment"># 访问field的matrix以及对应分量</span><br>tensor_field[i, j, k][a, b]<br></code></pre></td></tr></table></figure>
+<ul>
+<li>matrix
+field中元素是matrix，不过较大的矩阵会导致更长的编译时间和更差的性能</li>
+<li>矩阵的维度尽可能保持小，但是后面的shape可以大，并且并行化就是体现在后面的shape</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># struct fields：存储的元素是结构体</span><br><br><span class="hljs-comment"># 可以直接从ti.Struct.field创建</span><br>n = <span class="hljs-number">10</span><br>particle_field = ti.Struct.field(&#123;<br>    <span class="hljs-string">&quot;pos&quot;</span>: ti.math.vec3,<br>    <span class="hljs-string">&quot;vel&quot;</span>: ti.math.vec3,<br>    <span class="hljs-string">&quot;acc&quot;</span>: ti.math.vec3,<br>    <span class="hljs-string">&quot;mass&quot;</span>: <span class="hljs-built_in">float</span>,<br>  &#125;, shape=(n,))<br><span class="hljs-comment"># 也可以从struct中调用field创建</span><br>vec3 = ti.math.vec3<br>n = <span class="hljs-number">10</span><br>particle = ti.types.struct(<br>  pos=vec3, vel=vec3, acc=vec3, mass=<span class="hljs-built_in">float</span>,<br>)<br>particle_field = particle.field(shape=(n,))<br><br><span class="hljs-comment"># 可以先用名称定位</span><br>particle_field.mass[<span class="hljs-number">0</span>] = <span class="hljs-number">1.0</span><br><span class="hljs-comment"># 也可以先用索引定位</span><br>particle_field[<span class="hljs-number">0</span>].pos = vec3(<span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>struct
+field中的对应元素可以调用对应的方法，例如利用<code>.fill()</code>方法填充所有的值</li>
+</ul>
+<blockquote>
+<p>[Advanced] <strong>AoS和SoA</strong></p>
+<p>AoS和SoA表示两种不同的布局方式，分别是Array of
+Structures(AoS)和Structure of Arrays(SoA)。</p>
+<p>考虑一个具有四个像素、每个像素具有RGB颜色通道的图像，AoS和SoA的内存布局方式如下：</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">address: low ...................... high</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">AoS:     RGBRGBRGBRGBRGBRGB.............</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">SoA:     RRRRR...RGGGGGGG...GBBBBBBB...B</span><br></code></pre></td></tr></table></figure></p>
+<p>不同内存布局的使用主要看我们需要什么样的访问方式：</p>
+<ul>
+<li>如果我们要计算每个像素的灰度，那么并行单位应该要访问RGB，这时候选择AoS布局具有更好的内存访问模式</li>
+<li>如果我们要计算每个通道的均值，那么并行单位应该要访问通道的所有值，这个时候SoA布局则是更好的方式</li>
+</ul>
+<p>taichi中提供了非常方便的方式在两种内存布局中转换：</p>
+<p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">x = ti.field(ti.f32, shape=M)<br>y = ti.field(ti.f32, shape=M)<br><br><span class="hljs-comment"># SoA内存布局</span><br>ti.root.dense(ti.i, M).place(x)<br>ti.root.dense(ti.i, M).place(y)<br><span class="hljs-comment">#  address: low ................................. high</span><br><span class="hljs-comment">#           x[0]  x[1]  x[2] ... y[0]  y[1]  y[2] ...</span><br><br><span class="hljs-comment"># AoS内存布局</span><br>ti.root.dense(ti.i, M).place(x, y)<br><span class="hljs-comment">#  address: low .............................. high</span><br><span class="hljs-comment">#           x[0]  y[0]  x[1]  y[1]  x[2]  y[2] ...</span><br></code></pre></td></tr></table></figure></p>
+</blockquote>
+<p>这里还需要简要地补充介绍一下<code>taichi.ndarray</code>，它是一个保存连续多维数据的数组对象，作用与numpy中的<code>numpy.ndarray</code>类似，但是底层内存分配在taichi上。在大多数情况下，我们可以使用field作为数据容器，但是field的内部结构布局可能比较复杂，外部库很难直接解释或者使用存储在<code>ti.field</code>中的计算结果。而ndarray则是中分配一个连续的内存块，以便与外部进行直接的数据交换。</p>
+<p>简而言之，<code>field</code>主要用于在复杂数据布局下最大化性能，如果仅处理密集数据或需要外部互操作，那么只需使用<code>taichi.ndarray</code>即可。</p>
+<p>如果要与外部的array进行交互：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 将数据从numpy数组导入taichi.field</span><br>x = ti.field(<span class="hljs-built_in">float</span>, shape=(<span class="hljs-number">3</span>, <span class="hljs-number">3</span>))<br>a = np.arange(<span class="hljs-number">9</span>).reshape(<span class="hljs-number">3</span>, <span class="hljs-number">3</span>).astype(np.int32)<br>x.from_numpy(a)<br><br>arr = x.to_numpy()<br></code></pre></td></tr></table></figure>
+<ul>
+<li>类似的方法包括<code>from_numpy()/from_torch()</code>，该方法会将外部数组复制到field中</li>
+<li>如果taichi
+function或者kernel的参数使用了<code>ti.types.ndarray()</code>作为类型提示，则也可以接收numpy或者torch数组，但是此时仅支持连续的数组，并且是引用传递</li>
+</ul>
+<h2 id="oop-support">OOP Support</h2>
+<p>taichi本身是一种面向数据的编程语言(Data-Oriented
+Programming，DOP)，这种面向数据的设计认为一切都是可以采取行动的数据，将功能和数据区分开来。DOP的方式使得模块化变得困难。为了实现模块化代码，taichi借用了一些面向对象编程(OOP)的概念，这种混合方案被称为面向对象的数据编程(Objective
+Data-Oriented Programming, ODOP)。</p>
+<p>ODOP方案允许我们在Class类中组织数据和方法，并且调用方法在taichi作用域内操作数据。taichi提供了两种不同类型的方法来实现该目的，分别是<code>@ti.data_oriented</code>和<code>@ti.dataclass</code>。</p>
+<p><code>@ti.data_oriented</code>：适用于数据在python作用域内主动更新，而在taichi
+kernel中进行跟踪。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> taichi <span class="hljs-keyword">as</span> ti<br><br>ti.init()<br><br><span class="hljs-meta">@ti.data_oriented</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyClass</span>:<br><span class="hljs-meta">    @ti.kernel</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">inc</span>(<span class="hljs-params">self, temp: ti.template(<span class="hljs-params"></span>)</span>):<br><br>        <span class="hljs-comment">#increment all elements in array by 1</span><br>        <span class="hljs-keyword">for</span> I <span class="hljs-keyword">in</span> ti.grouped(temp):<br>            temp[I] += <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">call_inc</span>(<span class="hljs-params">self</span>):<br>        self.inc(self.temp)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">allocate_temp</span>(<span class="hljs-params">self, n</span>):<br>        self.temp = ti.field(dtype = ti.i32, shape=n)<br><br>a = MyClass() <span class="hljs-comment"># creating an instance of Data-Oriented Class</span><br><span class="hljs-comment"># 这里taichi.field的定义可以在任何python作用域中进行</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>@ti.data_oriented</code>的属性会随着类的继承而延续下去，如果一个类的任何祖先类具有该装饰器，则它可以调用对应的taichi
+kernel</li>
+</ul>
+<p><code>@ti.dataclass</code>：提供了更多的灵活性，可以将taichi
+function定义为类本身的方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python">vec3 = ti.math.vec3<br><br><span class="hljs-meta">@ti.dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sphere</span>:<br>    center: vec3<br>    radius: ti.f32<br><br><span class="hljs-meta">    @ti.func</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">area</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># a function to run in taichi scope</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">4</span> * math.pi * self.radius * self.radius<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">is_zero_sized</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># a python scope function</span><br>        <span class="hljs-keyword">return</span> self.radius == <span class="hljs-number">0.0</span><br><br><span class="hljs-comment"># 可以利用ti.types.struct达到相同的效果</span><br><span class="hljs-meta">@ti.func</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">area</span>(<span class="hljs-params">self</span>):<br>    <span class="hljs-comment"># a function to run in taichi scope</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">4</span> * math.pi * self.radius * self.radius<br><br>Sphere = ti.types.struct(center=ti.math.vec3, radius=ti.f32,<br>                         __struct_methods=&#123;<span class="hljs-string">&#x27;area&#x27;</span>: area&#125;)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>不支持taichi dataclass的继承</li>
+</ul>
+<h2 id="visualization">Visualization</h2>
+<p>首先介绍最基础的taichi GUI，它可以用于可视化data
+container中的数据，同时对绘制原始几何图形提供了有限的支持。</p>
+<h3 id="gui">GUI</h3>
+<p>这里需要注意的是，taichi采用标准笛卡尔坐标系定义像素坐标，即原点在左下角，向右是x的正方向，向上是y的正方向。</p>
+<img src="/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/image-20250404221828942.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="coordinate">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 基础显示</span><br>gui = ti.GUI(<span class="hljs-string">&#x27;Hello World!&#x27;</span>, (<span class="hljs-number">640</span>, <span class="hljs-number">360</span>))<br><span class="hljs-keyword">while</span> gui.running: <span class="hljs-comment"># 注意需要在while循环中调用gui.show()，否则窗口会闪烁后消失</span><br>    <span class="hljs-keyword">if</span> some_events_happend():<br>        gui.running = <span class="hljs-literal">False</span> <span class="hljs-comment"># 在循环内设置False来关闭窗口</span><br>    gui.show()<br><br><span class="hljs-comment"># 显示field或者ndarray</span><br>gui = ti.GUI(<span class="hljs-string">&#x27;Set Image&#x27;</span>, (<span class="hljs-number">640</span>, <span class="hljs-number">480</span>))<br><span class="hljs-comment"># gui = ti.GUI(&#x27;Fast GUI&#x27;, res=(400, 400), fast_gui=True)</span><br>image = ti.Vector.field(<span class="hljs-number">3</span>, ti.f32, shape=(<span class="hljs-number">640</span>, <span class="hljs-number">480</span>))<br><span class="hljs-keyword">while</span> gui.running:<br>    gui.set_image(image)<br>    gui.show()<br><br><span class="hljs-comment"># taichi支持绘制简单的几何图形，包括line、circle、triangles、rectangles、arrows、texts</span><br><span class="hljs-comment"># 均支持单个几何图形和列表形式的几何图形绘制</span><br><span class="hljs-comment"># lines</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br>X = np.random.random((<span class="hljs-number">5</span>, <span class="hljs-number">2</span>))<br>Y = np.random.random((<span class="hljs-number">5</span>, <span class="hljs-number">2</span>))<br>gui = ti.GUI(<span class="hljs-string">&quot;lines&quot;</span>, res=(<span class="hljs-number">400</span>, <span class="hljs-number">400</span>))<br><span class="hljs-keyword">while</span> gui.running:<br>    gui.lines(begin=X, end=Y, radius=<span class="hljs-number">2</span>, color=<span class="hljs-number">0x068587</span>)<br>    gui.show()<br><br><span class="hljs-comment"># circle</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br>pos = np.random.random((<span class="hljs-number">50</span>, <span class="hljs-number">2</span>))<br><span class="hljs-comment"># Create an array of 50 integer elements whose values are randomly 0, 1, 2</span><br><span class="hljs-comment"># 0 corresponds to 0x068587</span><br><span class="hljs-comment"># 1 corresponds to 0xED553B</span><br><span class="hljs-comment"># 2 corresponds to 0xEEEEF0</span><br>indices = np.random.randint(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, size=(<span class="hljs-number">50</span>,))<br>gui = ti.GUI(<span class="hljs-string">&quot;circles&quot;</span>, res=(<span class="hljs-number">400</span>, <span class="hljs-number">400</span>))<br><span class="hljs-keyword">while</span> gui.running:<br>    gui.circles(pos, radius=<span class="hljs-number">5</span>, palette=[<span class="hljs-number">0x068587</span>, <span class="hljs-number">0xED553B</span>, <span class="hljs-number">0xEEEEF0</span>], palette_indices=indices)<br>    gui.show()<br><br><span class="hljs-comment"># triangles</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br>pos = np.random.random((<span class="hljs-number">50</span>, <span class="hljs-number">2</span>))<br><span class="hljs-comment"># Create an array of 50 integer elements whose values are randomly 0, 1, 2</span><br><span class="hljs-comment"># 0 corresponds to 0x068587</span><br><span class="hljs-comment"># 1 corresponds to 0xED553B</span><br><span class="hljs-comment"># 2 corresponds to 0xEEEEF0</span><br>indices = np.random.randint(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, size=(<span class="hljs-number">50</span>,))<br>gui = ti.GUI(<span class="hljs-string">&quot;circles&quot;</span>, res=(<span class="hljs-number">400</span>, <span class="hljs-number">400</span>))<br><span class="hljs-keyword">while</span> gui.running:<br>    gui.circles(pos, radius=<span class="hljs-number">5</span>, palette=[<span class="hljs-number">0x068587</span>, <span class="hljs-number">0xED553B</span>, <span class="hljs-number">0xEEEEF0</span>], palette_indices=indices)<br>    gui.show()<br><br><span class="hljs-comment"># triangles</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br>X = np.random.random((<span class="hljs-number">2</span>, <span class="hljs-number">2</span>))<br>Y = np.random.random((<span class="hljs-number">2</span>, <span class="hljs-number">2</span>))<br>Z = np.random.random((<span class="hljs-number">2</span>, <span class="hljs-number">2</span>))<br>gui = ti.GUI(<span class="hljs-string">&quot;triangles&quot;</span>, res=(<span class="hljs-number">400</span>, <span class="hljs-number">400</span>))<br><span class="hljs-keyword">while</span> gui.running:<br>    gui.triangles(a=X, b=Y, c=Z, color=<span class="hljs-number">0xED553B</span>)<br>    gui.show()<br><br><span class="hljs-comment"># arrows</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br>begins = np.random.random((<span class="hljs-number">100</span>, <span class="hljs-number">2</span>))<br>directions = np.random.uniform(low=-<span class="hljs-number">0.05</span>, high=<span class="hljs-number">0.05</span>, size=(<span class="hljs-number">100</span>, <span class="hljs-number">2</span>))<br>gui = ti.GUI(<span class="hljs-string">&#x27;arrows&#x27;</span>, res=(<span class="hljs-number">400</span>, <span class="hljs-number">400</span>))<br><span class="hljs-keyword">while</span> gui.running:<br>    gui.arrows(orig=begins, direction=directions, radius=<span class="hljs-number">1</span>)<br>    gui.show()<br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>调用set_image()方法的时候，GUI系统会将图像数据转化成可显示的格式，并将结果复制到窗口缓冲区，当窗口很大的时候，这会导致巨大的负载，难以实现高FPS</p></li>
+<li><p>如果只需要调用set_image()方法而不使用其他任何绘图命令，则可以启用<code>fast_gui</code>
+模式以获得更好的性能。此模式允许 taichi GUI
+将图像数据直接写入帧缓冲区而无需额外复制，并显著提高 FPS</p></li>
+</ul>
+<p>taichi GUI也支持事件处理，包括鼠标和键盘的控制方式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 一个输入事件Event包括(Event type和Event key)</span><br><span class="hljs-comment"># Event type表示事件状态，包括鼠标或者键盘的按下和释放，或者鼠标/滚轮的移动</span><br>ti.GUI.RELEASE  <span class="hljs-comment"># key up or mouse button up</span><br>ti.GUI.PRESS    <span class="hljs-comment"># key down or mouse button down</span><br>ti.GUI.MOTION   <span class="hljs-comment"># mouse motion or mouse wheel</span><br><br><span class="hljs-comment"># Event key则表示具体的按键</span><br><span class="hljs-comment"># for ti.GUI.PRESS and ti.GUI.RELEASE event:</span><br>ti.GUI.ESCAPE  <span class="hljs-comment"># Esc</span><br>ti.GUI.SHIFT   <span class="hljs-comment"># Shift</span><br>ti.GUI.LEFT    <span class="hljs-comment"># Left Arrow</span><br><span class="hljs-string">&#x27;a&#x27;</span>            <span class="hljs-comment"># we use lowercase for alphabet</span><br><span class="hljs-string">&#x27;b&#x27;</span><br>...<br>ti.GUI.LMB     <span class="hljs-comment"># Left Mouse Button</span><br>ti.GUI.RMB     <span class="hljs-comment"># Right Mouse Button</span><br><br><span class="hljs-comment"># for ti.GUI.MOTION event:</span><br>ti.GUI.MOVE    <span class="hljs-comment"># Mouse Moved</span><br>ti.GUI.WHEEL   <span class="hljs-comment"># Mouse Wheel Scrolling</span><br><br><span class="hljs-comment"># 可以通过gui.get_event()参数过滤的方式来捕捉某类型事件</span><br><span class="hljs-comment"># if ESC pressed or released:</span><br>gui.get_event(ti.GUI.ESCAPE)<br><br><span class="hljs-comment"># if any key is pressed:</span><br>gui.get_event(ti.GUI.PRESS)<br><br><span class="hljs-comment"># if ESC is pressed or SPACE is released: 注意这里是OR的关系</span><br>gui.get_event((ti.GUI.PRESS, ti.GUI.ESCAPE), (ti.GUI.RELEASE, ti.GUI.SPACE))<br><br><span class="hljs-comment"># 如果不给任何参数，那么会从队列中弹出一个事件保存到gui.event中</span><br><span class="hljs-keyword">if</span> gui.get_event():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Got event, key =&#x27;</span>, gui.event.key)<br><br><span class="hljs-comment"># 还提供gui.is_pressed()来检测按下的键，不过需要和gui.event()配合使用，否则不会更新</span><br><span class="hljs-keyword">while</span> gui.running:<br>    gui.get_event()  <span class="hljs-comment"># must be called before is_pressed</span><br>    <span class="hljs-keyword">if</span> gui.is_pressed(<span class="hljs-string">&#x27;a&#x27;</span>, ti.GUI.LEFT):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Go left!&#x27;</span>)<br>    <span class="hljs-keyword">elif</span> gui.is_pressed(<span class="hljs-string">&#x27;d&#x27;</span>, ti.GUI.RIGHT):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Go right!&#x27;</span>)<br>    gui.show()<br>    <br><span class="hljs-comment"># 对于光标位置，则使用gui.get_cursor_pos()返回，返回值是一对范围在[0, 1]内的浮点数</span><br>mouse_x, mouse_y = gui.get_cursor_pos()<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>同时taichi
+GUI系统还提供了一些组件来自定义控制界面，这里就简单跳过</p>
+</blockquote>
+<h3 id="ggui">GGUI</h3>
+<p>然后是更高级的GUI系统，GGUI。它使用GPU进行渲染，使得3D场景的渲染速度更快。GGUI可以绘制的类型包括：</p>
+<ul>
+<li>2D Canvas：用于绘制简单2D几何图形</li>
+<li>3D Scene：渲染3D mesh和粒子，提供可配置的摄像头和光源</li>
+<li>GUI控件：包括按钮、文本框等</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python">vertices         = ti.Vector.field(<span class="hljs-number">2</span>, ti.f32, shape=<span class="hljs-number">200</span>)<br>vertices_3d      = ti.Vector.field(<span class="hljs-number">3</span>, ti.f32, shape=<span class="hljs-number">200</span>)<br>indices          = ti.field(ti.i32, shape=<span class="hljs-number">200</span> * <span class="hljs-number">3</span>)<br>normals          = ti.Vector.field(<span class="hljs-number">3</span>, ti.f32, shape=<span class="hljs-number">200</span>)<br>per_vertex_color = ti.Vector.field(<span class="hljs-number">3</span>, ti.f32, shape=<span class="hljs-number">200</span>)<br><br>color  = (<span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>)<br><br><span class="hljs-comment"># 创建windows</span><br>window = ti.ui.Window(name=<span class="hljs-string">&#x27;Window Title&#x27;</span>, res = (<span class="hljs-number">640</span>, <span class="hljs-number">360</span>), fps_limit=<span class="hljs-number">200</span>, pos = (<span class="hljs-number">150</span>, <span class="hljs-number">150</span>))<br><br><span class="hljs-comment"># 2D canvas</span><br>canvas = window.get_canvas()<br>canvas.set_background_color(color)<br>canvas.triangles(vertices, color, indices, per_vertex_color)<br><br>radius = <span class="hljs-number">5</span><br>canvas.circles(vertices, radius, color, per_vertex_color)<br><br>width = <span class="hljs-number">2</span><br>canvas.lines(vertices, width, indices, color, per_vertex_color)<br>canvas.set_image(window.get_image_buffer_as_numpy())<br></code></pre></td></tr></table></figure>
+<ul>
+<li>其中，几何图形的位置是[0.0,
+1.0]之间的浮点数，表示几何图形在画布上的相对位置；</li>
+<li>每帧结束后画布都会被清除。需要始终在渲染循环中调用这些方法。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 3D Scene</span><br>scene = window.get_scene()<br><br><span class="hljs-comment"># 相机配置</span><br>camera = ti.ui.Camera()<br>camera.position(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)  <span class="hljs-comment"># x, y, z</span><br>camera.lookat(<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>)<br>camera.up(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)<br>camera.projection_mode(ti.ui.ProjectionMode.Perspective)<br>scene.set_camera(camera)<br><br><span class="hljs-comment"># 光源配置</span><br>scene.point_light(pos=(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>), color=(<span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>))<br><br><span class="hljs-comment"># 3D形状的绘制</span><br>scene.lines(vertices, width, indices, color, per_vertex_color)<br>scene.mesh(vertices_3d, indices, normals, color, per_vertex_color)<br>scene.particles(vertices, radius, color, per_vertex_color)<br><br><span class="hljs-comment"># 绘制完成之后，在canvas上进行渲染</span><br>canvas = window.get_canvas()<br>canvas.scene(scene)<br>window.show() <span class="hljs-comment"># 在每帧渲染结束后调用</span><br><br><span class="hljs-comment"># 也可以获取每一帧的颜色/深度信息</span><br>img = window.get_image_buffer_as_numpy()<br>window.get_depth_buffer(scene_depth)<br>depth = window.get_depth_buffer_as_numpy()<br><br><span class="hljs-comment"># 保存图像</span><br>window.save_image(<span class="hljs-string">&#x27;xxx.png&#x27;</span>) <span class="hljs-comment"># 将当前帧写入图像文件，但是需要注意在调用window.show()前调用该方法</span><br><br><span class="hljs-comment"># 如果是headless模式，则在初始化window的时候进行设置，可以正常调用save_image()，同时删除window.show()</span><br>window = ti.ui.Window(<span class="hljs-string">&#x27;Window Title&#x27;</span>, (<span class="hljs-number">640</span>, <span class="hljs-number">360</span>), show_window = <span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>其中几何图形的位置/中心应该位于世界空间坐标中；</li>
+<li>需要在渲染循环中调用光源配置等方法；</li>
+<li><code>camera.track_user_inputs</code>提供一个非常直接的方式来控制相机(wasdeq来移动相机)；</li>
+<li>这里的<code>vertex_offset</code>，<code>vertex_count</code>，<code>index_offset</code>和<code>index_count</code>控制粒子和mesh的可见部分，可以用于渲染指定部分粒子/mesh</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 事件处理与ti.gui类型，不过接口有所变化</span><br><br>events = window.get_events() <span class="hljs-comment"># 获取所有events</span><br>window.get_cursor_pos() <span class="hljs-comment"># 获取鼠标位置</span><br>window.is_pressed(key) <span class="hljs-comment"># 检查按键是否被按下</span><br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>更多的使用案例可以参考官方的<a
+target="_blank" rel="noopener" href="https://github.com/taichi-dev/taichi/tree/master/python/taichi/examples/ggui_examples">examples</a>。</p>
+</blockquote>
+<h3 id="result-export">Result Export</h3>
+<p>最后介绍一些将渲染结果导出为图像或者视频的功能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 使用ti.GUI.show(filename)导出图像，不仅可以在屏幕上显示GUI，还可以保存图像</span><br>gui = ti.GUI(<span class="hljs-string">&quot;Random pixels&quot;</span>, res=<span class="hljs-number">512</span>)<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(iterations):<br>    <span class="hljs-comment"># ...</span><br>    filename = <span class="hljs-string">f&#x27;frame_<span class="hljs-subst">&#123;i:05d&#125;</span>.png&#x27;</span>   <span class="hljs-comment"># create filename with suffix png</span><br>    gui.show(filename)  <span class="hljs-comment"># export and show in GUI</span><br><br><span class="hljs-comment"># 使用ti.tools.imwrite(filename)保存图像</span><br>pixels = ti.field(ti.u8, shape=(<span class="hljs-number">512</span>, <span class="hljs-number">512</span>, <span class="hljs-number">3</span>))<br><br>filename = <span class="hljs-string">f&#x27;imwrite_export.png&#x27;</span><br>ti.tools.imwrite(pixels.to_numpy(), filename)<br><br><span class="hljs-comment"># 假设在当前目录存在000.png,001.png,...等一系列图像，那么可以通过运行下面命令创建mp4文件，会按照图像进行排序</span><br>ti video -f40 <span class="hljs-comment"># -f表示FPS</span><br><br><span class="hljs-comment"># 将mp4转化成gif</span><br>ti gif -i video.mp4 -f40<br><br><span class="hljs-comment"># VideoManager可以帮助我们导出mp4或者gif</span><br>result_dir = <span class="hljs-string">&quot;./results&quot;</span><br>video_manager = ti.tools.VideoManager(output_dir=result_dir, framerate=<span class="hljs-number">24</span>, automatic_build=<span class="hljs-literal">False</span>)<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">50</span>):<br>    <span class="hljs-comment"># ...</span><br>    pixels_img = pixels.to_numpy()<br>    video_manager.write_frame(pixels_img)<br><br>video_manager.make_video(gif=<span class="hljs-literal">True</span>, mp4=<span class="hljs-literal">True</span>)<br><br><span class="hljs-comment"># PLYWriter可以帮助我们以ply格式导出结果</span><br><span class="hljs-keyword">for</span> frame <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>    np_pos = np.reshape(pos.to_numpy(), (num_vertices, <span class="hljs-number">3</span>))<br>    np_rgba = np.reshape(rgba.to_numpy(), (num_vertices, <span class="hljs-number">4</span>))<br>    <span class="hljs-comment"># create a PLYWriter</span><br>    writer = ti.tools.PLYWriter(num_vertices=num_vertices)<br>    writer.add_vertex_pos(np_pos[:, <span class="hljs-number">0</span>], np_pos[:, <span class="hljs-number">1</span>], np_pos[:, <span class="hljs-number">2</span>])<br>    writer.add_vertex_rgba(<br>        np_rgba[:, <span class="hljs-number">0</span>], np_rgba[:, <span class="hljs-number">1</span>], np_rgba[:, <span class="hljs-number">2</span>], np_rgba[:, <span class="hljs-number">3</span>])<br>    writer.export_frame_ascii(frame, series_prefix)<br><span class="hljs-comment"># 在ply上还可以增加其他channel</span><br></code></pre></td></tr></table></figure>
+<h2 id="debug">Debug</h2>
+<p>taichi提供了一些机制来进行debug：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 1.在taichi作用域内使用print来检查变量的值</span><br><br><span class="hljs-comment"># 2.序列化程序</span><br>ti.init(arch=ti.cpu, cpu_max_num_threads=<span class="hljs-number">1</span>) <span class="hljs-comment"># 序列化整个程序</span><br><br><span class="hljs-meta">@ti.kernel</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">prefix_sum</span>():<br>    ti.loop_config(serialize=<span class="hljs-literal">True</span>) <span class="hljs-comment"># 序列化下一个for循环</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>        val[i] += val[i - <span class="hljs-number">1</span>]<br><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):  <span class="hljs-comment"># 仍然是并行</span><br>        val[i] += val[i - <span class="hljs-number">1</span>]<br><br><span class="hljs-comment"># 3.使用ti.init(debug=True)激活调试模式</span><br>ti.init(arch=ti.cpu, debug=<span class="hljs-literal">True</span>) <span class="hljs-comment"># 检查越界数组访问</span><br><br><span class="hljs-comment"># 4.使用assert断言</span><br><span class="hljs-meta">@ti.kernel</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">do_sqrt_all</span>():<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> x:<br>        <span class="hljs-keyword">assert</span> x[i] &gt;= <span class="hljs-number">0</span>, <span class="hljs-string">f&quot;The <span class="hljs-subst">&#123;i&#125;</span>-th element cannot be negative&quot;</span> <span class="hljs-comment"># 运行时assert，不过需要打开debug模式</span><br>        x[i] = ti.sqrt(x[i])<br><br><span class="hljs-meta">@ti.func</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">copy</span>(<span class="hljs-params">dst: ti.template(<span class="hljs-params"></span>), src: ti.template(<span class="hljs-params"></span>)</span>):<br>    ti.static_assert(dst.shape == src.shape, <span class="hljs-string">&quot;copy() needs src and dst fields to be same shape&quot;</span>) <span class="hljs-comment"># 编译时assert</span><br>    <span class="hljs-keyword">for</span> I <span class="hljs-keyword">in</span> ti.grouped(src): <br>        dst[I] = src[I]<br>        <br><span class="hljs-comment"># 5.使用sys.tracebacklimit产生更简洁的回溯</span><br><span class="hljs-keyword">import</span> taichi <span class="hljs-keyword">as</span> ti<br><span class="hljs-keyword">import</span> sys<br>sys.tracebacklimit=<span class="hljs-number">0</span><br>...<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" class="category-chain-item">计算机图形学</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/taichi/" class="category-chain-item">taichi</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/taichi/" class="print-no-link">#taichi</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>taichi学习笔记(1)-基础使用</div>
+      <div>http://example.com/2025/04/04/taichi学习笔记-1-基础使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="SMPL模型介绍及使用">
+                        <span class="hidden-mobile">SMPL模型介绍及使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
