@@ -1,0 +1,1113 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/myfavicon.png">
+  <link rel="icon" href="/img/myfavicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="EverNorif">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Habitat是由MetaAI推出的一个高性能3D仿真平台，主要用于支持具身智能研究，它支持Agent在虚拟环境中的感知、导航和交互等任务。本篇主要记录了Habitat仿真环境的使用，包括Habitat-Sim、Habitat-Lab的基础以及某些功能的实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="habitat-基础使用记录">
+<meta property="og:url" content="http://example.com/2025/05/07/habitat-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="EverNorif">
+<meta property="og:description" content="Habitat是由MetaAI推出的一个高性能3D仿真平台，主要用于支持具身智能研究，它支持Agent在虚拟环境中的感知、导航和交互等任务。本篇主要记录了Habitat仿真环境的使用，包括Habitat-Sim、Habitat-Lab的基础以及某些功能的实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/05/07/habitat-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/image-20250509163007514.png">
+<meta property="og:image" content="http://example.com/2025/05/07/habitat-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/image-20250509163041859.png">
+<meta property="article:published_time" content="2025-05-07T08:52:11.000Z">
+<meta property="article:modified_time" content="2025-05-09T09:09:54.347Z">
+<meta property="article:author" content="EverNorif">
+<meta property="article:tag" content="Simulation">
+<meta property="article:tag" content="Habitat">
+<meta property="article:tag" content="Embodied-AI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/05/07/habitat-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/image-20250509163007514.png">
+  
+  
+  
+  <title>habitat-基础使用记录 - EverNorif</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 80vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>EverNorif</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>工具</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bilibili"></i>
+                <span>番剧</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/bangumis/" target="_self">
+                    <i class="iconfont icon-bilibili-fill"></i>
+                    <span>追番</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/cinemas/" target="_self">
+                    <i class="iconfont icon-youtube-fill"></i>
+                    <span>追剧</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="habitat-基础使用记录"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-07 16:52" pubdate>
+          2025年5月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">habitat-基础使用记录</h1>
+            
+              <p id="updated-time" class="note note-info" style="display: none">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2025-05-09T17:09:54+08:00
+                  
+                  
+
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <div class="note note-success">
+            <p>一些有用的参考：</p><ul><li>Habitat-sim: https://github.com/facebookresearch/habitat-sim<ul><li>Doc: https://aihabitat.org/docs/habitat-sim/index.html</li><li>Tutorial: https://aihabitat.org/tutorial/2020/</li></ul></li><li>Habitat-lab: https://github.com/facebookresearch/habitat-lab<ul><li>Doc:https://aihabitat.org/docs/habitat-lab/</li></ul></li><li>Resource Index: https://aihabitat.org/docs/resource_index/</li></ul>
+          </div>
+<h1 id="habitat-sim-usage">Habitat-Sim Usage</h1>
+<p>首先介绍一些核心的概念，这些概念会贯穿整个使用流程。</p>
+<ul>
+<li><code>Agent</code>：在场景中的Agent，能够观察场景以及与场景进行交互</li>
+<li><code>Sensor</code>：装配在Agent上的各种传感器，能够对环境进行感知，包括视觉信息、深度信息等</li>
+<li><code>Scene</code>：场景的模拟3D环境</li>
+<li><code>Simulator</code>：模拟器，融合上面的概念，进行模拟</li>
+</ul>
+<p>Habitat-Sim的基础运行流程可以总结为：配置并启动simulator（<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.simulator.Simulator.html">habitat_sim.simulator.Simulator</a>），加载scene，配置带有sensor的agent（<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.agent.Agent.html">habitat_sim.agent.Agent</a>），执行action，获取sensor观察结果（rgb、semantic、depth等）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">## 1. 创建Simulator，指定相关Config</span><br><br>sim_cfg = habitat_sim.SimulatorConfiguration()<br><span class="hljs-comment"># sim_cfg.xxx = xxx</span><br>agent_cfg = habitat_sim.agent.AgentConfiguration()<br><span class="hljs-comment"># agent_cfg.xxx = xxx</span><br>sensor_spec = habitat_sim.CameraSensorSpec()<br><span class="hljs-comment"># sensor_spec.xxx = xxx</span><br><br>cfg = habitat_sim.Configuration(sim_cfg, [agent_cfg])<br>sim = habitat_sim.Simulator(cfg)<br><br><span class="hljs-comment">## 2. 对Agent进行初始化，即指定Agent的初始状态</span><br><span class="hljs-comment"># Set agent state</span><br>agent = sim.initialize_agent(sim_settings[<span class="hljs-string">&quot;default_agent&quot;</span>])<br>agent_state = habitat_sim.AgentState()<br>agent_state.position = np.array([<span class="hljs-number">0.</span> ,<span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>])  <span class="hljs-comment"># world space</span><br>agent_state.rotation = quaternion.from_euler_angles(<span class="hljs-number">0</span>, -np.pi/<span class="hljs-number">2</span>, -np.pi/<span class="hljs-number">2</span>)<br>agent.set_state(agent_state)<br><br><span class="hljs-comment">## 3. 调用action space中的动作进行执行</span><br>observations = sim.step(action)<br><br><span class="hljs-comment">## 4. 从observations中取出相关的sensor观察</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>创建Simulator，需要利用config（<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.simulator.Configuration.html">habitat_sim.simulator.Configuration</a>）来指定相关配置，主要包括：</p>
+<ul>
+<li><p><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-sim/blob/5820e1adc3ab238d2f564241d4705da5755542c9/src/esp/sim/Simulator.h#L44">For
+simulator
+backend</a>：指定要加载的场景，是否加载语义mesh、是否启用物理等</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-sim/blob/5820e1adc3ab238d2f564241d4705da5755542c9/src/esp/agent/Agent.h#L52">For
+agent</a>：给定Agent的初始化参数，包括高度、质量、Agent相关的Sensor、每次移动的物理量等</p></li>
+</ul></li>
+</ul>
+<p>根据官方给的入门教程，我们同样列举如下的一些概念：</p>
+<p><strong>NavMesh</strong>：用于指定场景中的可导航区域。habitat中提供<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.nav.PathFinder.html">pathfinder</a>可以用来加载或者构建NavMash，然后在上面进行点采样、路径查找、碰撞等查询</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 利用pathfinder来query某个点是否是可达的</span><br>sim.pathfinder.is_navigable(nav_point)<br><br><span class="hljs-comment"># NavMesh的可视化：获取topdown_view</span><br>sim.pathfinder.get_topdown_view(meters_per_pixel, height) <span class="hljs-comment"># 这是habitat-sim的接口，在habitat-lab中也提供相关接口</span><br><br><span class="hljs-comment"># NavMesh的使用</span><br><span class="hljs-comment"># 搜索距离最近障碍的距离以及碰撞点：</span><br>sim.pathfinder.distance_to_closest_obstacle(nav_point, max_search_radius)<br>sim.pathfinder.closest_obstacle_surface_point(nav_point, max_search_radius)<br><br><span class="hljs-comment"># 设定了某个世界坐标position之后，需要将其snap到可导航的有效点上</span><br>sim.pathfinder.snap_point(position)<br><br><span class="hljs-comment"># 可以通过NavMesh进行最短路径寻找并可视化路上的结果</span><br><br><span class="hljs-comment"># 显式加载NavMesh，后缀为.navmesh</span><br>sim.pathfinder.load_nav_mesh(xxx)<br><br><span class="hljs-comment"># 随机加载一个可以到达的点</span><br>sim.path.pathfinder.get_random_navigable_point()<br><br><span class="hljs-comment"># 在运行过程中，可以重新计算NavMesh，当然也可以进行保存</span><br>sim.recompute_navmesh(sim.pathfinder, navmesh_settings)<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>island_radius</code>：最小包含圆是指能够包含所有属于该导航岛屿的点的最小圆。island_radius
+是这个圆的半径。导航岛屿中的点的质心（中心点）是这个圆的圆心。island_radius
+参数表示的是一个点所属的连通组件（connected
+component）的大小。island_radius
+可以用来验证一个点是否在一个有意义的导航表面上，例如地板。如果一个点的island_radius值很小，这意味着该点可能位于一个小的、孤立的表面上，比如桌面或椅子，而不是一个大的、连续的表面如地板。这有助于过滤掉那些不适合导航的点，确保AI代理只在合理的、可导航的表面上移动。</li>
+<li><code>Snap Point</code>:在导航和路径规划领域，特别是在模拟和机器人研究中，“snap
+point”
+通常指的是将一个查询点调整（或“吸附”）到最接近的有效导航点的过程。这个概念用于确保AI代理或机器人在导航时始终位于可导航的表面上，而不是在无效的或无法导航的区域。</li>
+<li>重新计算NavMesh参考：<a
+target="_blank" rel="noopener" href="https://digestingduck.blogspot.com/2009/08/recast-settings-uncovered.html">Digesting
+Duck: Recast Settings Uncovered</a>）</li>
+</ul>
+<p><strong>Sliding</strong>：Agent的滑动操作。这是一个配置选项，表示Agent是否能够沿着障碍进行滑动<code>sim.config.sim_cfg.allow_sliding</code>。需要注意的是，滑动和连续动作空间并不是同一个概念。允许滑动可以使训练更加容易，产生更高的模拟性能，但是会损害训练策略的sim2real性能。</p>
+<p>入门教程中还提供了如下参考资料：</p>
+<ul>
+<li><p>Navigation：<a
+target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=EUP2taG5qo0&amp;list=PLGywud_-HlCORC0c4uj97oppQrGiB6JNy&amp;index=5">Habitat
+Lab for Navigation｜YouTube</a></p></li>
+<li><p>Interactivity 物理/交互性：<a
+target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=6eh0PBesIgw">Habitat-Sim
+Interactivity｜YouTube</a></p></li>
+<li><p>强化学习任务训练：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=KbbfD7RlJLM">Habitat-Lab
+for Interaction｜YouTube</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=I4MjX598ZYs&amp;t=3s">Faster RL
+Training: Profiling and Optimization｜YouTube</a></li>
+</ul></li>
+<li><p>Advanced Topic：<a
+target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=w_kDq6UOKos">Habitat-Sim Advanced
+Topics｜YouTube</a></p>
+<ul>
+<li>Tracking object motion with a camera：跟踪某个对象的运动</li>
+<li>Projecting 3D points into 2D：将3D空间的点投影到2D平面</li>
+<li>Configuring semantic ids for objects：为物体配置语义ID</li>
+<li>Object/Asset configuration via template libraries
+<ul>
+<li>Object
+attributes：修改对象的属性模版，然后以此重新实例化得到新的对象object</li>
+<li>Asset
+attributes：3d相关的特征，例如mesh数量等，是否是实体，几何形状等信息</li>
+</ul></li>
+</ul></li>
+</ul>
+<h1 id="habitat-lab-usage">Habitat-Lab Usage</h1>
+<p>Habitat-Lab是一个模块化的高级库，它在Habitat-sim的基础上构建，可以完成相关操作，包括定义具身AI任务（例如导航、指令跟随、问答）、配置具身Agent、训练Agent、在定义任务上进行基准测试。下面是一个Quick
+Start，允许我们通过键盘操作完成一个PointNav任务（完整实现可以参考<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/quickstart.html">quick-start</a>，这里只保留了一些关键代码便于说明）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> habitat<br><span class="hljs-keyword">from</span> habitat.sim.habitat_simulator.actions <span class="hljs-keyword">import</span> HabitatSimActions<br><span class="hljs-keyword">import</span> cv2<br><br>env = habitat.Env(<br>    config=habitat.get_config(<span class="hljs-string">&quot;benchmark/nav/pointnav/pointnav_habitat_test.yaml&quot;</span>)<br>)<br>observation = env.reset()<br><br><span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> env.episode_over:<br>    action = HabitatSimActions.xxx<br>    observation = env.step(action)<br>    <br>    distance = observations[<span class="hljs-string">&quot;pointgoal_with_gps_compass&quot;</span>][<span class="hljs-number">0</span>]<br>    theta = observations[<span class="hljs-string">&quot;pointgoal_with_gps_compass&quot;</span>][<span class="hljs-number">1</span>] <span class="hljs-comment"># radians</span><br>    image = observations[<span class="hljs-string">&quot;rgb&quot;</span>]<br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>完整quick-start中的可视化功能是通过cv2提供的，与habitat-sim是否使用headless没有关系</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.core.env.Env.html">habitcat.Env</a>：其中抽象了利用simulator处理emnodied
+task所需的所有信息，包括<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.core.dataset.Episode.html">dataset</a>(episodes)，<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.core.simulator.Simulator.html">simulator</a>(sim)和<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.core.embodied_task.EmbodiedTask.html">EmbodiedTask</a>(task)</p>
+<ul>
+<li>Env通过config来完成初始化，config中配置sensor和agent等信息</li>
+<li>config可以是一个文件，其中指定默认值，然后通过<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.config.html#get_config">habitat.get_config</a>来获取。配置管理系统使用hydra。配置系统可以参考<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/v0.3.1/habitat-lab/habitat/config/README.md">README</a>、<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/v0.3.1/habitat-lab/habitat/config/CONFIG_KEYS.md">config
+key</a></li>
+<li>所有的config基本配置都在<code>habitat-lab/habitat/config</code>中</li>
+<li>也可以通过read_write来更新默认值：</li>
+</ul></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> habitat<br><span class="hljs-keyword">from</span> habitat.config <span class="hljs-keyword">import</span> read_write<br><br>config = habitat.get_config(config_path=<span class="hljs-string">&quot;xxx/xxx/xxx&quot;</span>)<br><span class="hljs-keyword">with</span> read_write(config):<br>    config.habitat.dataset.split = <span class="hljs-string">&quot;val&quot;</span><br>    ...<br><br>env = habitat.Env(config=config)<br></code></pre></td></tr></table></figure>
+<ul>
+<li><p><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.core.simulator.Simulator.html">simulator.Simulator</a>：Abstract
+Simulator，要添加到habitat中的新Simulator都需要继承该类并实现抽象方法</p></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.core.embodied_task.EmbodiedTask.html">embodied_task.EmbodiedTask</a>：Abstract
+Embodied Task，包括任务定义相关的action space、observation
+space、measures、simulator usage</p></li>
+</ul>
+<img src="/2025/05/07/habitat-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/image-20250509163007514.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="habitat架构说明">
+<p>上图是Habitat的架构说明，包含如下关键概念：</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/sims/habitat_simulator/habitat_simulator.py#L254">habitat.sims.habitat_simulator.HabitatSim</a>：habitat_sim的轻量级封装,提供与实验框架的无缝集成</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/core/env.py#L26">habitat.core.env.Env</a>：智能体、任务和模拟器的抽象。你训练和评估的智能体在这个环境中运行</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/core/env.py#L347">habitat.core.env.RLEnv</a>：通过定义奖励和其他必需组件,扩展Env类以用于强化学习</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/core/embodied_task.py#L201">habitat.core.embodied_task.EmbodiedTask</a>：定义智能体需要解决的任务。这个类包含观察空间、动作空间、度量、模拟器使用的定义。例如:PointNav,
+ObjectNav</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/core/dataset.py#L107">habitat.core.dataset.Dataset</a>：包含具身任务数据集所需信息的封装,包含episode的定义和交互</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/core/embodied_task.py#L80">habitat.core.embodied_task.Measure</a>：定义具身任务的度量标准,例如:SPL</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/tree/main/habitat-baselines/habitat_baselines">habitat_baselines</a>：不同具身任务的强化学习、SLAM、启发式基线实现</li>
+</ul>
+<h1 id="habitat-baseline-usage">Habitat-Baseline Usage</h1>
+<p>Habitat-Baseline是Habitat官方提供的一套用于训练和评估 AI
+智能体的强化学习基线算法集合，构建于Habitat-Lab之上，提供了可直接使用的训练框架和模型实现。它是用于在
+Habitat
+环境中快速训练智能体的“开箱即用”工具，广泛用于导航、探索、任务完成等研究。</p>
+<p>一个典型的运行流程如下：</p>
+<ol type="1">
+<li>通过<code>habitat-baselines.run.execute_exp</code>来启动整个流程</li>
+<li>通过Trainer来进行训练和评估，类似Pytorch-Lightning的管理方式
+<ul>
+<li>通过config中的trainer name来初始化Trainer，默认实现是<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-baselines/habitat_baselines/rl/ppo/ppo_trainer.py">PPO
+Trainer</a></li>
+<li>需要通过<code>@baseline_registry.register_trainer</code>来将其他Trainer实现注册到系统中</li>
+<li>根据配置中的<code>cfg.habitat_baselines.evaluate</code>来选择走Trainer.train()还是Trainer.eval()</li>
+</ul></li>
+<li>Trainer中包括重要属性，Agent和Envs</li>
+<li>通过_init_envs()来初始化VectorEnv
+<ul>
+<li>VectorEnv就是多个envs组成的，可以同时运行多个Envs来加速训练。VectorEnv维护多个进程Process，每个进程会有一个worker_env，对应config.habitat.env_task.GymHabitatEnv
+<ul>
+<li>这个Env同样是可以注册的<code>@habitat.registry.register_env(*name*="GymHabitatEnv")</code></li>
+</ul></li>
+<li>而这个Env中又包含一个成员是RLTaskEnv -&gt; habitat.RLEnv -&gt;
+Env，最终和Habitat-sim中的Env联系在一起</li>
+</ul></li>
+<li>通过Trainer中的<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/core/vector_env.py#L260">env.step()</a>来驱动所有的Env和Agent等。这个也是Habitat-Lab
+Trainer和Habitat-sim Env之间的核心桥梁</li>
+</ol>
+<blockquote>
+<p>在Habitat-sim和Habitat-lab中包含多种Env的定义，它们可能是相互嵌套的关系，实际使用过程中需要明确每个Env究竟是什么Class</p>
+</blockquote>
+<ol start="6" type="1">
+<li>核心步骤的源码追踪如下：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs Python">observations, reward, done, info = env.step(data)<br><br><span class="hljs-comment"># 对应的实现在RLEnv中</span><br><span class="hljs-meta">@profiling_wrapper.RangeContext(<span class="hljs-params"><span class="hljs-string">&quot;RLEnv.step&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">step</span>(<span class="hljs-params">self, *args, **kwargs</span>) -&gt; <span class="hljs-type">Tuple</span>[Observations, <span class="hljs-type">Any</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-built_in">dict</span>]:<br>    <span class="hljs-string">r&quot;&quot;&quot;Perform an action in the environment.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :return: :py:`(observations, reward, done, info)`</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br><br>    observations = self._env.step(*args, **kwargs)<br>    reward = self.get_reward(observations)<br>    done = self.get_done(observations)<br>    info = self.get_info(observations)<br><br>    <span class="hljs-keyword">return</span> observations, reward, done, info<br><br><span class="hljs-comment"># 对应的get_reward实际在Env中</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_metrics</span>(<span class="hljs-params">self</span>) -&gt; Metrics:<br>        <span class="hljs-keyword">return</span> self._task.measurements.get_metrics()<br></code></pre></td></tr></table></figure>
+<ul>
+<li>对应的实现在RLEnv</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-meta">@profiling_wrapper.RangeContext(<span class="hljs-params"><span class="hljs-string">&quot;RLEnv.step&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">step</span>(<span class="hljs-params">self, *args, **kwargs</span>) -&gt; <span class="hljs-type">Tuple</span>[Observations, <span class="hljs-type">Any</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-built_in">dict</span>]:<br>    <span class="hljs-string">r&quot;&quot;&quot;Perform an action in the environment.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :return: :py:`(observations, reward, done, info)`</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br><br>    observations = self._env.step(*args, **kwargs)<br>    reward = self.get_reward(observations)<br>    done = self.get_done(observations)<br>    info = self.get_info(observations)<br><br>    <span class="hljs-keyword">return</span> observations, reward, done, info<br></code></pre></td></tr></table></figure>
+<h1 id="使用记录">使用记录</h1>
+<h2 id="坐标系约定">坐标系约定</h2>
+<p>关于坐标系的教程可以参考<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/coordinate-frame-tutorial.html">坐标系教程</a>。核心概念包括：</p>
+<ul>
+<li>世界坐标系：高度轴为y，并且遵循右手系</li>
+<li>物体坐标系：高度轴为y，并且遵循右手系，同时物体中心为原点</li>
+<li>相机坐标系：-z(blue)指向前方，y(green)指向上方，x(red)轴指向右方「opengl」</li>
+</ul>
+<img src="/2025/05/07/habitat-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/image-20250509163041859.png" srcset="/img/bilibiliTV.gif" lazyload class="" title="坐标系约定-颜色约定(xyz-红绿蓝)">
+<h2 id="dataset加载-以replica为例">Dataset加载-以Replica为例</h2>
+<p>在Habitat中，支持的Dataset需要满足一定的组织格式，可以参考<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/attributesJSON.html">文档</a></p>
+<p>顶层描述文件<code>xxx.scene_dataset_config.json</code></p>
+<ul>
+<li>子属性包括：
+<ul>
+<li>stage：构成场景背景的mesh组件，对于室内场景来说就是一个空房间的mesh</li>
+<li>objects: 物体</li>
+<li>articulated_objects：铰链物体</li>
+<li>lights_setup：光照设置</li>
+<li>scene_instances：场景描述</li>
+<li>semantic_scene_descriptor_instances:语义场景</li>
+<li>navmesh_instances: NavMesh描述</li>
+</ul></li>
+<li>每个子属性都可以用一个json来描述「json路径或者JSON Object」</li>
+<li>stage：一个场景只能有一个stage_instance</li>
+<li>在json文件中配置的路径为相对路径</li>
+<li><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/metadata-taxonomy.html">user_defined</a>：可以在任意json文件中叠加。并且
+Habitat-sim
+功能既不依赖于也不处理此标签下的任何特定元数据。您可以使用此标签缓存特定使用案例的对象信息，或在用户代码中跟踪一段时间内的模拟属性。</li>
+</ul>
+<blockquote>
+<p>这里我们记录了一些相关Issue：</p>
+<ul>
+<li>Replica数据加载，参考<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-sim/issues/1782#issuecomment-1155315433">issue1782</a>
+<ul>
+<li>指定xxx.scene_dataset_config.json, scene_id</li>
+</ul></li>
+<li>可以像参考程序一样直接加载glb，也可以像Replica一样加载ply，参考<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/Replica-Dataset/issues/63">issue63</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/attributesJSON.html">scene_dataset_config.json</a>内容说明，围绕此来构造集成自己的数据集，参考<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-sim/issues/2353">issue2353</a></li>
+</ul>
+</blockquote>
+<h2
+id="habitat-sim获取agent和sensor的state">[habitat-sim]获取Agent和Sensor的state</h2>
+<p>以下代码可以获取Agent的state：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">agent_state = agent.get_state()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;agent_state: position&quot;</span>, agent_state.position, <span class="hljs-string">&quot;rotation&quot;</span>, agent_state.rotation)<br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>agent的position是当前所在地面位置的全局坐标「注意agent必须贴地行走」</p></li>
+<li><p>agent的旋转与sensor的旋转相同</p></li>
+</ul>
+<p>以下代码可以获取sensor的state：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">agent_state = agent.get_state()<br>sensor_state = agent_state.sensor_states<br><span class="hljs-comment"># sensor_state = agent.state.sensor_states</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>分别返回position和rotation「一共六个数字」，相当于相机的外参</p></li>
+<li><p>注意sensor的状态和agent的状态并不存在绝对的联系</p></li>
+<li><p>sensor参数的获取：尤其是内参的获取</p>
+<ul>
+<li>camera是理想的针孔摄像头，参考<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-sim/issues/1732">issue1732</a>，<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-sim/issues/80">issue80</a>，<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/view-transform-warp.html">tutorial</a></li>
+</ul></li>
+</ul>
+<h2 id="habitat-sim获取observation">[habitat-sim]获取observation</h2>
+<p>在Habitat-sim中可以通过以下两种方式来获取observation：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python">agent = sim.get_agent(sim_settings[<span class="hljs-string">&quot;default_agent&quot;</span>])<br>agent_state = habitat_sim.AgentState()<br>agent_state.position = np.array(translation)<br>agent_state.rotation = quaternion.quaternion(quaternion_[<span class="hljs-number">0</span>], quaternion_[<span class="hljs-number">1</span>], quaternion_[<span class="hljs-number">2</span>], quaternion_[<span class="hljs-number">3</span>])<br>agent.set_state(agent_state)<br><span class="hljs-comment"># 以上为设置agent的状态的代码</span><br><br><span class="hljs-comment"># 下面两种方式都可以获取observation，不过有点不同</span><br><span class="hljs-comment"># 1.直接获取当前状态的observation，允许agent浮空，因此可以获得与上面设置的agent状态完全一致的观察</span><br>observations = sim.get_sensor_observations(sim_settings[<span class="hljs-string">&quot;default_agent&quot;</span>])<br><span class="hljs-comment"># 2.经过step之后再获取观察，此时agent会接地，因此此时agent的状态与上面设置的状态可能有所差别</span><br>observations = sim.step(<span class="hljs-string">&#x27;stay_quiet&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<h2 id="habitat-sim获取场景语义信息">[habitat-sim]获取场景语义信息</h2>
+<ul>
+<li>参考：https://github.com/facebookresearch/habitat-sim/issues/2364</li>
+</ul>
+<h2
+id="habitat-sim使用shortestfollower">[habitat-sim]使用ShortestFollower</h2>
+<p>在Habitat-sim中使用ShortedFollower，可以参考样例<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/ba77964155815a6d6b04b4533ef0936a11a370d1/examples/tutorials/nb_python/Habitat_Lab_TopdownMap_Visualization.py#L221">Notebook</a></p>
+<h2 id="habitat-lab获取state">[habitat-lab]获取state</h2>
+<p>在Habitat-lab中获取Agent的state：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">env = habitat.Env(config=config)<br><br>obs = env.reset()<br>initial_state = env._sim.get_agent_state(<span class="hljs-number">0</span>)<br>init_translation = initial_state.position<br>init_rotation = initial_state.rotation<br></code></pre></td></tr></table></figure>
+<p>Sensor的state则包含在agent的state中。</p>
+<h2 id="habitat-lab构造new-sensor">[habitat-lab]构造new sensor</h2>
+<p>这里说明如何构造<code>simulator.sim_sensor</code></p>
+<ul>
+<li><p>在Config系统中注册相关配置。config系统可以参考<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/v0.3.1/habitat-lab/habitat/config/README.md">文档</a></p></li>
+<li><p>如果需要额外的配置信息，也需要在config中指定增加配置</p></li>
+<li><p>实现相关的类型，进行register</p>
+<ul>
+<li>在Habitat中，如果不给@registry.register_sensor装饰器指定名字参数，它会使用类名作为默认的注册名。</li>
+</ul></li>
+<li><p>目前可用的config key，可以参考<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/v0.3.1/habitat-lab/habitat/config/README.md">文档</a></p></li>
+<li><p>注意simluator.sim_sensor在最终配置系统中Package的变化：</p>
+<ul>
+<li>```Bash /gsim/simulator/sensors@habitat.simulator.agents.main_agent:
+gs_rgb_sensor <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs awk"><br><span class="hljs-comment">## [habitat-lab]构造基于ReplicaCAD的PointNav</span><br><br>引入ReplicaCAD的关键在于Env中的Sim配置需要对齐，包括scene_dataset_config_json的指定，以及scene_id的指定。这里列出了一些需要解决的问题<br><br>-   sim使用的是封装了habitat_sim的[HabtatSim](https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/facebookresearch/</span>habitat-lab<span class="hljs-regexp">/blob/m</span>ain<span class="hljs-regexp">/habitat-lab/</span>habitat<span class="hljs-regexp">/sims/</span>habitat_simulator/habitat_simulator.py<span class="hljs-comment">#L269)</span><br>-   habitat_sim的config和habitat_lab的config之间关键参数的对应「[reference](https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/facebookresearch/</span>habitat-lab<span class="hljs-regexp">/blob/m</span>ain<span class="hljs-regexp">/habitat-lab/</span>habitat<span class="hljs-regexp">/sims/</span>habitat_simulator/habitat_simulator.py<span class="hljs-comment">#L324-L327)」</span><br>    -   habitat_sim.config.scene_dataset_config.file &lt;=&gt; habitat_lab.config.simulator.scene_datset<br>    -   habitat_sim.config.scene_id &lt;=&gt; habitat_lab.config.scene<br>-   habitat_lab.config.simulator.scene=habitat_lab.config.simulator.scene_dir + episode.scene_id「<span class="hljs-keyword">in</span> train.json」<br><br>-   我们不能够直接在habitat-lab yaml中指定habitat.simulator.scene_dataset，因为它会被episode中的scene_dataset_config覆盖「[reference](https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/facebookresearch/</span>habitat-lab<span class="hljs-regexp">/blob/m</span>ain<span class="hljs-regexp">/habitat-lab/</span>habitat<span class="hljs-regexp">/core/</span>env.py<span class="hljs-comment">#L104-L108)」</span><br><br><br>因此最终的解决方案是：<br><br>-   在yaml中如下指定，其中scene_dir设置为空字符串：<br><br>```yaml<br><span class="hljs-comment"># @package _global_</span><br><br>defaults:<br>  - pointnav_base<br>  - _self_<br><br>habitat:<br>  environment:<br>    max_episode_steps: <span class="hljs-number">500</span><br>  simulator:<br>    agents:<br>      main_agent:<br>        sim_sensors:<br>          rgb_sensor:<br>            width: <span class="hljs-number">256</span><br>            height: <span class="hljs-number">256</span><br>          depth_sensor:<br>            width: <span class="hljs-number">256</span><br>            height: <span class="hljs-number">256</span><br>  dataset:<br>    type: PointNav-v1<br>    split: train<br>    data_path: data<span class="hljs-regexp">/datasets/</span>pointnav<span class="hljs-regexp">/replica_cad_test/</span>v1<span class="hljs-regexp">/&#123;split&#125;/</span>&#123;split&#125;.json.gz<br>    scenes_dir: <span class="hljs-string">&quot;&quot;</span><br></code></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>在train.json中如下指定，其中通过scene_dataset_config指定为对应的json路径</p></li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;episodes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;episode_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;scene_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;apt_0&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;scene_dataset_config&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&lt;your_path&gt;/data/replica_cad/replicaCAD.scene_dataset_config.json&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;start_position&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-number">-1.2600001</span><span class="hljs-punctuation">,</span> <span class="hljs-number">0.11937292</span><span class="hljs-punctuation">,</span> <span class="hljs-number">0</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;start_rotation&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-number">1</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;info&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;geodesic_distance&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">6.1</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;difficulty&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;easy&quot;</span><br>      <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;goals&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;position&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-number">2.652453</span><span class="hljs-punctuation">,</span> <span class="hljs-number">0.11937272</span><span class="hljs-punctuation">,</span> <span class="hljs-number">6.1090064</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;radius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.2</span><br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;shortest_paths&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;start_room&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>这里还需要注意rotation的指定，在train.json中指定的start_rotation的顺序是<code>(x, y, z, w)</code>「<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/tasks/nav/nav.py#L90">reference</a>」，但是在agent中获得的rotation输出的顺序是<code>(w, x, y, z)</code>「该<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-lab/habitat.core.simulator.AgentState.html#rotation">rotation</a>的类型是<a
+target="_blank" rel="noopener" href="https://quaternion.readthedocs.io/en/latest/#basic-usage">quaternion.quaternion</a>，这个类对应的顺序是wxyz」</li>
+</ul>
+<h2
+id="habitat-lab获取habitat-sim相关的配置内容">[habitat-lab]获取habitat-sim相关的配置内容</h2>
+<p>在habitat-lab中，可以通过某种方式获取到<code>scene_dataset_config.json</code>里面的内容。关于Config属性可以参考<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/attributesJSON.html">说明文档</a>。要获取对应的Config属性，需要获取template_manager，然后获取其中的key。</p>
+<ul>
+<li>相关manager：<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.attributes_managers.html">reference</a>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.metadata.MetadataMediator.html">MetadataMediator</a>：管理dataset层级的config，可以获取scene的list</li>
+<li><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.attributes_managers.StageAttributesManager.html">StageAttributesManager</a>：管理stage层级的config</li>
+<li><a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.attributes_managers.ObjectAttributesManager.html">ObjectAttributesManager</a>：管理object层级的config</li>
+</ul></li>
+<li>Attributes对应的C++实现<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-sim/tree/main/src/esp/metadata/attributes">位置</a></li>
+<li>stage和object的缩放和平移在两个配置文件中有定义
+<ul>
+<li>stage：「stage的缩放好像没有生效？」
+<ul>
+<li>stage_config.json中
+<ul>
+<li>up: y</li>
+<li>front: -z</li>
+<li>origin: xyz</li>
+<li>scale: 缩放</li>
+</ul></li>
+<li>scene_instance.json中的stage_instance:
+<ul>
+<li>translation xyz</li>
+<li>rotation wxyz</li>
+<li>uniform_scale</li>
+<li>non_uniform_scale</li>
+</ul></li>
+</ul></li>
+<li>object：
+<ul>
+<li>object_config.json中
+<ul>
+<li>up：y</li>
+<li>front：-z</li>
+<li>COM：xyz</li>
+<li>scale：缩放</li>
+</ul></li>
+<li>scene_instance.json中的object_instances:
+<ul>
+<li>translation xyz</li>
+<li>rotation wxyz</li>
+<li>uniform_scale</li>
+<li>non_uniform_scale</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<h2
+id="habitat-labepisode切换的流程">[habitat-lab]episode切换的流程</h2>
+<p>以下主要介绍在habitat-lab中切换episode实际上经过的操作：</p>
+<ol type="1">
+<li>首先在初始化Env的时候，会依次初始化dataset「List of
+Episode」，sim「simulator」和task 「EmbodiedTask」</li>
+<li>通过env.reset()进行episode的切换</li>
+</ol>
+<ul>
+<li>获取next episode</li>
+<li>Reconfigure
+<ul>
+<li>task.overwrite_sim_config</li>
+<li>sim.reconfigure(simulator_config+current_episode)</li>
+</ul></li>
+<li>在task中进行reset</li>
+<li>task.mesurements.rest_measures()：重置相关指标</li>
+</ul>
+<ol start="3" type="1">
+<li>但是需要注意的是next
+epsiode的处理逻辑，它并不是完全按照顺序一个个给出指定的env.episodes中的值，而是会构造一个迭代器，这个迭代器中顺序会尽可能减少场景的切换，参考habitat-lab中的<a
+target="_blank" rel="noopener" href="https://github.com/facebookresearch/habitat-lab/blob/main/habitat-lab/habitat/core/dataset.py#L329">EpisodeIterator</a></li>
+</ol>
+<h2
+id="habitat-lab实现过程中场景物体的控制">[habitat-lab]实现过程中场景物体的控制</h2>
+<p>在habitat-lab中，我们可以在过程中控制场景中的物体，包括物体的种类、位置等。一种实现思路是：在episode的描述文件中添加需要在该episode中加入的物体，然后在切换episode的时候，将对应的物体加载到场景中。其中的核心类是habitat_sim中的<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.physics.RigidObjectManager.html">RigidObjectManager</a>「动态管理的API<a
+target="_blank" rel="noopener" href="https://aihabitat.org/docs/habitat-sim/habitat_sim.physics.html">参考</a>」</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># self为Simulator类</span><br><br><span class="hljs-comment"># 获取RigidObjectManager</span><br>rigid_obj_mgr = self.get_rigid_object_manager()<br>rigid_obj_mgr.remove_all_objects()<br><br><span class="hljs-comment"># 通过对应配置文件的handle来实例化对应的物体</span><br>object_box = rigid_obj_mgr.add_object_by_template_handle(object_config_path)<br><br><span class="hljs-comment"># 修改物体的相关属性</span><br><span class="hljs-comment"># 相关的Package</span><br><span class="hljs-comment"># import magnum as mn</span><br><span class="hljs-comment"># from habitat_sim._ext.habitat_sim_bindings import MotionType</span><br>object_box.translation = np.array([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>])<br>object_box.rotation = mn.Quaternion(mn.Vector3(q.x, q.y, q.z), q.w)<br>object_box.motion_type = MotionType.STATIC<br>...<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BB%BF%E7%9C%9F/" class="category-chain-item">仿真</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BB%BF%E7%9C%9F/Habitat/" class="category-chain-item">Habitat</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Simulation/" class="print-no-link">#Simulation</a>
+      
+        <a href="/tags/Habitat/" class="print-no-link">#Habitat</a>
+      
+        <a href="/tags/Embodied-AI/" class="print-no-link">#Embodied-AI</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>habitat-基础使用记录</div>
+      <div>http://example.com/2025/05/07/habitat-基础使用记录/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>EverNorif</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/04/04/taichi%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/" title="taichi学习笔记(1)-基础使用">
+                        <span class="hidden-mobile">taichi学习笔记(1)-基础使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  var relativeDate = function() {
+    var updatedTime = document.getElementById('updated-time');
+    if (updatedTime) {
+      var text = updatedTime.textContent;
+      var reg = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/;
+      var matchs = text.match(reg);
+      if (matchs) {
+        var relativeTime = moment(matchs[0]).fromNow();
+        updatedTime.textContent = text.replace(reg, relativeTime);
+      }
+      updatedTime.style.display = '';
+    }
+  };
+  Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/moment.min.js', function() {
+    if (!'zh-cn'.startsWith('en')) {
+      Fluid.utils.createScript('https://lib.baomitu.com/moment.js/2.29.4/locale/zh-cn.min.js', function() {
+        relativeDate();
+      });
+    } else {
+      relativeDate();
+    }
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/xiaomai.model.json"},"display":{"position":"left","width":150,"height":300,"vOffset":-90},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
