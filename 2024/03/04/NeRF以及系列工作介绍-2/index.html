@@ -19,18 +19,18 @@
     <meta name="description" content="本篇主要介绍了NeRF相关工作，包括Plenoxels、InstantNGP、TensoRF、TriMipNeRF和ZipNeRF。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NeRF以及系列工作介绍(2)">
-<meta property="og:url" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="本篇主要介绍了NeRF相关工作，包括Plenoxels、InstantNGP、TensoRF、TriMipNeRF和ZipNeRF。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240229162137988.png">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301131800722.png">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301130659215.png">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303153636502.png">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303154854693.png">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304130337010.png">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304162605381.png">
-<meta property="og:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304170433355.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240229162137988.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301131800722.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240301130659215.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303153636502.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240303154854693.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304130337010.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304162605381.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240304170433355.png">
 <meta property="article:published_time" content="2024-03-04T09:13:26.000Z">
 <meta property="article:modified_time" content="2024-03-04T09:15:14.256Z">
 <meta property="article:author" content="EverNorif">
@@ -38,7 +38,7 @@
 <meta property="article:tag" content="论文笔记">
 <meta property="article:tag" content="NeRF">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240229162137988.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2024/03/04/NeRF%E4%BB%A5%E5%8F%8A%E7%B3%BB%E5%88%97%E5%B7%A5%E4%BD%9C%E4%BB%8B%E7%BB%8D-2/image-20240229162137988.png">
   
   
   
@@ -84,7 +84,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -763,7 +763,7 @@ Unofficial implementation of ZipNeRF</a></li>
   <div class="license-box my-3">
     <div class="license-title">
       <div>NeRF以及系列工作介绍(2)</div>
-      <div>http://example.com/2024/03/04/NeRF以及系列工作介绍-2/</div>
+      <div>https://evernorif.github.io/2024/03/04/NeRF以及系列工作介绍-2/</div>
     </div>
     <div class="license-meta">
       

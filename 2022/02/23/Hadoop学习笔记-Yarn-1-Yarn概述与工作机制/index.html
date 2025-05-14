@@ -19,12 +19,12 @@
     <meta name="description" content="学习Yarn的相关概念，包括Yarn的基础架构，工作机制，以及MapReduce、HDFS、Yarn三者之间的协调使用。最后学习了Yarn中的调度器和调度算法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hadoop学习笔记-Yarn(1)-Yarn概述与工作机制">
-<meta property="og:url" content="http://example.com/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="学习Yarn的相关概念，包括Yarn的基础架构，工作机制，以及MapReduce、HDFS、Yarn三者之间的协调使用。最后学习了Yarn中的调度器和调度算法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/%E5%AE%B9%E9%87%8F%E8%B0%83%E5%BA%A6%E5%99%A8.png">
-<meta property="og:image" content="http://example.com/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/FAIR%E5%88%86%E9%85%8D.png">
+<meta property="og:image" content="https://evernorif.github.io/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/%E5%AE%B9%E9%87%8F%E8%B0%83%E5%BA%A6%E5%99%A8.png">
+<meta property="og:image" content="https://evernorif.github.io/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/FAIR%E5%88%86%E9%85%8D.png">
 <meta property="article:published_time" content="2022-02-23T00:22:30.000Z">
 <meta property="article:modified_time" content="2022-02-23T13:08:32.000Z">
 <meta property="article:author" content="EverNorif">
@@ -32,7 +32,7 @@
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="Yarn">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/%E5%AE%B9%E9%87%8F%E8%B0%83%E5%BA%A6%E5%99%A8.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2022/02/23/Hadoop%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Yarn-1-Yarn%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/%E5%AE%B9%E9%87%8F%E8%B0%83%E5%BA%A6%E5%99%A8.png">
   
   
   
@@ -78,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -597,7 +597,7 @@ target="_blank" rel="noopener" href="https://blog.csdn.net/zc19921215/article/de
   <div class="license-box my-3">
     <div class="license-title">
       <div>Hadoop学习笔记-Yarn(1)-Yarn概述与工作机制</div>
-      <div>http://example.com/2022/02/23/Hadoop学习笔记-Yarn-1-Yarn概述与工作机制/</div>
+      <div>https://evernorif.github.io/2022/02/23/Hadoop学习笔记-Yarn-1-Yarn概述与工作机制/</div>
     </div>
     <div class="license-meta">
       

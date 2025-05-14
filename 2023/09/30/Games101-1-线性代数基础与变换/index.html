@@ -19,24 +19,24 @@
     <meta name="description" content="本系列为Games101的学习笔记。本篇主要介绍了计算机图形学中的线性代数基础以及变换的操作。其中重点在于变换Transformation，包括2D变换的介绍，齐次坐标的引入以及推广到3D变换。最后介绍了图形学中的MVP Transformation，即模型变换、视角变换和投影变换。通过MVP变换，我们可以将空间坐标系中任意的Model缩放到一个标准立方体中，便于后续的处理。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Games101(1)-线性代数基础与变换">
-<meta property="og:url" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="本系列为Games101的学习笔记。本篇主要介绍了计算机图形学中的线性代数基础以及变换的操作。其中重点在于变换Transformation，包括2D变换的介绍，齐次坐标的引入以及推广到3D变换。最后介绍了图形学中的MVP Transformation，即模型变换、视角变换和投影变换。通过MVP变换，我们可以将空间坐标系中任意的Model缩放到一个标准立方体中，便于后续的处理。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925210845399.png">
-<meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925200733986.png">
-<meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925213925722.png">
-<meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925204849048.png">
-<meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925205544314.png">
-<meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230928134135724.png">
-<meta property="og:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230928134234121.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925210845399.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925200733986.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925213925722.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925204849048.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925205544314.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230928134135724.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230928134234121.png">
 <meta property="article:published_time" content="2023-09-30T09:08:45.000Z">
 <meta property="article:modified_time" content="2023-10-24T08:54:50.201Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="线性代数">
 <meta property="article:tag" content="计算机图形学">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925210845399.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2023/09/30/Games101-1-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8F%98%E6%8D%A2/image-20230925210845399.png">
   
   
   
@@ -82,7 +82,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -349,7 +349,7 @@
                 
                 <h1 id="线性代数基础">线性代数基础</h1>
 <p>该部分可以首先参考<a
-target="_blank" rel="noopener" href="https://evernorif.github.io/2023/08/16/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/">线性代数的本质
+href="https://evernorif.github.io/2023/08/16/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84%E6%9C%AC%E8%B4%A8/">线性代数的本质
 - EverNorif</a>，其中以直观地方式介绍了线性代数的几何意义。</p>
 <p>在图形学中涉及的线性代数，主要可以分为两大部分，分别是向量和矩阵，下面将简单介绍相关概念。</p>
 <h2 id="向量vector">向量Vector</h2>
@@ -761,7 +761,7 @@ target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1X7411F744
   <div class="license-box my-3">
     <div class="license-title">
       <div>Games101(1)-线性代数基础与变换</div>
-      <div>http://example.com/2023/09/30/Games101-1-线性代数基础与变换/</div>
+      <div>https://evernorif.github.io/2023/09/30/Games101-1-线性代数基础与变换/</div>
     </div>
     <div class="license-meta">
       

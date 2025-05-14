@@ -19,18 +19,18 @@
     <meta name="description" content="Kubernetes是目前容器编排市场上绝对的巨头，占据了大量的市场份额。本篇简单介绍了Kubernetes的背景，组件和相关概念。Kubernetes中最重要的概念是Resources，Resource主要包括了namespace、pod、pod controller、service、lable等。最后，Getting Started在Kubernetes集群中完成了nginx服务的部署。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes学习笔记(1)-简介与基本使用">
-<meta property="og:url" content="http://example.com/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="Kubernetes是目前容器编排市场上绝对的巨头，占据了大量的市场份额。本篇简单介绍了Kubernetes的背景，组件和相关概念。Kubernetes中最重要的概念是Resources，Resource主要包括了namespace、pod、pod controller、service、lable等。最后，Getting Started在Kubernetes集群中完成了nginx服务的部署。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/Kubernetes%E7%BB%84%E4%BB%B6.png">
-<meta property="og:image" content="http://example.com/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/GettingStarted.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/Kubernetes%E7%BB%84%E4%BB%B6.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/GettingStarted.png">
 <meta property="article:published_time" content="2023-07-29T02:55:48.000Z">
 <meta property="article:modified_time" content="2023-07-29T03:16:16.976Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/Kubernetes%E7%BB%84%E4%BB%B6.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2023/07/29/Kubernetes%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1-%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/Kubernetes%E7%BB%84%E4%BB%B6.png">
   
   
   
@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -960,7 +960,7 @@ Started的全流程，我们可以得到下面一张概述图，描述Resource�
   <div class="license-box my-3">
     <div class="license-title">
       <div>Kubernetes学习笔记(1)-简介与基本使用</div>
-      <div>http://example.com/2023/07/29/Kubernetes学习笔记-1-简介与基本使用/</div>
+      <div>https://evernorif.github.io/2023/07/29/Kubernetes学习笔记-1-简介与基本使用/</div>
     </div>
     <div class="license-meta">
       

@@ -19,25 +19,25 @@
     <meta name="description" content="SMPL是一个人体Mesh模型，通过给定不同的形状和姿势参数，我们可以得到表示不同人体的Mesh。本篇主要对SMPL进行了原理以及使用方式的介绍，包括如何通过SMPL参数转换得到人体Mesh，如何通过Pose序列生成动画以及如何驱动Texture Mesh等。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SMPL模型介绍及使用">
-<meta property="og:url" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="SMPL是一个人体Mesh模型，通过给定不同的形状和姿势参数，我们可以得到表示不同人体的Mesh。本篇主要对SMPL进行了原理以及使用方式的介绍，包括如何通过SMPL参数转换得到人体Mesh，如何通过Pose序列生成动画以及如何驱动Texture Mesh等。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220150314710.png">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220155642131.png">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221225204969.png">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221230438634.png">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241223170825983.png">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq.gif">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241225161200875.png">
-<meta property="og:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq_man.gif">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220150314710.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220155642131.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221225204969.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241221230438634.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241223170825983.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq.gif">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241225161200875.png">
+<meta property="og:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/smplx_mesh_seq_man.gif">
 <meta property="article:published_time" content="2024-12-19T09:04:21.000Z">
 <meta property="article:modified_time" content="2024-12-26T12:55:43.347Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="3D">
 <meta property="article:tag" content="SMPL">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220150314710.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2024/12/19/SMPL%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/image-20241220150314710.png">
   
   
   
@@ -83,7 +83,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -692,7 +692,7 @@ target="_blank" rel="noopener" href="https://www.cnblogs.com/sariel-sakura/p/143
   <div class="license-box my-3">
     <div class="license-title">
       <div>SMPL模型介绍及使用</div>
-      <div>http://example.com/2024/12/19/SMPL模型介绍及使用/</div>
+      <div>https://evernorif.github.io/2024/12/19/SMPL模型介绍及使用/</div>
     </div>
     <div class="license-meta">
       

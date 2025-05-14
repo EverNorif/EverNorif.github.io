@@ -19,29 +19,29 @@
     <meta name="description" content="本篇主要介绍了光线追踪的基本概念。包括光追引入，基础Ray Tracing，Whitted-Style Ray Tracing。为了更加真实的描述光线的作用方式，我们介绍了辐射度量学Radiometry，同时推出最终渲染方程。为了解这个渲染方程，我们介绍了路径追踪算法，并从最初的想法一步步改进到最终结果。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Games101(4)-光线追踪">
-<meta property="og:url" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="本篇主要介绍了光线追踪的基本概念。包括光追引入，基础Ray Tracing，Whitted-Style Ray Tracing。为了更加真实的描述光线的作用方式，我们介绍了辐射度量学Radiometry，同时推出最终渲染方程。为了解这个渲染方程，我们介绍了路径追踪算法，并从最初的想法一步步改进到最终结果。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010230939370.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010232021792.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011101529651.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011105102202.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212330249.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212805774.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011213906440.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011220018546.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221540060.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221952705.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011222331706.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012133659124.png">
-<meta property="og:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012144331636.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010230939370.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010232021792.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011101529651.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011105102202.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212330249.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011212805774.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011213906440.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011220018546.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221540060.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011221952705.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231011222331706.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012133659124.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231012144331636.png">
 <meta property="article:published_time" content="2023-10-12T06:53:43.000Z">
 <meta property="article:modified_time" content="2023-10-12T07:02:27.573Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="计算机图形学">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010230939370.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2023/10/12/Games101-4-%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20231010230939370.png">
   
   
   
@@ -87,7 +87,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -734,7 +734,7 @@ Tracing|tangible-havarti-5bc</a></li>
   <div class="license-box my-3">
     <div class="license-title">
       <div>Games101(4)-光线追踪</div>
-      <div>http://example.com/2023/10/12/Games101-4-光线追踪/</div>
+      <div>https://evernorif.github.io/2023/10/12/Games101-4-光线追踪/</div>
     </div>
     <div class="license-meta">
       

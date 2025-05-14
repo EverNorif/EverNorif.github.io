@@ -19,18 +19,18 @@
     <meta name="description" content="在实际执行的时候，Hive可能出现性能问题。本笔记简单学习了不同情形下的优化手段，包括Hive中分区表、分桶表以及索引的设计和应用场景；文件格式以及数据压缩的优化、存储优化；explain解析命令的使用；MapReduce的属性优化、join方案的优化；优化器的使用以及数据倾斜问题的处理方案。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hive学习笔记-Hive优化(1)-Hive性能优化">
-<meta property="og:url" content="http://example.com/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="在实际执行的时候，Hive可能出现性能问题。本笔记简单学习了不同情形下的优化手段，包括Hive中分区表、分桶表以及索引的设计和应用场景；文件格式以及数据压缩的优化、存储优化；explain解析命令的使用；MapReduce的属性优化、join方案的优化；优化器的使用以及数据倾斜问题的处理方案。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png">
+<meta property="og:image" content="https://evernorif.github.io/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png">
 <meta property="article:published_time" content="2022-07-05T12:45:58.000Z">
 <meta property="article:modified_time" content="2022-07-13T11:17:32.000Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="笔记">
 <meta property="article:tag" content="Hive">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2022/07/05/Hive%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Hive%E4%BC%98%E5%8C%96-1-Hive%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/ReduceJoin.png">
   
   
   
@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -576,7 +576,7 @@ join的结果和reduce join的结果进行union合并。配置如下：</p>
   <div class="license-box my-3">
     <div class="license-title">
       <div>Hive学习笔记-Hive优化(1)-Hive性能优化</div>
-      <div>http://example.com/2022/07/05/Hive学习笔记-Hive优化-1-Hive性能优化/</div>
+      <div>https://evernorif.github.io/2022/07/05/Hive学习笔记-Hive优化-1-Hive性能优化/</div>
     </div>
     <div class="license-meta">
       

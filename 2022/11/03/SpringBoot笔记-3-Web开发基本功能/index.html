@@ -19,7 +19,7 @@
     <meta name="description" content="利用SpringBoot，我们可以快速开发一个Web项目。本篇主要介绍了利用SpringBoot开发Web项目中常用的一些功能，包括静态资源的处理、请求处理、响应处理、错误处理、拦截器以及文件上传功能。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringBoot笔记(3)-Web开发基本功能">
-<meta property="og:url" content="http://example.com/2022/11/03/SpringBoot%E7%AC%94%E8%AE%B0-3-Web%E5%BC%80%E5%8F%91%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2022/11/03/SpringBoot%E7%AC%94%E8%AE%B0-3-Web%E5%BC%80%E5%8F%91%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="利用SpringBoot，我们可以快速开发一个Web项目。本篇主要介绍了利用SpringBoot开发Web项目中常用的一些功能，包括静态资源的处理、请求处理、响应处理、错误处理、拦截器以及文件上传功能。">
 <meta property="og:locale" content="zh_CN">
@@ -74,7 +74,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -368,7 +368,7 @@ Jars</a>）。例如我们可以通过下面的方式来引入jquery：</p>
 <p>请求处理即通过<code>@RequestMapping</code>注解来设置访问路径与处理器对象之间的映射。在这个注解中可以指定method属性来设置访问方法，也可以使用封装了访问属性的注解，包括<code>@GetMapping</code>、<code>@PostMapping</code>、<code>@PutMapping</code>、<code>@DeleteMapping</code>，用于匹配不同的访问方式。</p>
 <blockquote>
 <p>在<a
-target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/19/SpringMVC笔记-4-SpringMVC中的RESTful与Ajax/">SpringMVC笔记(4)-SpringMVC中的RESTful与Ajax
+href="https://evernorif.github.io/2022/10/19/SpringMVC笔记-4-SpringMVC中的RESTful与Ajax/">SpringMVC笔记(4)-SpringMVC中的RESTful与Ajax
 -
 EverNorif</a>中我们学习过，如果想要在SpringMVC中发送put和delete方式的请求，需要利用到提供的<code>HiddenHttpMethodFilter</code>类，当时我们使用的方式是在<code>web.xml</code>中进行配置。而在SpringBoot中，默认没有开启该功能，我们需要在配置文件中配置开启：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">mvc:</span><br>    <span class="hljs-attr">hiddenmethod:</span><br>      <span class="hljs-attr">filter:</span><br>        <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
@@ -415,7 +415,7 @@ Page，如果是客户端错误访问，则会返回一个Json响应，其中包
 <p>同时我们可以自定义错误页，将错误页放在<code>/templates/error/</code>目录下，命名为<code>404.html</code>，<code>4xx.html</code>或者<code>5xx.html</code>。这些错误页将会被自动解析有精确的错误状态码页面就匹配精确，没有就找xx匹配，如果都没有就触发白页。</p>
 <h1 id="文件上传">文件上传</h1>
 <p>SpringMVC中的文件上传和下载可以参考：<a
-target="_blank" rel="noopener" href="https://evernorif.github.io/2022/10/19/SpringMVC笔记-5-SpringMVC中文件上传和下载/">SpringMVC笔记(5)-SpringMVC中文件上传和下载
+href="https://evernorif.github.io/2022/10/19/SpringMVC笔记-5-SpringMVC中文件上传和下载/">SpringMVC笔记(5)-SpringMVC中文件上传和下载
 -
 EverNorif</a>。其中文件下载有着固定的套路，需要指定返回值为<code>ResponseEntity&lt;byte[]&gt;</code>，然后按照固定流程即可。</p>
 <p>而对于文件上传，上传的文件需要先封装成<code>MultipartFile</code>对象，之后才能进行处理。之前我们需要添加相关依赖<code>commons-fileupload</code>，并且需要在配置文件中配置<code>MultipartFile</code>Bean对象，不过在SpringBoot中，这些同样被自动配置完成了。</p>
@@ -484,7 +484,7 @@ EverNorif</a>。其中文件下载有着固定的套路，需要指定返回值�
   <div class="license-box my-3">
     <div class="license-title">
       <div>SpringBoot笔记(3)-Web开发基本功能</div>
-      <div>http://example.com/2022/11/03/SpringBoot笔记-3-Web开发基本功能/</div>
+      <div>https://evernorif.github.io/2022/11/03/SpringBoot笔记-3-Web开发基本功能/</div>
     </div>
     <div class="license-meta">
       

@@ -19,17 +19,17 @@
     <meta name="description" content="本篇主要介绍了线性模型中线性回归和Softmax回归的实现。在补充说明中，介绍了相关的softlabel策略以及损失函数设计思路探寻。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="动手学深度学习(2)-线性模型">
-<meta property="og:url" content="http://example.com/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:url" content="https://evernorif.github.io/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="EverNorif">
 <meta property="og:description" content="本篇主要介绍了线性模型中线性回归和Softmax回归的实现。在补充说明中，介绍了相关的softlabel策略以及损失函数设计思路探寻。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/mes.png">
+<meta property="og:image" content="https://evernorif.github.io/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/mes.png">
 <meta property="article:published_time" content="2023-08-29T13:41:30.000Z">
 <meta property="article:modified_time" content="2023-08-29T14:09:03.807Z">
 <meta property="article:author" content="EverNorif">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/mes.png">
+<meta name="twitter:image" content="https://evernorif.github.io/2023/08/29/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-2-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/mes.png">
   
   
   
@@ -75,7 +75,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"evernorif.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/bilibiliTV.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -343,7 +343,7 @@
                 <h1 id="线性回归">线性回归</h1>
 <h2 id="简介">简介</h2>
 <p>这里对于线性回归不做详细的介绍，更加详细的介绍可以参考本人的其他相关笔记：<a
-target="_blank" rel="noopener" href="https://evernorif.github.io/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/">机器学习基础(6)线性回归与Logistic回归|EverNorif</a>。</p>
+href="https://evernorif.github.io/2023/08/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-6-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8ELogistic%E5%9B%9E%E5%BD%92/">机器学习基础(6)线性回归与Logistic回归|EverNorif</a>。</p>
 <p>线性回归模型如下，其中，对于单个输入向量<span
 class="math inline">\(\mathbf{x}\)</span>，使用<span
 class="math inline">\(\hat{y}\)</span>来表示预测值，<span
@@ -489,7 +489,7 @@ hot向量的其他值都是0，并且由于不为0的位置上是1，因此log�
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">metric = Accumulator(<span class="hljs-number">3</span>)<br><span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> test_data_loader:<br>    y_hat = net(X)<br>    l = loss(y_hat, y)<br>    metric.add(<span class="hljs-built_in">float</span>(l.<span class="hljs-built_in">sum</span>()), accuracy(y_hat, y), y.numel())<br><br>test_loss = metric[<span class="hljs-number">0</span>] / metric[<span class="hljs-number">2</span>]<br>test_accuracy = metric[<span class="hljs-number">1</span>] / metric[<span class="hljs-number">2</span>]<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;loss: <span class="hljs-subst">&#123;test_loss&#125;</span>&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;accuracy: <span class="hljs-subst">&#123;test_accuracy&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
 <h1 id="总结">总结</h1>
 <p>通过对线性回归和Softmax回归的从零手动实现和代码实现，我们可以发现模型训练过程中的一些基本要素，包括DataLoader、Model、Loss和Optimizer。这些要素实际上也就是最重要的模块。也可以参考<a
-target="_blank" rel="noopener" href="https://evernorif.github.io/2023/08/16/Pytorch%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">Pytorch快速入门
+href="https://evernorif.github.io/2023/08/16/Pytorch%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">Pytorch快速入门
 - EverNorif</a>中的Quick Start，其中就描述了模型训练的基本过程。</p>
 <h1 id="补充说明">补充说明</h1>
 <h2 id="softlabel策略">softlabel策略</h2>
@@ -735,7 +735,7 @@ class="math inline">\(y_i\)</span>不同的情况下，应该分开考虑。</p>
   <div class="license-box my-3">
     <div class="license-title">
       <div>动手学深度学习(2)-线性模型</div>
-      <div>http://example.com/2023/08/29/动手学深度学习-2-线性模型/</div>
+      <div>https://evernorif.github.io/2023/08/29/动手学深度学习-2-线性模型/</div>
     </div>
     <div class="license-meta">
       
